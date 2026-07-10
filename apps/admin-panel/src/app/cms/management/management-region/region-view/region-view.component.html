@@ -1,0 +1,59 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'region.title' | translate"
+  [nzSubtitle]="'region.subtitle' | translate">
+  <nz-page-header-extra>
+    <nz-space>
+      <div *nzSpaceItem>
+        <button *ngIf="form.value.id != null" nz-button (click)="clearMap()" [disabled]="polygons.length == 0">{{
+          'profile.clearMap' | translate }}</button>
+      </div>
+      <button *nzSpaceItem nz-button nzType="primary" [disabled]="form.invalid || polygons.length == 0"
+        (click)="onSubmit()">{{
+        'profile.saveChanges'
+        |
+        translate }}</button>
+    </nz-space>
+  </nz-page-header-extra>
+  <nz-page-header-content>
+    <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <input formControlName="id" type="hidden" hidden>
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+        <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
+          <input nz-input formControlName="name" id="name" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="currency" id="currency" nzShowSearch>
+            <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="enabled" nzRequired>{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName="enabled" id="enabled"></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="enabled" nzRequired>{{ 'region.geofence' | translate }}</nz-form-label>
+        <nz-form-control>
+          <input type="hidden" hidden formControlName="location">
+          <!-- MapboxDraw polygon tool is injected via (mapLoad) — no map-polygon child needed -->
+          <mgl-map
+            style="height: 400px; width: 100%;"
+            [style]="'mapbox://styles/mapbox/streets-v12'"
+            [zoom]="[4]"
+            [center]="center"
+            (mapLoad)="onMapLoad($event)">
+          </mgl-map>
+        </nz-form-control>
+      </nz-form-item>
+
+    </form>
+  </nz-page-header-content>
+
+</nz-page-header>

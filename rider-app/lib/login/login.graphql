@@ -1,0 +1,11 @@
+mutation Login($firebaseToken: String!) {
+  login(input: { firebaseToken: $firebaseToken }) {
+    jwtToken
+  }
+}
+
+mutation SkipVerification($mobileNumber: String!) {
+  skipVerification(mobileNumber: $mobileNumber) {
+    jwtToken
+  }
+}

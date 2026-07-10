@@ -1,0 +1,145 @@
+# =============================================================================
+# Kasi monorepo — .gitignore
+# Stack : Nx 16.x | Angular 16 | NestJS 10 | Flutter (driver-app, rider-app)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Nx workspace
+# -----------------------------------------------------------------------------
+.nx/cache
+.nx/workspace-data
+.nx/installation
+tmp/
+
+# -----------------------------------------------------------------------------
+# Node / npm / pnpm
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store/
+package-lock.json.bak
+
+# -----------------------------------------------------------------------------
+# Build outputs (Angular, NestJS, Nx)
+# -----------------------------------------------------------------------------
+dist/
+out/
+build/
+.angular/
+*.js.map
+
+# -----------------------------------------------------------------------------
+# Variables d environnement et secrets — NE JAMAIS COMMITTER
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.template
+secrets/
+*.pem
+*.key
+*.p12
+*.p8
+
+# -----------------------------------------------------------------------------
+# Firebase / Google Services — NE JAMAIS COMMITTER
+# Ces fichiers contiennent des cles de service ou des identifiants d app.
+# Les integrations Firebase sont en cours d arbitrage par kasi-integrations-auditor.
+# -----------------------------------------------------------------------------
+google-services.json
+GoogleService-Info.plist
+service-account*.json
+firebase-adminsdk*.json
+
+# -----------------------------------------------------------------------------
+# Android (driver-app, rider-app)
+# -----------------------------------------------------------------------------
+*.keystore
+*.jks
+key.properties
+local.properties
+driver-app/android/.gradle/
+driver-app/android/app/build/
+driver-app/android/build/
+rider-app/android/.gradle/
+rider-app/android/app/build/
+rider-app/android/build/
+driver-app/android/captures/
+rider-app/android/captures/
+
+# -----------------------------------------------------------------------------
+# iOS (driver-app, rider-app)
+# -----------------------------------------------------------------------------
+*.cer
+*.mobileprovision
+*.xcarchive
+driver-app/ios/Pods/
+rider-app/ios/Pods/
+driver-app/ios/Flutter/Flutter.framework
+rider-app/ios/Flutter/Flutter.framework
+driver-app/ios/Flutter/Flutter.podspec
+rider-app/ios/Flutter/Flutter.podspec
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+
+# -----------------------------------------------------------------------------
+# Flutter
+# -----------------------------------------------------------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock          # A garder si l equipe veut des builds reproductibles ;
+                      # supprimer cette ligne dans ce cas.
+driver-app/build/
+rider-app/build/
+
+# Generated Dart (freezed, json_serializable, graphql_flutter codegen)
+*.g.dart
+*.freezed.dart
+*.graphql.dart
+
+# -----------------------------------------------------------------------------
+# Editeurs et OS
+# -----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/settings.json
+.vscode/launch.json
+.vscode/.ropeproject
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# -----------------------------------------------------------------------------
+# Logs divers
+# -----------------------------------------------------------------------------
+*.log
+logs/
+coverage/
+.nyc_output/
+
+# -----------------------------------------------------------------------------
+# Docker
+# -----------------------------------------------------------------------------
+# Ne pas ignorer docker-compose*.yml ni les Dockerfiles (versionnes).
+# Ignorer d eventuels fichiers .env specifiques a Docker.
+docker-compose.override.yml
+.docker/
+
+# Configuration runtime des APIs (montee dans les conteneurs via docker-compose,
+# voir volumes ./config:/app/config). Contient des tokens/cles — jamais versionnee.
+/config/

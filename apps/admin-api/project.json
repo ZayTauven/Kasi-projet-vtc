@@ -1,0 +1,98 @@
+{
+  "name": "admin-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/admin-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "dependsOn": [
+        {
+          "target": "compile"
+        }
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc libs/database/src/lib/migration/mysql-archive/*.ts --outDir dist/apps/admin-api/migration --skipLibCheck"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "compile": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "deleteOutputPath": false,
+        "outputPath": "dist/apps/admin-api",
+        "main": "apps/admin-api/src/main.ts",
+        "tsConfig": "apps/admin-api/tsconfig.app.json",
+        "assets": [
+          "apps/admin-api/src/assets"
+        ],
+        "tsPlugins": [
+          {
+            "name": "@nestjs/graphql/plugin",
+            "options": {
+              "typeFileNameSuffix": [
+                ".input.ts",
+                ".dto.ts"
+              ]
+            }
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/admin-api/src/environments/environment.ts",
+              "with": "apps/admin-api/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "admin-api:compile",
+        "inspect": true,
+        "port": 9233
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/admin-api/**/*.ts"
+        ]
+      },
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/admin-api"
+      ],
+      "options": {
+        "jestConfig": "apps/admin-api/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

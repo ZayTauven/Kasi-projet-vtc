@@ -1,0 +1,33 @@
+<nz-tabset nzTabPosition="left">
+  <nz-tab nzTitle="{{ 'settings.generalSettings' | translate }}">
+    <nz-page-header
+      [nzGhost]="false"
+      [nzTitle]="'settings.changePasswordTitle' | translate"
+      [nzSubtitle]="'settings.changePasswordSubtitle' | translate">
+    </nz-page-header>
+    <nz-card style="mt-16">
+      <form nz-form #frm [formGroup]="form" (ngSubmit)="onSubmit()">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="oldPassword">{{ 'settings.oldPassword' | translate }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
+            <input nz-input formControlName="oldPassword" id="oldPassword" type="password" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="newPassword">{{ 'settings.newPassword' | translate }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
+            <input nz-input formControlName="newPassword" id="newPassword" type="password" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="newPasswordRepeat">{{ 'settings.newPasswordRepeat' | translate }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
+            <input nz-input formControlName="newPasswordRepeat" id="newPasswordRepeat" type="password" />
+          </nz-form-control>
+        </nz-form-item>
+        <button nz-button nzType="primary" type="submit" [disabled]="form.invalid" class="float-right">{{ 'profile.save' | translate }}</button>
+      </form>
+    </nz-card>
+
+  </nz-tab>
+</nz-tabset>

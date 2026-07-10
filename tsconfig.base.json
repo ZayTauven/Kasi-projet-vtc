@@ -1,0 +1,53 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": [
+      "es2017",
+      "dom",
+      "esnext.asynciterable"
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kasi/admin-panel/*": [
+        "apps/admin-panel/*"
+      ],
+      "@kasi/coupon/*": [
+        "libs/database/src/lib/coupon/*"
+      ],
+      "@kasi/database": [
+        "libs/database/src/index.ts"
+      ],
+      "@kasi/database/*": [
+        "libs/database/src/lib/entities/*"
+      ],
+      "@kasi/order/*": [
+        "libs/database/src/lib/order/*",
+        "libs/database/src/lib/order/region/*",
+        "libs/database/src/lib/order/google-services/*"
+      ],
+      "@kasi/redis/*": [
+        "libs/database/src/lib/redis/*"
+      ],
+      "@kasi/geo/*": [
+        "libs/database/src/lib/geo/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
+}

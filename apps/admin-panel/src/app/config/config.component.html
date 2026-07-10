@@ -1,0 +1,33 @@
+<nz-steps *ngIf="!configed" [nzCurrent]="currentStep" class="m-8 w-auto">
+    <nz-step [nzTitle]="'config.step1Title' | translate" [nzDescription]="'config.step1Description' | translate"></nz-step>
+    <nz-step [nzTitle]="'config.step2Title' | translate" [nzDescription]="'config.step2Description' | translate"></nz-step>
+</nz-steps>
+<div class="step-content" *ngIf="currentStep === 0">
+    <input nz-input placeholder="{{ 'config.backendMapsKey' | translate }}"
+        [(ngModel)]="currentConfig.currentConfiguration.backendMapsAPIKey" />
+    <input nz-input placeholder="{{ 'config.dashboardMapsKey' | translate }}"
+        [(ngModel)]="currentConfig.currentConfiguration.adminPanelAPIKey" />
+</div>
+<div class="step-content" *ngIf="currentStep === 1 && !configed">
+    <nz-upload nzType="drag" [nzAction]="root + 'config/upload'" (nzChange)="handleChange($event)"
+        nzAccept=".json,application/json">
+        <p class="ant-upload-drag-icon">
+            <i nz-icon nzType="inbox"></i>
+        </p>
+        <p class="ant-upload-text">{{ 'config.firebaseUploadText' | translate }}</p>
+        <p class="ant-upload-hint">
+            {{ 'config.firebaseUploadHint' | translate }}
+        </p>
+    </nz-upload>
+</div>
+<div class="steps-action" *ngIf="!configed">
+    <button nz-button nzType="default" (click)="pre()" *ngIf="currentStep > 0">{{ 'config.previous' | translate }}</button>
+    <button nz-button nzType="primary" (click)="next()" *ngIf="currentStep < 1">{{ 'config.next' | translate }}</button>
+    <button nz-button nzType="primary" (click)="done()" *ngIf="currentStep === 1">{{ 'config.done' | translate }}</button>
+</div>
+<nz-result *ngIf="configed" nzStatus="success" [nzTitle]="'config.successTitle' | translate"
+    [nzSubTitle]="'config.successSubtitle' | translate">
+    <div nz-result-extra>
+        <button nz-button nzType="primary" routerLink="../login">{{ 'config.goLogin' | translate }}</button>
+    </div>
+</nz-result>

@@ -1,0 +1,22 @@
+<nz-result nzStatus="info" *ngIf="(query | async)?.data?.orderUpdated == null"
+  [nzTitle]="'dispatcher.looking.waitMessage' | translate">
+  <div nz-result-extra>
+    <button nz-button [routerLink]="'/requests/view/' + orderId" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+    <button nz-button (click)="cancelRequest()" nzType="primary" nzDanger>{{ 'dispatcher.cancelRequest' | translate }}</button>
+  </div>
+</nz-result>
+
+<div *ngIf="(query | async)?.data?.orderUpdated as order">
+  <nz-result *ngIf="order.status == 'DriverAccepted'" nzStatus="success"
+    nzTitle="{{order.driver?.firstName}} {{order.driver?.lastName}} ({{order.driver?.mobileNumber}}) {{ 'dispatcher.driverAcceptedRequestSuffix' | translate }}">
+    <div nz-result-extra>
+      <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+    </div>
+  </nz-result>
+  <nz-result *ngIf="order.status != 'DriverAccepted'" nzStatus="info"
+    nzTitle="{{ 'dispatcher.tripStatusUpdated' | translate: { status: order.status } }}">
+    <div nz-result-extra>
+      <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+    </div>
+  </nz-result>
+</div>

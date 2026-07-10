@@ -1,0 +1,21 @@
+query CurrentConfiguration {
+  currentConfiguration {
+    backendMapsAPIKey
+    adminPanelAPIKey
+    firebaseProjectPrivateKey
+  }
+}
+
+mutation UpdateMapsAPIKey($backend: String!, $adminPanel: String!) {
+  updateMapsAPIKey(backend: $backend, adminPanel: $adminPanel) {
+    status
+    message
+  }
+}
+
+mutation UpdateFirebase($keyFileName: String!) {
+  updateFirebase(keyFileName: $keyFileName) {
+    status
+    message
+  }
+}

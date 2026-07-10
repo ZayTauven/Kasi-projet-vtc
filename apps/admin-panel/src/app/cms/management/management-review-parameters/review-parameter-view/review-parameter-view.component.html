@@ -1,0 +1,23 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'reviewParameter.title' | translate" [nzSubtitle]="'reviewParameter.subtitle' | translate">
+</nz-page-header>
+<nz-card [nzActions]="[tmplActions]" style="mt-16">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input formControlName="id" type="hidden" hidden>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
+      <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
+        <input nz-input formControlName="title" id="title" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="isGood" nzRequired>{{ 'reviewParameter.isGood' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-switch formControlName="isGood" id="isGood"></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #tmplActions>
+      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
+    </ng-template>
+  </form>
+</nz-card>

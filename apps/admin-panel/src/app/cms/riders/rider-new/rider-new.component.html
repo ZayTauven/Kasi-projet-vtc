@@ -1,0 +1,47 @@
+<nz-page-header
+      [nzGhost]="false"
+      nzBackIcon
+      [nzTitle]="'form.newRider.title' | translate"
+      [nzSubtitle]="'form.newRider.subtitle' | translate">
+    </nz-page-header>
+    <nz-card [nzActions]="[tmplActions]" style="mt-16">
+      <form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="firstName">{{ 'profile.firstName' | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="'form.notValidFirstName' | translate">
+            <input nz-input formControlName="firstName" id="firstName" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="lastName">{{ 'profile.lastName' | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="'form.notValidLastName' | translate">
+            <input nz-input formControlName="lastName" id="lastName" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>{{ 'profile.phoneNumber' | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
+              <ng-template #addOnBeforeTemplate>
+                <nz-select formControlName="phoneNumberPrefix" class="phone-select">
+                  <nz-option *ngFor="let code of countryCodes" [nzLabel]="code.name + ' (' + code.dial_code + ')'" [nzValue]="code.dial_code"></nz-option>
+                </nz-select>
+              </ng-template>
+              <input formControlName="phoneNumber" id="'phoneNumber'" nz-input />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="gender">{{ 'profile.gender' | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select formControlName="gender">
+              <nz-option [nzLabel]="'enum.gender.male' | translate" nzValue="Male"></nz-option>
+              <nz-option [nzLabel]="'enum.gender.female' | translate" nzValue="Female"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #tmplActions>
+          <button nz-button nzType="primary" [disabled]="form.invalid" (click)="submitForm()">{{ 'form.register' | translate }}</button>
+        </ng-template>
+      </form>
+    </nz-card>
