@@ -49,6 +49,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # GHCR exige des noms d'images en minuscules ; github.repository
+      # (ZayTauven/Kasi-projet-vtc) contient des majuscules.
+      - name: Lowercase repository name
+        id: repo
+        run: echo "name=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push ${{ matrix.service.name }}
         uses: docker/build-push-action@v5
         with:
@@ -56,8 +62,8 @@ jobs:
           file: ${{ matrix.service.dockerfile }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/${{ matrix.service.name }}:${{ github.event.workflow_run.head_sha }}
-            ghcr.io/${{ github.repository }}/${{ matrix.service.name }}:latest
+            ghcr.io/${{ steps.repo.outputs.name }}/${{ matrix.service.name }}:${{ github.event.workflow_run.head_sha }}
+            ghcr.io/${{ steps.repo.outputs.name }}/${{ matrix.service.name }}:latest
           cache-from: type=gha,scope=${{ matrix.service.name }}
           cache-to: type=gha,scope=${{ matrix.service.name }},mode=max
 
