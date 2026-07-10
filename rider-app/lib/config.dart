@@ -1,8 +1,8 @@
-import 'package:client_shared/config.dart';
-
-String serverUrl = "http://$serverIP:4000/";
-String wsUrl = serverUrl.replaceFirst("http", "ws");
+// Production Kasi : rider-api derrière le reverse proxy nginx du VPS
+// (le préfixe /rider-api/ est retiré par nginx, voir .nginx/kasi-locations.conf).
+String serverUrl = "https://kasigroupe.tech/rider-api/";
+String wsUrl = serverUrl.replaceFirst("http", "ws"); // https -> wss
 
 // Nominatim configuration (Only for Open Street Maps and MapBox)
-List<String>? nominatimCountries; // ISO 3166-1alpha2 codes
+List<String>? nominatimCountries = ["sn"]; // ISO 3166-1alpha2 codes — Sénégal
 String placesCountry = "en";

@@ -3,8 +3,6 @@ import 'package:client_shared/unit_of_measurement.dart';
 import './map_providers.dart';
 import 'package:latlong2/latlong.dart';
 
-String serverIP = "x.x.x.x";
-
 bool demoMode = false;
 String companyName = "kasi.app";
 String appName = "Kasi";
@@ -20,11 +18,13 @@ String mapBoxTileSetId = "streets-v12";
 
 String loginTermsAndConditionsUrl = "";
 
-String defaultCurrency = "USD";
+String defaultCurrency = "XOF"; // Franc CFA (Sénégal)
 String defaultCountryCode = "SN";
-const List<double> tipPresets = [10, 20, 50];
+const List<double> tipPresets = [500, 1000, 2000]; // en XOF
 
-LatLng fallbackLocation = LatLng(37.3382, -121.8863);
+// Dakar (Place de l'Indépendance) — remplace le fallback San José/Californie
+// du template d'origine.
+LatLng fallbackLocation = LatLng(14.6928, -17.4467);
 
 // Menu website url
 String? websiteUrl;
