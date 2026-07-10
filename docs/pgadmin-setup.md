@@ -11,7 +11,7 @@
 2. Onglet **General** : Name = `Kasi Dev`
 3. Onglet **Connection** :
    - Host name/address : `localhost`
-   - Port : `5432`
+   - Port : `5433` (le conteneur mappe 5432 -> hôte 5433, un PostgreSQL natif Windows occupant déjà 5432 en local)
    - Maintenance database : valeur de `DB_NAME` dans votre `.env` (ex: `kasi`)
    - Username : valeur de `DB_USER` (ex: `kasi`)
    - Password : valeur de `DB_PASS`

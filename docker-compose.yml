@@ -46,7 +46,7 @@ services:
       POSTGRES_USER: ${DB_USER:-kasi}
       POSTGRES_PASSWORD: ${DB_PASS:-CHANGEME_kasi}
     ports:
-      - "127.0.0.1:5432:5432"     # Expose localement pour pgAdmin4 / outils de migration
+      - "127.0.0.1:5433:5432"     # Hote 5433 : un PostgreSQL natif Windows occupe 5432 sur la machine de dev (pgAdmin -> localhost:5433)
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
@@ -261,9 +261,11 @@ services:
     volumes:
       # Config reverse proxy (read-only — toute modification necessite nginx -s reload)
       - ./.nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      # Placeholder SSL — decommenter et adapter apres certbot (voir ssl-placeholder.md)
-      # - /etc/letsencrypt:/etc/letsencrypt:ro
-      # - /etc/nginx/ssl:/etc/nginx/ssl:ro
+      # Blocs location/gzip/headers partages entre les serveurs HTTP et HTTPS
+      - ./.nginx/kasi-locations.conf:/etc/nginx/kasi-locations.conf:ro
+      # SSL (prod uniquement) : le VPS ajoute via docker-compose.override.yml
+      # le port 443, ssl-kasigroupe.conf et /etc/letsencrypt (voir
+      # .nginx/ssl-kasigroupe.conf pour le contenu exact de l'override).
     depends_on:
       - admin-panel
       - admin-api
