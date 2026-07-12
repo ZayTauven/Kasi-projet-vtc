@@ -37,6 +37,16 @@ subprojects {
                 }
             }
         }
+        // Same family of workaround: old pub.dev plugins (e.g. flutter_compass) declare a
+        // compileSdk < 31, which makes :verifyReleaseResources fail on android:attr/lStar
+        // (attribute introduced in API 31). Bump only those, and only to 31 — forcing every
+        // plugin to the app's compileSdk breaks Kotlin builds of package_info_plus/smart_auth
+        // against the stricter nullability annotations of recent android.jar versions.
+        val declaredApi = androidExtension?.compileSdkVersion
+            ?.removePrefix("android-")?.toIntOrNull()
+        if (declaredApi != null && declaredApi < 31) {
+            androidExtension?.compileSdkVersion(31)
+        }
     }
 }
 
