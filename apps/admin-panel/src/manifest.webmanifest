@@ -1,7 +1,7 @@
 {
   "name": "Kasi Admin Panel",
   "short_name": "Kasi",
-  "theme_color": "#1976d2",
+  "theme_color": "#1285A2",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

@@ -4,9 +4,9 @@
     "id": "com.kasi.taxi.rider",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Rider Application of Taxi",
+    "background_color": "#1285A2",
+    "theme_color": "#1285A2",
+    "description": "Kasi — application passager (VTC et livraison)",
     "orientation": "portrait-primary",
     "icons": [
         {

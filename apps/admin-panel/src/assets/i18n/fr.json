@@ -91,7 +91,7 @@
 	},
 	"branding": {
 		"menu": {
-			"header": "Monte"
+			"header": "Kasi"
 		},
 		"footer": {
 			"address": "https://kasi.app",
@@ -107,7 +107,7 @@
 		"home": {
 			"overview": "Aperçu",
 			"dispatcher": "Répartiteur",
-			"header": "Maison"
+			"header": "Accueil"
 		},
 		"driver": {
 			"pendingVerification": "En attente de vérification",
@@ -117,8 +117,8 @@
 		"marketing": {
 			"coupons": "Coupons",
 			"announcements": "Annonces",
-			"header": "Commercialisation",
-			"rewards": "Récompenses et références"
+			"header": "Marketing",
+			"rewards": "Récompenses & parrainage"
 		},
 		"accounting": {
 			"admin": "Administrateur",
@@ -133,12 +133,12 @@
 		"complaints": "Plaintes",
 		"management": {
 			"regions": "Régions",
-			"services": "Prestations de service",
-			"serviceOptions": "Options d'entretien",
+			"services": "Services",
+			"serviceOptions": "Options de service",
 			"fleets": "Flottes",
 			"zonePrices": "Tarifs zonaux",
 			"orderCancelReasons": "Motifs d'annulation",
-			"reviewParameters": "Paramètres d'examen",
+			"reviewParameters": "Paramètres d'avis",
 			"cars": "Voitures",
 			"userRoles": "Rôles d'utilisateur",
 			"users": "Utilisateurs",

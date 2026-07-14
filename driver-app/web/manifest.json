@@ -1,11 +1,11 @@
 {
-    "name": "driver_app",
-    "short_name": "driver_app",
+    "name": "Kasi Driver",
+    "short_name": "Kasi Driver",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Driver application of Kasi",
+    "background_color": "#1285A2",
+    "theme_color": "#1285A2",
+    "description": "Kasi Driver — application Kasiman",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
                   navigatorObservers: [defaultLifecycleObserver],
                   localizationsDelegates: S.localizationsDelegates,
                   supportedLocales: S.supportedLocales,
-                  locale: Locale(box.get('language') ?? 'en'),
+                  locale: Locale(box.get('language') ?? 'fr'),
                   routes: {
                     'login': (context) => const LoginView(),
                     'addresses': (context) => const AddressListView(),

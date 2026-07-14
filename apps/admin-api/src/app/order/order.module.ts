@@ -61,6 +61,7 @@ import { OrderCancelReasonInput } from './dto/order-cancel-reason.input';
           DTOClass: OrderCancelReasonDTO,
           CreateDTOClass: OrderCancelReasonInput,
           UpdateDTOClass: OrderCancelReasonInput,
+          guards: [JwtAuthGuard],
           create: { many: { disabled: true } },
           update: { many: { disabled: true } },
           delete: { many: { disabled: true } },

@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
                       debugShowCheckedModeBanner: false,
                       localizationsDelegates: S.localizationsDelegates,
                       supportedLocales: S.supportedLocales,
-                      locale: Locale(box.get('language') ?? 'en'),
+                      locale: Locale(box.get('language') ?? 'fr'),
                       routes: {
                         'register': (context) => const RegisterView(),
                         'profile': (context) => const ProfileView(),

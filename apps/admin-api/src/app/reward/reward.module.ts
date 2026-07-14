@@ -5,6 +5,7 @@
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { Module } from '@nestjs/common';
 import { RewardEntity } from '@kasi/database/reward.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RewardDTO } from './dto/reward.dto';
 
 @Module({
@@ -15,6 +16,7 @@ import { RewardDTO } from './dto/reward.dto';
         {
           EntityClass: RewardEntity,
           DTOClass: RewardDTO,
+          guards: [JwtAuthGuard],
           create: { many: { disabled: true } },
           update: { many: { disabled: true } },
           delete: { many: { disabled: true } },
