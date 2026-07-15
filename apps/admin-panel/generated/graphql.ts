@@ -706,6 +706,11 @@ export type CreateOneServiceOptionInput = {
   serviceOption: ServiceOptionInput;
 };
 
+export type CreateOneSmsProviderInput = {
+  /** The record to create */
+  smsProvider: SmsProviderInput;
+};
+
 export type CreateOneZonePriceInput = {
   /** The record to create */
   zonePrice: ZonePriceInput;
@@ -895,6 +900,11 @@ export type DeleteOneServiceInput = {
 };
 
 export type DeleteOneServiceOptionInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneSmsProviderInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -2314,6 +2324,7 @@ export type Mutation = {
   createOneService: Service;
   createOneServiceCategory: ServiceCategory;
   createOneServiceOption: ServiceOption;
+  createOneSmsProvider: SmsProvider;
   createOneZonePrice: ZonePrice;
   createOrder: Order;
   createPayoutSession: PayoutSession;
@@ -2332,10 +2343,13 @@ export type Mutation = {
   deleteOneService: ServiceDeleteResponse;
   deleteOneServiceCategory: ServiceCategoryDeleteResponse;
   deleteOneServiceOption: ServiceOptionDeleteResponse;
+  deleteOneSmsProvider: SmsProviderDeleteResponse;
   deleteOneZonePrice: ZonePriceDeleteResponse;
   disablePreviousServer: UpdateConfigResult;
   processPayout: Payout;
   processPayoutSession: PayoutSession;
+  sendTestSms: Scalars['Boolean']['output'];
+  setDefaultSmsProvider: SmsProvider;
   setEnabledServicesOnDriver: Driver;
   setFleetsOnZonePrice: ZonePrice;
   setOptionsOnService: Service;
@@ -2365,6 +2379,7 @@ export type Mutation = {
   updateOneService: Service;
   updateOneServiceCategory: ServiceCategory;
   updateOneServiceOption: ServiceOption;
+  updateOneSmsProvider: SmsProvider;
   updateOneZonePrice: ZonePrice;
   updatePassword: Operator;
   updatePurchaseCode: UpdatePurchaseCodeResult;
@@ -2552,6 +2567,11 @@ export type MutationCreateOneServiceOptionArgs = {
 };
 
 
+export type MutationCreateOneSmsProviderArgs = {
+  input: CreateOneSmsProviderInput;
+};
+
+
 export type MutationCreateOneZonePriceArgs = {
   input: CreateOneZonePriceInput;
 };
@@ -2642,6 +2662,11 @@ export type MutationDeleteOneServiceOptionArgs = {
 };
 
 
+export type MutationDeleteOneSmsProviderArgs = {
+  input: DeleteOneSmsProviderInput;
+};
+
+
 export type MutationDeleteOneZonePriceArgs = {
   input: DeleteOneZonePriceInput;
 };
@@ -2658,6 +2683,17 @@ export type MutationProcessPayoutArgs = {
 
 
 export type MutationProcessPayoutSessionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSendTestSmsArgs = {
+  number: Scalars['String']['input'];
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationSetDefaultSmsProviderArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2805,6 +2841,11 @@ export type MutationUpdateOneServiceCategoryArgs = {
 
 export type MutationUpdateOneServiceOptionArgs = {
   input: UpdateOneServiceOptionInput;
+};
+
+
+export type MutationUpdateOneSmsProviderArgs = {
+  input: UpdateOneSmsProviderInput;
 };
 
 
@@ -4197,6 +4238,8 @@ export type Query = {
   serviceOption: ServiceOption;
   serviceOptions: Array<ServiceOption>;
   services: Array<Service>;
+  smsProvider: SmsProvider;
+  smsProviders: SmsProviderConnection;
   zonePrice: ZonePrice;
   zonePrices: ZonePriceConnection;
 };
@@ -4694,6 +4737,18 @@ export type QueryServiceOptionsArgs = {
 export type QueryServicesArgs = {
   filter?: ServiceFilter;
   sorting?: Array<ServiceSort>;
+};
+
+
+export type QuerySmsProviderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySmsProvidersArgs = {
+  filter?: SmsProviderFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<SmsProviderSort>;
 };
 
 
@@ -5620,6 +5675,97 @@ export type SetServicesOnZonePriceInput = {
   relationIds: Array<Scalars['ID']['input']>;
 };
 
+export type SmsProvider = {
+  __typename?: 'SmsProvider';
+  accountId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  senderId?: Maybe<Scalars['String']['output']>;
+  type: SmsProviderType;
+  verificationTemplate: Scalars['String']['output'];
+};
+
+export type SmsProviderConnection = {
+  __typename?: 'SmsProviderConnection';
+  /** Array of nodes. */
+  nodes: Array<SmsProvider>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SmsProviderDeleteResponse = {
+  __typename?: 'SmsProviderDeleteResponse';
+  accountId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isDefault?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  senderId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<SmsProviderType>;
+  verificationTemplate?: Maybe<Scalars['String']['output']>;
+};
+
+export type SmsProviderFilter = {
+  and?: InputMaybe<Array<SmsProviderFilter>>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isDefault?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<SmsProviderFilter>>;
+  type?: InputMaybe<SmsProviderTypeFilterComparison>;
+};
+
+export type SmsProviderInput = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  apiSecret?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  senderId?: InputMaybe<Scalars['String']['input']>;
+  type: SmsProviderType;
+  verificationTemplate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SmsProviderSort = {
+  direction: SortDirection;
+  field: SmsProviderSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum SmsProviderSortFields {
+  Enabled = 'enabled',
+  Id = 'id',
+  IsDefault = 'isDefault',
+  Type = 'type'
+}
+
+export enum SmsProviderType {
+  LogOnly = 'LogOnly',
+  OrangeSms = 'OrangeSms',
+  Twilio = 'Twilio'
+}
+
+export type SmsProviderTypeFilterComparison = {
+  eq?: InputMaybe<SmsProviderType>;
+  gt?: InputMaybe<SmsProviderType>;
+  gte?: InputMaybe<SmsProviderType>;
+  iLike?: InputMaybe<SmsProviderType>;
+  in?: InputMaybe<Array<SmsProviderType>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<SmsProviderType>;
+  lt?: InputMaybe<SmsProviderType>;
+  lte?: InputMaybe<SmsProviderType>;
+  neq?: InputMaybe<SmsProviderType>;
+  notILike?: InputMaybe<SmsProviderType>;
+  notIn?: InputMaybe<Array<SmsProviderType>>;
+  notLike?: InputMaybe<SmsProviderType>;
+};
+
 /** Sort Directions */
 export enum SortDirection {
   Asc = 'ASC',
@@ -5905,6 +6051,13 @@ export type UpdateOneServiceOptionInput = {
   id: Scalars['ID']['input'];
   /** The update to apply. */
   update: ServiceOptionInput;
+};
+
+export type UpdateOneSmsProviderInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: SmsProviderInput;
 };
 
 export type UpdateOneZonePriceInput = {
@@ -6671,6 +6824,50 @@ export type UpdatePasswordMutationVariables = Exact<{
 
 
 export type UpdatePasswordMutation = { __typename?: 'Mutation', updatePassword: { __typename?: 'Operator', id: string } };
+
+export type SmsProviderListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type SmsProviderListQuery = { __typename?: 'Query', smsProviders: { __typename?: 'SmsProviderConnection', totalCount: number, nodes: Array<{ __typename?: 'SmsProvider', id: string, type: SmsProviderType, name: string, enabled: boolean, isDefault: boolean, senderId?: string | null, createdAt: any }> } };
+
+export type SmsProviderViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type SmsProviderViewQuery = { __typename?: 'Query', smsProvider: { __typename?: 'SmsProvider', id: string, type: SmsProviderType, name: string, enabled: boolean, isDefault: boolean, accountId?: string | null, senderId?: string | null, verificationTemplate: string } };
+
+export type CreateSmsProviderMutationVariables = Exact<{
+  input: SmsProviderInput;
+}>;
+
+
+export type CreateSmsProviderMutation = { __typename?: 'Mutation', createOneSmsProvider: { __typename?: 'SmsProvider', id: string } };
+
+export type UpdateSmsProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: SmsProviderInput;
+}>;
+
+
+export type UpdateSmsProviderMutation = { __typename?: 'Mutation', updateOneSmsProvider: { __typename?: 'SmsProvider', id: string } };
+
+export type SetDefaultSmsProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type SetDefaultSmsProviderMutation = { __typename?: 'Mutation', setDefaultSmsProvider: { __typename?: 'SmsProvider', id: string, isDefault: boolean } };
+
+export type SendTestSmsMutationVariables = Exact<{
+  number: Scalars['String']['input'];
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type SendTestSmsMutation = { __typename?: 'Mutation', sendTestSms: boolean };
 
 export type CreateOperatorMutationVariables = Exact<{
   input: CreateOperatorInput;
@@ -9146,6 +9343,129 @@ export const UpdatePasswordDocument = gql`
   })
   export class UpdatePasswordGQL extends Apollo.Mutation<UpdatePasswordMutation, UpdatePasswordMutationVariables> {
     document = UpdatePasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SmsProviderListDocument = gql`
+    query SmsProviderList($paging: OffsetPaging) {
+  smsProviders(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      enabled
+      isDefault
+      senderId
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SmsProviderListGQL extends Apollo.Query<SmsProviderListQuery, SmsProviderListQueryVariables> {
+    document = SmsProviderListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SmsProviderViewDocument = gql`
+    query SmsProviderView($id: ID!) {
+  smsProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    accountId
+    senderId
+    verificationTemplate
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SmsProviderViewGQL extends Apollo.Query<SmsProviderViewQuery, SmsProviderViewQueryVariables> {
+    document = SmsProviderViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateSmsProviderDocument = gql`
+    mutation CreateSmsProvider($input: SmsProviderInput!) {
+  createOneSmsProvider(input: {smsProvider: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateSmsProviderGQL extends Apollo.Mutation<CreateSmsProviderMutation, CreateSmsProviderMutationVariables> {
+    document = CreateSmsProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateSmsProviderDocument = gql`
+    mutation UpdateSmsProvider($id: ID!, $update: SmsProviderInput!) {
+  updateOneSmsProvider(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateSmsProviderGQL extends Apollo.Mutation<UpdateSmsProviderMutation, UpdateSmsProviderMutationVariables> {
+    document = UpdateSmsProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SetDefaultSmsProviderDocument = gql`
+    mutation SetDefaultSmsProvider($id: ID!) {
+  setDefaultSmsProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SetDefaultSmsProviderGQL extends Apollo.Mutation<SetDefaultSmsProviderMutation, SetDefaultSmsProviderMutationVariables> {
+    document = SetDefaultSmsProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SendTestSmsDocument = gql`
+    mutation SendTestSms($number: String!, $providerId: ID) {
+  sendTestSms(number: $number, providerId: $providerId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SendTestSmsGQL extends Apollo.Mutation<SendTestSmsMutation, SendTestSmsMutationVariables> {
+    document = SendTestSmsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

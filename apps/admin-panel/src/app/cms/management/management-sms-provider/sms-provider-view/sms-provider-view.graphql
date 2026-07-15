@@ -1,0 +1,35 @@
+query SmsProviderView($id: ID!) {
+  smsProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    accountId
+    senderId
+    verificationTemplate
+  }
+}
+
+mutation CreateSmsProvider($input: SmsProviderInput!) {
+  createOneSmsProvider(input: { smsProvider: $input }) {
+    id
+  }
+}
+
+mutation UpdateSmsProvider($id: ID!, $update: SmsProviderInput!) {
+  updateOneSmsProvider(input: { id: $id, update: $update }) {
+    id
+  }
+}
+
+mutation SetDefaultSmsProvider($id: ID!) {
+  setDefaultSmsProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+
+mutation SendTestSms($number: String!, $providerId: ID) {
+  sendTestSms(number: $number, providerId: $providerId)
+}

@@ -42,6 +42,7 @@ import { OrderCancelReasonEntity } from './entities/order-cancel-reason.entity';
 import { PayoutMethodEntity } from './entities/payout-method.entity';
 import { PayoutSessionEntity } from './entities/payout-session.entity';
 import { PayoutEntity } from './entities/payout.entity';
+import { SmsProviderEntity } from './entities/sms-provider.entity';
 
 @Module({
   imports: [
@@ -142,4 +143,5 @@ export const entities = [
   PayoutMethodEntity,
   PayoutSessionEntity,
   PayoutEntity,
+  SmsProviderEntity,
 ];

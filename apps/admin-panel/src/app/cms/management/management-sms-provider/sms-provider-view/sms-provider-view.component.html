@@ -1,0 +1,74 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'smsProvider.title' | translate"
+  [nzSubtitle]="'smsProvider.subtitle' | translate">
+  <nz-page-header-tags>
+    <nz-tag *ngIf="isDefault" nzColor="blue">{{'smsProvider.default' | translate}}</nz-tag>
+  </nz-page-header-tags>
+</nz-page-header>
+<nz-card [nzActions]="[tmplActions]" style="mt-16">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input formControlName="id" type="hidden" hidden>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="type">{{ 'smsProvider.type' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
+          <nz-option [nzLabel]="'enum.smsProviderType.LogOnly' | translate" nzValue="LogOnly"></nz-option>
+          <nz-option [nzLabel]="'enum.smsProviderType.Twilio' | translate" nzValue="Twilio"></nz-option>
+          <nz-option [nzLabel]="'enum.smsProviderType.OrangeSms' | translate" nzValue="OrangeSms"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+      <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
+        <input nz-input formControlName="name" id="name" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="accountId">{{ 'smsProvider.accountId' | translate }}</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="accountId" id="accountId" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="apiSecret">{{ 'smsProvider.apiSecret' | translate }}</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="password" formControlName="apiSecret" id="apiSecret" autocomplete="new-password"
+          [placeholder]="isEdit ? ('smsProvider.apiSecretHint' | translate) : ''" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="senderId">{{ 'smsProvider.senderId' | translate }}</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="senderId" id="senderId" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="verificationTemplate">{{ 'smsProvider.template' | translate }}</nz-form-label>
+      <nz-form-control [nzExtra]="'smsProvider.templateHint' | translate">
+        <input nz-input formControlName="verificationTemplate" id="verificationTemplate" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  <div *ngIf="showTestSms" class="mt-2">
+    <nz-input-group nzCompact style="max-width: 420px;">
+      <input nz-input [(ngModel)]="testNumber" [ngModelOptions]="{ standalone: true }" name="testNumber"
+        [placeholder]="'smsProvider.testNumber' | translate" style="width: 60%;" />
+      <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testNumber === ''"
+        (click)="onSendTestSms()">{{ 'smsProvider.testSms' | translate }}</button>
+    </nz-input-group>
+  </div>
+  <ng-template #tmplActions>
+    <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
+      translate}}</button>
+    <button *ngIf="isEdit" nz-button nzType="default" type="button" class="ml-2" [disabled]="isDefault"
+      (click)="onSetDefault()">{{'smsProvider.setDefault' | translate}}</button>
+    <button *ngIf="isEdit" nz-button nzType="default" type="button" class="ml-2"
+      (click)="showTestSms = !showTestSms">{{'smsProvider.testSms' | translate}}</button>
+  </ng-template>
+</nz-card>

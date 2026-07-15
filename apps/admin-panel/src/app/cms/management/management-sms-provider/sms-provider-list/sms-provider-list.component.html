@@ -1,0 +1,33 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'smsProviders.title' | translate"
+  [nzSubtitle]="'smsProviders.subtitle' | translate">
+  <nz-page-header-extra>
+    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'profile.add' | translate
+      }}</button>
+  </nz-page-header-extra>
+  <nz-page-header-content>
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.smsProviders as smsProviders" [nzData]="smsProviders.nodes"
+      [nzTotal]="smsProviders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      <thead>
+        <tr>
+          <th>{{ 'profile.name' | translate }}</th>
+          <th>{{ 'smsProvider.type' | translate }}</th>
+          <th>{{ 'smsProvider.senderId' | translate }}</th>
+          <th>{{ 'profile.date' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>
+            <span class="mr-2">{{ data.name }}</span>
+            <nz-tag *ngIf="data.isDefault" nzColor="blue">{{'smsProvider.default' | translate}}</nz-tag>
+            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+          </td>
+          <td>{{ 'enum.smsProviderType.' + data.type | translate }}</td>
+          <td>{{ data.senderId != null ? data.senderId : '-' }}</td>
+          <td>{{ data.createdAt | date: 'short' }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-page-header-content>
+</nz-page-header>

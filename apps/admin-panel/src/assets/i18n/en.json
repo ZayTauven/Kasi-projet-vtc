@@ -39,6 +39,11 @@
 			"BankTransfer": "Bank transfer",
 			"Cash": "Cash"
 		},
+		"smsProviderType": {
+			"LogOnly": "Log only (dev)",
+			"Twilio": "Twilio",
+			"OrangeSms": "Orange SMS"
+		},
 		"payoutSessionStatus": {
 			"Pending": "Pending",
 			"Processed": "Processed",
@@ -164,6 +169,7 @@
 			"fleets": "Fleets",
 			"zonePrices": "Zone Prices",
 			"orderCancelReasons": "Order Cancel Reasons",
+			"smsProviders": "SMS Providers",
 			"reviewParameters": "Review Parameters",
 			"cars": "Cars",
 			"userRoles": "User Roles",
@@ -507,6 +513,27 @@
 		"markPaidConfirm": "Payment done outside the app? The wallet will be deducted.",
 		"cancel": "Cancel",
 		"cancelPayoutConfirm": "Cancel this payout?"
+	},
+	"smsProviders": {
+		"title": "SMS Providers",
+		"subtitle": "SMS gateways used to send verification codes and text notifications."
+	},
+	"smsProvider": {
+		"title": "SMS Provider",
+		"subtitle": "SMS gateway settings.",
+		"type": "Type",
+		"accountId": "Account ID",
+		"apiSecret": "API secret",
+		"apiSecretHint": "Unchanged if empty.",
+		"senderId": "Sender ID",
+		"template": "Verification template",
+		"templateHint": "{code} will be replaced by the 6-digit code.",
+		"setDefault": "Set as default",
+		"default": "Default",
+		"defaultSet": "Set as the default provider.",
+		"testSms": "Test SMS",
+		"testNumber": "Phone number",
+		"testSent": "Test SMS sent."
 	},
 	"cancelReason": {
 		"title": "Cancel Reason",

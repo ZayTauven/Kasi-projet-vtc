@@ -39,6 +39,11 @@
 			"BankTransfer": "Virement bancaire",
 			"Cash": "Espèces"
 		},
+		"smsProviderType": {
+			"LogOnly": "Journal (dev)",
+			"Twilio": "Twilio",
+			"OrangeSms": "Orange SMS"
+		},
 		"payoutSessionStatus": {
 			"Pending": "En attente",
 			"Processed": "Traitée",
@@ -164,6 +169,7 @@
 			"fleets": "Flottes",
 			"zonePrices": "Tarifs zonaux",
 			"orderCancelReasons": "Motifs d'annulation",
+			"smsProviders": "Fournisseurs SMS",
 			"reviewParameters": "Paramètres d'avis",
 			"cars": "Voitures",
 			"userRoles": "Rôles d'utilisateur",
@@ -507,6 +513,27 @@
 		"markPaidConfirm": "Paiement effectué hors application ? Le portefeuille sera débité.",
 		"cancel": "Annuler",
 		"cancelPayoutConfirm": "Annuler ce versement ?"
+	},
+	"smsProviders": {
+		"title": "Fournisseurs SMS",
+		"subtitle": "Passerelles SMS utilisées pour envoyer les codes de vérification et les notifications."
+	},
+	"smsProvider": {
+		"title": "Fournisseur SMS",
+		"subtitle": "Paramètres de la passerelle SMS.",
+		"type": "Type",
+		"accountId": "Identifiant de compte",
+		"apiSecret": "Secret API",
+		"apiSecretHint": "Inchangé si vide.",
+		"senderId": "Identifiant d'expéditeur",
+		"template": "Modèle de vérification",
+		"templateHint": "{code} sera remplacé par le code à 6 chiffres.",
+		"setDefault": "Définir par défaut",
+		"default": "Défaut",
+		"defaultSet": "Défini comme fournisseur par défaut.",
+		"testSms": "SMS de test",
+		"testNumber": "Numéro de téléphone",
+		"testSent": "SMS de test envoyé."
 	},
 	"cancelReason": {
 		"title": "Motif d'annulation",

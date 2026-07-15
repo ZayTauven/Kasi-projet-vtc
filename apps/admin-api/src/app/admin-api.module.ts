@@ -32,6 +32,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { SOSModule } from './sos/sos.module';
 import { RewardModule } from './reward/reward.module';
 import { PayoutModule } from './payout/payout.module';
+import { SmsProviderModule } from './sms-provider/sms-provider.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -120,6 +121,7 @@ export class AdminAPIModule {
             SOSModule,
             RewardModule,
             PayoutModule,
+            SmsProviderModule,
             ComplaintModule,
             ConfigurationModule,
             HttpModule,

@@ -32,6 +32,13 @@ const routes: Routes = [
       ).then((x) => x.ManagementOrderCancelReasonModule),
   },
   {
+    path: 'sms-providers',
+    loadChildren: () =>
+      import('./management-sms-provider/management-sms-provider.module').then(
+        (x) => x.ManagementSmsProviderModule
+      ),
+  },
+  {
     path: 'review-parameters',
     loadChildren: () =>
       import(
