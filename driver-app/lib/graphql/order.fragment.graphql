@@ -11,6 +11,10 @@ fragment AvailableOrder on Order {
   providerShare
   distanceBest
   durationBest
+  packageSize
+  recipientName
+  recipientMobileNumber
+  deliveryInstructions
   directions {
     ...Point
   }
@@ -20,6 +24,7 @@ fragment AvailableOrder on Order {
   }
   service {
     name
+    orderType
   }
   points {
     ...Point
@@ -46,6 +51,7 @@ fragment CurrentOrder on Order {
   }
   service {
     name
+    orderType
   }
   options {
     id
@@ -53,6 +59,10 @@ fragment CurrentOrder on Order {
     icon
   }
   addresses
+  packageSize
+  recipientName
+  recipientMobileNumber
+  deliveryInstructions
   rider {
     mobileNumber
     firstName

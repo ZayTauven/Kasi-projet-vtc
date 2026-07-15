@@ -6,6 +6,12 @@ import { DriverTransactionEntity } from '../entities/driver-transaction.entity';
 import { DriverWalletEntity } from '../entities/driver-wallet.entity';
 import { DriverEntity } from '../entities/driver.entity';
 import { DriverStatus } from '../entities/enums/driver-status.enum';
+import {
+  PackageSize,
+  packageSizeRank,
+} from '../entities/enums/package-size.enum';
+import { ServiceOrderType } from '../entities/enums/service-order-type.enum';
+import { ServiceEntity } from '../entities/service.entity';
 
 @Injectable()
 export class SharedDriverService {
@@ -45,6 +51,7 @@ export class SharedDriverService {
     driverIds: number[],
     serviceId: number,
     fleetIds: number[] = [],
+    delivery?: { service: ServiceEntity; packageSize?: PackageSize | null },
   ) {
     let driversWithService: DriverEntity[];
     if (fleetIds.length > 0) {
@@ -65,9 +72,18 @@ export class SharedDriverService {
         relations: ['enabledServices'],
       });
     }
-    return driversWithService.filter((x) =>
+    driversWithService = driversWithService.filter((x) =>
       x.enabledServices.map((y) => y.id).includes(serviceId),
     );
+    if (delivery?.service?.orderType === ServiceOrderType.Delivery) {
+      driversWithService = driversWithService.filter(
+        (x) =>
+          x.canDeliver &&
+          packageSizeRank(x.maxPackageSize) >=
+            packageSizeRank(delivery.packageSize),
+      );
+    }
+    return driversWithService;
   }
 
   async canDriverDoServiceAndFleet(

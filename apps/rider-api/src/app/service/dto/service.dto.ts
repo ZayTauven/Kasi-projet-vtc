@@ -4,6 +4,7 @@
   UnPagedRelation,
 } from '@ptc-org/nestjs-query-graphql';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { ServicePaymentMethod } from '@kasi/database/enums/service-payment-method.enum';
 import { MediaDTO } from '../../upload/media.dto';
 import { ServiceOptionDTO } from './service-option.dto';
@@ -19,6 +20,7 @@ export class ServiceDTO {
   @Field(() => Int)
   personCapacity?: number;
   paymentMethod: ServicePaymentMethod;
+  orderType!: ServiceOrderType;
   cost: number;
   costAfterCoupon?: number;
   cancellationTotalFee: number;

@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ApolloQueryResult } from '@apollo/client/core';
 import {
   Gender,
+  PackageSize,
   UpdateDriverProfileGQL,
   ViewDriverQuery,
 } from '@kasi/admin-panel/generated/graphql';
@@ -38,6 +39,8 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
     bankSwift: [null],
     address: [null],
     mediaId: [null],
+    canDeliver: [false],
+    maxPackageSize: [null],
     enabledServices: [null, Validators.required],
   });
   root: string = environment.root;
@@ -45,6 +48,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   query?: Observable<ApolloQueryResult<ViewDriverQuery>>;
   genders = Object.values(Gender);
   public gender = Gender;
+  packageSizes = Object.values(PackageSize);
   public camelCase = camelCase;
   jwt = localStorage.getItem('kasi_admin_token');
   loadingUpload = false;

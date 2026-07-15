@@ -570,4 +570,16 @@ class SFr extends S {
 
   @override
   String get skipVerificationDemoOnly => 'Skip verification (Demo only)';
+
+  @override
+  String get delivery_tag => 'Livraison';
+
+  @override
+  String get package_size_small => 'Petit colis';
+
+  @override
+  String get package_size_medium => 'Colis moyen';
+
+  @override
+  String get package_size_large => 'Grand colis';
 }

@@ -6342,7 +6342,7 @@ class SvgGenImage {
         _assetName,
         assetBundle: bundle,
         packageName: package,
-        theme: theme ?? const _svg.SvgTheme(),
+        theme: theme,
         colorMapper: colorMapper,
       );
     }

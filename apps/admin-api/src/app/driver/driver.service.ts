@@ -52,21 +52,23 @@ export class DriverService {
   async driverFeedbackParametersSummary(
     driverId: number
   ): Promise<FeedbackParameterAggregateDto[]> {
+    // SQL Postgres (la version amont était en dialecte MySQL : ANY_VALUE,
+    // placeholder « ? », identifiants camelCase non quotés — plantait en prod)
     return this.driverRepository.query(
       `
-        SELECT 
+        SELECT
             review_parameter.title,
-            ANY_VALUE(review_parameter.isGood) AS isGood,
-            COUNT(review_parameter.id) AS count
+            bool_or(review_parameter."isGood") AS "isGood",
+            COUNT(review_parameter.id)::int AS count
         FROM
             review_parameter_feedbacks_request_review
-        INNER JOIN review_parameter on review_parameter.id = review_parameter_feedbacks_request_review.reviewParameterId
-        INNER JOIN request_review on request_review.id = review_parameter_feedbacks_request_review.requestReviewId
+        INNER JOIN review_parameter ON review_parameter.id = review_parameter_feedbacks_request_review."reviewParameterId"
+        INNER JOIN request_review ON request_review.id = review_parameter_feedbacks_request_review."requestReviewId"
         WHERE
-            request_review.driverId = ?
+            request_review."driverId" = $1
         GROUP BY
             review_parameter.title
-        ORDER BY isGood DESC, count DESC`,
+        ORDER BY "isGood" DESC, count DESC`,
       [driverId]
     );
   }

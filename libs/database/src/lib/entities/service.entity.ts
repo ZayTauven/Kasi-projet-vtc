@@ -18,6 +18,7 @@ import { TimeMultiplierTransformer } from '../transformers/time-multiplier.trans
 import { CouponEntity } from './coupon.entity';
 import { DriverEntity } from './driver.entity';
 import { ServiceDistanceFeeMode } from './enums/service-distance-fee-mode.enum';
+import { ServiceOrderType } from './enums/service-order-type.enum';
 import { ServicePaymentMethod } from './enums/service-payment-method.enum';
 import { MediaEntity } from './media.entity';
 import { RequestEntity } from './request.entity';
@@ -98,6 +99,12 @@ export class ServiceEntity {
     default: ServicePaymentMethod.CashCredit,
   })
   paymentMethod!: ServicePaymentMethod;
+
+  @Column('enum', {
+    enum: ServiceOrderType,
+    default: ServiceOrderType.Ride,
+  })
+  orderType!: ServiceOrderType;
 
   @Column('enum', {
     enum: ServiceDistanceFeeMode,

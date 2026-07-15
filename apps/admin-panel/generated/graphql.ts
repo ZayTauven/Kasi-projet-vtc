@@ -718,8 +718,12 @@ export type CreateOperatorInput = {
 
 export type CreateOrderInput = {
   addresses: Array<Scalars['String']['input']>;
+  deliveryInstructions?: InputMaybe<Scalars['String']['input']>;
   intervalMinutes: Scalars['Int']['input'];
+  packageSize?: InputMaybe<PackageSize>;
   points: Array<PointInput>;
+  recipientMobileNumber?: InputMaybe<Scalars['String']['input']>;
+  recipientName?: InputMaybe<Scalars['String']['input']>;
   riderId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
 };
@@ -1046,6 +1050,7 @@ export type Driver = {
   bankName?: Maybe<Scalars['String']['output']>;
   bankRoutingNumber?: Maybe<Scalars['String']['output']>;
   bankSwift?: Maybe<Scalars['String']['output']>;
+  canDeliver?: Maybe<Scalars['Boolean']['output']>;
   carColorId?: Maybe<Scalars['ID']['output']>;
   carId?: Maybe<Scalars['ID']['output']>;
   carPlate?: Maybe<Scalars['String']['output']>;
@@ -1064,6 +1069,7 @@ export type Driver = {
   id: Scalars['ID']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   lastSeenTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  maxPackageSize?: Maybe<PackageSize>;
   media?: Maybe<Media>;
   mediaId?: Maybe<Scalars['ID']['output']>;
   mobileNumber: Scalars['String']['output'];
@@ -1151,6 +1157,7 @@ export type DriverWalletsAggregateArgs = {
 
 export type DriverAggregateFilter = {
   and?: InputMaybe<Array<DriverAggregateFilter>>;
+  canDeliver?: InputMaybe<BooleanFieldComparison>;
   fleetId?: InputMaybe<IdFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   lastName?: InputMaybe<StringFieldComparison>;
@@ -1161,6 +1168,7 @@ export type DriverAggregateFilter = {
 
 export type DriverAggregateGroupBy = {
   __typename?: 'DriverAggregateGroupBy';
+  canDeliver?: Maybe<Scalars['Boolean']['output']>;
   fleetId?: Maybe<Scalars['ID']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
@@ -1196,6 +1204,7 @@ export type DriverConnection = {
 
 export type DriverCountAggregate = {
   __typename?: 'DriverCountAggregate';
+  canDeliver?: Maybe<Scalars['Int']['output']>;
   fleetId?: Maybe<Scalars['Int']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   lastName?: Maybe<Scalars['Int']['output']>;
@@ -1359,6 +1368,7 @@ export type DriverFeedbacksSumAggregate = {
 
 export type DriverFilter = {
   and?: InputMaybe<Array<DriverFilter>>;
+  canDeliver?: InputMaybe<BooleanFieldComparison>;
   fleetId?: InputMaybe<IdFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   lastName?: InputMaybe<StringFieldComparison>;
@@ -1469,6 +1479,7 @@ export type DriverSort = {
 };
 
 export enum DriverSortFields {
+  CanDeliver = 'canDeliver',
   FleetId = 'fleetId',
   Id = 'id',
   LastName = 'lastName',
@@ -2896,6 +2907,7 @@ export type Order = {
   coupon?: Maybe<Coupon>;
   createdOn: Scalars['DateTime']['output'];
   currency: Scalars['String']['output'];
+  deliveryInstructions?: Maybe<Scalars['String']['output']>;
   destinationArrivedTo: Scalars['Int']['output'];
   distanceBest: Scalars['Int']['output'];
   driver?: Maybe<Driver>;
@@ -2908,9 +2920,12 @@ export type Order = {
   fleetTransactions: Array<FleetTransaction>;
   fleetTransactionsAggregate: Array<OrderFleetTransactionsAggregateResponse>;
   id: Scalars['ID']['output'];
+  packageSize?: Maybe<PackageSize>;
   points: Array<Point>;
   providerTransactions: Array<ProviderTransaction>;
   providerTransactionsAggregate: Array<OrderProviderTransactionsAggregateResponse>;
+  recipientMobileNumber?: Maybe<Scalars['String']['output']>;
+  recipientName?: Maybe<Scalars['String']['output']>;
   rider?: Maybe<Rider>;
   riderId: Scalars['ID']['output'];
   riderTransactions: Array<RiderTransaction>;
@@ -3562,6 +3577,12 @@ export type OrderSumAggregate = {
   id?: Maybe<Scalars['Float']['output']>;
   riderId?: Maybe<Scalars['Float']['output']>;
 };
+
+export enum PackageSize {
+  Large = 'Large',
+  Medium = 'Medium',
+  Small = 'Small'
+}
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -4953,6 +4974,7 @@ export type Service = {
   minimumFee: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   options: Array<ServiceOption>;
+  orderType: ServiceOrderType;
   paymentMethod: ServicePaymentMethod;
   perHundredMeters: Scalars['Float']['output'];
   perMinuteDrive: Scalars['Float']['output'];
@@ -5049,6 +5071,7 @@ export type ServiceDeleteResponse = {
   mediaId?: Maybe<Scalars['ID']['output']>;
   minimumFee?: Maybe<Scalars['Float']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  orderType?: Maybe<ServiceOrderType>;
   paymentMethod?: Maybe<ServicePaymentMethod>;
   perHundredMeters?: Maybe<Scalars['Float']['output']>;
   perMinuteDrive?: Maybe<Scalars['Float']['output']>;
@@ -5083,6 +5106,7 @@ export type ServiceInput = {
   mediaId: Scalars['ID']['input'];
   minimumFee: Scalars['Float']['input'];
   name: Scalars['String']['input'];
+  orderType?: InputMaybe<ServiceOrderType>;
   paymentMethod: ServicePaymentMethod;
   perHundredMeters: Scalars['Float']['input'];
   perMinuteDrive: Scalars['Float']['input'];
@@ -5156,6 +5180,11 @@ export enum ServiceOptionType {
   Free = 'Free',
   Paid = 'Paid',
   TwoWay = 'TwoWay'
+}
+
+export enum ServiceOrderType {
+  Delivery = 'Delivery',
+  Ride = 'Ride'
 }
 
 export enum ServicePaymentMethod {
@@ -5316,6 +5345,7 @@ export type UpdateDriverInput = {
   bankName?: InputMaybe<Scalars['String']['input']>;
   bankRoutingNumber?: InputMaybe<Scalars['String']['input']>;
   bankSwift?: InputMaybe<Scalars['String']['input']>;
+  canDeliver?: InputMaybe<Scalars['Boolean']['input']>;
   carColorId?: InputMaybe<Scalars['ID']['input']>;
   carId?: InputMaybe<Scalars['ID']['input']>;
   carPlate?: InputMaybe<Scalars['String']['input']>;
@@ -5326,6 +5356,7 @@ export type UpdateDriverInput = {
   fleetId?: InputMaybe<Scalars['ID']['input']>;
   gender?: InputMaybe<Gender>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+  maxPackageSize?: InputMaybe<PackageSize>;
   mediaId?: InputMaybe<Scalars['ID']['input']>;
   mobileNumber?: InputMaybe<Scalars['String']['input']>;
   softRejectionNote?: InputMaybe<Scalars['String']['input']>;
@@ -5704,7 +5735,7 @@ export type ViewDriverQueryVariables = Exact<{
 }>;
 
 
-export type ViewDriverQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null }, services: Array<{ __typename?: 'Service', id: string, name: string }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
+export type ViewDriverQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, canDeliver?: boolean | null, maxPackageSize?: PackageSize | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null }, services: Array<{ __typename?: 'Service', id: string, name: string }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
 
 export type UpdateDriverProfileMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -6207,7 +6238,7 @@ export type ViewServiceQueryVariables = Exact<{
 }>;
 
 
-export type ViewServiceQuery = { __typename?: 'Query', service: { __typename?: 'Service', id: string, name: string, categoryId: string, baseFare: number, perHundredMeters: number, perMinuteDrive: number, perMinuteWait: number, minimumFee: number, searchRadius: number, maximumDestinationDistance: number, paymentMethod: ServicePaymentMethod, cancellationTotalFee: number, cancellationDriverShare: number, providerShareFlat: number, providerSharePercent: number, prepayPercent: number, mediaId: string, description?: string | null, personCapacity?: number | null, roundingFactor?: number | null, media: { __typename?: 'Media', address: string }, timeMultipliers: Array<{ __typename?: 'TimeMultiplier', startTime: string, endTime: string, multiply: number }>, distanceMultipliers: Array<{ __typename?: 'DistanceMultiplier', distanceFrom: number, distanceTo: number, multiply: number }>, weekdayMultipliers: Array<{ __typename?: 'WeekdayMultiplier', weekday: Weekday, multiply: number }>, dateRangeMultipliers: Array<{ __typename?: 'DateRangeMultiplier', startDate: number, endDate: number, multiply: number }>, options: Array<{ __typename?: 'ServiceOption', id: string, name: string, type: ServiceOptionType, additionalFee?: number | null, icon: ServiceOptionIcon }>, regions: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, serviceCategories: Array<{ __typename?: 'ServiceCategory', id: string, name: string }>, serviceOptions: Array<{ __typename?: 'ServiceOption', id: string, name: string, icon: ServiceOptionIcon, type: ServiceOptionType, additionalFee?: number | null }> };
+export type ViewServiceQuery = { __typename?: 'Query', service: { __typename?: 'Service', id: string, name: string, categoryId: string, baseFare: number, perHundredMeters: number, perMinuteDrive: number, perMinuteWait: number, minimumFee: number, searchRadius: number, maximumDestinationDistance: number, paymentMethod: ServicePaymentMethod, orderType: ServiceOrderType, cancellationTotalFee: number, cancellationDriverShare: number, providerShareFlat: number, providerSharePercent: number, prepayPercent: number, mediaId: string, description?: string | null, personCapacity?: number | null, roundingFactor?: number | null, media: { __typename?: 'Media', address: string }, timeMultipliers: Array<{ __typename?: 'TimeMultiplier', startTime: string, endTime: string, multiply: number }>, distanceMultipliers: Array<{ __typename?: 'DistanceMultiplier', distanceFrom: number, distanceTo: number, multiply: number }>, weekdayMultipliers: Array<{ __typename?: 'WeekdayMultiplier', weekday: Weekday, multiply: number }>, dateRangeMultipliers: Array<{ __typename?: 'DateRangeMultiplier', startDate: number, endDate: number, multiply: number }>, options: Array<{ __typename?: 'ServiceOption', id: string, name: string, type: ServiceOptionType, additionalFee?: number | null, icon: ServiceOptionIcon }>, regions: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, serviceCategories: Array<{ __typename?: 'ServiceCategory', id: string, name: string }>, serviceOptions: Array<{ __typename?: 'ServiceOption', id: string, name: string, icon: ServiceOptionIcon, type: ServiceOptionType, additionalFee?: number | null }> };
 
 export type NewServiceQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6580,15 +6611,7 @@ export type CreateSosActivityMutation = { __typename?: 'Mutation', createOneSOSA
 export type CurrentConfigurationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentConfigurationQuery = { __typename?: 'Query', currentConfiguration: { __typename?: 'CurrentConfiguration', purchaseCode?: string | null, backendMapsAPIKey?: string | null, adminPanelAPIKey?: string | null, firebaseProjectPrivateKey?: string | null } };
-
-export type UpdatePurchaseCodeMutationVariables = Exact<{
-  code: Scalars['String']['input'];
-  email?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type UpdatePurchaseCodeMutation = { __typename?: 'Mutation', updatePurchaseCode: { __typename?: 'UpdatePurchaseCodeResult', status: UpdatePurchaseCodeStatus, message?: string | null, clients?: Array<{ __typename?: 'UpdatePurchaseCodeClient', ip: string }> | null } };
+export type CurrentConfigurationQuery = { __typename?: 'Query', currentConfiguration: { __typename?: 'CurrentConfiguration', backendMapsAPIKey?: string | null, adminPanelAPIKey?: string | null, firebaseProjectPrivateKey?: string | null } };
 
 export type UpdateMapsApiKeyMutationVariables = Exact<{
   backend: Scalars['String']['input'];
@@ -6604,13 +6627,6 @@ export type UpdateFirebaseMutationVariables = Exact<{
 
 
 export type UpdateFirebaseMutation = { __typename?: 'Mutation', updateFirebase: { __typename?: 'UpdateConfigResult', status: UpdateConfigStatus, message?: string | null } };
-
-export type DisableServerMutationVariables = Exact<{
-  ip: Scalars['String']['input'];
-}>;
-
-
-export type DisableServerMutation = { __typename?: 'Mutation', disablePreviousServer: { __typename?: 'UpdateConfigResult', status: UpdateConfigStatus, message?: string | null } };
 
 export type LoginQueryVariables = Exact<{
   username: Scalars['String']['input'];
@@ -6853,6 +6869,8 @@ export const ViewDriverDocument = gql`
     bankSwift
     address
     email
+    canDeliver
+    maxPackageSize
     feedbacks {
       nodes {
         parametersAggregate {
@@ -8447,6 +8465,7 @@ export const ViewServiceDocument = gql`
     searchRadius
     maximumDestinationDistance
     paymentMethod
+    orderType
     cancellationTotalFee
     cancellationDriverShare
     providerShareFlat
@@ -9832,7 +9851,6 @@ export const CreateSosActivityDocument = gql`
 export const CurrentConfigurationDocument = gql`
     query CurrentConfiguration {
   currentConfiguration {
-    purchaseCode
     backendMapsAPIKey
     adminPanelAPIKey
     firebaseProjectPrivateKey
@@ -9845,28 +9863,6 @@ export const CurrentConfigurationDocument = gql`
   })
   export class CurrentConfigurationGQL extends Apollo.Query<CurrentConfigurationQuery, CurrentConfigurationQueryVariables> {
     document = CurrentConfigurationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const UpdatePurchaseCodeDocument = gql`
-    mutation UpdatePurchaseCode($code: String!, $email: String) {
-  updatePurchaseCode(purchaseCode: $code, email: $email) {
-    status
-    message
-    clients {
-      ip
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdatePurchaseCodeGQL extends Apollo.Mutation<UpdatePurchaseCodeMutation, UpdatePurchaseCodeMutationVariables> {
-    document = UpdatePurchaseCodeDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -9905,25 +9901,6 @@ export const UpdateFirebaseDocument = gql`
   })
   export class UpdateFirebaseGQL extends Apollo.Mutation<UpdateFirebaseMutation, UpdateFirebaseMutationVariables> {
     document = UpdateFirebaseDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const DisableServerDocument = gql`
-    mutation DisableServer($ip: String!) {
-  disablePreviousServer(ip: $ip) {
-    status
-    message
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DisableServerGQL extends Apollo.Mutation<DisableServerMutation, DisableServerMutationVariables> {
-    document = DisableServerDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

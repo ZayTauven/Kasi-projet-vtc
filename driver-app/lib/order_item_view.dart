@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/current_location_cubit.dart';
+import 'package:kasi_driver/delivery_info_view.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
 import 'package:kasi_driver/unit_of_measurement.dart';
@@ -126,6 +127,11 @@ class OrderItemView extends StatelessWidget {
                   ],
                 );
               }).toList(),
+              if (order.service?.orderType == Enum$ServiceOrderType.Delivery)
+                DeliveryInfoView(
+                    packageSize: order.packageSize,
+                    deliveryInstructions: order.deliveryInstructions,
+                    compact: true),
               const Spacer(),
               Row(
                   children: order.options

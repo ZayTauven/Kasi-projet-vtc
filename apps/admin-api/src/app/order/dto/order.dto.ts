@@ -7,6 +7,7 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Point } from '@kasi/database';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
+import { PackageSize } from '@kasi/database/enums/package-size.enum';
 
 import { ProviderTransactionDTO } from '../../accounting/dto/provider-transaction.dto';
 import { ComplaintDTO } from '../../complaint/dto/complaint.dto';
@@ -60,4 +61,8 @@ export class OrderDTO {
   riderId: number;
   @FilterableField(() => ID)
   driverId?: number;
+  packageSize?: PackageSize;
+  recipientName?: string;
+  recipientMobileNumber?: string;
+  deliveryInstructions?: string;
 }

@@ -18,18 +18,18 @@ type Coupon {
   code: String!
   title: String!
   description: String!
-  expireAt: DateTime!
+  expireAt: Timestamp!
 }
 
 """
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
-scalar DateTime
+scalar Timestamp
 
 type OrderMessage {
   id: ID!
   requestId: ID!
-  sentAt: DateTime!
+  sentAt: Timestamp!
   status: MessageStatus!
   content: String!
   sentByDriver: Boolean!
@@ -76,6 +76,7 @@ type Service {
   name: String!
   description: String
   paymentMethod: ServicePaymentMethod!
+  orderType: ServiceOrderType!
   cost: Float!
   costAfterCoupon: Float
   cancellationTotalFee: Float!
@@ -94,6 +95,11 @@ enum ServicePaymentMethod {
   CashCredit
   OnlyCredit
   OnlyCash
+}
+
+enum ServiceOrderType {
+  Ride
+  Delivery
 }
 
 input ServiceOptionFilter {
@@ -168,6 +174,8 @@ enum PaymentGatewayType {
   WayForPay
   MyFatoorah
   SberBank
+  BinancePay
+  OpenPix
   CustomLink
 }
 
@@ -201,21 +209,28 @@ type Order {
   distanceBest: Int!
   durationBest: Int!
   waitMinutes: Int!
+  destinationArrivedTo: Int!
   riderId: ID!
   driverId: ID
   points: [Point!]!
   addresses: [String!]!
-  expectedTimestamp: DateTime!
-  driverLastSeenMessagesAt: DateTime!
-  riderLastSeenMessagesAt: DateTime!
-  startTimestamp: DateTime
-  finishTimestamp: DateTime
+  expectedTimestamp: Timestamp!
+  driverLastSeenMessagesAt: Timestamp!
+  riderLastSeenMessagesAt: Timestamp!
+  startTimestamp: Timestamp
+  finishTimestamp: Timestamp
   costAfterCoupon: Float!
-  etaPickup: DateTime
+  etaPickup: Timestamp
   costBest: Float!
   paidAmount: Float!
+  tipAmount: Float!
+  providerShare: Float!
   currency: String!
   directions: [Point!]
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
   driver: Driver
   rider: Rider
   service: Service
@@ -254,10 +269,11 @@ enum OrderStatus {
   Expired
 }
 
-"""
-`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
-"""
-scalar Timestamp
+enum PackageSize {
+  Small
+  Medium
+  Large
+}
 
 input OrderMessageFilter {
   and: [OrderMessageFilter!]
@@ -275,6 +291,13 @@ input OrderMessageSort {
 enum OrderMessageSortFields {
   id
   requestId
+}
+
+type RiderWallet {
+  id: ID!
+  balance: Float!
+  currency: String!
+  riderId: Float!
 }
 
 type Rider {
@@ -299,6 +322,13 @@ type Rider {
     """Specify to sort results."""
     sorting: [CouponSort!]! = []
   ): [Coupon!]!
+  wallets(
+    """Specify to filter the records returned."""
+    filter: RiderWalletFilter! = {}
+
+    """Specify to sort results."""
+    sorting: [RiderWalletSort!]! = []
+  ): [RiderWallet!]!
   orders(
     """Specify to filter the records returned."""
     filter: OrderFilter! = {status: {in: [Requested, Booked, Found, NotFound, NoCloseFound, DriverAccepted, Arrived, Started, WaitingForReview, WaitingForPostPay, WaitingForPrePay]}}
@@ -326,7 +356,7 @@ input OrderAggregateFilter {
   or: [OrderAggregateFilter!]
   id: IDFilterComparison
   status: OrderStatusFilterComparison
-  createdOn: TimestampFieldComparison
+  createdOn: DateFieldComparison
   riderId: IDFilterComparison
   driverId: IDFilterComparison
 }
@@ -348,24 +378,29 @@ input OrderStatusFilterComparison {
   notIn: [OrderStatus!]
 }
 
-input TimestampFieldComparison {
+input DateFieldComparison {
   is: Boolean
   isNot: Boolean
-  eq: Timestamp
-  neq: Timestamp
-  gt: Timestamp
-  gte: Timestamp
-  lt: Timestamp
-  lte: Timestamp
-  in: [Timestamp!]
-  notIn: [Timestamp!]
-  between: TimestampFieldComparisonBetween
-  notBetween: TimestampFieldComparisonBetween
+  eq: DateTime
+  neq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  between: DateFieldComparisonBetween
+  notBetween: DateFieldComparisonBetween
 }
 
-input TimestampFieldComparisonBetween {
-  lower: Timestamp!
-  upper: Timestamp!
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DateFieldComparisonBetween {
+  lower: DateTime!
+  upper: DateTime!
 }
 
 input CouponFilter {
@@ -384,12 +419,30 @@ enum CouponSortFields {
   id
 }
 
+input RiderWalletFilter {
+  and: [RiderWalletFilter!]
+  or: [RiderWalletFilter!]
+  id: IDFilterComparison
+  riderId: IDFilterComparison
+}
+
+input RiderWalletSort {
+  field: RiderWalletSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum RiderWalletSortFields {
+  id
+  riderId
+}
+
 input OrderFilter {
   and: [OrderFilter!]
   or: [OrderFilter!]
   id: IDFilterComparison
   status: OrderStatusFilterComparison
-  createdOn: TimestampFieldComparison
+  createdOn: DateFieldComparison
   riderId: IDFilterComparison
   driverId: IDFilterComparison
 }
@@ -431,30 +484,6 @@ type PageInfo {
 
   """The cursor of the last returned record."""
   endCursor: ConnectionCursor
-}
-
-type RiderAggregateGroupBy {
-  id: ID
-}
-
-type RiderCountAggregate {
-  id: Int
-}
-
-type RiderSumAggregate {
-  id: Float
-}
-
-type RiderAvgAggregate {
-  id: Float
-}
-
-type RiderMinAggregate {
-  id: ID
-}
-
-type RiderMaxAggregate {
-  id: ID
 }
 
 type RiderOrdersAggregateGroupBy {
@@ -522,30 +551,6 @@ type MediaEdge {
   cursor: ConnectionCursor!
 }
 
-type MediaAggregateGroupBy {
-  id: ID
-}
-
-type MediaCountAggregate {
-  id: Int
-}
-
-type MediaSumAggregate {
-  id: Float
-}
-
-type MediaAvgAggregate {
-  id: Float
-}
-
-type MediaMinAggregate {
-  id: ID
-}
-
-type MediaMaxAggregate {
-  id: ID
-}
-
 type ServiceCategory {
   id: ID!
   name: String!
@@ -558,54 +563,6 @@ type ServiceEdge {
 
   """Cursor for this node."""
   cursor: ConnectionCursor!
-}
-
-type ServiceAggregateGroupBy {
-  id: ID
-}
-
-type ServiceCountAggregate {
-  id: Int
-}
-
-type ServiceSumAggregate {
-  id: Float
-}
-
-type ServiceAvgAggregate {
-  id: Float
-}
-
-type ServiceMinAggregate {
-  id: ID
-}
-
-type ServiceMaxAggregate {
-  id: ID
-}
-
-type ServiceCategoryAggregateGroupBy {
-  id: ID
-}
-
-type ServiceCategoryCountAggregate {
-  id: Int
-}
-
-type ServiceCategorySumAggregate {
-  id: Float
-}
-
-type ServiceCategoryAvgAggregate {
-  id: Float
-}
-
-type ServiceCategoryMinAggregate {
-  id: ID
-}
-
-type ServiceCategoryMaxAggregate {
-  id: ID
 }
 
 type CalculateFareDTO {
@@ -625,13 +582,6 @@ enum CalculateFareError {
 type CurrentOrder {
   order: Order!
   driverLocation: Point
-}
-
-type RiderWallet {
-  id: ID!
-  balance: Float!
-  currency: String!
-  riderId: Float!
 }
 
 type FeedbackParameter {
@@ -656,80 +606,12 @@ type OrderConnection {
   edges: [OrderEdge!]!
 }
 
-type OrderAggregateGroupBy {
-  id: ID
-  status: OrderStatus
-  createdOn: Timestamp
-  riderId: ID
-  driverId: ID
-}
-
-type OrderCountAggregate {
-  id: Int
-  status: Int
-  createdOn: Int
-  riderId: Int
-  driverId: Int
-}
-
-type OrderSumAggregate {
-  id: Float
-  riderId: Float
-  driverId: Float
-}
-
-type OrderAvgAggregate {
-  id: Float
-  riderId: Float
-  driverId: Float
-}
-
-type OrderMinAggregate {
-  id: ID
-  status: OrderStatus
-  createdOn: Timestamp
-  riderId: ID
-  driverId: ID
-}
-
-type OrderMaxAggregate {
-  id: ID
-  status: OrderStatus
-  createdOn: Timestamp
-  riderId: ID
-  driverId: ID
-}
-
 type DriverEdge {
   """The node containing the Driver"""
   node: Driver!
 
   """Cursor for this node."""
   cursor: ConnectionCursor!
-}
-
-type DriverAggregateGroupBy {
-  id: ID
-}
-
-type DriverCountAggregate {
-  id: Int
-}
-
-type DriverSumAggregate {
-  id: Float
-}
-
-type DriverAvgAggregate {
-  id: Float
-}
-
-type DriverMinAggregate {
-  id: ID
-}
-
-type DriverMaxAggregate {
-  id: ID
 }
 
 type CarModelEdge {
@@ -740,84 +622,12 @@ type CarModelEdge {
   cursor: ConnectionCursor!
 }
 
-type CarModelAggregateGroupBy {
-  id: ID
-}
-
-type CarModelCountAggregate {
-  id: Int
-}
-
-type CarModelSumAggregate {
-  id: Float
-}
-
-type CarModelAvgAggregate {
-  id: Float
-}
-
-type CarModelMinAggregate {
-  id: ID
-}
-
-type CarModelMaxAggregate {
-  id: ID
-}
-
 type CarColorEdge {
   """The node containing the CarColor"""
   node: CarColor!
 
   """Cursor for this node."""
   cursor: ConnectionCursor!
-}
-
-type CarColorAggregateGroupBy {
-  id: ID
-}
-
-type CarColorCountAggregate {
-  id: Int
-}
-
-type CarColorSumAggregate {
-  id: Float
-}
-
-type CarColorAvgAggregate {
-  id: Float
-}
-
-type CarColorMinAggregate {
-  id: ID
-}
-
-type CarColorMaxAggregate {
-  id: ID
-}
-
-type FeedbackParameterAggregateGroupBy {
-  id: ID
-}
-
-type FeedbackParameterCountAggregate {
-  id: Int
-}
-
-type FeedbackParameterSumAggregate {
-  id: Float
-}
-
-type FeedbackParameterAvgAggregate {
-  id: Float
-}
-
-type FeedbackParameterMinAggregate {
-  id: ID
-}
-
-type FeedbackParameterMaxAggregate {
-  id: ID
 }
 
 type RiderAddress {
@@ -849,41 +659,11 @@ type RiderAddressDeleteResponse {
   riderId: Float
 }
 
-type RiderAddressAggregateGroupBy {
-  id: ID
-  riderId: ID
-}
-
-type RiderAddressCountAggregate {
-  id: Int
-  riderId: Int
-}
-
-type RiderAddressSumAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderAddressAvgAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderAddressMinAggregate {
-  id: ID
-  riderId: ID
-}
-
-type RiderAddressMaxAggregate {
-  id: ID
-  riderId: ID
-}
-
 type Announcement {
   id: ID!
   userType: AnnouncementUserType!
-  startAt: DateTime!
-  expireAt: DateTime!
+  startAt: Timestamp!
+  expireAt: Timestamp!
   title: String!
   description: String!
   url: String
@@ -909,34 +689,6 @@ type AnnouncementConnection {
 
   """Array of edges."""
   edges: [AnnouncementEdge!]!
-}
-
-type AnnouncementAggregateGroupBy {
-  id: ID
-  userType: AnnouncementUserType
-}
-
-type AnnouncementCountAggregate {
-  id: Int
-  userType: Int
-}
-
-type AnnouncementSumAggregate {
-  id: Float
-}
-
-type AnnouncementAvgAggregate {
-  id: Float
-}
-
-type AnnouncementMinAggregate {
-  id: ID
-  userType: AnnouncementUserType
-}
-
-type AnnouncementMaxAggregate {
-  id: ID
-  userType: AnnouncementUserType
 }
 
 type RiderTransacion {
@@ -995,122 +747,6 @@ type RiderTransacionConnection {
   edges: [RiderTransacionEdge!]!
 }
 
-type RiderTransacionAggregateGroupBy {
-  id: ID
-  riderId: ID
-}
-
-type RiderTransacionCountAggregate {
-  id: Int
-  riderId: Int
-}
-
-type RiderTransacionSumAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderTransacionAvgAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderTransacionMinAggregate {
-  id: ID
-  riderId: ID
-}
-
-type RiderTransacionMaxAggregate {
-  id: ID
-  riderId: ID
-}
-
-type RiderWalletAggregateGroupBy {
-  id: ID
-  riderId: ID
-}
-
-type RiderWalletCountAggregate {
-  id: Int
-  riderId: Int
-}
-
-type RiderWalletSumAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderWalletAvgAggregate {
-  id: Float
-  riderId: Float
-}
-
-type RiderWalletMinAggregate {
-  id: ID
-  riderId: ID
-}
-
-type RiderWalletMaxAggregate {
-  id: ID
-  riderId: ID
-}
-
-type PaymentGatewayAggregateGroupBy {
-  id: ID
-  enabled: Boolean
-}
-
-type PaymentGatewayCountAggregate {
-  id: Int
-  enabled: Int
-}
-
-type PaymentGatewaySumAggregate {
-  id: Float
-}
-
-type PaymentGatewayAvgAggregate {
-  id: Float
-}
-
-type PaymentGatewayMinAggregate {
-  id: ID
-}
-
-type PaymentGatewayMaxAggregate {
-  id: ID
-}
-
-type OrderMessageAggregateGroupBy {
-  id: ID
-  requestId: ID
-}
-
-type OrderMessageCountAggregate {
-  id: Int
-  requestId: Int
-}
-
-type OrderMessageSumAggregate {
-  id: Float
-  requestId: Float
-}
-
-type OrderMessageAvgAggregate {
-  id: Float
-  requestId: Float
-}
-
-type OrderMessageMinAggregate {
-  id: ID
-  requestId: ID
-}
-
-type OrderMessageMaxAggregate {
-  id: ID
-  requestId: ID
-}
-
 type Complaint {
   id: ID!
   subject: String!
@@ -1132,32 +768,14 @@ type ComplaintEdge {
   cursor: ConnectionCursor!
 }
 
-type ComplaintAggregateGroupBy {
-  id: ID
-}
-
-type ComplaintCountAggregate {
-  id: Int
-}
-
-type ComplaintSumAggregate {
-  id: Float
-}
-
-type ComplaintAvgAggregate {
-  id: Float
-}
-
-type ComplaintMinAggregate {
-  id: ID
-}
-
-type ComplaintMaxAggregate {
-  id: ID
-}
-
 type SOS {
   id: ID!
+}
+
+type PlaceDTO {
+  point: Point!
+  title: String
+  address: String!
 }
 
 input PointInput {
@@ -1170,7 +788,7 @@ type Query {
   rider(
     """The id of the record to find."""
     id: ID!
-  ): Rider
+  ): Rider!
   serviceCategories(
     """Specify to filter the records returned."""
     filter: ServiceCategoryFilter! = {}
@@ -1186,7 +804,7 @@ type Query {
   order(
     """The id of the record to find."""
     id: ID!
-  ): Order
+  ): Order!
   orders(
     """Limit or page results."""
     paging: CursorPaging! = {first: 10}
@@ -1207,7 +825,7 @@ type Query {
   riderAddress(
     """The id of the record to find."""
     id: ID!
-  ): RiderAddress
+  ): RiderAddress!
   riderAddresses(
     """Specify to filter the records returned."""
     filter: RiderAddressFilter! = {}
@@ -1218,7 +836,7 @@ type Query {
   announcement(
     """The id of the record to find."""
     id: ID!
-  ): Announcement
+  ): Announcement!
   announcements(
     """Limit or page results."""
     paging: CursorPaging! = {first: 10}
@@ -1229,6 +847,16 @@ type Query {
     """Specify to sort results."""
     sorting: [AnnouncementSort!]! = []
   ): AnnouncementConnection!
+  getPlaces(
+    keyword: String!
+    location: PointInput
+
+    """Search radius from location argument in meters"""
+    radius: Int
+    language: String
+    provider: GeoProvider
+  ): [PlaceDTO!]!
+  reverseGeocode(location: PointInput!, language: String, provider: GeoProvider): PlaceDTO!
   riderTransacions(
     """Limit or page results."""
     paging: CursorPaging! = {first: 10}
@@ -1374,6 +1002,12 @@ enum AnnouncementSortFields {
   userType
 }
 
+enum GeoProvider {
+  GOOGLE
+  MAPBOX
+  NOMINATIM
+}
+
 input RiderTransacionFilter {
   and: [RiderTransacionFilter!]
   or: [RiderTransacionFilter!]
@@ -1388,24 +1022,6 @@ input RiderTransacionSort {
 }
 
 enum RiderTransacionSortFields {
-  id
-  riderId
-}
-
-input RiderWalletFilter {
-  and: [RiderWalletFilter!]
-  or: [RiderWalletFilter!]
-  id: IDFilterComparison
-  riderId: IDFilterComparison
-}
-
-input RiderWalletSort {
-  field: RiderWalletSortFields!
-  direction: SortDirection!
-  nulls: SortNulls
-}
-
-enum RiderWalletSortFields {
   id
   riderId
 }
@@ -1436,6 +1052,7 @@ enum PaymentGatewaySortFields {
 type Mutation {
   login(input: LoginInput!): Login!
   deleteUser: Rider!
+  skipVerification(mobileNumber: String!): Login!
   updateOneRider(input: UpdateOneRiderInput!): Rider!
   calculateFare(input: CalculateFareInput!): CalculateFareDTO!
   createOrder(input: CreateOrderInput!): Order!
@@ -1486,6 +1103,10 @@ input CreateOrderInput {
   twoWay: Boolean
   optionIds: [String!]
   couponCode: String
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
 }
 
 input SubmitFeedbackInput {

@@ -19,6 +19,8 @@ query ViewDriver($id: ID!) {
     bankSwift
     address
     email
+    canDeliver
+    maxPackageSize
 
     feedbacks {
       nodes {

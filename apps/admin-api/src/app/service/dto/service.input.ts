@@ -1,6 +1,7 @@
 ﻿import { Field, ID, InputType, Int } from '@nestjs/graphql';
 import { FilterableField } from '@ptc-org/nestjs-query-graphql';
 import { TimeMultiplier, DistanceMultiplier } from '@kasi/database';
+import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { ServicePaymentMethod } from '@kasi/database/enums/service-payment-method.enum';
 import { DateRangeMultiplier } from 'libs/database/src/lib/interfaces/date-range-multiplier.dto';
 import { WeekdayMultiplier } from 'libs/database/src/lib/interfaces/weekday-multiplier.dto';
@@ -23,6 +24,7 @@ export class ServiceInput {
   @Field(() => Int)
   searchRadius!: number;
   paymentMethod!: ServicePaymentMethod;
+  orderType?: ServiceOrderType;
   cancellationTotalFee!: number;
   cancellationDriverShare!: number;
   @Field(() => Int)

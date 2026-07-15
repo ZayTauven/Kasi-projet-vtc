@@ -96,6 +96,7 @@ type Service {
   id: ID!
   name: String!
   paymentMethod: ServicePaymentMethod!
+  orderType: ServiceOrderType!
   cancellationTotalFee: Float!
   media: Media!
 }
@@ -104,6 +105,11 @@ enum ServicePaymentMethod {
   CashCredit
   OnlyCredit
   OnlyCash
+}
+
+enum ServiceOrderType {
+  Ride
+  Delivery
 }
 
 type OrderMessage {
@@ -160,6 +166,7 @@ type Order {
   createdOn: Timestamp!
   distanceBest: Int!
   durationBest: Int!
+  destinationArrivedTo: Int!
   costBest: Float!
   startTimestamp: Timestamp
   finishTimestamp: Timestamp
@@ -178,6 +185,10 @@ type Order {
   tipAmount: Float!
   paymentGatewayId: Float
   directions: [Point!]
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
   optionsAggregate(
     """Filter to find records to aggregate on"""
     filter: ServiceOptionAggregateFilter
@@ -221,6 +232,12 @@ enum OrderStatus {
   Finished
   Booked
   Expired
+}
+
+enum PackageSize {
+  Small
+  Medium
+  Large
 }
 
 input ServiceOptionAggregateFilter {
@@ -303,6 +320,8 @@ type Driver {
   bankSwift: String
   address: String
   softRejectionNote: String
+  canDeliver: Boolean!
+  maxPackageSize: PackageSize
   rating: Float
   historyOrdersAggregate(
     """Filter to find records to aggregate on"""
@@ -317,7 +336,7 @@ type Driver {
 
     """Specify to sort results."""
     sorting: [MediaSort!]! = []
-  ): [Media!]!
+  ): [Media!]
   historyOrders(
     """Limit or page results."""
     paging: OffsetPaging! = {limit: 10}
@@ -580,60 +599,12 @@ type PageInfo {
   endCursor: ConnectionCursor
 }
 
-type MediaAggregateGroupBy {
-  id: ID
-}
-
-type MediaCountAggregate {
-  id: Int
-}
-
-type MediaSumAggregate {
-  id: Float
-}
-
-type MediaAvgAggregate {
-  id: Float
-}
-
-type MediaMinAggregate {
-  id: ID
-}
-
-type MediaMaxAggregate {
-  id: ID
-}
-
 type DriverEdge {
   """The node containing the Driver"""
   node: Driver!
 
   """Cursor for this node."""
   cursor: ConnectionCursor!
-}
-
-type DriverAggregateGroupBy {
-  id: ID
-}
-
-type DriverCountAggregate {
-  id: Int
-}
-
-type DriverSumAggregate {
-  id: Float
-}
-
-type DriverAvgAggregate {
-  id: Float
-}
-
-type DriverMinAggregate {
-  id: ID
-}
-
-type DriverMaxAggregate {
-  id: ID
 }
 
 type OffsetPageInfo {
@@ -719,54 +690,6 @@ type DriverHistoryOrdersAggregateResponse {
   max: DriverHistoryOrdersMaxAggregate
 }
 
-type CarModelAggregateGroupBy {
-  id: ID
-}
-
-type CarModelCountAggregate {
-  id: Int
-}
-
-type CarModelSumAggregate {
-  id: Float
-}
-
-type CarModelAvgAggregate {
-  id: Float
-}
-
-type CarModelMinAggregate {
-  id: ID
-}
-
-type CarModelMaxAggregate {
-  id: ID
-}
-
-type CarColorAggregateGroupBy {
-  id: ID
-}
-
-type CarColorCountAggregate {
-  id: Int
-}
-
-type CarColorSumAggregate {
-  id: Float
-}
-
-type CarColorAvgAggregate {
-  id: Float
-}
-
-type CarColorMinAggregate {
-  id: ID
-}
-
-type CarColorMaxAggregate {
-  id: ID
-}
-
 type OrderEdge {
   """The node containing the Order"""
   node: Order!
@@ -786,10 +709,18 @@ type OrderConnection {
 type OrderAggregateGroupBy {
   id: ID
   status: OrderStatus
-  createdOn: Timestamp
+  createdOn(by: GroupBy! = DAY): Timestamp
   distanceBest: Int
   costBest: Float
   driverId: ID
+}
+
+"""Group by"""
+enum GroupBy {
+  DAY
+  WEEK
+  MONTH
+  YEAR
 }
 
 type OrderCountAggregate {
@@ -922,30 +853,6 @@ type RiderEdge {
   cursor: ConnectionCursor!
 }
 
-type RiderAggregateGroupBy {
-  id: ID
-}
-
-type RiderCountAggregate {
-  id: Int
-}
-
-type RiderSumAggregate {
-  id: Float
-}
-
-type RiderAvgAggregate {
-  id: Float
-}
-
-type RiderMinAggregate {
-  id: ID
-}
-
-type RiderMaxAggregate {
-  id: ID
-}
-
 type Login {
   jwtToken: String!
 }
@@ -964,34 +871,6 @@ enum AnnouncementUserType {
   Driver
   Rider
   Operator
-}
-
-type AnnouncementAggregateGroupBy {
-  id: ID
-  userType: AnnouncementUserType
-}
-
-type AnnouncementCountAggregate {
-  id: Int
-  userType: Int
-}
-
-type AnnouncementSumAggregate {
-  id: Float
-}
-
-type AnnouncementAvgAggregate {
-  id: Float
-}
-
-type AnnouncementMinAggregate {
-  id: ID
-  userType: AnnouncementUserType
-}
-
-type AnnouncementMaxAggregate {
-  id: ID
-  userType: AnnouncementUserType
 }
 
 type DriverTransacion {
@@ -1051,6 +930,8 @@ enum PaymentGatewayType {
   WayForPay
   MyFatoorah
   SberBank
+  BinancePay
+  OpenPix
   CustomLink
 }
 
@@ -1094,152 +975,12 @@ type DriverTransacionConnection {
   edges: [DriverTransacionEdge!]!
 }
 
-type DriverTransacionAggregateGroupBy {
-  id: ID
-  driverId: ID
-}
-
-type DriverTransacionCountAggregate {
-  id: Int
-  driverId: Int
-}
-
-type DriverTransacionSumAggregate {
-  id: Float
-  driverId: Float
-}
-
-type DriverTransacionAvgAggregate {
-  id: Float
-  driverId: Float
-}
-
-type DriverTransacionMinAggregate {
-  id: ID
-  driverId: ID
-}
-
-type DriverTransacionMaxAggregate {
-  id: ID
-  driverId: ID
-}
-
-type DriverWalletAggregateGroupBy {
-  id: ID
-  driverId: ID
-}
-
-type DriverWalletCountAggregate {
-  id: Int
-  driverId: Int
-}
-
-type DriverWalletSumAggregate {
-  id: Float
-  driverId: Float
-}
-
-type DriverWalletAvgAggregate {
-  id: Float
-  driverId: Float
-}
-
-type DriverWalletMinAggregate {
-  id: ID
-  driverId: ID
-}
-
-type DriverWalletMaxAggregate {
-  id: ID
-  driverId: ID
-}
-
-type PaymentGatewayAggregateGroupBy {
-  id: ID
-  enabled: Boolean
-}
-
-type PaymentGatewayCountAggregate {
-  id: Int
-  enabled: Int
-}
-
-type PaymentGatewaySumAggregate {
-  id: Float
-}
-
-type PaymentGatewayAvgAggregate {
-  id: Float
-}
-
-type PaymentGatewayMinAggregate {
-  id: ID
-}
-
-type PaymentGatewayMaxAggregate {
-  id: ID
-}
-
 type ServiceEdge {
   """The node containing the Service"""
   node: Service!
 
   """Cursor for this node."""
   cursor: ConnectionCursor!
-}
-
-type ServiceAggregateGroupBy {
-  id: ID
-}
-
-type ServiceCountAggregate {
-  id: Int
-}
-
-type ServiceSumAggregate {
-  id: Float
-}
-
-type ServiceAvgAggregate {
-  id: Float
-}
-
-type ServiceMinAggregate {
-  id: ID
-}
-
-type ServiceMaxAggregate {
-  id: ID
-}
-
-type OrderMessageAggregateGroupBy {
-  id: ID
-  requestId: ID
-}
-
-type OrderMessageCountAggregate {
-  id: Int
-  requestId: Int
-}
-
-type OrderMessageSumAggregate {
-  id: Float
-  requestId: Float
-}
-
-type OrderMessageAvgAggregate {
-  id: Float
-  requestId: Float
-}
-
-type OrderMessageMinAggregate {
-  id: ID
-  requestId: ID
-}
-
-type OrderMessageMaxAggregate {
-  id: ID
-  requestId: ID
 }
 
 type Complaint {
@@ -1263,30 +1004,6 @@ type ComplaintEdge {
   cursor: ConnectionCursor!
 }
 
-type ComplaintAggregateGroupBy {
-  id: ID
-}
-
-type ComplaintCountAggregate {
-  id: Int
-}
-
-type ComplaintSumAggregate {
-  id: Float
-}
-
-type ComplaintAvgAggregate {
-  id: Float
-}
-
-type ComplaintMinAggregate {
-  id: ID
-}
-
-type ComplaintMaxAggregate {
-  id: ID
-}
-
 input PointInput {
   lat: Float!
   lng: Float!
@@ -1301,7 +1018,7 @@ type Query {
   order(
     """The id of the record to find."""
     id: ID!
-  ): Order
+  ): Order!
   orders(
     """Limit or page results."""
     paging: CursorPaging! = {first: 10}
@@ -1316,7 +1033,7 @@ type Query {
   driver(
     """The id of the record to find."""
     id: ID!
-  ): Driver
+  ): Driver!
   carModels(
     """Specify to filter the records returned."""
     filter: CarModelFilter! = {}
@@ -1510,13 +1227,11 @@ enum AnnouncementSortFields {
 type Mutation {
   login(input: LoginInput!): Login!
   deleteUser: Driver!
+  skipVerification(mobileNumber: String!): Login!
   updateOneOrder(input: UpdateOneOrderInput!): Order!
   updateDriversLocationNew(point: PointInput!): [Order!]!
   addDocumentsToDriver(input: AddDocumentsToDriverInput!): Driver!
   setDocumentsOnDriver(input: SetDocumentsOnDriverInput!): Driver!
-  addEnabledServicesToDriver(input: AddEnabledServicesToDriverInput!): Driver!
-  setEnabledServicesOnDriver(input: SetEnabledServicesOnDriverInput!): Driver!
-  removeEnabledServicesFromDriver(input: RemoveEnabledServicesFromDriverInput!): Driver!
   updateOneDriver(input: UpdateOneDriverInput!): Driver!
   updateLastSeenMessagesAt(orderId: ID!): Boolean!
   createOneOrderMessage(input: CreateOneOrderMessageInput!): OrderMessage!
@@ -1537,7 +1252,8 @@ input UpdateOneOrderInput {
 }
 
 input UpdateOrderInput {
-  status: OrderStatus!
+  destinationArrivedTo: Int
+  status: OrderStatus
   paidAmount: Float
 }
 
@@ -1557,30 +1273,6 @@ input SetDocumentsOnDriverInput {
   relationIds: [ID!]!
 }
 
-input AddEnabledServicesToDriverInput {
-  """The id of the record."""
-  id: ID!
-
-  """The ids of the relations."""
-  relationIds: [ID!]!
-}
-
-input SetEnabledServicesOnDriverInput {
-  """The id of the record."""
-  id: ID!
-
-  """The ids of the relations."""
-  relationIds: [ID!]!
-}
-
-input RemoveEnabledServicesFromDriverInput {
-  """The id of the record."""
-  id: ID!
-
-  """The ids of the relations."""
-  relationIds: [ID!]!
-}
-
 input UpdateOneDriverInput {
   """The id of the record to update"""
   id: ID!
@@ -1591,6 +1283,7 @@ input UpdateOneDriverInput {
 
 input UpdateDriverInput {
   carProductionYear: Int
+  mediaId: ID
   carModelId: ID
   carId: ID
   carColorId: ID
@@ -1601,7 +1294,6 @@ input UpdateDriverInput {
   certificateNumber: String
   email: String
   carPlate: String
-  mediaId: Float
   gender: Gender
   accountNumber: String
   bankName: String

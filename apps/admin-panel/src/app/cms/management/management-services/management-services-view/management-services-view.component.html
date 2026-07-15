@@ -109,6 +109,16 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
+            <nz-form-label nzRequired nzFor="orderType">{{ 'service.orderType' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="orderType" id="orderType">
+                <nz-option *ngFor="let orderType of orderTypes" [nzValue]="orderType"
+                  [nzLabel]="'service.orderTypes.' + orderType | translate">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
             <nz-form-label nzFor="providerSharePercent" nzRequired>{{ 'service.providerSharePercent' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-input-number formControlName="providerSharePercent" id="providerSharePercent" nzRequired

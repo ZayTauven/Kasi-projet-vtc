@@ -16,6 +16,7 @@ import { CouponEntity } from './coupon.entity';
 import { DriverTransactionEntity } from './driver-transaction.entity';
 import { DriverEntity } from './driver.entity';
 import { OrderStatus } from './enums/order-status.enum';
+import { PackageSize } from './enums/package-size.enum';
 import { FeedbackEntity } from './feedback.entity';
 import { FleetTransactionEntity } from './fleet-transaction.entity';
 import { OrderMessageEntity } from './request-message.entity';
@@ -104,6 +105,22 @@ export class RequestEntity {
     default: 0,
   })
   destinationArrivedTo!: number;
+
+  // Détails livraison (services orderType=Delivery — Kasi Moto)
+  @Column('enum', {
+    enum: PackageSize,
+    nullable: true,
+  })
+  packageSize?: PackageSize;
+
+  @Column({ nullable: true })
+  recipientName?: string;
+
+  @Column({ nullable: true })
+  recipientMobileNumber?: string;
+
+  @Column({ nullable: true })
+  deliveryInstructions?: string;
 
   @OneToMany(() => RequestActivityEntity, (activity) => activity.request)
   activities!: RequestActivityEntity[];

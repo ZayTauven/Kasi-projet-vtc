@@ -12618,6 +12618,39 @@ Enum$ServicePaymentMethod fromJson$Enum$ServicePaymentMethod(String value) {
   }
 }
 
+enum Enum$ServiceOrderType {
+  Ride,
+  Delivery,
+  $unknown;
+
+  factory Enum$ServiceOrderType.fromJson(String value) =>
+      fromJson$Enum$ServiceOrderType(value);
+
+  String toJson() => toJson$Enum$ServiceOrderType(this);
+}
+
+String toJson$Enum$ServiceOrderType(Enum$ServiceOrderType e) {
+  switch (e) {
+    case Enum$ServiceOrderType.Ride:
+      return r'Ride';
+    case Enum$ServiceOrderType.Delivery:
+      return r'Delivery';
+    case Enum$ServiceOrderType.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ServiceOrderType fromJson$Enum$ServiceOrderType(String value) {
+  switch (value) {
+    case r'Ride':
+      return Enum$ServiceOrderType.Ride;
+    case r'Delivery':
+      return Enum$ServiceOrderType.Delivery;
+    default:
+      return Enum$ServiceOrderType.$unknown;
+  }
+}
+
 enum Enum$MessageStatus {
   Sent,
   Delivered,
@@ -12862,6 +12895,44 @@ Enum$OrderStatus fromJson$Enum$OrderStatus(String value) {
       return Enum$OrderStatus.Expired;
     default:
       return Enum$OrderStatus.$unknown;
+  }
+}
+
+enum Enum$PackageSize {
+  Small,
+  Medium,
+  Large,
+  $unknown;
+
+  factory Enum$PackageSize.fromJson(String value) =>
+      fromJson$Enum$PackageSize(value);
+
+  String toJson() => toJson$Enum$PackageSize(this);
+}
+
+String toJson$Enum$PackageSize(Enum$PackageSize e) {
+  switch (e) {
+    case Enum$PackageSize.Small:
+      return r'Small';
+    case Enum$PackageSize.Medium:
+      return r'Medium';
+    case Enum$PackageSize.Large:
+      return r'Large';
+    case Enum$PackageSize.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$PackageSize fromJson$Enum$PackageSize(String value) {
+  switch (value) {
+    case r'Small':
+      return Enum$PackageSize.Small;
+    case r'Medium':
+      return Enum$PackageSize.Medium;
+    case r'Large':
+      return Enum$PackageSize.Large;
+    default:
+      return Enum$PackageSize.$unknown;
   }
 }
 

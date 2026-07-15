@@ -284,5 +284,14 @@
   "actionYes": "Yes",
   "actionNo": "No",
   "messageConfirmAddressDelete": "Are you sure you want to delete this address?",
-  "skipVerificationDemoOnly": "Skip Verification (Demo only)"
+  "skipVerificationDemoOnly": "Skip Verification (Demo only)",
+  "delivery_details_title": "Package details",
+  "delivery_details_body": "Tell your Kasiman what to deliver and who receives it.",
+  "delivery_package_size": "Package size",
+  "package_size_small": "Small",
+  "package_size_medium": "Medium",
+  "package_size_large": "Large",
+  "delivery_recipient_name": "Recipient name (optional)",
+  "delivery_recipient_mobile": "Recipient phone number",
+  "delivery_instructions": "Delivery instructions (optional)"
 }

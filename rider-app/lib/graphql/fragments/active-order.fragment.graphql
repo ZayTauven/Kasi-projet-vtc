@@ -31,6 +31,7 @@ fragment CurrentOrder on Order {
       address
     }
     name
+    orderType
     prepayPercent
     cancellationTotalFee
   }
@@ -48,6 +49,10 @@ fragment CurrentOrder on Order {
   waitMinutes
   startTimestamp
   durationBest
+  packageSize
+  recipientName
+  recipientMobileNumber
+  deliveryInstructions
   riderLastSeenMessagesAt
   conversations {
     sentAt

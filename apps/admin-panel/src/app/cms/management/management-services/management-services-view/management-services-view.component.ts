@@ -7,6 +7,7 @@ import {
   CreateServiceGQL,
   DeleteServiceGQL,
   NewServiceQuery,
+  ServiceOrderType,
   ServicePaymentMethod,
   SetOptionsOnServiceGQL,
   SetRegionsOnServiceGQL,
@@ -53,6 +54,7 @@ export class ManagementServicesViewComponent implements OnInit {
     twoWayAvailable: [false, Validators.required],
     maximumDestinationDistance: [0, Validators.required],
     paymentMethod: ['CashCredit', Validators.required],
+    orderType: ['Ride', Validators.required],
     cancellationTotalFee: [0, Validators.required],
     cancellationDriverShare: [0, Validators.required],
     providerSharePercent: [0, Validators.required],
@@ -116,6 +118,7 @@ export class ManagementServicesViewComponent implements OnInit {
   jwt = localStorage.getItem('kasi_admin_token');
   avatarUrl?: string;
   paymentMethods = Object.values(ServicePaymentMethod);
+  orderTypes = Object.values(ServiceOrderType);
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =

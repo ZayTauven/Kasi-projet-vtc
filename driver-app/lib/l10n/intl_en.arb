@@ -239,5 +239,9 @@
       }
     }
   },
-  "skipVerificationDemoOnly": "Skip verification (Demo only)"
+  "skipVerificationDemoOnly": "Skip verification (Demo only)",
+  "delivery_tag": "Delivery",
+  "package_size_small": "Small package",
+  "package_size_medium": "Medium package",
+  "package_size_large": "Large package"
 }

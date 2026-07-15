@@ -260,6 +260,7 @@ query GetFare(
         personCapacity
         prepayPercent
         twoWayAvailable
+        orderType
         media {
           address
         }

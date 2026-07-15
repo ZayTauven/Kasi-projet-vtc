@@ -76,6 +76,7 @@ type Service {
   name: String!
   description: String
   paymentMethod: ServicePaymentMethod!
+  orderType: ServiceOrderType!
   cost: Float!
   costAfterCoupon: Float
   cancellationTotalFee: Float!
@@ -94,6 +95,11 @@ enum ServicePaymentMethod {
   CashCredit
   OnlyCredit
   OnlyCash
+}
+
+enum ServiceOrderType {
+  Ride
+  Delivery
 }
 
 input ServiceOptionFilter {
@@ -221,6 +227,10 @@ type Order {
   providerShare: Float!
   currency: String!
   directions: [Point!]
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
   driver: Driver
   rider: Rider
   service: Service
@@ -257,6 +267,12 @@ enum OrderStatus {
   Finished
   Booked
   Expired
+}
+
+enum PackageSize {
+  Small
+  Medium
+  Large
 }
 
 input OrderMessageFilter {
@@ -1087,6 +1103,10 @@ input CreateOrderInput {
   twoWay: Boolean
   optionIds: [String!]
   couponCode: String
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
 }
 
 input SubmitFeedbackInput {

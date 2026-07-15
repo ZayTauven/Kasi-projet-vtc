@@ -7,6 +7,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:client_shared/components/kasi_sheet_view.dart';
 import 'package:hive/hive.dart';
 import 'package:kasi_rider/l10n/messages.dart';
+import 'package:kasi_rider/main/delivery_details_sheet_view.dart';
 import 'package:kasi_rider/main/enter_coupon_code_sheet_view.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
 import 'package:kasi_rider/main/reserve_confirmation_sheet_view.dart';
@@ -29,6 +30,17 @@ class SelectServiceView extends StatefulWidget {
 class _SelectServiceViewState extends State<SelectServiceView> {
   bool isLoading = false;
   final _pushTokenProvider = FcmPushTokenProvider();
+
+  bool _isDelivery(Query$GetFare$getFare$services$services service) =>
+      service.orderType == Enum$ServiceOrderType.Delivery;
+
+  Future<DeliveryDetails?> _askDeliveryDetails(BuildContext context) {
+    return showModalBottomSheet<DeliveryDetails>(
+        context: context,
+        isScrollControlled: true,
+        constraints: const BoxConstraints(maxWidth: 500),
+        builder: (context) => const DeliveryDetailsSheetView());
+  }
 
   Future<String?> _getFcmToken(BuildContext context) async {
     final messaging = FirebaseMessaging.instance;
@@ -115,6 +127,15 @@ class _SelectServiceViewState extends State<SelectServiceView> {
                                     Navigator.pushNamed(context, 'login');
                                     return;
                                   }
+                                  DeliveryDetails? delivery;
+                                  if (_isDelivery(state.selectedService!)) {
+                                    delivery =
+                                        await _askDeliveryDetails(context);
+                                    if (delivery == null) {
+                                      setState(() => isLoading = false);
+                                      return;
+                                    }
+                                  }
                                   final fcmId = await _getFcmToken(context);
                                   runMutation(Variables$Mutation$CreateOrder(
                                       input: Input$CreateOrderInput(
@@ -129,7 +150,14 @@ class _SelectServiceViewState extends State<SelectServiceView> {
                                               .toList(),
                                           addresses: state.points
                                               .map((e) => e.address)
-                                              .toList()),
+                                              .toList(),
+                                          packageSize: delivery?.packageSize,
+                                          recipientName:
+                                              delivery?.recipientName,
+                                          recipientMobileNumber:
+                                              delivery?.recipientMobileNumber,
+                                          deliveryInstructions:
+                                              delivery?.deliveryInstructions),
                                       notificationPlayerId: fcmId ?? ''));
                                 },
                           child: Text(S.of(context).service_selection_book_now),
@@ -156,6 +184,12 @@ class _SelectServiceViewState extends State<SelectServiceView> {
                                       Navigator.pushNamed(context, 'login');
                                       return;
                                     }
+                                    DeliveryDetails? delivery;
+                                    if (_isDelivery(state.selectedService!)) {
+                                      delivery =
+                                          await _askDeliveryDetails(context);
+                                      if (delivery == null) return;
+                                    }
                                     final fcmId = await _getFcmToken(context);
                                     final difference = dialogResult
                                         .difference(DateTime.now())
@@ -172,7 +206,14 @@ class _SelectServiceViewState extends State<SelectServiceView> {
                                                 .toList(),
                                             addresses: state.points
                                                 .map((e) => e.address)
-                                                .toList()),
+                                                .toList(),
+                                            packageSize: delivery?.packageSize,
+                                            recipientName:
+                                                delivery?.recipientName,
+                                            recipientMobileNumber: delivery
+                                                ?.recipientMobileNumber,
+                                            deliveryInstructions: delivery
+                                                ?.deliveryInstructions),
                                         notificationPlayerId: fcmId ?? ''));
                                   },
                             child: const Padding(

@@ -9,6 +9,7 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { DistanceMultiplier } from '@kasi/database';
 import { TimeMultiplier } from '@kasi/database';
+import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { ServicePaymentMethod } from '@kasi/database/enums/service-payment-method.enum';
 import { DateRangeMultiplier } from 'libs/database/src/lib/interfaces/date-range-multiplier.dto';
 import { WeekdayMultiplier } from 'libs/database/src/lib/interfaces/weekday-multiplier.dto';
@@ -46,6 +47,7 @@ export class ServiceDTO {
   @Field(() => Int)
   searchRadius!: number;
   paymentMethod!: ServicePaymentMethod;
+  orderType!: ServiceOrderType;
   cancellationTotalFee!: number;
   cancellationDriverShare!: number;
   @Field(() => Int)

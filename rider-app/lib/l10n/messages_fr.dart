@@ -660,4 +660,32 @@ class SFr extends S {
 
   @override
   String get skipVerificationDemoOnly => 'Skip Verification (Demo only)';
+
+  @override
+  String get delivery_details_title => 'Détails du colis';
+
+  @override
+  String get delivery_details_body =>
+      'Précisez au Kasiman ce qu\'il livre et qui le reçoit.';
+
+  @override
+  String get delivery_package_size => 'Taille du colis';
+
+  @override
+  String get package_size_small => 'Petit';
+
+  @override
+  String get package_size_medium => 'Moyen';
+
+  @override
+  String get package_size_large => 'Grand';
+
+  @override
+  String get delivery_recipient_name => 'Nom du destinataire (facultatif)';
+
+  @override
+  String get delivery_recipient_mobile => 'Téléphone du destinataire';
+
+  @override
+  String get delivery_instructions => 'Instructions de livraison (facultatif)';
 }

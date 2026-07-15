@@ -96,6 +96,7 @@ type Service {
   id: ID!
   name: String!
   paymentMethod: ServicePaymentMethod!
+  orderType: ServiceOrderType!
   cancellationTotalFee: Float!
   media: Media!
 }
@@ -104,6 +105,11 @@ enum ServicePaymentMethod {
   CashCredit
   OnlyCredit
   OnlyCash
+}
+
+enum ServiceOrderType {
+  Ride
+  Delivery
 }
 
 type OrderMessage {
@@ -179,6 +185,10 @@ type Order {
   tipAmount: Float!
   paymentGatewayId: Float
   directions: [Point!]
+  packageSize: PackageSize
+  recipientName: String
+  recipientMobileNumber: String
+  deliveryInstructions: String
   optionsAggregate(
     """Filter to find records to aggregate on"""
     filter: ServiceOptionAggregateFilter
@@ -222,6 +232,12 @@ enum OrderStatus {
   Finished
   Booked
   Expired
+}
+
+enum PackageSize {
+  Small
+  Medium
+  Large
 }
 
 input ServiceOptionAggregateFilter {
@@ -304,6 +320,8 @@ type Driver {
   bankSwift: String
   address: String
   softRejectionNote: String
+  canDeliver: Boolean!
+  maxPackageSize: PackageSize
   rating: Float
   historyOrdersAggregate(
     """Filter to find records to aggregate on"""

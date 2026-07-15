@@ -11,6 +11,7 @@ import {
 } from '@ptc-org/nestjs-query-graphql';
 import { Gender } from '@kasi/database/enums/gender.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
+import { PackageSize } from '@kasi/database/enums/package-size.enum';
 import { UserContext } from '../../auth/authenticated-user';
 import { CarModelDTO } from './car-model.dto';
 import { CarColorDTO } from './car-color.dto';
@@ -114,6 +115,8 @@ export class DriverDTO {
   carColorId?: number;
   @Field(() => Int)
   searchDistance?: number;
+  canDeliver!: boolean;
+  maxPackageSize?: PackageSize;
   rating?: number;
   @Field(() => Boolean, {
     middleware: [

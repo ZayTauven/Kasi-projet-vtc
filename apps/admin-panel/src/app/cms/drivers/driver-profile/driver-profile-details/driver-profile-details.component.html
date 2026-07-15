@@ -73,6 +73,22 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
+      <nz-form-label nzFor="canDeliver">{{ 'profile.canDeliver' | translate }}</nz-form-label>
+      <nz-form-control>
+        <label nz-checkbox formControlName="canDeliver" id="canDeliver"></label>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="maxPackageSize">{{ 'profile.maxPackageSize' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-select id="maxPackageSize" formControlName="maxPackageSize">
+          <nz-option [nzValue]="null" nzLabel=""></nz-option>
+          <nz-option *ngFor="let size of packageSizes" [nzValue]="size"
+            [nzLabel]="('enum.packageSize.' + camelCase(size)) | translate"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-label nzFor="accountNumber">{{'profile.accountNumber' | translate }}</nz-form-label>
       <nz-form-control>
         <input nz-input formControlName="accountNumber" id="accountNumber">

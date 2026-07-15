@@ -239,5 +239,9 @@
       }
     }
   },
-  "skipVerificationDemoOnly": "Skip verification (Demo only)"
+  "skipVerificationDemoOnly": "Skip verification (Demo only)",
+  "delivery_tag": "Livraison",
+  "package_size_small": "Petit colis",
+  "package_size_medium": "Colis moyen",
+  "package_size_large": "Grand colis"
 }

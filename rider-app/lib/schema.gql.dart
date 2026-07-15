@@ -8806,6 +8806,10 @@ class Input$CreateOrderInput {
     bool? twoWay,
     List<String>? optionIds,
     String? couponCode,
+    Enum$PackageSize? packageSize,
+    String? recipientName,
+    String? recipientMobileNumber,
+    String? deliveryInstructions,
   }) => Input$CreateOrderInput._({
     r'serviceId': serviceId,
     r'intervalMinutes': intervalMinutes,
@@ -8814,6 +8818,12 @@ class Input$CreateOrderInput {
     if (twoWay != null) r'twoWay': twoWay,
     if (optionIds != null) r'optionIds': optionIds,
     if (couponCode != null) r'couponCode': couponCode,
+    if (packageSize != null) r'packageSize': packageSize,
+    if (recipientName != null) r'recipientName': recipientName,
+    if (recipientMobileNumber != null)
+      r'recipientMobileNumber': recipientMobileNumber,
+    if (deliveryInstructions != null)
+      r'deliveryInstructions': deliveryInstructions,
   });
 
   Input$CreateOrderInput._(this._$data);
@@ -8846,6 +8856,25 @@ class Input$CreateOrderInput {
       final l$couponCode = data['couponCode'];
       result$data['couponCode'] = (l$couponCode as String?);
     }
+    if (data.containsKey('packageSize')) {
+      final l$packageSize = data['packageSize'];
+      result$data['packageSize'] = l$packageSize == null
+          ? null
+          : fromJson$Enum$PackageSize((l$packageSize as String));
+    }
+    if (data.containsKey('recipientName')) {
+      final l$recipientName = data['recipientName'];
+      result$data['recipientName'] = (l$recipientName as String?);
+    }
+    if (data.containsKey('recipientMobileNumber')) {
+      final l$recipientMobileNumber = data['recipientMobileNumber'];
+      result$data['recipientMobileNumber'] =
+          (l$recipientMobileNumber as String?);
+    }
+    if (data.containsKey('deliveryInstructions')) {
+      final l$deliveryInstructions = data['deliveryInstructions'];
+      result$data['deliveryInstructions'] = (l$deliveryInstructions as String?);
+    }
     return Input$CreateOrderInput._(result$data);
   }
 
@@ -8865,6 +8894,17 @@ class Input$CreateOrderInput {
   List<String>? get optionIds => (_$data['optionIds'] as List<String>?);
 
   String? get couponCode => (_$data['couponCode'] as String?);
+
+  Enum$PackageSize? get packageSize =>
+      (_$data['packageSize'] as Enum$PackageSize?);
+
+  String? get recipientName => (_$data['recipientName'] as String?);
+
+  String? get recipientMobileNumber =>
+      (_$data['recipientMobileNumber'] as String?);
+
+  String? get deliveryInstructions =>
+      (_$data['deliveryInstructions'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -8887,6 +8927,24 @@ class Input$CreateOrderInput {
     if (_$data.containsKey('couponCode')) {
       final l$couponCode = couponCode;
       result$data['couponCode'] = l$couponCode;
+    }
+    if (_$data.containsKey('packageSize')) {
+      final l$packageSize = packageSize;
+      result$data['packageSize'] = l$packageSize == null
+          ? null
+          : toJson$Enum$PackageSize(l$packageSize);
+    }
+    if (_$data.containsKey('recipientName')) {
+      final l$recipientName = recipientName;
+      result$data['recipientName'] = l$recipientName;
+    }
+    if (_$data.containsKey('recipientMobileNumber')) {
+      final l$recipientMobileNumber = recipientMobileNumber;
+      result$data['recipientMobileNumber'] = l$recipientMobileNumber;
+    }
+    if (_$data.containsKey('deliveryInstructions')) {
+      final l$deliveryInstructions = deliveryInstructions;
+      result$data['deliveryInstructions'] = l$deliveryInstructions;
     }
     return result$data;
   }
@@ -8973,6 +9031,42 @@ class Input$CreateOrderInput {
     if (l$couponCode != lOther$couponCode) {
       return false;
     }
+    final l$packageSize = packageSize;
+    final lOther$packageSize = other.packageSize;
+    if (_$data.containsKey('packageSize') !=
+        other._$data.containsKey('packageSize')) {
+      return false;
+    }
+    if (l$packageSize != lOther$packageSize) {
+      return false;
+    }
+    final l$recipientName = recipientName;
+    final lOther$recipientName = other.recipientName;
+    if (_$data.containsKey('recipientName') !=
+        other._$data.containsKey('recipientName')) {
+      return false;
+    }
+    if (l$recipientName != lOther$recipientName) {
+      return false;
+    }
+    final l$recipientMobileNumber = recipientMobileNumber;
+    final lOther$recipientMobileNumber = other.recipientMobileNumber;
+    if (_$data.containsKey('recipientMobileNumber') !=
+        other._$data.containsKey('recipientMobileNumber')) {
+      return false;
+    }
+    if (l$recipientMobileNumber != lOther$recipientMobileNumber) {
+      return false;
+    }
+    final l$deliveryInstructions = deliveryInstructions;
+    final lOther$deliveryInstructions = other.deliveryInstructions;
+    if (_$data.containsKey('deliveryInstructions') !=
+        other._$data.containsKey('deliveryInstructions')) {
+      return false;
+    }
+    if (l$deliveryInstructions != lOther$deliveryInstructions) {
+      return false;
+    }
     return true;
   }
 
@@ -8985,6 +9079,10 @@ class Input$CreateOrderInput {
     final l$twoWay = twoWay;
     final l$optionIds = optionIds;
     final l$couponCode = couponCode;
+    final l$packageSize = packageSize;
+    final l$recipientName = recipientName;
+    final l$recipientMobileNumber = recipientMobileNumber;
+    final l$deliveryInstructions = deliveryInstructions;
     return Object.hashAll([
       l$serviceId,
       l$intervalMinutes,
@@ -8997,6 +9095,14 @@ class Input$CreateOrderInput {
                 : Object.hashAll(l$optionIds.map((v) => v))
           : const {},
       _$data.containsKey('couponCode') ? l$couponCode : const {},
+      _$data.containsKey('packageSize') ? l$packageSize : const {},
+      _$data.containsKey('recipientName') ? l$recipientName : const {},
+      _$data.containsKey('recipientMobileNumber')
+          ? l$recipientMobileNumber
+          : const {},
+      _$data.containsKey('deliveryInstructions')
+          ? l$deliveryInstructions
+          : const {},
     ]);
   }
 }
@@ -9018,6 +9124,10 @@ abstract class CopyWith$Input$CreateOrderInput<TRes> {
     bool? twoWay,
     List<String>? optionIds,
     String? couponCode,
+    Enum$PackageSize? packageSize,
+    String? recipientName,
+    String? recipientMobileNumber,
+    String? deliveryInstructions,
   });
   TRes points(
     Iterable<Input$PointInput> Function(
@@ -9045,6 +9155,10 @@ class _CopyWithImpl$Input$CreateOrderInput<TRes>
     Object? twoWay = _undefined,
     Object? optionIds = _undefined,
     Object? couponCode = _undefined,
+    Object? packageSize = _undefined,
+    Object? recipientName = _undefined,
+    Object? recipientMobileNumber = _undefined,
+    Object? deliveryInstructions = _undefined,
   }) => _then(
     Input$CreateOrderInput._({
       ..._instance._$data,
@@ -9059,6 +9173,14 @@ class _CopyWithImpl$Input$CreateOrderInput<TRes>
       if (twoWay != _undefined) 'twoWay': (twoWay as bool?),
       if (optionIds != _undefined) 'optionIds': (optionIds as List<String>?),
       if (couponCode != _undefined) 'couponCode': (couponCode as String?),
+      if (packageSize != _undefined)
+        'packageSize': (packageSize as Enum$PackageSize?),
+      if (recipientName != _undefined)
+        'recipientName': (recipientName as String?),
+      if (recipientMobileNumber != _undefined)
+        'recipientMobileNumber': (recipientMobileNumber as String?),
+      if (deliveryInstructions != _undefined)
+        'deliveryInstructions': (deliveryInstructions as String?),
     }),
   );
 
@@ -9088,6 +9210,10 @@ class _CopyWithStubImpl$Input$CreateOrderInput<TRes>
     bool? twoWay,
     List<String>? optionIds,
     String? couponCode,
+    Enum$PackageSize? packageSize,
+    String? recipientName,
+    String? recipientMobileNumber,
+    String? deliveryInstructions,
   }) => _res;
 
   points(_fn) => _res;
@@ -11056,6 +11182,39 @@ Enum$ServicePaymentMethod fromJson$Enum$ServicePaymentMethod(String value) {
   }
 }
 
+enum Enum$ServiceOrderType {
+  Ride,
+  Delivery,
+  $unknown;
+
+  factory Enum$ServiceOrderType.fromJson(String value) =>
+      fromJson$Enum$ServiceOrderType(value);
+
+  String toJson() => toJson$Enum$ServiceOrderType(this);
+}
+
+String toJson$Enum$ServiceOrderType(Enum$ServiceOrderType e) {
+  switch (e) {
+    case Enum$ServiceOrderType.Ride:
+      return r'Ride';
+    case Enum$ServiceOrderType.Delivery:
+      return r'Delivery';
+    case Enum$ServiceOrderType.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ServiceOrderType fromJson$Enum$ServiceOrderType(String value) {
+  switch (value) {
+    case r'Ride':
+      return Enum$ServiceOrderType.Ride;
+    case r'Delivery':
+      return Enum$ServiceOrderType.Delivery;
+    default:
+      return Enum$ServiceOrderType.$unknown;
+  }
+}
+
 enum Enum$ServiceOptionSortFields {
   id,
   $unknown;
@@ -11370,6 +11529,44 @@ Enum$OrderStatus fromJson$Enum$OrderStatus(String value) {
       return Enum$OrderStatus.Expired;
     default:
       return Enum$OrderStatus.$unknown;
+  }
+}
+
+enum Enum$PackageSize {
+  Small,
+  Medium,
+  Large,
+  $unknown;
+
+  factory Enum$PackageSize.fromJson(String value) =>
+      fromJson$Enum$PackageSize(value);
+
+  String toJson() => toJson$Enum$PackageSize(this);
+}
+
+String toJson$Enum$PackageSize(Enum$PackageSize e) {
+  switch (e) {
+    case Enum$PackageSize.Small:
+      return r'Small';
+    case Enum$PackageSize.Medium:
+      return r'Medium';
+    case Enum$PackageSize.Large:
+      return r'Large';
+    case Enum$PackageSize.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$PackageSize fromJson$Enum$PackageSize(String value) {
+  switch (value) {
+    case r'Small':
+      return Enum$PackageSize.Small;
+    case r'Medium':
+      return Enum$PackageSize.Medium;
+    case r'Large':
+      return Enum$PackageSize.Large;
+    default:
+      return Enum$PackageSize.$unknown;
   }
 }
 

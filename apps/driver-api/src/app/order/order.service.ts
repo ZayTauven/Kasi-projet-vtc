@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from '@kasi/database';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
+import { packageSizeRank } from '@kasi/database/enums/package-size.enum';
+import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { PaymentStatus } from '@kasi/database/enums/payment-status.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
 import { PaymentEntity } from '@kasi/database/payment.entity';
@@ -108,6 +110,13 @@ export class OrderService {
       relations: ['service', 'options'],
     });
     Logger.log(`got orders ${JSON.stringify(orders)}`);
+    orders = orders.filter(
+      (order) =>
+        order.service.orderType !== ServiceOrderType.Delivery ||
+        (driver.canDeliver &&
+          packageSizeRank(driver.maxPackageSize) >=
+            packageSizeRank(order.packageSize)),
+    );
     for (let order of orders) {
       const fleetIds = await this.sharedFleetService.getFleetIdsInPoint(
         order.points[0],

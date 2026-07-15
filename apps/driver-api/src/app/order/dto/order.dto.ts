@@ -8,6 +8,7 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Point } from '@kasi/database';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
+import { PackageSize } from '@kasi/database/enums/package-size.enum';
 import { UserContext } from '../../auth/authenticated-user';
 import { RiderDTO } from './rider.dto';
 import { ServiceDTO } from '../../service/dto/service.dto';
@@ -65,4 +66,8 @@ export class OrderDTO {
   tipAmount!: number;
   paymentGatewayId?: number;
   directions?: Point[];
+  packageSize?: PackageSize;
+  recipientName?: string;
+  recipientMobileNumber?: string;
+  deliveryInstructions?: string;
 }

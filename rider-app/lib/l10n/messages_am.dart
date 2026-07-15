@@ -643,4 +643,32 @@ class SAm extends S {
 
   @override
   String get skipVerificationDemoOnly => 'Skip Verification (Demo only)';
+
+  @override
+  String get delivery_details_title => 'Package details';
+
+  @override
+  String get delivery_details_body =>
+      'Tell your Kasiman what to deliver and who receives it.';
+
+  @override
+  String get delivery_package_size => 'Package size';
+
+  @override
+  String get package_size_small => 'Small';
+
+  @override
+  String get package_size_medium => 'Medium';
+
+  @override
+  String get package_size_large => 'Large';
+
+  @override
+  String get delivery_recipient_name => 'Recipient name (optional)';
+
+  @override
+  String get delivery_recipient_mobile => 'Recipient phone number';
+
+  @override
+  String get delivery_instructions => 'Delivery instructions (optional)';
 }

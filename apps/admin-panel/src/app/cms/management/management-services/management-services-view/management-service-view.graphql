@@ -11,6 +11,7 @@ query ViewService($id: ID!) {
     searchRadius
     maximumDestinationDistance
     paymentMethod
+    orderType
     cancellationTotalFee
     cancellationDriverShare
     providerShareFlat

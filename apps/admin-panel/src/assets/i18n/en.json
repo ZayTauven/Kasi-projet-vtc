@@ -38,6 +38,11 @@
 			"female": "Female",
 			"genderless": "Genderless"
 		},
+		"packageSize": {
+			"small": "Small",
+			"medium": "Medium",
+			"large": "Large"
+		},
 		"complaintStatus": {
 			"submitted": "Submitted",
 			"underInvestigation": "Under Investigation",
@@ -233,6 +238,8 @@
 		"firstName": "First Name",
 		"lastName": "Last Name",
 		"gender": "Gender",
+		"canDeliver": "Can deliver (Kasi Moto)",
+		"maxPackageSize": "Max package size",
 		"email": "E-Mail",
 		"fleet": "Fleet",
 		"carModel": "Car Model",
@@ -473,6 +480,11 @@
 		"maximumDistance": "Maximum Distance",
 		"searchRadius": "Search Radius",
 		"paymentMethod": "Payment Method",
+		"orderType": "Order Type",
+		"orderTypes": {
+			"Ride": "Ride",
+			"Delivery": "Delivery"
+		},
 		"providerSharePercent": "Provider Share Percent",
 		"providerShareFlat": "Provider Share Flat",
 		"cancellationTotalFee": "Cancellation Total Fee",

@@ -8,6 +8,7 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { Gender } from '@kasi/database/enums/gender.enum';
+import { PackageSize } from '@kasi/database/enums/package-size.enum';
 import { FeedbackDTO } from '../../feedback/dto/feedback.dto';
 import { numberMasker } from '../../number.masker.middleware';
 import { OrderDTO } from '../../order/dto/order.dto';
@@ -48,6 +49,9 @@ export class DriverDTO {
   @FilterableField(() => DriverStatus)
   status!: DriverStatus;
   gender?: Gender;
+  @FilterableField(() => Boolean, { nullable: true })
+  canDeliver!: boolean;
+  maxPackageSize?: PackageSize;
   rating?: number;
   reviewCount: number;
   registrationTimestamp!: Date;

@@ -1299,6 +1299,60 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Skip Verification (Demo only)'**
   String get skipVerificationDemoOnly;
+
+  /// No description provided for @delivery_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Package details'**
+  String get delivery_details_title;
+
+  /// No description provided for @delivery_details_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell your Kasiman what to deliver and who receives it.'**
+  String get delivery_details_body;
+
+  /// No description provided for @delivery_package_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Package size'**
+  String get delivery_package_size;
+
+  /// No description provided for @package_size_small.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get package_size_small;
+
+  /// No description provided for @package_size_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get package_size_medium;
+
+  /// No description provided for @package_size_large.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get package_size_large;
+
+  /// No description provided for @delivery_recipient_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name (optional)'**
+  String get delivery_recipient_name;
+
+  /// No description provided for @delivery_recipient_mobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient phone number'**
+  String get delivery_recipient_mobile;
+
+  /// No description provided for @delivery_instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery instructions (optional)'**
+  String get delivery_instructions;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

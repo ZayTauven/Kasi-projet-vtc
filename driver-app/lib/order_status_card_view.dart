@@ -6,6 +6,7 @@ import 'package:client_shared/components/sheet_title_view.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:kasi_driver/chat/chat.graphql.dart';
+import 'package:kasi_driver/delivery_info_view.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/order_invoice_view.dart';
@@ -199,6 +200,15 @@ class OrderStatusCardView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
+                        if (order.service?.orderType ==
+                            Enum$ServiceOrderType.Delivery)
+                          DeliveryInfoView(
+                              packageSize: order.packageSize,
+                              recipientName: order.recipientName,
+                              recipientMobileNumber:
+                                  order.recipientMobileNumber,
+                              deliveryInstructions:
+                                  order.deliveryInstructions),
                         const Divider(),
                         Row(
                           children: [

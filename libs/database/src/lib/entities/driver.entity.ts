@@ -18,6 +18,7 @@ import { DriverTransactionEntity } from './driver-transaction.entity';
 import { DriverWalletEntity } from './driver-wallet.entity';
 import { DriverStatus } from './enums/driver-status.enum';
 import { Gender } from './enums/gender.enum';
+import { PackageSize } from './enums/package-size.enum';
 import { FeedbackEntity } from './feedback.entity';
 import { FleetTransactionEntity } from './fleet-transaction.entity';
 import { FleetEntity } from './fleet.entity';
@@ -85,6 +86,15 @@ export class DriverEntity {
 
     @Column('int', { nullable: true })
     searchDistance?: number;
+
+    @Column({ default: false })
+    canDeliver!: boolean;
+
+    @Column('enum', {
+        nullable: true,
+        enum: PackageSize
+    })
+    maxPackageSize?: PackageSize;
 
     @Column("enum", {
         default: DriverStatus.WaitingDocuments,

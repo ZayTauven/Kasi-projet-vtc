@@ -23,6 +23,7 @@ import { In, Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 
 import { OrderStatus } from '../entities/enums/order-status.enum';
+import { PackageSize } from '../entities/enums/package-size.enum';
 import { RequestEntity } from '../entities/request.entity';
 import { ServiceCategoryEntity } from '../entities/service-category.entity';
 import { Point } from '../interfaces/point';
@@ -219,6 +220,10 @@ export class SharedOrderService {
     optionIds?: string[];
     couponCode?: string;
     fleetId?: number;
+    packageSize?: PackageSize;
+    recipientName?: string;
+    recipientMobileNumber?: string;
+    deliveryInstructions?: string;
   }): Promise<RequestEntity> {
     let zonePricings: ZonePriceEntity[] = [];
     if (input.points.length == 2) {
@@ -244,6 +249,7 @@ export class SharedOrderService {
         driverIds,
         input.serviceId,
         fleetIdsInPoint,
+        { service, packageSize: input.packageSize },
       );
     let optionFee = 0;
     let options: ServiceOptionEntity[] = [];
@@ -371,6 +377,10 @@ export class SharedOrderService {
       providerShare:
         service.providerShareFlat + (service.providerSharePercent * cost) / 100,
       options: options,
+      packageSize: input.packageSize,
+      recipientName: input.recipientName,
+      recipientMobileNumber: input.recipientMobileNumber,
+      deliveryInstructions: input.deliveryInstructions,
     });
     if (input.couponCode != null && input.couponCode != '' && rider != null) {
       order = await this.commonCouponService.applyCoupon(
@@ -450,6 +460,7 @@ export class SharedOrderService {
         closeDriverIds,
         order.serviceId,
         fleetIdsInPoint,
+        { service: order.service, packageSize: order.packageSize },
       );
     this.orderRedisService.driverNotified(order.id, driversWithService);
     this.pubSub.publish('orderCreated', {

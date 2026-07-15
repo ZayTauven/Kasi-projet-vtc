@@ -1136,6 +1136,30 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Skip verification (Demo only)'**
   String get skipVerificationDemoOnly;
+
+  /// No description provided for @delivery_tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get delivery_tag;
+
+  /// No description provided for @package_size_small.
+  ///
+  /// In en, this message translates to:
+  /// **'Small package'**
+  String get package_size_small;
+
+  /// No description provided for @package_size_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium package'**
+  String get package_size_medium;
+
+  /// No description provided for @package_size_large.
+  ///
+  /// In en, this message translates to:
+  /// **'Large package'**
+  String get package_size_large;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

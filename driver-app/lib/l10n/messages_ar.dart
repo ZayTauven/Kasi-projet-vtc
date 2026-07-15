@@ -548,4 +548,16 @@ class SAr extends S {
 
   @override
   String get skipVerificationDemoOnly => 'Skip verification (Demo only)';
+
+  @override
+  String get delivery_tag => 'Delivery';
+
+  @override
+  String get package_size_small => 'Small package';
+
+  @override
+  String get package_size_medium => 'Medium package';
+
+  @override
+  String get package_size_large => 'Large package';
 }

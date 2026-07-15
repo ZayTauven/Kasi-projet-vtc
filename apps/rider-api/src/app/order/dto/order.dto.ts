@@ -8,6 +8,7 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Point } from '@kasi/database';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
+import { PackageSize } from '@kasi/database/enums/package-size.enum';
 
 import { UserContext } from '../../auth/authenticated-user';
 import { OrderMessageDTO } from '../../chat/dto/order-message.dto';
@@ -73,4 +74,8 @@ export class OrderDTO {
   providerShare: number;
   currency: string;
   directions?: Point[];
+  packageSize?: PackageSize;
+  recipientName?: string;
+  recipientMobileNumber?: string;
+  deliveryInstructions?: string;
 }
