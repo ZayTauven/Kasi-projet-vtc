@@ -39,6 +39,9 @@ import { ZonePriceEntity } from './entities/zone-price.entity';
 import { GatewayToUserEntity } from './entities/gateway-to-user.entity';
 import { FleetDeviceEntity } from './entities/fleet-device.entity';
 import { OrderCancelReasonEntity } from './entities/order-cancel-reason.entity';
+import { PayoutMethodEntity } from './entities/payout-method.entity';
+import { PayoutSessionEntity } from './entities/payout-session.entity';
+import { PayoutEntity } from './entities/payout.entity';
 
 @Module({
   imports: [
@@ -136,4 +139,7 @@ export const entities = [
   AnnouncementEntity,
   ZonePriceEntity,
   GatewayToUserEntity,
+  PayoutMethodEntity,
+  PayoutSessionEntity,
+  PayoutEntity,
 ];

@@ -1,0 +1,32 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'payoutMethods.title' | translate"
+  [nzSubtitle]="'payoutMethods.subtitle' | translate">
+  <nz-page-header-extra>
+    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'profile.add' | translate
+      }}</button>
+  </nz-page-header-extra>
+  <nz-page-header-content>
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.payoutMethods as payoutMethods" [nzData]="payoutMethods.nodes"
+      [nzTotal]="payoutMethods.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      <thead>
+        <tr>
+          <th>{{ 'profile.name' | translate }}</th>
+          <th>{{ 'payouts.type' | translate }}</th>
+          <th>{{ 'profile.currency' | translate }}</th>
+          <th>{{ 'payouts.minimumAmount' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>
+            <span class="mr-2">{{ data.name }}</span>
+            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+          </td>
+          <td>{{ 'enum.payoutMethodType.' + data.type | translate }}</td>
+          <td>{{ data.currency }}</td>
+          <td>{{ data.minimumAmount | currency: data.currency }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-page-header-content>
+</nz-page-header>

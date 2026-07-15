@@ -1,0 +1,13 @@
+query PayoutMethodList($paging: OffsetPaging) {
+  payoutMethods(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      currency
+      enabled
+      minimumAmount
+    }
+    totalCount
+  }
+}

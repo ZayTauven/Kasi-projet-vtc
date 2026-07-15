@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DriverTransactionEntity } from '@kasi/database/driver-transaction.entity';
 import { DriverWalletEntity } from '@kasi/database/driver-wallet.entity';
 import { PaymentGatewayEntity } from '@kasi/database/payment-gateway.entity';
+import { PayoutMethodEntity } from '@kasi/database/payout-method.entity';
+import { PayoutEntity } from '@kasi/database/payout.entity';
 import { RequestEntity } from '@kasi/database/request.entity';
 
 import { GqlAuthGuard } from '../auth/jwt-gql-auth.guard';
@@ -15,11 +17,12 @@ import { DriverTransactionDTO } from './dto/driver-transaction.dto';
 import { DriverWalletDTO } from './dto/driver-wallet.dto';
 import { PaymentGatewayDTO } from './dto/payment-gateway.dto';
 import { EarningsService } from './earnings.service';
+import { PayoutResolver } from './payout.resolver';
 import { WalletResolver } from './wallet-resolver';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RequestEntity]),
+    TypeOrmModule.forFeature([RequestEntity, PayoutMethodEntity, PayoutEntity]),
     NestjsQueryGraphQLModule.forFeature({
       imports: [
         NestjsQueryTypeOrmModule.forFeature([
@@ -60,6 +63,6 @@ import { WalletResolver } from './wallet-resolver';
       ],
     }),
   ],
-  providers: [WalletResolver, EarningsService],
+  providers: [WalletResolver, PayoutResolver, EarningsService],
 })
 export class WalletModule {}

@@ -101,6 +101,9 @@ export class DriverDTO {
   bankName?: string;
   bankRoutingNumber?: string;
   bankSwift?: string;
+  @Field(() => ID)
+  payoutMethodId?: number;
+  payoutAccountNumber?: string;
   address?: string;
   softRejectionNote?: string;
   @Field(() => ID)

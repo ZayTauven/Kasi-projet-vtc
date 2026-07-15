@@ -33,6 +33,22 @@
 			"Canceled": "Annulé",
 			"Rejected": "Rejeté"
 		},
+		"payoutMethodType": {
+			"Wave": "Wave",
+			"OrangeMoney": "Orange Money",
+			"BankTransfer": "Virement bancaire",
+			"Cash": "Espèces"
+		},
+		"payoutSessionStatus": {
+			"Pending": "En attente",
+			"Processed": "Traitée",
+			"Canceled": "Annulée"
+		},
+		"payoutStatus": {
+			"Pending": "En attente",
+			"Paid": "Payé",
+			"Canceled": "Annulé"
+		},
 		"gender": {
 			"male": "Homme",
 			"female": "Femme",
@@ -131,6 +147,11 @@
 			"drivers": "Kasimen",
 			"riders": "Passagers",
 			"header": "Comptabilité"
+		},
+		"payouts": {
+			"header": "Versements",
+			"sessions": "Sessions de versement",
+			"methods": "Méthodes de versement"
 		},
 		"riders": "Passagers",
 		"requests": "Demandes",
@@ -272,6 +293,7 @@
 		"export": "Exporter",
 		"total": "Total",
 		"currency": "Monnaie",
+		"date": "Date",
 		"next": "Suivant",
 		"select": "Sélectionner",
 		"delete": "Supprimer",
@@ -441,6 +463,50 @@
 	"cancelReasons": {
 		"title": "Motifs d'annulation",
 		"subtitle": "Motifs d'annulation que les passagers pourront choisir lors de l'annulation d'une course."
+	},
+	"payoutSessions": {
+		"title": "Sessions de versement",
+		"subtitle": "Paiements par lot des gains des Kasimen."
+	},
+	"payoutSession": {
+		"title": "Session de versement",
+		"subtitle": "Versements générés pour cette session."
+	},
+	"payoutSessionNew": {
+		"title": "Nouvelle session de versement",
+		"subtitle": "Génère un versement pour chaque Kasiman éligible (solde au-dessus du minimum, méthode de retrait active)."
+	},
+	"payoutMethods": {
+		"title": "Méthodes de versement",
+		"subtitle": "Canaux de paiement des gains des Kasimen (Wave, Orange Money, virement, espèces)."
+	},
+	"payoutMethod": {
+		"title": "Méthode de versement",
+		"subtitle": "Paramètres du canal de versement."
+	},
+	"payouts": {
+		"type": "Type",
+		"method": "Méthode",
+		"accountNumber": "Numéro de compte",
+		"minimumAmount": "Montant minimum",
+		"minimumAmountHint": "Les Kasimen sous ce solde sont exclus de la session.",
+		"totalAmount": "Montant total",
+		"instructions": "Consignes",
+		"targetMethods": "Méthodes ciblées",
+		"targetMethodsHint": "Laisser vide pour inclure toutes les méthodes actives.",
+		"allMethods": "Toutes les méthodes",
+		"createSession": "Nouvelle session",
+		"preview": "Aperçu",
+		"previewResult": "{{count}} Kasimen éligibles",
+		"noEligible": "Aucun Kasiman éligible pour ces critères.",
+		"processAll": "Tout payer",
+		"processAllConfirm": "Marquer tous les versements en attente comme payés et débiter les portefeuilles ?",
+		"cancelSession": "Annuler la session",
+		"cancelSessionConfirm": "Annuler tous les versements en attente de cette session ?",
+		"markPaid": "Marquer payé",
+		"markPaidConfirm": "Paiement effectué hors application ? Le portefeuille sera débité.",
+		"cancel": "Annuler",
+		"cancelPayoutConfirm": "Annuler ce versement ?"
 	},
 	"cancelReason": {
 		"title": "Motif d'annulation",

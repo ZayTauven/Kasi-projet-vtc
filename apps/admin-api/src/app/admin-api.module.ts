@@ -31,6 +31,7 @@ import { validateToken } from './auth/jwt.strategy';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { SOSModule } from './sos/sos.module';
 import { RewardModule } from './reward/reward.module';
+import { PayoutModule } from './payout/payout.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -118,6 +119,7 @@ export class AdminAPIModule {
             UploadModule,
             SOSModule,
             RewardModule,
+            PayoutModule,
             ComplaintModule,
             ConfigurationModule,
             HttpModule,

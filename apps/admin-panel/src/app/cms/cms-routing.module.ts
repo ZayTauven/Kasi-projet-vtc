@@ -53,6 +53,11 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'payouts',
+        loadChildren: () =>
+          import('./payouts/payouts.module').then((m) => m.PayoutsModule),
+      },
+      {
         path: 'requests',
         loadChildren: () =>
           import('./requests/requests.module').then((m) => m.RequestsModule),

@@ -1,0 +1,55 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'payoutMethod.title' | translate"
+  [nzSubtitle]="'payoutMethod.subtitle' | translate">
+</nz-page-header>
+<nz-card [nzActions]="[tmplActions]" style="mt-16">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input formControlName="id" type="hidden" hidden>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="type">{{ 'payouts.type' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
+          <nz-option [nzLabel]="'enum.payoutMethodType.Wave' | translate" nzValue="Wave"></nz-option>
+          <nz-option [nzLabel]="'enum.payoutMethodType.OrangeMoney' | translate" nzValue="OrangeMoney"></nz-option>
+          <nz-option [nzLabel]="'enum.payoutMethodType.BankTransfer' | translate" nzValue="BankTransfer"></nz-option>
+          <nz-option [nzLabel]="'enum.payoutMethodType.Cash' | translate" nzValue="Cash"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+      <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
+        <input nz-input formControlName="name" id="name" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="currency" id="currency" placeholder="XOF" maxlength="3"
+          style="width: 120px; text-transform: uppercase;" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="minimumAmount">{{ 'payouts.minimumAmount' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-input-number formControlName="minimumAmount" id="minimumAmount" [nzMin]="0" [nzStep]="500"
+          style="width: 160px;"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="instructions">{{ 'payouts.instructions' | translate }}</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="instructions" id="instructions" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+      <nz-form-control>
+        <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-template #tmplActions>
+      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
+        translate}}</button>
+    </ng-template>
+  </form>
+</nz-card>

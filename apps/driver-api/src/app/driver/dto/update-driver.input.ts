@@ -19,6 +19,9 @@ export class UpdateDriverInput {
   bankName?: string;
   bankRoutingNumber?: string;
   bankSwift?: string;
+  @Field(() => ID)
+  payoutMethodId?: number;
+  payoutAccountNumber?: string;
   address?: string;
   @Field(() => ID)
   carModelId?: number;

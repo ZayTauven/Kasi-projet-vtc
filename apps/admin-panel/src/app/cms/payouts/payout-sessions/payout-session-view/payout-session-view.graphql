@@ -1,0 +1,61 @@
+query PayoutSessionView($id: ID!) {
+  payoutSession(id: $id) {
+    id
+    createdAt
+    processedAt
+    status
+    currency
+    minimumAmount
+    totalAmount
+    description
+    payouts(paging: { limit: 500 }) {
+      nodes {
+        id
+        driverId
+        amount
+        currency
+        status
+        methodType
+        methodName
+        accountNumber
+        processedAt
+        driver {
+          firstName
+          lastName
+          mobileNumber
+        }
+      }
+      totalCount
+    }
+  }
+}
+
+mutation ProcessPayout($id: ID!) {
+  processPayout(id: $id) {
+    id
+    status
+    processedAt
+  }
+}
+
+mutation CancelPayout($id: ID!) {
+  cancelPayout(id: $id) {
+    id
+    status
+  }
+}
+
+mutation ProcessPayoutSession($id: ID!) {
+  processPayoutSession(id: $id) {
+    id
+    status
+    processedAt
+  }
+}
+
+mutation CancelPayoutSession($id: ID!) {
+  cancelPayoutSession(id: $id) {
+    id
+    status
+  }
+}

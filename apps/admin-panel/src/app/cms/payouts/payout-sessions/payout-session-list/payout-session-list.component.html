@@ -1,0 +1,36 @@
+<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'payoutSessions.title' | translate"
+  [nzSubtitle]="'payoutSessions.subtitle' | translate">
+  <nz-page-header-extra>
+    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'payouts.createSession' |
+      translate }}</button>
+  </nz-page-header-extra>
+  <nz-page-header-content>
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.payoutSessions as payoutSessions" [nzData]="payoutSessions.nodes"
+      [nzTotal]="payoutSessions.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{{ 'profile.date' | translate }}</th>
+          <th>{{ 'profile.status' | translate }}</th>
+          <th>{{ 'profile.currency' | translate }}</th>
+          <th>{{ 'payouts.totalAmount' | translate }}</th>
+          <th>{{ 'profile.description' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>{{ data.id }}</td>
+          <td>{{ data.createdAt | date: 'short' }}</td>
+          <td>
+            <nz-tag [nzColor]="statusColor(data.status)">{{ 'enum.payoutSessionStatus.' + data.status | translate
+              }}</nz-tag>
+          </td>
+          <td>{{ data.currency }}</td>
+          <td>{{ data.totalAmount | currency: data.currency }}</td>
+          <td>{{ data.description }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-page-header-content>
+</nz-page-header>

@@ -1,0 +1,13 @@
+query PayoutSessionPreview($input: CreatePayoutSessionInput!) {
+  payoutSessionPreview(input: $input) {
+    eligibleCount
+    totalAmount
+    currency
+  }
+}
+
+mutation CreatePayoutSession($input: CreatePayoutSessionInput!) {
+  createPayoutSession(input: $input) {
+    id
+  }
+}

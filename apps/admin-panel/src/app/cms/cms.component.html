@@ -57,6 +57,16 @@
           </li>
         </ul>
       </li>
+      <li nz-submenu [nzTitle]="'menu.payouts.header' | translate" nzIcon="wallet">
+        <ul>
+          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
+            <a routerLink="/payouts/sessions">{{'menu.payouts.sessions' | translate}}</a>
+          </li>
+          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
+            <a routerLink="/payouts/methods">{{'menu.payouts.methods' | translate}}</a>
+          </li>
+        </ul>
+      </li>
       <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
         <a routerLink="/riders" [queryParams]="{sort:'id|DESC'}"><i nz-icon nzType="user"></i><span
             *ngIf="!isCollapsed">{{'menu.riders' |

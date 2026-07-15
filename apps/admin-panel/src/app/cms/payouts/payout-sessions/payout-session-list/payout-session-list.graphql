@@ -1,0 +1,15 @@
+query PayoutSessionList($paging: OffsetPaging, $sorting: [PayoutSessionSort!]) {
+  payoutSessions(paging: $paging, sorting: $sorting) {
+    nodes {
+      id
+      createdAt
+      processedAt
+      status
+      currency
+      minimumAmount
+      totalAmount
+      description
+    }
+    totalCount
+  }
+}

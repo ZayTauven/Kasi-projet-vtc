@@ -23,6 +23,8 @@ import { FeedbackEntity } from './feedback.entity';
 import { FleetTransactionEntity } from './fleet-transaction.entity';
 import { FleetEntity } from './fleet.entity';
 import { MediaEntity } from './media.entity';
+import { PayoutMethodEntity } from './payout-method.entity';
+import { PayoutEntity } from './payout.entity';
 import { RequestEntity } from './request.entity';
 import { ServiceEntity } from './service.entity';
 
@@ -147,6 +149,17 @@ export class DriverEntity {
     @Column({ nullable: true })
     bankSwift?: string;
 
+    // Méthode de retrait des gains choisie par le Kasiman (module Payouts).
+    @ManyToOne(() => PayoutMethodEntity, method => method.drivers, { onDelete: 'SET NULL' })
+    payoutMethod?: PayoutMethodEntity;
+
+    @Column({ nullable: true })
+    payoutMethodId?: number;
+
+    // Numéro Wave/Orange Money ou compte bancaire selon la méthode choisie.
+    @Column({ nullable: true })
+    payoutAccountNumber?: string;
+
     @Column({ nullable: true })
     address?: string;
 
@@ -202,4 +215,7 @@ export class DriverEntity {
 
     @OneToMany(() => FleetTransactionEntity, fleetTransaction => fleetTransaction.driver)
     fleetTransactions!: FleetTransactionEntity[];
+
+    @OneToMany(() => PayoutEntity, payout => payout.driver)
+    payouts!: PayoutEntity[];
 }

@@ -651,6 +651,11 @@ export type CreateOnePaymentGatewayInput = {
   paymentGateway: PaymentGatewayInput;
 };
 
+export type CreateOnePayoutMethodInput = {
+  /** The record to create */
+  payoutMethod: PayoutMethodInput;
+};
+
 export type CreateOneProviderTransactionInput = {
   /** The record to create */
   providerTransaction: ProviderTransactionInput;
@@ -726,6 +731,13 @@ export type CreateOrderInput = {
   recipientName?: InputMaybe<Scalars['String']['input']>;
   riderId: Scalars['ID']['input'];
   serviceId: Scalars['ID']['input'];
+};
+
+export type CreatePayoutSessionInput = {
+  currency: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  methodIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  minimumAmount?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CreateReward = {
@@ -853,6 +865,11 @@ export type DeleteOneFeedbackParameterInput = {
 };
 
 export type DeleteOneOrderCancelReasonInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOnePayoutMethodInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -1075,6 +1092,8 @@ export type Driver = {
   mobileNumber: Scalars['String']['output'];
   orders: DriverOrdersConnection;
   ordersAggregate: Array<DriverOrdersAggregateResponse>;
+  payoutAccountNumber?: Maybe<Scalars['String']['output']>;
+  payoutMethodId?: Maybe<Scalars['ID']['output']>;
   rating?: Maybe<Scalars['Float']['output']>;
   registrationTimestamp: Scalars['DateTime']['output'];
   reviewCount: Scalars['Float']['output'];
@@ -2266,6 +2285,8 @@ export type Mutation = {
   addServicesToZonePrice: ZonePrice;
   assignDriverToOrder: Order;
   cancelOrder: Order;
+  cancelPayout: Payout;
+  cancelPayoutSession: PayoutSession;
   createDriverTransaction: DriverWallet;
   createFleetTransaction: FleetWallet;
   createManyComplaintActivities: Array<ComplaintActivity>;
@@ -2282,6 +2303,7 @@ export type Mutation = {
   createOneOperatorRole: OperatorRole;
   createOneOrderCancelReason: OrderCancelReason;
   createOnePaymentGateway: PaymentGateway;
+  createOnePayoutMethod: PayoutMethod;
   createOneProviderTransaction: ProviderTransaction;
   createOneRegion: Region;
   createOneReward: Reward;
@@ -2294,6 +2316,7 @@ export type Mutation = {
   createOneServiceOption: ServiceOption;
   createOneZonePrice: ZonePrice;
   createOrder: Order;
+  createPayoutSession: PayoutSession;
   createRiderTransaction: RiderWallet;
   deleteOneAnnouncement: AnnouncementDeleteResponse;
   deleteOneCarColor: CarColorDeleteResponse;
@@ -2302,6 +2325,7 @@ export type Mutation = {
   deleteOneDriver: Driver;
   deleteOneFeedbackParameter: FeedbackParameterDeleteResponse;
   deleteOneOrderCancelReason: OrderCancelReasonDeleteResponse;
+  deleteOnePayoutMethod: PayoutMethodDeleteResponse;
   deleteOneRegion: RegionDeleteResponse;
   deleteOneReward: RewardDeleteResponse;
   deleteOneRider: Rider;
@@ -2310,6 +2334,8 @@ export type Mutation = {
   deleteOneServiceOption: ServiceOptionDeleteResponse;
   deleteOneZonePrice: ZonePriceDeleteResponse;
   disablePreviousServer: UpdateConfigResult;
+  processPayout: Payout;
+  processPayoutSession: PayoutSession;
   setEnabledServicesOnDriver: Driver;
   setFleetsOnZonePrice: ZonePrice;
   setOptionsOnService: Service;
@@ -2331,6 +2357,7 @@ export type Mutation = {
   updateOneOperatorRole: OperatorRole;
   updateOneOrderCancelReason: OrderCancelReason;
   updateOnePaymentGateway: PaymentGateway;
+  updateOnePayoutMethod: PayoutMethod;
   updateOneRegion: Region;
   updateOneReward: Reward;
   updateOneRider: Rider;
@@ -2377,6 +2404,16 @@ export type MutationAssignDriverToOrderArgs = {
 
 export type MutationCancelOrderArgs = {
   orderId: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelPayoutArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelPayoutSessionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2460,6 +2497,11 @@ export type MutationCreateOnePaymentGatewayArgs = {
 };
 
 
+export type MutationCreateOnePayoutMethodArgs = {
+  input: CreateOnePayoutMethodInput;
+};
+
+
 export type MutationCreateOneProviderTransactionArgs = {
   input: CreateOneProviderTransactionInput;
 };
@@ -2520,6 +2562,11 @@ export type MutationCreateOrderArgs = {
 };
 
 
+export type MutationCreatePayoutSessionArgs = {
+  input: CreatePayoutSessionInput;
+};
+
+
 export type MutationCreateRiderTransactionArgs = {
   input: RiderTransactionInput;
 };
@@ -2560,6 +2607,11 @@ export type MutationDeleteOneOrderCancelReasonArgs = {
 };
 
 
+export type MutationDeleteOnePayoutMethodArgs = {
+  input: DeleteOnePayoutMethodInput;
+};
+
+
 export type MutationDeleteOneRegionArgs = {
   input: DeleteOneRegionInput;
 };
@@ -2597,6 +2649,16 @@ export type MutationDeleteOneZonePriceArgs = {
 
 export type MutationDisablePreviousServerArgs = {
   ip: Scalars['String']['input'];
+};
+
+
+export type MutationProcessPayoutArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationProcessPayoutSessionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2703,6 +2765,11 @@ export type MutationUpdateOneOrderCancelReasonArgs = {
 
 export type MutationUpdateOnePaymentGatewayArgs = {
   input: UpdateOnePaymentGatewayInput;
+};
+
+
+export type MutationUpdateOnePayoutMethodArgs = {
+  input: UpdateOnePayoutMethodInput;
 };
 
 
@@ -3670,6 +3737,264 @@ export enum PaymentGatewayType {
   WayForPay = 'WayForPay'
 }
 
+export type Payout = {
+  __typename?: 'Payout';
+  accountNumber?: Maybe<Scalars['String']['output']>;
+  amount: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  driver: Driver;
+  driverId: Scalars['ID']['output'];
+  driverTransactionId?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  methodId?: Maybe<Scalars['ID']['output']>;
+  methodName: Scalars['String']['output'];
+  methodType: PayoutMethodType;
+  processedAt?: Maybe<Scalars['DateTime']['output']>;
+  sessionId: Scalars['ID']['output'];
+  status: PayoutStatus;
+};
+
+export type PayoutConnection = {
+  __typename?: 'PayoutConnection';
+  /** Array of nodes. */
+  nodes: Array<Payout>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PayoutFilter = {
+  and?: InputMaybe<Array<PayoutFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  driverId?: InputMaybe<IdFilterComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<PayoutFilter>>;
+  sessionId?: InputMaybe<IdFilterComparison>;
+  status?: InputMaybe<PayoutStatusFilterComparison>;
+};
+
+export type PayoutMethod = {
+  __typename?: 'PayoutMethod';
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  instructions?: Maybe<Scalars['String']['output']>;
+  minimumAmount: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  type: PayoutMethodType;
+};
+
+export type PayoutMethodConnection = {
+  __typename?: 'PayoutMethodConnection';
+  /** Array of nodes. */
+  nodes: Array<PayoutMethod>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PayoutMethodDeleteResponse = {
+  __typename?: 'PayoutMethodDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  instructions?: Maybe<Scalars['String']['output']>;
+  minimumAmount?: Maybe<Scalars['Float']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<PayoutMethodType>;
+};
+
+export type PayoutMethodFilter = {
+  and?: InputMaybe<Array<PayoutMethodFilter>>;
+  currency?: InputMaybe<StringFieldComparison>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<PayoutMethodFilter>>;
+  type?: InputMaybe<PayoutMethodTypeFilterComparison>;
+};
+
+export type PayoutMethodInput = {
+  currency: Scalars['String']['input'];
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  instructions?: InputMaybe<Scalars['String']['input']>;
+  minimumAmount?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  type: PayoutMethodType;
+};
+
+export type PayoutMethodSort = {
+  direction: SortDirection;
+  field: PayoutMethodSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum PayoutMethodSortFields {
+  Currency = 'currency',
+  Enabled = 'enabled',
+  Id = 'id',
+  Type = 'type'
+}
+
+export enum PayoutMethodType {
+  BankTransfer = 'BankTransfer',
+  Cash = 'Cash',
+  OrangeMoney = 'OrangeMoney',
+  Wave = 'Wave'
+}
+
+export type PayoutMethodTypeFilterComparison = {
+  eq?: InputMaybe<PayoutMethodType>;
+  gt?: InputMaybe<PayoutMethodType>;
+  gte?: InputMaybe<PayoutMethodType>;
+  iLike?: InputMaybe<PayoutMethodType>;
+  in?: InputMaybe<Array<PayoutMethodType>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<PayoutMethodType>;
+  lt?: InputMaybe<PayoutMethodType>;
+  lte?: InputMaybe<PayoutMethodType>;
+  neq?: InputMaybe<PayoutMethodType>;
+  notILike?: InputMaybe<PayoutMethodType>;
+  notIn?: InputMaybe<Array<PayoutMethodType>>;
+  notLike?: InputMaybe<PayoutMethodType>;
+};
+
+export type PayoutSession = {
+  __typename?: 'PayoutSession';
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  minimumAmount: Scalars['Float']['output'];
+  operator?: Maybe<Operator>;
+  operatorId?: Maybe<Scalars['ID']['output']>;
+  payouts: PayoutSessionPayoutsConnection;
+  processedAt?: Maybe<Scalars['DateTime']['output']>;
+  status: PayoutSessionStatus;
+  totalAmount: Scalars['Float']['output'];
+};
+
+
+export type PayoutSessionPayoutsArgs = {
+  filter?: PayoutFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<PayoutSort>;
+};
+
+export type PayoutSessionConnection = {
+  __typename?: 'PayoutSessionConnection';
+  /** Array of nodes. */
+  nodes: Array<PayoutSession>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PayoutSessionFilter = {
+  and?: InputMaybe<Array<PayoutSessionFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<PayoutSessionFilter>>;
+  status?: InputMaybe<PayoutSessionStatusFilterComparison>;
+};
+
+export type PayoutSessionPayoutsConnection = {
+  __typename?: 'PayoutSessionPayoutsConnection';
+  /** Array of nodes. */
+  nodes: Array<Payout>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PayoutSessionPreview = {
+  __typename?: 'PayoutSessionPreview';
+  currency: Scalars['String']['output'];
+  eligibleCount: Scalars['Int']['output'];
+  totalAmount: Scalars['Float']['output'];
+};
+
+export type PayoutSessionSort = {
+  direction: SortDirection;
+  field: PayoutSessionSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum PayoutSessionSortFields {
+  CreatedAt = 'createdAt',
+  Currency = 'currency',
+  Id = 'id',
+  Status = 'status'
+}
+
+export enum PayoutSessionStatus {
+  Canceled = 'Canceled',
+  Pending = 'Pending',
+  Processed = 'Processed'
+}
+
+export type PayoutSessionStatusFilterComparison = {
+  eq?: InputMaybe<PayoutSessionStatus>;
+  gt?: InputMaybe<PayoutSessionStatus>;
+  gte?: InputMaybe<PayoutSessionStatus>;
+  iLike?: InputMaybe<PayoutSessionStatus>;
+  in?: InputMaybe<Array<PayoutSessionStatus>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<PayoutSessionStatus>;
+  lt?: InputMaybe<PayoutSessionStatus>;
+  lte?: InputMaybe<PayoutSessionStatus>;
+  neq?: InputMaybe<PayoutSessionStatus>;
+  notILike?: InputMaybe<PayoutSessionStatus>;
+  notIn?: InputMaybe<Array<PayoutSessionStatus>>;
+  notLike?: InputMaybe<PayoutSessionStatus>;
+};
+
+export type PayoutSort = {
+  direction: SortDirection;
+  field: PayoutSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum PayoutSortFields {
+  CreatedAt = 'createdAt',
+  DriverId = 'driverId',
+  Id = 'id',
+  SessionId = 'sessionId',
+  Status = 'status'
+}
+
+export enum PayoutStatus {
+  Canceled = 'Canceled',
+  Paid = 'Paid',
+  Pending = 'Pending'
+}
+
+export type PayoutStatusFilterComparison = {
+  eq?: InputMaybe<PayoutStatus>;
+  gt?: InputMaybe<PayoutStatus>;
+  gte?: InputMaybe<PayoutStatus>;
+  iLike?: InputMaybe<PayoutStatus>;
+  in?: InputMaybe<Array<PayoutStatus>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<PayoutStatus>;
+  lt?: InputMaybe<PayoutStatus>;
+  lte?: InputMaybe<PayoutStatus>;
+  neq?: InputMaybe<PayoutStatus>;
+  notILike?: InputMaybe<PayoutStatus>;
+  notIn?: InputMaybe<Array<PayoutStatus>>;
+  notLike?: InputMaybe<PayoutStatus>;
+};
+
 export type Point = {
   __typename?: 'Point';
   lat: Scalars['Float']['output'];
@@ -3840,6 +4165,13 @@ export type Query = {
   orders: OrderConnection;
   paymentGateway: PaymentGateway;
   paymentGateways: PaymentGatewayConnection;
+  payout: Payout;
+  payoutMethod: PayoutMethod;
+  payoutMethods: PayoutMethodConnection;
+  payoutSession: PayoutSession;
+  payoutSessionPreview: PayoutSessionPreview;
+  payoutSessions: PayoutSessionConnection;
+  payouts: PayoutConnection;
   providerTransaction: ProviderTransaction;
   providerTransactions: ProviderTransactionConnection;
   providerWallet: ProviderWallet;
@@ -4178,6 +4510,47 @@ export type QueryPaymentGatewaysArgs = {
   filter?: PaymentGatewayFilter;
   paging?: OffsetPaging;
   sorting?: Array<PaymentGatewaySort>;
+};
+
+
+export type QueryPayoutArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryPayoutMethodArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryPayoutMethodsArgs = {
+  filter?: PayoutMethodFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<PayoutMethodSort>;
+};
+
+
+export type QueryPayoutSessionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryPayoutSessionPreviewArgs = {
+  input: CreatePayoutSessionInput;
+};
+
+
+export type QueryPayoutSessionsArgs = {
+  filter?: PayoutSessionFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<PayoutSessionSort>;
+};
+
+
+export type QueryPayoutsArgs = {
+  filter?: PayoutFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<PayoutSort>;
 };
 
 
@@ -5359,6 +5732,8 @@ export type UpdateDriverInput = {
   maxPackageSize?: InputMaybe<PackageSize>;
   mediaId?: InputMaybe<Scalars['ID']['input']>;
   mobileNumber?: InputMaybe<Scalars['String']['input']>;
+  payoutAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  payoutMethodId?: InputMaybe<Scalars['ID']['input']>;
   softRejectionNote?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<DriverStatus>;
 };
@@ -5474,6 +5849,13 @@ export type UpdateOnePaymentGatewayInput = {
   id: Scalars['ID']['input'];
   /** The update to apply. */
   update: PaymentGatewayInput;
+};
+
+export type UpdateOnePayoutMethodInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: PayoutMethodInput;
 };
 
 export type UpdateOneRegionInput = {
@@ -6474,6 +6856,92 @@ export type UpdateRewardMutationVariables = Exact<{
 
 
 export type UpdateRewardMutation = { __typename?: 'Mutation', updateOneReward: { __typename?: 'Reward', id: string } };
+
+export type PayoutMethodListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type PayoutMethodListQuery = { __typename?: 'Query', payoutMethods: { __typename?: 'PayoutMethodConnection', totalCount: number, nodes: Array<{ __typename?: 'PayoutMethod', id: string, type: PayoutMethodType, name: string, currency: string, enabled: boolean, minimumAmount: number }> } };
+
+export type PayoutMethodViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type PayoutMethodViewQuery = { __typename?: 'Query', payoutMethod: { __typename?: 'PayoutMethod', id: string, type: PayoutMethodType, name: string, currency: string, enabled: boolean, minimumAmount: number, instructions?: string | null } };
+
+export type CreatePayoutMethodMutationVariables = Exact<{
+  input: PayoutMethodInput;
+}>;
+
+
+export type CreatePayoutMethodMutation = { __typename?: 'Mutation', createOnePayoutMethod: { __typename?: 'PayoutMethod', id: string } };
+
+export type UpdatePayoutMethodMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: PayoutMethodInput;
+}>;
+
+
+export type UpdatePayoutMethodMutation = { __typename?: 'Mutation', updateOnePayoutMethod: { __typename?: 'PayoutMethod', id: string } };
+
+export type PayoutSessionListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+  sorting?: InputMaybe<Array<PayoutSessionSort> | PayoutSessionSort>;
+}>;
+
+
+export type PayoutSessionListQuery = { __typename?: 'Query', payoutSessions: { __typename?: 'PayoutSessionConnection', totalCount: number, nodes: Array<{ __typename?: 'PayoutSession', id: string, createdAt: any, processedAt?: any | null, status: PayoutSessionStatus, currency: string, minimumAmount: number, totalAmount: number, description?: string | null }> } };
+
+export type PayoutSessionPreviewQueryVariables = Exact<{
+  input: CreatePayoutSessionInput;
+}>;
+
+
+export type PayoutSessionPreviewQuery = { __typename?: 'Query', payoutSessionPreview: { __typename?: 'PayoutSessionPreview', eligibleCount: number, totalAmount: number, currency: string } };
+
+export type CreatePayoutSessionMutationVariables = Exact<{
+  input: CreatePayoutSessionInput;
+}>;
+
+
+export type CreatePayoutSessionMutation = { __typename?: 'Mutation', createPayoutSession: { __typename?: 'PayoutSession', id: string } };
+
+export type PayoutSessionViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type PayoutSessionViewQuery = { __typename?: 'Query', payoutSession: { __typename?: 'PayoutSession', id: string, createdAt: any, processedAt?: any | null, status: PayoutSessionStatus, currency: string, minimumAmount: number, totalAmount: number, description?: string | null, payouts: { __typename?: 'PayoutSessionPayoutsConnection', totalCount: number, nodes: Array<{ __typename?: 'Payout', id: string, driverId: string, amount: number, currency: string, status: PayoutStatus, methodType: PayoutMethodType, methodName: string, accountNumber?: string | null, processedAt?: any | null, driver: { __typename?: 'Driver', firstName?: string | null, lastName?: string | null, mobileNumber: string } }> } } };
+
+export type ProcessPayoutMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type ProcessPayoutMutation = { __typename?: 'Mutation', processPayout: { __typename?: 'Payout', id: string, status: PayoutStatus, processedAt?: any | null } };
+
+export type CancelPayoutMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CancelPayoutMutation = { __typename?: 'Mutation', cancelPayout: { __typename?: 'Payout', id: string, status: PayoutStatus } };
+
+export type ProcessPayoutSessionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type ProcessPayoutSessionMutation = { __typename?: 'Mutation', processPayoutSession: { __typename?: 'PayoutSession', id: string, status: PayoutSessionStatus, processedAt?: any | null } };
+
+export type CancelPayoutSessionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CancelPayoutSessionMutation = { __typename?: 'Mutation', cancelPayoutSession: { __typename?: 'PayoutSession', id: string, status: PayoutSessionStatus } };
 
 export type AvailableDriversForOrderQueryVariables = Exact<{
   center: PointInput;
@@ -9271,6 +9739,280 @@ export const UpdateRewardDocument = gql`
   })
   export class UpdateRewardGQL extends Apollo.Mutation<UpdateRewardMutation, UpdateRewardMutationVariables> {
     document = UpdateRewardDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayoutMethodListDocument = gql`
+    query PayoutMethodList($paging: OffsetPaging) {
+  payoutMethods(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      currency
+      enabled
+      minimumAmount
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayoutMethodListGQL extends Apollo.Query<PayoutMethodListQuery, PayoutMethodListQueryVariables> {
+    document = PayoutMethodListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayoutMethodViewDocument = gql`
+    query PayoutMethodView($id: ID!) {
+  payoutMethod(id: $id) {
+    id
+    type
+    name
+    currency
+    enabled
+    minimumAmount
+    instructions
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayoutMethodViewGQL extends Apollo.Query<PayoutMethodViewQuery, PayoutMethodViewQueryVariables> {
+    document = PayoutMethodViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreatePayoutMethodDocument = gql`
+    mutation CreatePayoutMethod($input: PayoutMethodInput!) {
+  createOnePayoutMethod(input: {payoutMethod: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreatePayoutMethodGQL extends Apollo.Mutation<CreatePayoutMethodMutation, CreatePayoutMethodMutationVariables> {
+    document = CreatePayoutMethodDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdatePayoutMethodDocument = gql`
+    mutation UpdatePayoutMethod($id: ID!, $update: PayoutMethodInput!) {
+  updateOnePayoutMethod(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdatePayoutMethodGQL extends Apollo.Mutation<UpdatePayoutMethodMutation, UpdatePayoutMethodMutationVariables> {
+    document = UpdatePayoutMethodDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayoutSessionListDocument = gql`
+    query PayoutSessionList($paging: OffsetPaging, $sorting: [PayoutSessionSort!]) {
+  payoutSessions(paging: $paging, sorting: $sorting) {
+    nodes {
+      id
+      createdAt
+      processedAt
+      status
+      currency
+      minimumAmount
+      totalAmount
+      description
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayoutSessionListGQL extends Apollo.Query<PayoutSessionListQuery, PayoutSessionListQueryVariables> {
+    document = PayoutSessionListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayoutSessionPreviewDocument = gql`
+    query PayoutSessionPreview($input: CreatePayoutSessionInput!) {
+  payoutSessionPreview(input: $input) {
+    eligibleCount
+    totalAmount
+    currency
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayoutSessionPreviewGQL extends Apollo.Query<PayoutSessionPreviewQuery, PayoutSessionPreviewQueryVariables> {
+    document = PayoutSessionPreviewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreatePayoutSessionDocument = gql`
+    mutation CreatePayoutSession($input: CreatePayoutSessionInput!) {
+  createPayoutSession(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreatePayoutSessionGQL extends Apollo.Mutation<CreatePayoutSessionMutation, CreatePayoutSessionMutationVariables> {
+    document = CreatePayoutSessionDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayoutSessionViewDocument = gql`
+    query PayoutSessionView($id: ID!) {
+  payoutSession(id: $id) {
+    id
+    createdAt
+    processedAt
+    status
+    currency
+    minimumAmount
+    totalAmount
+    description
+    payouts(paging: {limit: 500}) {
+      nodes {
+        id
+        driverId
+        amount
+        currency
+        status
+        methodType
+        methodName
+        accountNumber
+        processedAt
+        driver {
+          firstName
+          lastName
+          mobileNumber
+        }
+      }
+      totalCount
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayoutSessionViewGQL extends Apollo.Query<PayoutSessionViewQuery, PayoutSessionViewQueryVariables> {
+    document = PayoutSessionViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ProcessPayoutDocument = gql`
+    mutation ProcessPayout($id: ID!) {
+  processPayout(id: $id) {
+    id
+    status
+    processedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ProcessPayoutGQL extends Apollo.Mutation<ProcessPayoutMutation, ProcessPayoutMutationVariables> {
+    document = ProcessPayoutDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CancelPayoutDocument = gql`
+    mutation CancelPayout($id: ID!) {
+  cancelPayout(id: $id) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CancelPayoutGQL extends Apollo.Mutation<CancelPayoutMutation, CancelPayoutMutationVariables> {
+    document = CancelPayoutDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ProcessPayoutSessionDocument = gql`
+    mutation ProcessPayoutSession($id: ID!) {
+  processPayoutSession(id: $id) {
+    id
+    status
+    processedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ProcessPayoutSessionGQL extends Apollo.Mutation<ProcessPayoutSessionMutation, ProcessPayoutSessionMutationVariables> {
+    document = ProcessPayoutSessionDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CancelPayoutSessionDocument = gql`
+    mutation CancelPayoutSession($id: ID!) {
+  cancelPayoutSession(id: $id) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CancelPayoutSessionGQL extends Apollo.Mutation<CancelPayoutSessionMutation, CancelPayoutSessionMutationVariables> {
+    document = CancelPayoutSessionDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

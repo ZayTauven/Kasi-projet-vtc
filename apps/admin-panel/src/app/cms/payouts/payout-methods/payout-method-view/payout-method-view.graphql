@@ -1,0 +1,23 @@
+query PayoutMethodView($id: ID!) {
+  payoutMethod(id: $id) {
+    id
+    type
+    name
+    currency
+    enabled
+    minimumAmount
+    instructions
+  }
+}
+
+mutation CreatePayoutMethod($input: PayoutMethodInput!) {
+  createOnePayoutMethod(input: { payoutMethod: $input }) {
+    id
+  }
+}
+
+mutation UpdatePayoutMethod($id: ID!, $update: PayoutMethodInput!) {
+  updateOnePayoutMethod(input: { id: $id, update: $update }) {
+    id
+  }
+}

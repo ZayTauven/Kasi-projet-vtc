@@ -33,6 +33,22 @@
 			"Canceled": "Canceled",
 			"Rejected": "Rejected"
 		},
+		"payoutMethodType": {
+			"Wave": "Wave",
+			"OrangeMoney": "Orange Money",
+			"BankTransfer": "Bank transfer",
+			"Cash": "Cash"
+		},
+		"payoutSessionStatus": {
+			"Pending": "Pending",
+			"Processed": "Processed",
+			"Canceled": "Canceled"
+		},
+		"payoutStatus": {
+			"Pending": "Pending",
+			"Paid": "Paid",
+			"Canceled": "Canceled"
+		},
 		"gender": {
 			"male": "Male",
 			"female": "Female",
@@ -131,6 +147,11 @@
 			"drivers": "Kasimen",
 			"riders": "Riders",
 			"header": "Accounting"
+		},
+		"payouts": {
+			"header": "Payouts",
+			"sessions": "Payout sessions",
+			"methods": "Payout methods"
 		},
 		"riders": "Riders",
 		"requests": "Requests",
@@ -272,6 +293,7 @@
 		"export": "Export",
 		"total": "Total",
 		"currency": "Currency",
+		"date": "Date",
 		"next": "Next",
 		"select": "Select",
 		"delete": "Delete",
@@ -441,6 +463,50 @@
 	"cancelReasons": {
 		"title": "Cancel Reasons",
 		"subtitle": "Reasons for cancellation that riders will encounter and can choose from when canceling a ride."
+	},
+	"payoutSessions": {
+		"title": "Payout Sessions",
+		"subtitle": "Batch payments of Kasimen earnings."
+	},
+	"payoutSession": {
+		"title": "Payout Session",
+		"subtitle": "Payouts generated for this session."
+	},
+	"payoutSessionNew": {
+		"title": "New Payout Session",
+		"subtitle": "Generates a payout for every eligible Kasiman (balance above the minimum, active payout method)."
+	},
+	"payoutMethods": {
+		"title": "Payout Methods",
+		"subtitle": "Channels used to pay Kasimen earnings (Wave, Orange Money, bank transfer, cash)."
+	},
+	"payoutMethod": {
+		"title": "Payout Method",
+		"subtitle": "Payout channel settings."
+	},
+	"payouts": {
+		"type": "Type",
+		"method": "Method",
+		"accountNumber": "Account number",
+		"minimumAmount": "Minimum amount",
+		"minimumAmountHint": "Kasimen below this balance are excluded from the session.",
+		"totalAmount": "Total amount",
+		"instructions": "Instructions",
+		"targetMethods": "Targeted methods",
+		"targetMethodsHint": "Leave empty to include every active method.",
+		"allMethods": "All methods",
+		"createSession": "New session",
+		"preview": "Preview",
+		"previewResult": "{{count}} eligible Kasimen",
+		"noEligible": "No eligible Kasiman for these criteria.",
+		"processAll": "Pay all",
+		"processAllConfirm": "Mark every pending payout as paid and deduct wallets?",
+		"cancelSession": "Cancel session",
+		"cancelSessionConfirm": "Cancel every pending payout of this session?",
+		"markPaid": "Mark paid",
+		"markPaidConfirm": "Payment done outside the app? The wallet will be deducted.",
+		"cancel": "Cancel",
+		"cancelPayoutConfirm": "Cancel this payout?"
 	},
 	"cancelReason": {
 		"title": "Cancel Reason",
