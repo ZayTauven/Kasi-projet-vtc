@@ -1,5 +1,6 @@
 
-<div *ngIf="(query | async)?.data?.order as order">
+<div *ngIf="(query | async)?.data?.order as order" class="kasi-card">
+  <div class="kasi-card__body">
   <nz-empty *ngIf="order.conversations.length === 0" class="empty-state"></nz-empty>
   <nz-comment [nzAuthor]="!chat.sentByDriver ? ((order.rider?.firstName ?? '-') + ' ' + (order.rider?.lastName ?? '-')) : ((order.driver?.firstName ?? '-') + ' ' + (order.driver?.lastName ?? ''))" [nzDatetime]="((chat.sentAt | date: 'short') ?? '')" *ngFor="let chat of order.conversations">
     <nz-avatar
@@ -13,4 +14,5 @@
       </p>
     </nz-comment-content>
   </nz-comment>
+  </div>
 </div>

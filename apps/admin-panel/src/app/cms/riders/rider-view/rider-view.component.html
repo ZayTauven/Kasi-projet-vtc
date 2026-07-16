@@ -1,26 +1,34 @@
-<nz-card *ngIf="(query | async)?.data?.rider == null">
-  <nz-empty [nzNotFoundContent]="contentTpl" [nzNotFoundFooter]="footerTpl">
-    <ng-template #contentTpl>
-      <span>
-        {{'riders.notFoundMessage' | translate}}
-      </span>
-    </ng-template>
-    <ng-template #footerTpl>
-      <button nz-button nzType="primary" routerLink="/riders">{{'profile.goToList' | translate}}</button>
-    </ng-template>
-  </nz-empty>
-</nz-card>
-<nz-card *ngIf="(query | async)?.data?.rider as rider">
-  <nz-page-header>
-    <nz-page-header-title><nz-avatar nzIcon="user" [nzSrc]="environment.root + rider.media?.address"></nz-avatar>{{
-      rider.firstName }}
-      {{ rider.lastName }}</nz-page-header-title>
-    <nz-page-header-tags>
-      <nz-tag *ngIf="rider.status == riderStatus.Disabled" [nzColor]="'red'">{{ 'enum.rider.status.blocked' | translate
-        }}</nz-tag>
-    </nz-page-header-tags>
-    <nz-page-header-extra>
-      <button nz-button [nzType]="'dashed'" nzDanger class="mr-2" (click)="deleteRider(rider.id)">
+<nz-empty *ngIf="(query | async)?.data?.rider == null" [nzNotFoundContent]="contentTpl"
+  [nzNotFoundFooter]="footerTpl">
+  <ng-template #contentTpl>
+    <span>
+      {{'riders.notFoundMessage' | translate}}
+    </span>
+  </ng-template>
+  <ng-template #footerTpl>
+    <button nz-button nzType="primary" routerLink="/riders">{{'profile.goToList' | translate}}</button>
+  </ng-template>
+</nz-empty>
+<ng-container *ngIf="(query | async)?.data?.rider as rider">
+  <div class="kasi-profile-head">
+    <div class="kasi-profile-head__avatar">
+      <img *ngIf="rider.media?.address" [src]="environment.root + rider.media?.address" />
+      <i *ngIf="!rider.media?.address" nz-icon nzType="user"></i>
+    </div>
+    <div class="kasi-profile-head__main">
+      <h1 class="kasi-profile-head__name">{{ rider.firstName }} {{ rider.lastName }}</h1>
+      <div class="kasi-profile-head__meta">
+        <span>{{ 'profile.mobileNumber' | translate }}: {{rider.mobileNumber | phone}}</span>
+        <span>{{ 'profile.registeredOn' | translate }}: {{rider.registrationTimestamp | date: "short"}}</span>
+        <nz-badge [nzStatus]="rider.status === 'Enabled' ? 'success' : 'error'" [nzText]="rider.status"></nz-badge>
+      </div>
+      <div class="kasi-profile-head__tags">
+        <nz-tag *ngIf="rider.status == riderStatus.Disabled" [nzColor]="'red'">{{ 'enum.rider.status.blocked' | translate
+          }}</nz-tag>
+      </div>
+    </div>
+    <div class="kasi-profile-head__actions">
+      <button nz-button [nzType]="'dashed'" nzDanger (click)="deleteRider(rider.id)">
         <i nz-icon nzType="delete"></i>
       </button>
       <button nz-button nz-dropdown [nzDropdownMenu]="menu4">
@@ -35,35 +43,23 @@
             'enum.rider.status.enabled' | translate }}</li>
         </ul>
       </nz-dropdown-menu>
-    </nz-page-header-extra>
-    <nz-page-header-content>
-      <nz-descriptions>
-        <nz-descriptions-item nzTitle="{{ 'profile.mobileNumber' | translate }}" [nzSpan]="1">{{rider.mobileNumber |
-          phone}}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.registeredOn' | translate }}">{{rider.registrationTimestamp | date:
-          "short"}}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{'profile.status' | translate}}">
-          <nz-badge [nzStatus]="rider.status === 'Enabled' ? 'success' : 'error'" [nzText]="rider.status"></nz-badge>
-        </nz-descriptions-item>
-      </nz-descriptions>
-    </nz-page-header-content>
-    <nz-page-header-footer>
-      <nz-tabset nzLinkRouter [nzLinkExact]="false" class="mb-4">
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="details">{{ 'riders.tab.details' | translate }}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="financials">{{ 'riders.tab.creditrecords' | translate }}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="orders">{{ 'riders.tab.orders' | translate }}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="addresses">{{ 'riders.tab.addresses' | translate }}</a>
-        </nz-tab>
-      </nz-tabset>
-      <router-outlet></router-outlet>
-    </nz-page-header-footer>
-  </nz-page-header>
-
-</nz-card>
+    </div>
+  </div>
+  <div class="kasi-tabs">
+    <nz-tabset nzLinkRouter [nzLinkExact]="false">
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="details">{{ 'riders.tab.details' | translate }}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="financials">{{ 'riders.tab.creditrecords' | translate }}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="orders">{{ 'riders.tab.orders' | translate }}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="addresses">{{ 'riders.tab.addresses' | translate }}</a>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+  <router-outlet></router-outlet>
+</ng-container>

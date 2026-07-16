@@ -1,6 +1,8 @@
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
 <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
   *ngIf="(query | async)?.data?.riderAddresses as addresses" [nzData]="addresses.nodes"
-  (nzQueryParams)="tableService.onTableQueryParamsChange" nzBordered>
+  (nzQueryParams)="tableService.onTableQueryParamsChange">
   <thead>
     <tr>
       <th>
@@ -22,3 +24,5 @@
     </tr>
   </tbody>
 </nz-table>
+  </div>
+</div>

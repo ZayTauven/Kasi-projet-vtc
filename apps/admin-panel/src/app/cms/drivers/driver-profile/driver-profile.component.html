@@ -1,27 +1,40 @@
-<nz-card>
-  <nz-empty *ngIf="(query | async)?.data?.driver == null" [nzNotFoundContent]="contentTpl"
-    [nzNotFoundFooter]="footerTpl">
-    <ng-template #contentTpl>
-      <span>
-        {{'drivers.notFoundMessage' | translate}}
-      </span>
-    </ng-template>
-    <ng-template #footerTpl>
-      <button nz-button nzType="primary" routerLink="/drivers">{{'profile.goToList' | translate}}</button>
-    </ng-template>
-  </nz-empty>
-  <nz-page-header *ngIf="(query | async)?.data?.driver as driver">
-    <nz-page-header-title>
-      <nz-avatar nzIcon="user"
-        [nzSrc]="driver.media?.address ? (root + driver.media?.address) : undefined"></nz-avatar>{{driver.firstName}}
-      {{driver.lastName}}
-    </nz-page-header-title>
-    <nz-page-header-tags>
-      <nz-tag [nzColor]="tagColor.driver(driver.status)">{{('enum.driver.status.' + toCamelCase(driver.status)) |
-        translate}}</nz-tag>
-    </nz-page-header-tags>
-    <nz-page-header-extra>
-      <button nz-button [nzType]="'dashed'" nzDanger class="mr-2" (click)="deleteDriver(driver.id)">
+<nz-empty *ngIf="(query | async)?.data?.driver == null" [nzNotFoundContent]="contentTpl"
+  [nzNotFoundFooter]="footerTpl">
+  <ng-template #contentTpl>
+    <span>
+      {{'drivers.notFoundMessage' | translate}}
+    </span>
+  </ng-template>
+  <ng-template #footerTpl>
+    <button nz-button nzType="primary" routerLink="/drivers">{{'profile.goToList' | translate}}</button>
+  </ng-template>
+</nz-empty>
+<ng-container *ngIf="(query | async)?.data?.driver as driver">
+  <div class="kasi-profile-head">
+    <div class="kasi-profile-head__avatar">
+      <img *ngIf="driver.media?.address" [src]="root + driver.media?.address" />
+      <i *ngIf="!driver.media?.address" nz-icon nzType="user"></i>
+    </div>
+    <div class="kasi-profile-head__main">
+      <h1 class="kasi-profile-head__name">{{driver.firstName}} {{driver.lastName}}</h1>
+      <div class="kasi-profile-head__meta">
+        <span>{{'profile.registeredOn' | translate}} {{driver.registrationTimestamp | timeago}}</span>
+        <span *ngIf="driver.status !== 'Online'">{{'driver.profile.lastSeenAt' | translate}}: {{driver.lastSeenTimestamp
+          != null ? (driver.lastSeenTimestamp | timeago) : '-'}}</span>
+        <span>{{'driver.profile.rating' | translate}}: {{(driver.rating !== null ? (('profile.ratingSummary' | translate:
+          { percent: driver.rating, count: driver.reviewCount })) : ('profile.notAvailable' | translate))}}</span>
+      </div>
+      <div class="kasi-profile-head__tags">
+        <nz-tag [nzColor]="tagColor.driver(driver.status)">{{('enum.driver.status.' + toCamelCase(driver.status)) |
+          translate}}</nz-tag>
+        <ng-container *ngIf="(query | async)?.data?.driverFeedbackParametersSummary as summary">
+          <nz-tag *ngFor="let parameter of summary" [nzColor]="tagColor.boolean(parameter.isGood)">{{parameter.count}} x
+            {{parameter.title}}</nz-tag>
+        </ng-container>
+      </div>
+    </div>
+    <div class="kasi-profile-head__actions">
+      <button nz-button [nzType]="'dashed'" nzDanger (click)="deleteDriver(driver.id)">
         <i nz-icon nzType="delete"></i>
       </button>
       <button nz-button nz-dropdown [nzDropdownMenu]="menu4">
@@ -50,41 +63,26 @@
             translate}}</li>
         </ul>
       </nz-dropdown-menu>
-    </nz-page-header-extra>
-    <nz-page-header-content>
-      <nz-descriptions>
-        <nz-descriptions-item [nzTitle]="'profile.registeredOn' | translate">{{driver.registrationTimestamp |
-          timeago}}</nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="'driver.profile.lastSeenAt' | translate"
-          *ngIf="driver.status !== 'Online'">{{driver.lastSeenTimestamp != null ? (driver.lastSeenTimestamp | timeago) :
-          '-'}}</nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="'driver.profile.rating' | translate">{{(driver.rating !== null ? (('profile.ratingSummary' | translate: { percent: driver.rating, count: driver.reviewCount })) : ('profile.notAvailable' | translate))}}</nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="'driver.profile.ratingSummary' | translate"
-          *ngIf="(query | async)?.data?.driverFeedbackParametersSummary as summary">
-          <nz-tag *ngFor="let parameter of summary" [nzColor]="tagColor.boolean(parameter.isGood)">{{parameter.count}} x
-            {{parameter.title}}</nz-tag></nz-descriptions-item>
-      </nz-descriptions>
-
-    </nz-page-header-content>
-    <nz-page-header-footer>
-      <nz-tabset [nzLinkExact]="false" nzLinkRouter class="mb-2">
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="details">{{'driver.profile.details' | translate}}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="orders">{{'driver.profile.orders' | translate}}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="financial">{{'driver.profile.financials' | translate}}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="reviews">{{'driver.profile.reviews' | translate}}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="documents">{{'driver.profile.documents' | translate}}</a>
-        </nz-tab>
-      </nz-tabset>
-      <router-outlet></router-outlet>
-    </nz-page-header-footer>
-  </nz-page-header>
-</nz-card>
+    </div>
+  </div>
+  <div class="kasi-tabs">
+    <nz-tabset [nzLinkExact]="false" nzLinkRouter>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="details">{{'driver.profile.details' | translate}}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="orders">{{'driver.profile.orders' | translate}}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="financial">{{'driver.profile.financials' | translate}}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="reviews">{{'driver.profile.reviews' | translate}}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="documents">{{'driver.profile.documents' | translate}}</a>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+  <router-outlet></router-outlet>
+</ng-container>

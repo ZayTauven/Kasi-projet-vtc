@@ -1,24 +1,31 @@
-<nz-page-header
-      [nzGhost]="false"
-      nzBackIcon
-      [nzTitle]="'serviceCategory.title' | translate"
-      [nzSubtitle]="'serviceCategory.subtitle' | translate">
-    </nz-page-header>
-    <nz-card>
-      <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'serviceCategory.title' | translate }}</h1>
+    <p>{{ 'serviceCategory.subtitle' | translate }}</p>
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
           <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
             <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
-        <button nz-button class="float-right" nzType="primary" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
-      </form>
-    </nz-card>
-    <nz-card class="mt-2" [nzTitle]="'profile.dangerArea' | translate" *ngIf="this.form.value?.id !== null">
-      <div>
-        <p class="text-lg leading-6 font-medium text-gray-900">{{ 'profile.delete' | translate }}</p>
-        <p class="mt-2 max-w-xl text-sm text-gray-500">{{ 'profile.deleteNotice' | translate }}</p>
-        <button nz-button nzDanger class="mt-2" (click)="deleteCategory()">{{ 'profile.delete' | translate }}</button>
-      </div>
-    </nz-card>
+    </form>
+    <div class="kasi-form-actions">
+      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.save' | translate }}</button>
+    </div>
+  </div>
+</div>
+<div class="kasi-card mt-2" *ngIf="this.form.value?.id !== null">
+  <div class="kasi-card__head">
+    <span class="kasi-card__title">{{ 'profile.dangerArea' | translate }}</span>
+  </div>
+  <div class="kasi-card__body">
+    <p class="text-lg leading-6 font-medium text-gray-900">{{ 'profile.delete' | translate }}</p>
+    <p class="mt-2 max-w-xl text-sm text-gray-500">{{ 'profile.deleteNotice' | translate }}</p>
+    <button nz-button nzDanger class="mt-2" (click)="deleteCategory()">{{ 'profile.delete' | translate }}</button>
+  </div>
+</div>

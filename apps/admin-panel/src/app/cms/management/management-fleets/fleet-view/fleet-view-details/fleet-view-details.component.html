@@ -1,6 +1,6 @@
-<form nz-form #frm [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
+<form nz-form #frm class="kasi-form" [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
   <input type="hidden" formControlName="id">
-  <div class="md:grid md:grid-cols-4 md:gap-2">
+  <div class="kasi-form--grid">
     <nz-form-item>
       <nz-form-label nzRequired nzFor="name">{{'profile.name' | translate}}</nz-form-label>
       <nz-form-control nzErrorTip="{{'error.nameInvalid' | translate}}">
@@ -71,8 +71,8 @@
   <nz-alert nzType="warning" [nzMessage]="'profile.warning' | translate"
     [nzDescription]="'fleet.exclusitivityAreaWarning' | translate" nzShowIcon class="mb-4"></nz-alert>
 
-  <div class="float-right">
-    <button nz-button (click)="clearMap()" style="margin: 4px;" type="button" [disabled]="polygons.length == 0">{{
+  <div class="kasi-form-actions">
+    <button nz-button (click)="clearMap()" type="button" [disabled]="polygons.length == 0">{{
       'profile.clearMap' | translate }}</button>
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{'profile.submit' | translate}}</button>
   </div>

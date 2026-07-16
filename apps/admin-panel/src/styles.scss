@@ -534,3 +534,241 @@ a:hover {
 .ant-btn {
   border-radius: 8px !important;
 }
+
+/* ==========================================================================
+   Primitives Lot 0 — pages DÉTAIL / VIEW / NEW / SETTINGS (P4 refonte design).
+   Formulaires, fiches descriptives, vues à onglets, en-tête de fiche.
+   Réutilisent les tokens --kasi-* (light/dark) comme les primitives ci-dessus.
+   Les overrides ng-zorro (.ant-tabs-*, .ant-form-*) sont en !important : le CSS
+   stock est injecté au RUNTIME par le ThemeService, APRÈS ce fichier.
+   ========================================================================== */
+
+/* --- Formulaires ---------------------------------------------------------- */
+.kasi-form {
+  display: block;
+}
+.kasi-form .ant-form-item {
+  margin-bottom: 18px;
+}
+.kasi-form .ant-form-item-label > label {
+  color: var(--kasi-text-muted);
+  font-weight: 600;
+  font-size: 13px;
+  height: auto;
+}
+.kasi-form nz-form-label,
+.kasi-form .ant-form-item-label {
+  padding-bottom: 4px;
+}
+
+/* Variante grille : 1 colonne mobile -> 2 colonnes lg. */
+.kasi-form--grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px 28px;
+}
+@media (min-width: 1024px) {
+  .kasi-form--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .kasi-form--grid.kasi-form--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Un champ qui doit occuper toute la largeur de la grille. */
+.kasi-form__full {
+  grid-column: 1 / -1;
+}
+
+/* Barre d'actions en bas de formulaire (remplace [nzActions] des nz-card). */
+.kasi-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--kasi-border);
+}
+.kasi-form-actions--split {
+  justify-content: space-between;
+}
+
+/* --- Fiche descriptive (remplace nz-descriptions) ------------------------- */
+.kasi-desc {
+  display: flex;
+  flex-direction: column;
+}
+.kasi-desc__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--kasi-border);
+}
+.kasi-desc__row:first-child {
+  padding-top: 0;
+}
+.kasi-desc__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+@media (min-width: 640px) {
+  .kasi-desc__row {
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: baseline;
+  }
+}
+.kasi-desc__label {
+  color: var(--kasi-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.kasi-desc__value {
+  color: var(--kasi-text);
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* --- Onglets (habillage d'un wrapper autour d'un nz-tabset) --------------- */
+/* Actif souligné ORANGE (accent), inactifs muted, hover pétrole. */
+.kasi-tabs .ant-tabs-nav {
+  margin-bottom: 20px !important;
+}
+.kasi-tabs .ant-tabs-nav::before {
+  border-bottom-color: var(--kasi-border) !important;
+}
+.kasi-tabs .ant-tabs-tab {
+  color: var(--kasi-text-muted) !important;
+  font-weight: 600 !important;
+  padding: 10px 2px !important;
+}
+.kasi-tabs .ant-tabs-tab + .ant-tabs-tab {
+  margin: 0 0 0 28px !important;
+}
+.kasi-tabs .ant-tabs-tab:hover .ant-tabs-tab-btn,
+.kasi-tabs .ant-tabs-tab:hover {
+  color: var(--kasi-petrol-600) !important;
+}
+.kasi-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--kasi-text) !important;
+}
+.kasi-tabs .ant-tabs-tab-btn:focus,
+.kasi-tabs .ant-tabs-tab-btn:active {
+  color: var(--kasi-text) !important;
+}
+/* Mode nzLinkRouter : les <a nz-tab-link> héritent de la couleur de l'onglet
+   (muted / pétrole au survol / texte si actif) au lieu du bleu lien ng-zorro. */
+.kasi-tabs .ant-tabs-tab a,
+.kasi-tabs .ant-tabs-tab .ant-tabs-tab-btn a {
+  color: inherit !important;
+}
+.kasi-tabs .ant-tabs-tab-active a {
+  color: var(--kasi-text) !important;
+}
+.kasi-tabs .ant-tabs-ink-bar {
+  background: var(--kasi-accent) !important;
+  height: 2.5px !important;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Onglets verticaux (nzTabPosition="left", pour la page settings). */
+.kasi-tabs--vertical .ant-tabs-nav {
+  min-width: 208px;
+}
+.kasi-tabs--vertical .ant-tabs-tab {
+  padding: 11px 16px !important;
+  border-radius: 10px;
+  justify-content: flex-start;
+}
+.kasi-tabs--vertical .ant-tabs-tab + .ant-tabs-tab {
+  margin: 6px 0 0 0 !important;
+}
+.kasi-tabs--vertical .ant-tabs-tab:hover {
+  background: var(--kasi-surface-2) !important;
+}
+.kasi-tabs--vertical .ant-tabs-tab.ant-tabs-tab-active {
+  background: var(--kasi-petrol-50) !important;
+}
+.dark .kasi-tabs--vertical .ant-tabs-tab.ant-tabs-tab-active {
+  background: rgba(18, 133, 162, 0.18) !important;
+}
+.kasi-tabs--vertical .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--kasi-petrol-700) !important;
+}
+.dark .kasi-tabs--vertical .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #cdeef6 !important;
+}
+.kasi-tabs--vertical .ant-tabs-ink-bar {
+  width: 3px !important;
+  height: auto !important;
+  background: var(--kasi-accent) !important;
+  border-radius: 3px 0 0 3px;
+}
+
+/* --- En-tête de fiche (remplace nz-page-header des pages *-view) ---------- */
+.kasi-profile-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--kasi-border);
+}
+.kasi-profile-head__avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--kasi-surface-3);
+  border: 1px solid var(--kasi-border);
+  color: var(--kasi-petrol-600);
+  font-size: 26px;
+}
+.kasi-profile-head__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kasi-profile-head__main {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.kasi-profile-head__main .kasi-title,
+.kasi-profile-head__name {
+  font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--kasi-text);
+}
+.kasi-profile-head__meta {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  color: var(--kasi-text-muted);
+}
+.kasi-profile-head__tags {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.kasi-profile-head__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}

@@ -1,10 +1,14 @@
-<nz-page-header [nzGhost]="false" nzBackIcon
-  [nzTitle]="form.value.id == null ? ('reward.newTitle' | translate) : (('reward.editTitle' | translate) + form.value.id)"
-  [nzSubtitle]="'reward.subtitle' | translate">
-  <nz-page-header-content>
-    <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ form.value.id == null ? ('reward.newTitle' | translate) : (('reward.editTitle' | translate) + form.value.id) }}</h1>
+    <p>{{ 'reward.subtitle' | translate }}</p>
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form class="kasi-form" nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
       <input formControlName="id" type="hidden" hidden>
-      <div class="lg:grid lg:grid-cols-4 lg:gap-2">
+      <div class="kasi-form--grid">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="title">{{'profile.title' | translate}}</nz-form-label>
           <nz-form-control>
@@ -67,7 +71,7 @@
         </nz-form-item>
       </div>
       <nz-divider [nzText]="'reward.conditions' | translate" nzOrientation="left"></nz-divider>
-      <div class="lg:grid lg:grid-cols-2 lg:gap-2">
+      <div class="kasi-form--grid">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="conditionTripCountsLessThan">{{ 'profile.conditionTripCountsLessThan' | translate }}</nz-form-label>
           <nz-form-control>
@@ -82,8 +86,9 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <button nz-button nzType="primary" type="submit" [disabled]="form.invalid" class="float-right">{{ 'profile.submit' |
-        translate }}</button>
     </form>
-  </nz-page-header-content>
-</nz-page-header>
+    <div class="kasi-form-actions">
+      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.submit' | translate }}</button>
+    </div>
+  </div>
+</div>

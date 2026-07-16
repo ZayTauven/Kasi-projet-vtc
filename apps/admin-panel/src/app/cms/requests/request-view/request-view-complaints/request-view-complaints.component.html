@@ -1,10 +1,11 @@
 <div *ngIf="(query | async)?.data?.order?.complaints as complaints">
+      <div class="kasi-card">
+        <div class="kasi-card__body kasi-card__body--flush">
       <nz-table
       #ajaxTable
       nzShowSizeChanger
       [nzData]="complaints"
       [nzTotal]="complaints.length"
-      nzBordered
     >
       <thead>
         <tr>
@@ -33,4 +34,6 @@
         </tr>
       </tbody>
     </nz-table>
+        </div>
+      </div>
 </div>

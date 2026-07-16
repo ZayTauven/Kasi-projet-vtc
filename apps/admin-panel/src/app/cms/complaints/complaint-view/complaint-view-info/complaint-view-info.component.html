@@ -1,65 +1,74 @@
 <div *ngIf="(query | async)?.data?.complaint as complaint">
-  <nz-descriptions nzTitle="{{ 'profile.requestInfo' | translate }}" nzBordered class="mt-2">
-    <nz-descriptions-item nzTitle="{{ 'requests.expectedTime' | translate }}">{{
-      complaint.order.expectedTimestamp !== null
-      ? (complaint.order.expectedTimestamp | date: "short")
-      : "-"
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'requests.startTime' | translate }}">{{
-      complaint.order.startTimestamp !== null ? (complaint.order.startTimestamp | date: "short") : "-"
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'requests.finishTime' | translate }}">{{
-      complaint.order.finishTimestamp !== null ? (complaint.order.finishTimestamp | date: "short") : "-"
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'requests.costAfterCoupon' | translate }}">{{
-      complaint.order.costAfterCoupon | currency:complaint.order.currency
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'requests.estimatedCost' | translate }}">{{
-      complaint.order.costBest | currency:complaint.order.currency
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.status' | translate }}" [nzSpan]="2">
-      <nz-badge [nzStatus]="tagColor.orderStatus(complaint.order.status)"
-        [nzText]="'enum.request.' + complaint.order.status | translate"></nz-badge>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.locations' | translate }}" [nzSpan]="3">
-      {{ complaint.order.addresses.join(" -> ") }}
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.view' | translate }}"><a
-        [routerLink]="'/../requests/view/' + complaint.order.id">{{ 'profile.view' | translate
-        }}</a></nz-descriptions-item>
-  </nz-descriptions>
+  <div class="kasi-card mt-2">
+    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.requestInfo' | translate }}</span></div>
+    <div class="kasi-card__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.expectedTime' | translate }}</span><span
+            class="kasi-desc__value">{{ complaint.order.expectedTimestamp !== null ? (complaint.order.expectedTimestamp |
+            date: "short") : "-" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.startTime' | translate }}</span><span
+            class="kasi-desc__value">{{ complaint.order.startTimestamp !== null ? (complaint.order.startTimestamp | date:
+            "short") : "-" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.finishTime' | translate }}</span><span
+            class="kasi-desc__value">{{ complaint.order.finishTimestamp !== null ? (complaint.order.finishTimestamp |
+            date: "short") : "-" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.costAfterCoupon' | translate
+            }}</span><span class="kasi-desc__value">{{ complaint.order.costAfterCoupon |
+            currency:complaint.order.currency }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.estimatedCost' | translate }}</span><span
+            class="kasi-desc__value">{{ complaint.order.costBest | currency:complaint.order.currency }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.orderStatus(complaint.order.status)"
+              [nzText]="'enum.request.' + complaint.order.status | translate"></nz-badge></span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.locations' | translate }}</span><span
+            class="kasi-desc__value">{{ complaint.order.addresses.join(" -> ") }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+            class="kasi-desc__value"><a [routerLink]="'/../requests/view/' + complaint.order.id">{{ 'profile.view' |
+            translate }}</a></span></div>
+      </div>
+    </div>
+  </div>
 
-  <nz-descriptions *ngIf="complaint.order.driver as driver"
-    nzTitle="{{ ('profile.driverInfo' | translate) + (complaint.requestedByDriver ? (' ' + ('profile.sender' | translate)) : '') }}" nzBordered
-    class="mt-2">
-    <nz-descriptions-item nzTitle="{{ 'profile.name' | translate }}">{{driver.firstName }}
-      {{driver.lastName}}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.mobileNumber' | translate }}">{{driver.mobileNumber.toString() | phone
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.registeredOn' | translate }}">{{ driver.registrationTimestamp | date:
-      "short" }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.status' | translate }}" [nzSpan]="2">
-      <nz-badge [nzStatus]="tagColor.driver(driver.status)"
-        [nzText]="'enum.driver.status.' + camelCase(driver.status) | translate"></nz-badge>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.view' | translate }}"><a
-        [routerLink]="'/../drivers/view/' + driver.id">{{ 'profile.view' | translate }}</a></nz-descriptions-item>
-  </nz-descriptions>
+  <div class="kasi-card mt-2" *ngIf="complaint.order.driver as driver">
+    <div class="kasi-card__head"><span class="kasi-card__title">{{ ('profile.driverInfo' | translate) +
+        (complaint.requestedByDriver ? (' ' + ('profile.sender' | translate)) : '') }}</span></div>
+    <div class="kasi-card__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+            class="kasi-desc__value">{{driver.firstName }} {{driver.lastName}}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
+            class="kasi-desc__value">{{driver.mobileNumber.toString() | phone }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
+            class="kasi-desc__value">{{ driver.registrationTimestamp | date: "short" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.driver(driver.status)"
+              [nzText]="'enum.driver.status.' + camelCase(driver.status) | translate"></nz-badge></span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+            class="kasi-desc__value"><a [routerLink]="'/../drivers/view/' + driver.id">{{ 'profile.view' | translate
+            }}</a></span></div>
+      </div>
+    </div>
+  </div>
 
-  <nz-descriptions nzTitle="{{ ('profile.riderInfo' | translate) + (complaint.requestedByDriver ? '' : (' ' + ('profile.sender' | translate))) }}"
-    nzBordered class="mt-2" *ngIf="complaint.order.rider as rider">
-    <nz-descriptions-item nzTitle="{{ 'profile.name' | translate }}">{{rider.firstName }}
-      {{rider.lastName}}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.mobileNumber' | translate }}">{{rider.mobileNumber | phone
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.registeredOn' | translate }}">{{
-      rider.registrationTimestamp !== null ? (rider.registrationTimestamp | date: "short") : "-"
-      }}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.status' | translate }}" [nzSpan]="2">
-      <nz-badge [nzStatus]="tagColor.rider(rider.status)"
-        [nzText]="'enum.rider.status.' + rider.status.toLowerCase() | translate"></nz-badge>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="{{ 'profile.view' | translate }}"><a [routerLink]="'/../riders/view/' + rider.id">{{
-        'profile.view' | translate }}</a></nz-descriptions-item>
-  </nz-descriptions>
+  <div class="kasi-card mt-2" *ngIf="complaint.order.rider as rider">
+    <div class="kasi-card__head"><span class="kasi-card__title">{{ ('profile.riderInfo' | translate) +
+        (complaint.requestedByDriver ? '' : (' ' + ('profile.sender' | translate))) }}</span></div>
+    <div class="kasi-card__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+            class="kasi-desc__value">{{rider.firstName }} {{rider.lastName}}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
+            class="kasi-desc__value">{{rider.mobileNumber | phone }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
+            class="kasi-desc__value">{{ rider.registrationTimestamp !== null ? (rider.registrationTimestamp | date:
+            "short") : "-" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.rider(rider.status)"
+              [nzText]="'enum.rider.status.' + rider.status.toLowerCase() | translate"></nz-badge></span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+            class="kasi-desc__value"><a [routerLink]="'/../riders/view/' + rider.id">{{ 'profile.view' | translate
+            }}</a></span></div>
+      </div>
+    </div>
+  </div>
 </div>

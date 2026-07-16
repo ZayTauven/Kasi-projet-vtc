@@ -1,50 +1,64 @@
 <div *ngIf="(query | async)?.data?.order as order">
   <div class="grid grid-cols-3 gap-2">
     <div class="col-span-2" *ngIf="order.rider as rider">
-      <nz-descriptions nzTitle="{{ 'profile.riderInfo' | translate }}" nzBordered class="mt-2">
-        <nz-descriptions-item nzTitle="{{ 'profile.name' | translate }}">{{rider.firstName }} {{rider.lastName}}
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.mobileNumber' | translate }}"><a
-            [href]="'tel:+' + rider.mobileNumber">{{rider.mobileNumber | phone }}</a>
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.registeredOn' | translate }}">{{ rider.registrationTimestamp | date:
-          "short" }}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.status' | translate }}" [nzSpan]="2">
-          <nz-badge [nzStatus]="tagColor.rider(rider.status)"
-            nzText="{{ 'enum.rider.status.' + rider.status.toLowerCase() | translate }}"></nz-badge>
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.actions' | translate }}"><button nz-button nzType="text"
-            [routerLink]="'/../riders/view/' + rider.id"><i nz-icon
-              nzType="folder-open"></i></button></nz-descriptions-item>
-      </nz-descriptions>
+      <div class="kasi-card mt-2">
+        <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.riderInfo' | translate }}</span></div>
+        <div class="kasi-card__body">
+          <div class="kasi-desc">
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+                class="kasi-desc__value">{{rider.firstName }} {{rider.lastName}}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate
+                }}</span><span class="kasi-desc__value"><a [href]="'tel:+' + rider.mobileNumber">{{rider.mobileNumber |
+                phone }}</a></span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate
+                }}</span><span class="kasi-desc__value">{{ rider.registrationTimestamp | date: "short" }}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+                class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.rider(rider.status)"
+                  nzText="{{ 'enum.rider.status.' + rider.status.toLowerCase() | translate }}"></nz-badge></span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.actions' | translate }}</span><span
+                class="kasi-desc__value"><button nz-button nzType="text"
+                  [routerLink]="'/../riders/view/' + rider.id"><i nz-icon
+                    nzType="folder-open"></i></button></span></div>
+          </div>
+        </div>
+      </div>
     </div>
     <a target="_blank" [href]="getMapAddress(order.points)"><img class="w-full h-auto hover:ring-2 hover:cursor-pointer"
         [src]="getMapAddress(order.points)"></a>
     <div class="col-span-3">
-      <nz-descriptions nzTitle="{{ 'profile.driverInfo' | translate }}" nzBordered class="mt-2"
-        *ngIf="order.driver as driver">
-        <nz-descriptions-item nzTitle="{{ 'profile.name' | translate }}">{{driver.firstName }} {{driver.lastName}}
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.mobileNumber' | translate }}"><a
-            [href]="'tel:+' + driver.mobileNumber">{{driver.mobileNumber | phone }}</a>
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.registeredOn' | translate }}">{{driver.registrationTimestamp | date:
-          "short"}}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.status' | translate }}" [nzSpan]="2">
-          <nz-badge [nzStatus]="tagColor.driver(driver.status)"
-            nzText="{{ 'enum.driver.status.' + camelCase(driver.status) | translate }}"></nz-badge>
-        </nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.actions' | translate }}"><button nz-button nzType="text"
-            [routerLink]="'/drivers/view/' + driver.id"><i nz-icon nzType="folder-open"></i></button>
-        </nz-descriptions-item>
-      </nz-descriptions>
-      <nz-descriptions nzTitle="{{ 'profile.coupon' | translate }}" nzBordered style="margin-top: 30px;"
-        *ngIf="order.coupon as coupon">
-        <nz-descriptions-item nzTitle="{{ 'profile.title' | translate }}">{{coupon.title }}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'profile.code' | translate }}">{{coupon.code }}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="{{ 'coupons.expirationTime' | translate }}">{{ coupon.expireAt | date: "short"
-          }}</nz-descriptions-item>
-      </nz-descriptions>
+      <div class="kasi-card mt-2" *ngIf="order.driver as driver">
+        <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.driverInfo' | translate }}</span></div>
+        <div class="kasi-card__body">
+          <div class="kasi-desc">
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+                class="kasi-desc__value">{{driver.firstName }} {{driver.lastName}}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate
+                }}</span><span class="kasi-desc__value"><a [href]="'tel:+' + driver.mobileNumber">{{driver.mobileNumber |
+                phone }}</a></span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate
+                }}</span><span class="kasi-desc__value">{{driver.registrationTimestamp | date: "short"}}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+                class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.driver(driver.status)"
+                  nzText="{{ 'enum.driver.status.' + camelCase(driver.status) | translate }}"></nz-badge></span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.actions' | translate }}</span><span
+                class="kasi-desc__value"><button nz-button nzType="text"
+                  [routerLink]="'/drivers/view/' + driver.id"><i nz-icon nzType="folder-open"></i></button></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="kasi-card mt-4" *ngIf="order.coupon as coupon">
+        <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.coupon' | translate }}</span></div>
+        <div class="kasi-card__body">
+          <div class="kasi-desc">
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.title' | translate }}</span><span
+                class="kasi-desc__value">{{coupon.title }}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.code' | translate }}</span><span
+                class="kasi-desc__value">{{coupon.code }}</span></div>
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'coupons.expirationTime' | translate
+                }}</span><span class="kasi-desc__value">{{ coupon.expireAt | date: "short" }}</span></div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- <nz-timeline class="mt-2">
   <nz-timeline-item>{{ 'requests.requestTime' | translate }}: {{ order.createdOn | date: "short" }}

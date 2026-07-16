@@ -1,11 +1,13 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'smsProvider.title' | translate"
-  [nzSubtitle]="'smsProvider.subtitle' | translate">
-  <nz-page-header-tags>
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'smsProvider.title' | translate }}</h1>
+    <p>{{ 'smsProvider.subtitle' | translate }}</p>
     <nz-tag *ngIf="isDefault" nzColor="blue">{{'smsProvider.default' | translate}}</nz-tag>
-  </nz-page-header-tags>
-</nz-page-header>
-<nz-card [nzActions]="[tmplActions]" style="mt-16">
-  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
     <input formControlName="id" type="hidden" hidden>
     <nz-form-item>
       <nz-form-label nzRequired nzFor="type">{{ 'smsProvider.type' | translate }}</nz-form-label>
@@ -54,21 +56,22 @@
         <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
       </nz-form-control>
     </nz-form-item>
-  </form>
-  <div *ngIf="showTestSms" class="mt-2">
-    <nz-input-group nzCompact style="max-width: 420px;">
-      <input nz-input [(ngModel)]="testNumber" [ngModelOptions]="{ standalone: true }" name="testNumber"
-        [placeholder]="'smsProvider.testNumber' | translate" style="width: 60%;" />
-      <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testNumber === ''"
-        (click)="onSendTestSms()">{{ 'smsProvider.testSms' | translate }}</button>
-    </nz-input-group>
+    </form>
+    <div *ngIf="showTestSms" class="mt-2">
+      <nz-input-group nzCompact style="max-width: 420px;">
+        <input nz-input [(ngModel)]="testNumber" [ngModelOptions]="{ standalone: true }" name="testNumber"
+          [placeholder]="'smsProvider.testNumber' | translate" style="width: 60%;" />
+        <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testNumber === ''"
+          (click)="onSendTestSms()">{{ 'smsProvider.testSms' | translate }}</button>
+      </nz-input-group>
+    </div>
+    <div class="kasi-form-actions">
+      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
+        translate}}</button>
+      <button *ngIf="isEdit" nz-button nzType="default" type="button" [disabled]="isDefault"
+        (click)="onSetDefault()">{{'smsProvider.setDefault' | translate}}</button>
+      <button *ngIf="isEdit" nz-button nzType="default" type="button"
+        (click)="showTestSms = !showTestSms">{{'smsProvider.testSms' | translate}}</button>
+    </div>
   </div>
-  <ng-template #tmplActions>
-    <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
-      translate}}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" type="button" class="ml-2" [disabled]="isDefault"
-      (click)="onSetDefault()">{{'smsProvider.setDefault' | translate}}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" type="button" class="ml-2"
-      (click)="showTestSms = !showTestSms">{{'smsProvider.testSms' | translate}}</button>
-  </ng-template>
-</nz-card>
+</div>

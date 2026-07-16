@@ -1,7 +1,12 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'reviewParameter.title' | translate" [nzSubtitle]="'reviewParameter.subtitle' | translate">
-</nz-page-header>
-<nz-card [nzActions]="[tmplActions]" style="mt-16">
-  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'reviewParameter.title' | translate }}</h1>
+    <p>{{ 'reviewParameter.subtitle' | translate }}</p>
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
     <input formControlName="id" type="hidden" hidden>
     <nz-form-item>
       <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
@@ -16,8 +21,9 @@
       </nz-form-control>
     </nz-form-item>
 
-    <ng-template #tmplActions>
+    </form>
+    <div class="kasi-form-actions">
       <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
-    </ng-template>
-  </form>
-</nz-card>
+    </div>
+  </div>
+</div>

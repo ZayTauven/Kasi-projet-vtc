@@ -1,7 +1,12 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'form.newFleet.title' | translate" [nzSubtitle]="'form.newFleet.subtitle' | translate">
-</nz-page-header>
-<nz-card style="mt-16">
-  <form nz-form #frm [formGroup]="form" (ngSubmit)="submitForm()">
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'form.newFleet.title' | translate }}</h1>
+    <p>{{ 'form.newFleet.subtitle' | translate }}</p>
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form #frm class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item>
       <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
       <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
@@ -62,6 +67,9 @@
         <input nz-input id="address" formControlName="address">
       </nz-form-control>
     </nz-form-item>
-    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid" class="float-right">{{ 'form.register' | translate }}</button>
+    <div class="kasi-form-actions kasi-form__full">
+      <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'form.register' | translate }}</button>
+    </div>
   </form>
-</nz-card>
+  </div>
+</div>

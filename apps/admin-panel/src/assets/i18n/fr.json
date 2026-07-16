@@ -12,7 +12,7 @@
 			"RiderCanceled": "Passager annulé",
 			"Started": "Commencé",
 			"WaitingForPostPay": "En attente de post-paiement",
-			"WaitingForReview": "en attente d'une revue",
+			"WaitingForReview": "En attente d'évaluation",
 			"Finished": "Fini",
 			"Booked": "Réservé",
 			"Expired": "Expiré"
@@ -76,7 +76,7 @@
 		"sosStatus": {
 			"submitted": "Soumis",
 			"underReview": "À l'étude",
-			"falseAlarm": "fausse alerte",
+			"falseAlarm": "Fausse alerte",
 			"resolved": "Résolu"
 		},
 		"driver": {
@@ -104,7 +104,7 @@
 			"contactDriver": "J'ai contacté le Kasiman",
 			"contactAuthorities": "Autorités contactées",
 			"markedAsResolved": "Marqué comme résolu",
-			"markedAsFalseAlarm": "Marqué comme fausse alarme"
+			"markedAsFalseAlarm": "Marqué comme fausse alerte"
 		},
 		"transactionAction": {
 			"Deduct": "Déduire",
@@ -364,6 +364,8 @@
 		"assign": "Attribuer"
 	},
 	"complaint": {
+		"title": "Plainte",
+		"subtitle": "Détail de la plainte soumise.",
 		"inscriptionTime": "Heure d'inscription",
 		"content": "Contenu"
 	},
@@ -395,6 +397,8 @@
 		"submittedOn": "Soumis le"
 	},
 	"drivers": {
+		"title": "Kasimen",
+		"subtitle": "Liste de tous les Kasimen inscrits.",
 		"notFoundMessage": "Kasiman introuvable !"
 	},
 	"dispatcher": {
@@ -448,6 +452,8 @@
 		"PERMISSION_NOT_GRANTED": "Autorisation non accordée"
 	},
 	"fleet": {
+		"title": "Flotte",
+		"subtitle": "Paramètres et zone d'exclusivité de la flotte.",
 		"exclusitivityAreaTitle": "Zone d'exclusivité",
 		"exclusitivityAreaWarning": "Soyez prudent lors de l'utilisation de cette fonctionnalité. Une fois qu'une zone d'exclusivité est attribuée à une flotte, toutes les demandes de course provenant de cette zone seront destinées uniquement aux Kasimen appartenant à cette flotte. Les Kasimen qui ne font pas partie de la flotte ne recevront pas ces demandes.",
 		"feeMultiplier": "Multiplicateur de frais"
@@ -542,7 +548,7 @@
 	},
 	"callMaskingProviders": {
 		"title": "Fournisseurs d'appels masqués",
-		"subtitle": "Fournisseurs vocaux utilisés pour anonymiser les appels entre passagers et chauffeurs."
+		"subtitle": "Fournisseurs vocaux utilisés pour anonymiser les appels entre passagers et Kasimen."
 	},
 	"callMaskingProvider": {
 		"title": "Fournisseur d'appels masqués",
@@ -690,6 +696,7 @@
 		"subtitle": "Options de paiement des clients"
 	},
 	"paymentGateway": {
+		"title": "Passerelle de paiement",
 		"subtitle": "Clés API et définitions destinées aux clients.",
 		"apiKeys": "Clés API"
 	},

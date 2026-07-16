@@ -1,5 +1,5 @@
 <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="onSubmit()"
-  class="lg:grid lg:grid-cols-3 lg:gap-2">
+  class="kasi-form kasi-form--grid kasi-form--3">
   <input formControlName="id" type="hidden" hidden>
   <nz-form-item>
     <nz-form-label nzRequired nzFor="firstName">{{'profile.firstName' | translate}}</nz-form-label>
@@ -46,4 +46,6 @@
     </nz-form-control>
   </nz-form-item>
 </form>
-<button class="float-right" nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.save' | translate}}</button>
+<div class="kasi-form-actions">
+  <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.save' | translate}}</button>
+</div>

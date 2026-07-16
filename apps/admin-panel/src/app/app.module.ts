@@ -90,6 +90,9 @@ import {
   MenuOutline,
   EyeOutline,
   ArrowRightOutline,
+  // Icônes des pages détail/view/settings (Lot 0)
+  DownOutline,
+  CheckOutline,
 } from '@ant-design/icons-angular/icons';
 import { IconDefinition } from '@ant-design/icons-angular';
 import { ApolloModule } from 'apollo-angular';
@@ -163,6 +166,8 @@ const icons: IconDefinition[] = [
   MenuOutline,
   EyeOutline,
   ArrowRightOutline,
+  DownOutline,
+  CheckOutline,
 ];
 registerLocaleData(en);
 

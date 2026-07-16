@@ -1,8 +1,8 @@
-<form nz-form [formGroup]="form" nzLayout="vertical" (ngSubmit)="onSubmit()" *ngIf="(query | async)?.data as data">
+<form nz-form class="kasi-form" [formGroup]="form" nzLayout="vertical" (ngSubmit)="onSubmit()" *ngIf="(query | async)?.data as data">
   <input formControlName="id" type="hidden" hidden>
   <input formControlName="mediaId" type="hidden" hidden>
   <input formControlName="enabledServices" type="hidden" hidden>
-  <div class="lg:grid lg:grid-cols-4 lg:gap-2">
+  <div class="kasi-form--grid">
     <nz-form-item>
       <nz-form-label nzRequired nzFor="firstName">{{'profile.firstName' | translate}}</nz-form-label>
       <nz-form-control>
@@ -118,7 +118,7 @@
         <input nz-input formControlName="address" id="address">
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="lg:col-span-4">
+    <nz-form-item class="kasi-form__full">
       <nz-form-label nzRequired>
         {{ 'profile.services' | translate }}
       </nz-form-label>
@@ -160,5 +160,7 @@
       <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
     </nz-upload>
     <br> -->
-  <button nz-button nzType="primary" [disabled]="!form.valid">{{ 'profile.save' | translate }}</button>
+  <div class="kasi-form-actions">
+    <button nz-button nzType="primary" [disabled]="!form.valid">{{ 'profile.save' | translate }}</button>
+  </div>
 </form>

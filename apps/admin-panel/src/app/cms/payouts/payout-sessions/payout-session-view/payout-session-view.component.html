@@ -1,69 +1,91 @@
-<nz-page-header *ngIf="session" [nzGhost]="false" nzBackIcon
-  [nzTitle]="('payoutSession.title' | translate) + ' #' + session.id"
-  [nzSubtitle]="session.description ?? ('payoutSession.subtitle' | translate)">
-  <nz-page-header-tags>
-    <nz-tag [nzColor]="statusColor(session.status)">{{ 'enum.payoutSessionStatus.' + session.status | translate
-      }}</nz-tag>
-  </nz-page-header-tags>
-  <nz-page-header-extra>
-    <nz-space *ngIf="session.status === 'Pending'">
-      <button *nzSpaceItem nz-button nz-popconfirm [nzPopconfirmTitle]="'payouts.processAllConfirm' | translate"
+<ng-container *ngIf="session">
+  <!-- En-tête de fiche -->
+  <div class="kasi-profile-head">
+    <div class="kasi-profile-head__main">
+      <h1 class="kasi-profile-head__name">{{ ('payoutSession.title' | translate) + ' #' + session.id }}</h1>
+      <div class="kasi-profile-head__meta">{{ session.description ?? ('payoutSession.subtitle' | translate) }}</div>
+      <div class="kasi-profile-head__tags">
+        <nz-tag [nzColor]="statusColor(session.status)">{{ 'enum.payoutSessionStatus.' + session.status | translate
+          }}</nz-tag>
+      </div>
+    </div>
+    <div class="kasi-profile-head__actions" *ngIf="session.status === 'Pending'">
+      <button nz-button nz-popconfirm [nzPopconfirmTitle]="'payouts.processAllConfirm' | translate"
         (nzOnConfirm)="processSession()" nzType="primary" [nzLoading]="loading">
         <i nz-icon nzType="check"></i>{{ 'payouts.processAll' | translate }}
       </button>
-      <button *nzSpaceItem nz-button nz-popconfirm [nzPopconfirmTitle]="'payouts.cancelSessionConfirm' | translate"
+      <button nz-button nz-popconfirm [nzPopconfirmTitle]="'payouts.cancelSessionConfirm' | translate"
         (nzOnConfirm)="cancelSession()" nzDanger [nzLoading]="loading">
         {{ 'payouts.cancelSession' | translate }}
       </button>
-    </nz-space>
-  </nz-page-header-extra>
-  <nz-page-header-content>
-    <nz-descriptions nzBordered [nzColumn]="4" class="mb-4">
-      <nz-descriptions-item [nzTitle]="'profile.date' | translate">{{ session.createdAt | date: 'short'
-        }}</nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'profile.currency' | translate">{{ session.currency }}</nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'payouts.minimumAmount' | translate">{{ session.minimumAmount | currency:
-        session.currency }}</nz-descriptions-item>
-      <nz-descriptions-item [nzTitle]="'payouts.totalAmount' | translate">{{ session.totalAmount | currency:
-        session.currency }}</nz-descriptions-item>
-    </nz-descriptions>
-    <nz-table #table [nzData]="session.payouts.nodes" [nzShowPagination]="session.payouts.nodes.length > 10" nzBordered>
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'payouts.method' | translate }}</th>
-          <th>{{ 'payouts.accountNumber' | translate }}</th>
-          <th>{{ 'profile.amount' | translate }}</th>
-          <th>{{ 'profile.status' | translate }}</th>
-          <th>{{ 'profile.actions' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let payout of table.data">
-          <td>
-            <a [routerLink]="'/drivers/view/' + payout.driverId">{{ (payout.driver.firstName ?? '') + ' ' +
-              (payout.driver.lastName ?? '') }}</a>
-          </td>
-          <td>{{ payout.methodName }} ({{ 'enum.payoutMethodType.' + payout.methodType | translate }})</td>
-          <td>{{ payout.accountNumber ?? '—' }}</td>
-          <td>{{ payout.amount | currency: payout.currency }}</td>
-          <td>
-            <nz-tag [nzColor]="statusColor(payout.status)">{{ 'enum.payoutStatus.' + payout.status | translate
-              }}</nz-tag>
-            <span *ngIf="payout.processedAt" class="text-xs">{{ payout.processedAt | date: 'short' }}</span>
-          </td>
-          <td>
-            <nz-space *ngIf="payout.status === 'Pending'">
-              <button *nzSpaceItem nz-button nzSize="small" nzType="primary" nz-popconfirm
-                [nzPopconfirmTitle]="'payouts.markPaidConfirm' | translate" (nzOnConfirm)="processPayout(payout.id)"
-                [nzLoading]="loading">{{ 'payouts.markPaid' | translate }}</button>
-              <button *nzSpaceItem nz-button nzSize="small" nzDanger nz-popconfirm
-                [nzPopconfirmTitle]="'payouts.cancelPayoutConfirm' | translate" (nzOnConfirm)="cancelPayout(payout.id)"
-                [nzLoading]="loading">{{ 'payouts.cancel' | translate }}</button>
-            </nz-space>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
-  </nz-page-header-content>
-</nz-page-header>
+    </div>
+  </div>
+
+  <!-- Récapitulatif -->
+  <div class="kasi-card mb-4">
+    <div class="kasi-card__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row">
+          <span class="kasi-desc__label">{{ 'profile.date' | translate }}</span>
+          <span class="kasi-desc__value">{{ session.createdAt | date: 'short' }}</span>
+        </div>
+        <div class="kasi-desc__row">
+          <span class="kasi-desc__label">{{ 'profile.currency' | translate }}</span>
+          <span class="kasi-desc__value">{{ session.currency }}</span>
+        </div>
+        <div class="kasi-desc__row">
+          <span class="kasi-desc__label">{{ 'payouts.minimumAmount' | translate }}</span>
+          <span class="kasi-desc__value">{{ session.minimumAmount | currency: session.currency }}</span>
+        </div>
+        <div class="kasi-desc__row">
+          <span class="kasi-desc__label">{{ 'payouts.totalAmount' | translate }}</span>
+          <span class="kasi-desc__value">{{ session.totalAmount | currency: session.currency }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Versements de la session -->
+  <div class="kasi-card">
+    <div class="kasi-card__body kasi-card__body--flush">
+      <nz-table #table [nzData]="session.payouts.nodes" [nzShowPagination]="session.payouts.nodes.length > 10">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'payouts.method' | translate }}</th>
+            <th>{{ 'payouts.accountNumber' | translate }}</th>
+            <th>{{ 'profile.amount' | translate }}</th>
+            <th>{{ 'profile.status' | translate }}</th>
+            <th>{{ 'profile.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payout of table.data">
+            <td>
+              <a [routerLink]="'/drivers/view/' + payout.driverId">{{ (payout.driver.firstName ?? '') + ' ' +
+                (payout.driver.lastName ?? '') }}</a>
+            </td>
+            <td>{{ payout.methodName }} ({{ 'enum.payoutMethodType.' + payout.methodType | translate }})</td>
+            <td>{{ payout.accountNumber ?? '—' }}</td>
+            <td>{{ payout.amount | currency: payout.currency }}</td>
+            <td>
+              <nz-tag [nzColor]="statusColor(payout.status)">{{ 'enum.payoutStatus.' + payout.status | translate
+                }}</nz-tag>
+              <span *ngIf="payout.processedAt" class="text-xs">{{ payout.processedAt | date: 'short' }}</span>
+            </td>
+            <td>
+              <nz-space *ngIf="payout.status === 'Pending'">
+                <button *nzSpaceItem nz-button nzSize="small" nzType="primary" nz-popconfirm
+                  [nzPopconfirmTitle]="'payouts.markPaidConfirm' | translate" (nzOnConfirm)="processPayout(payout.id)"
+                  [nzLoading]="loading">{{ 'payouts.markPaid' | translate }}</button>
+                <button *nzSpaceItem nz-button nzSize="small" nzDanger nz-popconfirm
+                  [nzPopconfirmTitle]="'payouts.cancelPayoutConfirm' | translate" (nzOnConfirm)="cancelPayout(payout.id)"
+                  [nzLoading]="loading">{{ 'payouts.cancel' | translate }}</button>
+              </nz-space>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</ng-container>

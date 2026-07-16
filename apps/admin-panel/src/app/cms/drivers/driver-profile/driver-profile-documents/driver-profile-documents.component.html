@@ -1,4 +1,5 @@
-<div style="overflow: auto;" *ngIf="(query | async)?.data?.driver as driver">
+<div class="kasi-card" *ngIf="(query | async)?.data?.driver as driver">
+  <div class="kasi-card__body" style="overflow: auto;">
   <nz-upload nzListType="picture-card" [nzFileList]="files" [nzShowButton]="false" [nzPreview]="handlePreview"
     [nzShowUploadList]="{showRemoveIcon: false, showPreviewIcon: true, showDownloadIcon: true}">
     <div>
@@ -12,6 +13,7 @@
       <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
     </ng-template>
   </nz-modal>
+  </div>
 </div>
 <!-- <div *ngIf="(query | async)?.data?.driver?.documents as documents">
   <div *ngFor="let document of documents">

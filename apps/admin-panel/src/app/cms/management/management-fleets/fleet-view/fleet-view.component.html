@@ -1,35 +1,26 @@
-<nz-card *ngIf="(query | async)?.data?.fleet as fleet">
-  <nz-page-header>
-    <nz-page-header-title>{{ fleet.name }}</nz-page-header-title>
-    <nz-page-header-tags>
-    </nz-page-header-tags>
-    <nz-page-header-extra>
-    </nz-page-header-extra>
-    <nz-page-header-content>
-      <div class="content">
-        <div class="main">
-          <nz-descriptions [nzColumn]="2">
-            <nz-descriptions-item nzTitle="{{ 'profile.phoneNumber' | translate }}" [nzSpan]="1">{{ fleet.phoneNumber }}
-            </nz-descriptions-item>
-            <nz-descriptions-item nzTitle="{{ 'profile.address' | translate }}" [nzSpan]="2">{{ fleet.address }}
-            </nz-descriptions-item>
-          </nz-descriptions>
-        </div>
+<ng-container *ngIf="(query | async)?.data?.fleet as fleet">
+  <div class="kasi-profile-head">
+    <div class="kasi-profile-head__avatar"><i nz-icon nzType="team"></i></div>
+    <div class="kasi-profile-head__main">
+      <h1 class="kasi-profile-head__name">{{ fleet.name }}</h1>
+      <div class="kasi-profile-head__meta">
+        <span>{{ 'profile.phoneNumber' | translate }}: {{ fleet.phoneNumber }}</span>
+        <span>{{ 'profile.address' | translate }}: {{ fleet.address }}</span>
       </div>
-    </nz-page-header-content>
-    <nz-page-header-footer>
-      <nz-tabset class="mb-2" nzLinkRouter>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="details">{{ 'profile.details' | translate }}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="financials">{{ 'profile.financialRecords' | translate }}</a>
-        </nz-tab>
-        <nz-tab>
-          <a *nzTabLink nz-tab-link routerLink="zone-prices">{{ 'menu.management.zonePrices' | translate }}</a>
-        </nz-tab>
-      </nz-tabset>
-      <router-outlet></router-outlet>
-    </nz-page-header-footer>
-  </nz-page-header>
-</nz-card>
+    </div>
+  </div>
+  <div class="kasi-tabs">
+    <nz-tabset nzLinkRouter>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="details">{{ 'profile.details' | translate }}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="financials">{{ 'profile.financialRecords' | translate }}</a>
+      </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link routerLink="zone-prices">{{ 'menu.management.zonePrices' | translate }}</a>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+  <router-outlet></router-outlet>
+</ng-container>

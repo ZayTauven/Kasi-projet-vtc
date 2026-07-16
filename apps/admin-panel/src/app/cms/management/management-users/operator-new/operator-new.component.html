@@ -1,11 +1,12 @@
-<nz-page-header
-      [nzGhost]="false"
-      nzBackIcon
-      [nzTitle]="'form.newOperator.title' | translate"
-      [nzSubtitle]="'form.newOperator.subtitle' | translate">
-    </nz-page-header>
-    <nz-card [nzActions]="[tmplActions]" style="mt-16">
-      <form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'form.newOperator.title' | translate }}</h1>
+    <p>{{ 'form.newOperator.subtitle' | translate }}</p>
+  </div>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="submitForm()">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="firstName">{{ 'profile.firstName' | translate }}</nz-form-label>
           <nz-form-control [nzErrorTip]="'form.notValidFirstName' | translate">
@@ -57,8 +58,9 @@
             <input nz-input formControlName="email" id="email" />
           </nz-form-control>
         </nz-form-item>
-        <ng-template #tmplActions>
-          <button nz-button nzType="primary" [disabled]="form.invalid" (click)="submitForm()">{{ 'form.register' | translate }}</button>
-        </ng-template>
-      </form>
-    </nz-card>
+    </form>
+    <div class="kasi-form-actions">
+      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="submitForm()">{{ 'form.register' | translate }}</button>
+    </div>
+  </div>
+</div>

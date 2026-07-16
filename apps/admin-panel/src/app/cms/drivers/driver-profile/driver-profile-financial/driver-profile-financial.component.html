@@ -1,8 +1,11 @@
 <div fxLayout="row" fxLayoutGap="4px" class="dt-actionbar">
   <!--<button nz-button nzType="primary"><i nz-icon nzType="plus"></i>Add</button>-->
 </div>
-<nz-table #table [nzTitle]="'profile.transactionsRecords' | translate" nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.driver?.transactions as transactions"
-  [nzData]="transactions.nodes" [nzTotal]="transactions.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+<div class="kasi-card">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.transactionsRecords' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+<nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.driver?.transactions as transactions"
+  [nzData]="transactions.nodes" [nzTotal]="transactions.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
   <thead>
     <tr>
       <th [nzSortFn]="true" nzColumnKey="createdAt">
@@ -45,8 +48,13 @@
     </tr>
   </tbody>
 </nz-table>
-<nz-table #walletTable *ngIf="(query | async)?.data?.driver?.wallets as driverWallets" [nzTitle]="'profile.walletSummary' | translate"
-  [nzFrontPagination] [nzData]="driverWallets" [nzTotal]="driverWallets.length" nzBordered class="mt-2">
+  </div>
+</div>
+<div class="kasi-card mt-4">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.walletSummary' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+<nz-table #walletTable *ngIf="(query | async)?.data?.driver?.wallets as driverWallets"
+  [nzFrontPagination] [nzData]="driverWallets" [nzTotal]="driverWallets.length">
   <thead>
     <tr>
       <th>{{ 'profile.amount' | translate }}</th>
@@ -58,9 +66,13 @@
     </tr>
   </tbody>
 </nz-table>
-<nz-card nzTitle="{{ 'profile.insertTransaction' | translate }}" class="mt-2">
-  <form nz-form [formGroup]="formTransaction" (ngSubmit)="onSubmitTransaction()">
-    <div class="lg:grid lg:grid-cols-2 lg:gap-2">
+  </div>
+</div>
+<div class="kasi-card mt-4">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.insertTransaction' | translate }}</span></div>
+  <div class="kasi-card__body">
+  <form nz-form class="kasi-form" [formGroup]="formTransaction" (ngSubmit)="onSubmitTransaction()">
+    <div class="kasi-form--grid">
     <nz-form-item>
       <nz-form-label nzRequired>{{ 'profile.type' | translate }}</nz-form-label>
       <nz-form-control>
@@ -114,7 +126,10 @@
       </nz-form-control>
     </nz-form-item>
   </div>
-  <button class="float-right mt-2" nz-button nzType="primary" type="submit" [disabled]="!formTransaction.valid">{{
+  <div class="kasi-form-actions">
+    <button nz-button nzType="primary" type="submit" [disabled]="!formTransaction.valid">{{
     'profile.submit' | translate }}</button>
+  </div>
   </form>
-</nz-card>
+  </div>
+</div>

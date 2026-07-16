@@ -1,6 +1,8 @@
 
-<nz-table #table nzShowSizeChanger class="mt-4" [nzFrontPagination]="false" *ngIf="(query | async)?.data?.rider?.orders as orders" [nzData]="orders.nodes"  [nzTotal]="orders.totalCount"
-(nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+<nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.rider?.orders as orders" [nzData]="orders.nodes"  [nzTotal]="orders.totalCount"
+(nzQueryParams)="tableService.onTableQueryParamsChange($event)">
   <thead>
     <tr>
       <th [nzSortFn]="true" nzColumnKey="createdOn">
@@ -32,3 +34,5 @@
     </tr>
   </tbody>
 </nz-table>
+  </div>
+</div>

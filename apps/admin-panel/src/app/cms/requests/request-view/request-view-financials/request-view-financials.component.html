@@ -1,5 +1,8 @@
 <div *ngIf="(query | async)?.data?.order as order">
-<nz-table #basicTable2 [nzData]="order.riderTransactions" nzTitle="{{ 'profile.rider' | translate }}" nzBordered>
+<div class="kasi-card">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.rider' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+<nz-table #basicTable2 [nzData]="order.riderTransactions">
   <thead>
     <tr>
       <th>{{ 'profile.amount' | translate }}</th>
@@ -17,8 +20,12 @@
     </tr>
   </tbody>
 </nz-table>
-<br>
-<nz-table #basicTable [nzData]="order.driverTransactions" [nzFrontPagination]='false' nzTitle="{{ 'profile.driver' | translate }}" nzBordered>
+  </div>
+</div>
+<div class="kasi-card mt-4">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.driver' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+<nz-table #basicTable [nzData]="order.driverTransactions" [nzFrontPagination]='false'>
     <thead>
       <tr>
         <th>{{ 'profile.amount' | translate }}</th>
@@ -34,8 +41,12 @@
       </tr>
     </tbody>
   </nz-table>
-  <br>
-  <nz-table #basicTable3 [nzData]="order.providerTransactions" [nzFrontPagination]='false' nzTitle="{{ 'profile.admin' | translate }}" nzBordered>
+  </div>
+</div>
+<div class="kasi-card mt-4">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.admin' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+  <nz-table #basicTable3 [nzData]="order.providerTransactions" [nzFrontPagination]='false'>
     <thead>
       <tr>
         <th>{{ 'profile.amount' | translate }}</th>
@@ -51,8 +62,12 @@
       </tr>
     </tbody>
   </nz-table>
-  <br>
-  <nz-table *ngIf="order.fleetTransactions.length > 0" #basicTable4 [nzData]="order.fleetTransactions" [nzFrontPagination]='false' nzTitle="{{ 'profile.fleet' | translate }}" nzBordered>
+  </div>
+</div>
+<div class="kasi-card mt-4" *ngIf="order.fleetTransactions.length > 0">
+  <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.fleet' | translate }}</span></div>
+  <div class="kasi-card__body kasi-card__body--flush">
+  <nz-table #basicTable4 [nzData]="order.fleetTransactions" [nzFrontPagination]='false'>
     <thead>
       <tr>
         <th>{{ 'profile.amount' | translate }}</th>
@@ -68,4 +83,6 @@
       </tr>
     </tbody>
   </nz-table>
+  </div>
+</div>
 </div>

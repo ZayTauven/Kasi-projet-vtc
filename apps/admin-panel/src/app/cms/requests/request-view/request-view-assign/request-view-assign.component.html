@@ -72,13 +72,14 @@
   </div>
 
   <div class="mt-2 lg:mt-0">
+    <div class="kasi-card">
+      <div class="kasi-card__body kasi-card__body--flush">
     <nz-table
       #table
       nzShowSizeChanger
       [nzFrontPagination]="false"
       *ngIf="(query | async)?.[0]?.data?.getDriversLocationWithData as drivers"
-      [nzData]="drivers"
-      nzBordered>
+      [nzData]="drivers">
       <thead>
         <tr>
           <th nzShowSort nzColumnKey="reviewTimestamp">{{ 'profile.name' | translate }}</th>
@@ -99,5 +100,7 @@
         </tr>
       </tbody>
     </nz-table>
+      </div>
+    </div>
   </div>
 </div>

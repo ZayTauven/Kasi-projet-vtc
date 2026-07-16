@@ -1,9 +1,11 @@
 <div fxLayout="row" fxLayoutGap="4px" class="dt-actionbar">
   <!--<button nz-button nzType="primary"><i nz-icon nzType="plus"></i>Add</button>-->
 </div>
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
 <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
   *ngIf="(query | async)?.data?.fleet?.zonePrices as zonePrices" [nzData]="zonePrices.nodes"
-  [nzTotal]="zonePrices.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange" nzBordered>
+  [nzTotal]="zonePrices.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange">
   <thead>
     <tr>
       <th>
@@ -18,3 +20,5 @@
     </tr>
   </tbody>
 </nz-table>
+  </div>
+</div>
