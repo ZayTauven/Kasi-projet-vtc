@@ -44,6 +44,10 @@
 			"Twilio": "Twilio",
 			"OrangeSms": "Orange SMS"
 		},
+		"callMaskingProviderType": {
+			"Direct": "Direct (dev)",
+			"TwilioVoice": "Twilio Voice"
+		},
 		"payoutSessionStatus": {
 			"Pending": "Pending",
 			"Processed": "Processed",
@@ -170,6 +174,7 @@
 			"zonePrices": "Zone Prices",
 			"orderCancelReasons": "Order Cancel Reasons",
 			"smsProviders": "SMS Providers",
+			"callMaskingProviders": "Call Masking",
 			"reviewParameters": "Review Parameters",
 			"cars": "Cars",
 			"userRoles": "User Roles",
@@ -534,6 +539,28 @@
 		"testSms": "Test SMS",
 		"testNumber": "Phone number",
 		"testSent": "Test SMS sent."
+	},
+	"callMaskingProviders": {
+		"title": "Call Masking Providers",
+		"subtitle": "Voice providers used to anonymize calls between riders and drivers."
+	},
+	"callMaskingProvider": {
+		"title": "Call Masking Provider",
+		"subtitle": "Anonymized call provider settings.",
+		"type": "Type",
+		"accountId": "Account SID",
+		"apiSecret": "Auth token",
+		"apiSecretHint": "Unchanged if empty.",
+		"proxyNumber": "Proxy number",
+		"webhookAuthToken": "Webhook auth token",
+		"webhookAuthTokenHint": "Unchanged if empty.",
+		"sessionTtlMinutes": "Session TTL (minutes)",
+		"setDefault": "Set as default",
+		"default": "Default",
+		"defaultSet": "Set as the default provider.",
+		"testCall": "Test call",
+		"testNumber": "Phone number",
+		"testSent": "Test call triggered."
 	},
 	"cancelReason": {
 		"title": "Cancel Reason",

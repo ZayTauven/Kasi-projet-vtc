@@ -22,6 +22,10 @@ import {
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { SharedProviderService } from '@kasi/order/shared-provider.service';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
+import {
+  CallMaskingService,
+  MaskedCallResult,
+} from '@kasi/order/call-masking.service';
 import { OrderRedisService } from '@kasi/redis/order-redis.service';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
@@ -49,7 +53,55 @@ export class RiderOrderService {
     @InjectPubSub()
     private pubSub: RedisPubSub,
     private httpService: HttpService,
+    private callMaskingService: CallMaskingService,
   ) {}
+
+  // Ensemble EXACT des statuts « actifs » utilisé par getCurrentOrder : une
+  // course doit être dans l'un d'eux pour qu'un appel masqué soit autorisé.
+  private static readonly ACTIVE_ORDER_STATUSES = [
+    OrderStatus.Requested,
+    OrderStatus.Booked,
+    OrderStatus.Found,
+    OrderStatus.NotFound,
+    OrderStatus.NoCloseFound,
+    OrderStatus.DriverAccepted,
+    OrderStatus.Arrived,
+    OrderStatus.Started,
+    OrderStatus.WaitingForReview,
+    OrderStatus.WaitingForPrePay,
+    OrderStatus.WaitingForPostPay,
+  ];
+
+  // Appel masqué demandé par le RIDER pour joindre le driver de sa course.
+  // Cœur sécurité : seul le rider participant d'une course active obtient un
+  // numéro, et uniquement vers le driver de CETTE course.
+  async requestMaskedCall(
+    riderId: number,
+    orderId: number,
+  ): Promise<MaskedCallResult> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['rider', 'driver'],
+    });
+    if (
+      order == null ||
+      !RiderOrderService.ACTIVE_ORDER_STATUSES.includes(order.status)
+    ) {
+      throw new Error('ORDER_NOT_ACTIVE');
+    }
+    if (order.riderId !== riderId) {
+      throw new Error('CALL_MASKING_NOT_ALLOWED');
+    }
+    // Pas de contrepartie tant qu'aucun driver n'est assigné.
+    if (order.driver == null || order.driver.mobileNumber == null) {
+      throw new Error('CALL_MASKING_NOT_ALLOWED');
+    }
+    return this.callMaskingService.requestMaskedCall({
+      order,
+      callerMsisdn: order.rider.mobileNumber,
+      targetMsisdn: order.driver.mobileNumber,
+    });
+  }
 
   async getCurrentOrder(
     riderId: number,
@@ -170,7 +222,21 @@ export class RiderOrderService {
       requestId: order.id,
       type: RequestActivityType.CanceledByRider,
     });
+    // Course terminale (RiderCanceled) : purge les sessions de call masking.
+    await this.safeEndCallMasking(order.id);
     return order;
+  }
+
+  // Purge non bloquante des sessions de masquage à la fin d'une course.
+  private async safeEndCallMasking(orderId: number): Promise<void> {
+    try {
+      await this.callMaskingService.endSession(orderId);
+    } catch (error) {
+      Logger.warn(
+        `endSession failed for order ${orderId}: ${(error as Error).message}`,
+        'RiderOrderService',
+      );
+    }
   }
 
   async submitReview(
@@ -214,6 +280,8 @@ export class RiderOrderService {
     await this.orderRepository.update(order.id, {
       status: OrderStatus.Finished,
     });
+    // Course terminale (Finished) : purge les sessions de call masking.
+    await this.safeEndCallMasking(order.id);
     order = await this.orderRepository.findOneBy({ id: review.requestId });
     return order;
   }

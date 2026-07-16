@@ -1,0 +1,35 @@
+query CallMaskingProviderView($id: ID!) {
+  callMaskingProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    accountId
+    proxyNumber
+    sessionTtlMinutes
+  }
+}
+
+mutation CreateCallMaskingProvider($input: CallMaskingProviderInput!) {
+  createOneCallMaskingProvider(input: { callMaskingProvider: $input }) {
+    id
+  }
+}
+
+mutation UpdateCallMaskingProvider($id: ID!, $update: CallMaskingProviderInput!) {
+  updateOneCallMaskingProvider(input: { id: $id, update: $update }) {
+    id
+  }
+}
+
+mutation SetDefaultCallMaskingProvider($id: ID!) {
+  setDefaultCallMaskingProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+
+mutation TestMaskedCall($number: String!, $providerId: ID) {
+  testMaskedCall(number: $number, providerId: $providerId)
+}

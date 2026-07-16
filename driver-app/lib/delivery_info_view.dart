@@ -93,6 +93,11 @@ class DeliveryInfoView extends StatelessWidget {
                   ),
                   if (recipientMobileNumber != null &&
                       recipientMobileNumber!.isNotEmpty)
+                    // Appel direct volontaire (pas de call masking) : le
+                    // destinataire d'une livraison Kasi Moto n'est pas un
+                    // utilisateur de l'app, on ne peut donc pas lui attribuer de
+                    // numéro proxy. Décision produit phase 1 — reste en tel://
+                    // direct vers le numéro saisi par l'expéditeur.
                     InkWell(
                       onTap: () =>
                           launchUrl(Uri.parse("tel://$recipientMobileNumber")),

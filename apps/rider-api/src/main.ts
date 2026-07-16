@@ -34,6 +34,10 @@ async function bootstrap() {
       fileSize: 10000000,
     },
   });
+  // Twilio poste ses webhooks voix en application/x-www-form-urlencoded : le
+  // FastifyAdapter de NestJS enregistre déjà ce content-type parser par défaut
+  // (req.body arrive en objet). Ne PAS en ajouter un manuellement, sinon
+  // FST_ERR_CTP_ALREADY_PRESENT au démarrage.
   const configAddress = `${process.cwd()}/config/config.${
     process.env.NODE_ENV ?? 'production'
   }.json`;

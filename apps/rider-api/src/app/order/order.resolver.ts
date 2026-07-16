@@ -8,6 +8,7 @@ import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { UserContextOptional } from '../auth/authenticated-user';
 import { GqlAuthGuard } from '../auth/jwt-gql-auth.guard';
 import { GqlOptionalAuthGuard } from '../auth/jwt-optional-gql-auth.guard';
+import { MaskedCallDTO } from '@kasi/order/dto/masked-call.dto';
 import { CalculateFareDTO } from './dto/calculate-fare.dto';
 import { CalculateFareInput } from './dto/calculate-fare.input';
 import { CreateOrderInput } from './dto/create-order.input';
@@ -133,6 +134,19 @@ export class OrderResolver {
   ): Promise<Point[]> {
     if (center == null) return [];
     return this.driverRedisService.getCloseWithoutIds(center, 1000);
+  }
+
+  // Appel masqué : le rider participant d'une course active obtient un numéro
+  // pour joindre le driver (numéro proxy en TwilioVoice, vrai numéro en Direct).
+  @Mutation(() => MaskedCallDTO)
+  @UseGuards(GqlAuthGuard)
+  async requestMaskedCall(
+    @Args('orderId', { type: () => ID }) orderId: number,
+  ): Promise<MaskedCallDTO> {
+    return this.riderOrderService.requestMaskedCall(
+      this.context.req.user.id,
+      Number(orderId),
+    );
   }
 
   @Mutation(() => OrderDTO)

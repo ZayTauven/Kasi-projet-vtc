@@ -188,13 +188,45 @@ class OrderStatusCardView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            RoundedButton(
-                                icon: Ionicons.call,
-                                onPressed: () {
-                                  if (order.rider == null) return;
-                                  _launchUrl(context,
-                                      "tel://+${order.rider!.mobileNumber}");
-                                }),
+                            Mutation$RequestMaskedCall$Widget(
+                              options:
+                                  WidgetOptions$Mutation$RequestMaskedCall(
+                                onCompleted: (data, parsedData) {
+                                  final proxyNumber = parsedData
+                                      ?.requestMaskedCall.proxyNumber;
+                                  if (proxyNumber != null &&
+                                      proxyNumber.isNotEmpty) {
+                                    _launchUrl(context, "tel:$proxyNumber");
+                                  } else if (order.rider != null) {
+                                    // Réponse vide inattendue : repli direct.
+                                    _launchUrl(context,
+                                        "tel://+${order.rider!.mobileNumber}");
+                                  }
+                                },
+                                onError: (error) {
+                                  // Repli gracieux : si requestMaskedCall échoue
+                                  // (réseau/backend), on compose le vrai numéro
+                                  // pour ne pas casser la fonction d'appel.
+                                  debugPrint(
+                                      "requestMaskedCall failed, falling back to direct dial: $error");
+                                  if (order.rider != null) {
+                                    _launchUrl(context,
+                                        "tel://+${order.rider!.mobileNumber}");
+                                  }
+                                },
+                              ),
+                              builder: (runMutation, result) {
+                                return RoundedButton(
+                                    icon: Ionicons.call,
+                                    isLoading: result?.isLoading ?? false,
+                                    onPressed: () {
+                                      if (order.rider == null) return;
+                                      runMutation(
+                                          Variables$Mutation$RequestMaskedCall(
+                                              orderId: order.id));
+                                    });
+                              },
+                            ),
                             const SizedBox(width: 8),
                             ChatIconButton(order: order),
                           ],

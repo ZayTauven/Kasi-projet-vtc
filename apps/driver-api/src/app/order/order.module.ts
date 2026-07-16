@@ -18,6 +18,7 @@ import { PaymentEntity } from '@kasi/database/payment.entity';
 import { FirebaseNotificationModule } from '@kasi/order/firebase-notification-service/firebase-notification-service.module';
 import { GoogleServicesModule } from '@kasi/order/google-services/google-services.module';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
+import { CallMaskingModule } from '@kasi/order/call-masking.module';
 import { SharedProviderService } from '@kasi/order/shared-provider.service';
 import { SharedFleetService } from '@kasi/order/shared-fleet.service';
 import { RegionModule } from '@kasi/order/region/region.module';
@@ -48,6 +49,7 @@ import { HttpModule } from '@nestjs/axios';
     RedisHelpersModule,
     DriverModule,
     CommonCouponModule,
+    CallMaskingModule,
     TypeOrmModule.forFeature([
       RequestEntity,
       ServiceCategoryEntity,

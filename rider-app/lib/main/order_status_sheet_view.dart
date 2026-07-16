@@ -191,10 +191,40 @@ class OrderStatusSheetView extends StatelessWidget {
                           Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.rotationY(pi),
-                            child: RoundedButton(
-                                icon: Ionicons.call,
-                                onPressed: () => _launchUrl(context,
-                                    "tel://+${state.order.driver?.mobileNumber}")),
+                            child: Mutation$RequestMaskedCall$Widget(
+                              options:
+                                  WidgetOptions$Mutation$RequestMaskedCall(
+                                onCompleted: (data, parsedData) {
+                                  final proxyNumber = parsedData
+                                      ?.requestMaskedCall.proxyNumber;
+                                  if (proxyNumber != null &&
+                                      proxyNumber.isNotEmpty) {
+                                    _launchUrl(context, "tel:$proxyNumber");
+                                  } else {
+                                    // Réponse vide inattendue : repli direct.
+                                    _launchUrl(context,
+                                        "tel://+${state.order.driver?.mobileNumber}");
+                                  }
+                                },
+                                onError: (error) {
+                                  // Repli gracieux : si requestMaskedCall échoue
+                                  // (réseau/backend), on compose le vrai numéro
+                                  // pour ne pas casser la fonction d'appel.
+                                  debugPrint(
+                                      "requestMaskedCall failed, falling back to direct dial: $error");
+                                  _launchUrl(context,
+                                      "tel://+${state.order.driver?.mobileNumber}");
+                                },
+                              ),
+                              builder: (runMutation, result) {
+                                return RoundedButton(
+                                    icon: Ionicons.call,
+                                    isLoading: result?.isLoading ?? false,
+                                    onPressed: () => runMutation(
+                                        Variables$Mutation$RequestMaskedCall(
+                                            orderId: state.order.id)));
+                              },
+                            ),
                           ),
                         ],
                       ),

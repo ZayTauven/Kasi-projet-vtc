@@ -1224,11 +1224,17 @@ enum AnnouncementSortFields {
   userType
 }
 
+type MaskedCallDTO {
+  proxyNumber: String!
+  expiresAt: Timestamp
+}
+
 type Mutation {
   login(input: LoginInput!): Login!
   deleteUser: Driver!
   skipVerification(mobileNumber: String!): Login!
   updateOneOrder(input: UpdateOneOrderInput!): Order!
+  requestMaskedCall(orderId: ID!): MaskedCallDTO!
   updateDriversLocationNew(point: PointInput!): [Order!]!
   addDocumentsToDriver(input: AddDocumentsToDriverInput!): Driver!
   setDocumentsOnDriver(input: SetDocumentsOnDriverInput!): Driver!

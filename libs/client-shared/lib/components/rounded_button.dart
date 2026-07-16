@@ -5,11 +5,19 @@ import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {
   final IconData icon;
-  final Function() onPressed;
+  final Function()? onPressed;
   final int? count;
 
+  /// Affiche un indicateur de chargement à la place de l'icône et désactive
+  /// le bouton (ex. pendant l'appel réseau à requestMaskedCall).
+  final bool isLoading;
+
   const RoundedButton(
-      {required this.icon, required this.onPressed, this.count, Key? key})
+      {required this.icon,
+      required this.onPressed,
+      this.count,
+      this.isLoading = false,
+      Key? key})
       : super(key: key);
 
   @override
@@ -17,16 +25,31 @@ class RoundedButton extends StatelessWidget {
     return Stack(children: [
       CupertinoButton(
           padding: const EdgeInsets.all(0),
-          onPressed: onPressed,
+          onPressed: isLoading ? null : onPressed,
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
                 color: CustomTheme.primaryColors.shade100,
                 borderRadius: BorderRadius.circular(20)),
-            child: Icon(
-              icon,
-              color: CustomTheme.neutralColors,
-            ),
+            child: isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Center(
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: CustomTheme.neutralColors,
+                        ),
+                      ),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    color: CustomTheme.neutralColors,
+                  ),
           )),
       if (count != null && count! > 0)
         Positioned(

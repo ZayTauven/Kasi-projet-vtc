@@ -37,6 +37,7 @@ import { OrderSubscriptionService } from './order-subscription.service';
 import { MediaEntity } from '@kasi/database/media.entity';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
 import { SharedOrderModule } from '@kasi/order/shared-order.module';
+import { CallMaskingModule } from '@kasi/order/call-masking.module';
 import { CouponModule } from '../coupon/coupon.module';
 import { FeedbackParameterEntity } from '@kasi/database/feedback-parameter.entity';
 import { FeedbackParameterDTO } from './dto/feedback-parameter.dto';
@@ -74,6 +75,7 @@ import { HttpModule } from '@nestjs/axios';
     forwardRef(() => CouponModule),
     RedisHelpersModule,
     SharedOrderModule,
+    CallMaskingModule,
     FirebaseNotificationModule.register(),
     NestjsQueryGraphQLModule.forFeature({
       imports: [
@@ -92,6 +94,7 @@ import { HttpModule } from '@nestjs/axios';
         ]),
         CommonCouponModule,
         SharedOrderModule,
+        CallMaskingModule,
         HttpModule,
         FirebaseNotificationModule.register(),
       ],

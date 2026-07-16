@@ -1049,6 +1049,11 @@ enum PaymentGatewaySortFields {
   enabled
 }
 
+type MaskedCallDTO {
+  proxyNumber: String!
+  expiresAt: Timestamp
+}
+
 type Mutation {
   login(input: LoginInput!): Login!
   deleteUser: Rider!
@@ -1058,6 +1063,7 @@ type Mutation {
   createOrder(input: CreateOrderInput!): Order!
   cancelOrder: Order!
   cancelBooking(id: ID!): Order!
+  requestMaskedCall(orderId: ID!): MaskedCallDTO!
   submitReview(review: SubmitFeedbackInput!): Order!
   applyCoupon(code: String!): Order!
   redeemGiftCard(code: String!): RiderWallet!

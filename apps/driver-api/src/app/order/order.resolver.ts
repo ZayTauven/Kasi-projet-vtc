@@ -1,7 +1,8 @@
 ﻿import { CRUDResolver, InjectPubSub } from '@ptc-org/nestjs-query-graphql';
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, CONTEXT, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, CONTEXT, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Point } from '@kasi/database';
+import { MaskedCallDTO } from '@kasi/order/dto/masked-call.dto';
 import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { UserContext } from '../auth/authenticated-user';
@@ -40,6 +41,18 @@ export class OrderResolver extends CRUDResolver(OrderDTO, {
   @Query(() => [OrderDTO])
   async availableOrders(): Promise<OrderDTO[]> {
     return this.orderService.getOrdersForDriver(this.context.req.user.id);
+  }
+
+  // Appel masqué : le driver participant d'une course active obtient un numéro
+  // pour joindre le rider (numéro proxy en TwilioVoice, vrai numéro en Direct).
+  @Mutation(() => MaskedCallDTO)
+  async requestMaskedCall(
+    @Args('orderId', { type: () => ID }) orderId: number,
+  ): Promise<MaskedCallDTO> {
+    return this.orderService.requestMaskedCall(
+      this.context.req.user.id,
+      Number(orderId),
+    );
   }
 
   @Mutation(() => [OrderDTO])

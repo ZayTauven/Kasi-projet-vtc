@@ -39,6 +39,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'call-masking-providers',
+    loadChildren: () =>
+      import(
+        './management-call-masking-provider/management-call-masking-provider.module'
+      ).then((x) => x.ManagementCallMaskingProviderModule),
+  },
+  {
     path: 'review-parameters',
     loadChildren: () =>
       import(

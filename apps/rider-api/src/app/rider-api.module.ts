@@ -20,6 +20,7 @@ import { CryptoService } from '@kasi/database';
 import { ChatModule } from './chat/chat.module';
 import { ComplaintModule } from './complaint/complaint.module';
 import { SharedOrderModule } from '@kasi/order/shared-order.module';
+import { CallMaskingModule } from '@kasi/order/call-masking.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { SOSModule } from './sos/sos.module';
@@ -109,6 +110,7 @@ import { GeoModule } from './geo/geo.module';
     WalletModule,
     CouponModule,
     ConfigModule,
+    CallMaskingModule,
     RedisModule.forRoot({
       closeClient: true,
       commonOptions: { db: 2 },

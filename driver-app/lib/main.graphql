@@ -195,6 +195,13 @@ mutation UpdateOrderStatus(
   }
 }
 
+mutation RequestMaskedCall($orderId: ID!) {
+  requestMaskedCall(orderId: $orderId) {
+    proxyNumber
+    expiresAt
+  }
+}
+
 mutation UpdateDriverStatus($status: DriverStatus!, $fcmId: String) {
   updateOneDriver(
     input: {

@@ -182,6 +182,97 @@ export type CalculateFareInput = {
   points: Array<PointInput>;
 };
 
+export type CallMaskingProvider = {
+  __typename?: 'CallMaskingProvider';
+  accountId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  proxyNumber?: Maybe<Scalars['String']['output']>;
+  sessionTtlMinutes: Scalars['Float']['output'];
+  type: CallMaskingProviderType;
+};
+
+export type CallMaskingProviderConnection = {
+  __typename?: 'CallMaskingProviderConnection';
+  /** Array of nodes. */
+  nodes: Array<CallMaskingProvider>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CallMaskingProviderDeleteResponse = {
+  __typename?: 'CallMaskingProviderDeleteResponse';
+  accountId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isDefault?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  proxyNumber?: Maybe<Scalars['String']['output']>;
+  sessionTtlMinutes?: Maybe<Scalars['Float']['output']>;
+  type?: Maybe<CallMaskingProviderType>;
+};
+
+export type CallMaskingProviderFilter = {
+  and?: InputMaybe<Array<CallMaskingProviderFilter>>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isDefault?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<CallMaskingProviderFilter>>;
+  type?: InputMaybe<CallMaskingProviderTypeFilterComparison>;
+};
+
+export type CallMaskingProviderInput = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  apiSecret?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  proxyNumber?: InputMaybe<Scalars['String']['input']>;
+  sessionTtlMinutes?: InputMaybe<Scalars['Float']['input']>;
+  type: CallMaskingProviderType;
+  webhookAuthToken?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CallMaskingProviderSort = {
+  direction: SortDirection;
+  field: CallMaskingProviderSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum CallMaskingProviderSortFields {
+  Enabled = 'enabled',
+  Id = 'id',
+  IsDefault = 'isDefault',
+  Type = 'type'
+}
+
+export enum CallMaskingProviderType {
+  Direct = 'Direct',
+  TwilioVoice = 'TwilioVoice'
+}
+
+export type CallMaskingProviderTypeFilterComparison = {
+  eq?: InputMaybe<CallMaskingProviderType>;
+  gt?: InputMaybe<CallMaskingProviderType>;
+  gte?: InputMaybe<CallMaskingProviderType>;
+  iLike?: InputMaybe<CallMaskingProviderType>;
+  in?: InputMaybe<Array<CallMaskingProviderType>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<CallMaskingProviderType>;
+  lt?: InputMaybe<CallMaskingProviderType>;
+  lte?: InputMaybe<CallMaskingProviderType>;
+  neq?: InputMaybe<CallMaskingProviderType>;
+  notILike?: InputMaybe<CallMaskingProviderType>;
+  notIn?: InputMaybe<Array<CallMaskingProviderType>>;
+  notLike?: InputMaybe<CallMaskingProviderType>;
+};
+
 export type CarColor = {
   __typename?: 'CarColor';
   id: Scalars['ID']['output'];
@@ -591,6 +682,11 @@ export type CreateOneAnnouncementInput = {
   announcement: AnnouncementInput;
 };
 
+export type CreateOneCallMaskingProviderInput = {
+  /** The record to create */
+  callMaskingProvider: CallMaskingProviderInput;
+};
+
 export type CreateOneCarColorInput = {
   /** The record to create */
   carColor: CarColorInput;
@@ -845,6 +941,11 @@ export type DateRangeMultiplierInput = {
 };
 
 export type DeleteOneAnnouncementInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneCallMaskingProviderInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -2301,6 +2402,7 @@ export type Mutation = {
   createFleetTransaction: FleetWallet;
   createManyComplaintActivities: Array<ComplaintActivity>;
   createOneAnnouncement: Announcement;
+  createOneCallMaskingProvider: CallMaskingProvider;
   createOneCarColor: CarColor;
   createOneCarModel: CarModel;
   createOneComplaintActivity: ComplaintActivity;
@@ -2330,6 +2432,7 @@ export type Mutation = {
   createPayoutSession: PayoutSession;
   createRiderTransaction: RiderWallet;
   deleteOneAnnouncement: AnnouncementDeleteResponse;
+  deleteOneCallMaskingProvider: CallMaskingProviderDeleteResponse;
   deleteOneCarColor: CarColorDeleteResponse;
   deleteOneCarModel: CarModelDeleteResponse;
   deleteOneCoupon: CouponDeleteResponse;
@@ -2349,16 +2452,19 @@ export type Mutation = {
   processPayout: Payout;
   processPayoutSession: PayoutSession;
   sendTestSms: Scalars['Boolean']['output'];
+  setDefaultCallMaskingProvider: CallMaskingProvider;
   setDefaultSmsProvider: SmsProvider;
   setEnabledServicesOnDriver: Driver;
   setFleetsOnZonePrice: ZonePrice;
   setOptionsOnService: Service;
   setRegionsOnService: Service;
   setServicesOnZonePrice: ZonePrice;
+  testMaskedCall: Scalars['Boolean']['output'];
   updateFirebase: UpdateConfigResult;
   updateManyRiderAddresses: UpdateManyResponse;
   updateMapsAPIKey: UpdateConfigResult;
   updateOneAnnouncement: Announcement;
+  updateOneCallMaskingProvider: CallMaskingProvider;
   updateOneCarColor: CarColor;
   updateOneCarModel: CarModel;
   updateOneComplaint: Complaint;
@@ -2449,6 +2555,11 @@ export type MutationCreateManyComplaintActivitiesArgs = {
 
 export type MutationCreateOneAnnouncementArgs = {
   input: CreateOneAnnouncementInput;
+};
+
+
+export type MutationCreateOneCallMaskingProviderArgs = {
+  input: CreateOneCallMaskingProviderInput;
 };
 
 
@@ -2597,6 +2708,11 @@ export type MutationDeleteOneAnnouncementArgs = {
 };
 
 
+export type MutationDeleteOneCallMaskingProviderArgs = {
+  input: DeleteOneCallMaskingProviderInput;
+};
+
+
 export type MutationDeleteOneCarColorArgs = {
   input: DeleteOneCarColorInput;
 };
@@ -2693,6 +2809,11 @@ export type MutationSendTestSmsArgs = {
 };
 
 
+export type MutationSetDefaultCallMaskingProviderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationSetDefaultSmsProviderArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2723,6 +2844,12 @@ export type MutationSetServicesOnZonePriceArgs = {
 };
 
 
+export type MutationTestMaskedCallArgs = {
+  number: Scalars['String']['input'];
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type MutationUpdateFirebaseArgs = {
   keyFileName: Scalars['String']['input'];
 };
@@ -2741,6 +2868,11 @@ export type MutationUpdateMapsApiKeyArgs = {
 
 export type MutationUpdateOneAnnouncementArgs = {
   input: UpdateOneAnnouncementInput;
+};
+
+
+export type MutationUpdateOneCallMaskingProviderArgs = {
+  input: UpdateOneCallMaskingProviderInput;
 };
 
 
@@ -4155,6 +4287,8 @@ export type Query = {
   announcement: Announcement;
   announcements: AnnouncementConnection;
   calculateFare: CalculateFareDto;
+  callMaskingProvider: CallMaskingProvider;
+  callMaskingProviders: CallMaskingProviderConnection;
   carColor: CarColor;
   carColors: Array<CarColor>;
   carModel: CarModel;
@@ -4271,6 +4405,18 @@ export type QueryAnnouncementsArgs = {
 
 export type QueryCalculateFareArgs = {
   input: CalculateFareInput;
+};
+
+
+export type QueryCallMaskingProviderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryCallMaskingProvidersArgs = {
+  filter?: CallMaskingProviderFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<CallMaskingProviderSort>;
 };
 
 
@@ -5913,6 +6059,13 @@ export type UpdateOneAnnouncementInput = {
   update: AnnouncementInput;
 };
 
+export type UpdateOneCallMaskingProviderInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: CallMaskingProviderInput;
+};
+
 export type UpdateOneCarColorInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -6451,6 +6604,50 @@ export type RiderRegistrationsQueryVariables = Exact<{
 
 
 export type RiderRegistrationsQuery = { __typename?: 'Query', riderRegistrations: Array<{ __typename?: 'RegistrationResultItem', time: string, count: number }> };
+
+export type CallMaskingProviderListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type CallMaskingProviderListQuery = { __typename?: 'Query', callMaskingProviders: { __typename?: 'CallMaskingProviderConnection', totalCount: number, nodes: Array<{ __typename?: 'CallMaskingProvider', id: string, type: CallMaskingProviderType, name: string, enabled: boolean, isDefault: boolean, proxyNumber?: string | null, createdAt: any }> } };
+
+export type CallMaskingProviderViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CallMaskingProviderViewQuery = { __typename?: 'Query', callMaskingProvider: { __typename?: 'CallMaskingProvider', id: string, type: CallMaskingProviderType, name: string, enabled: boolean, isDefault: boolean, accountId?: string | null, proxyNumber?: string | null, sessionTtlMinutes: number } };
+
+export type CreateCallMaskingProviderMutationVariables = Exact<{
+  input: CallMaskingProviderInput;
+}>;
+
+
+export type CreateCallMaskingProviderMutation = { __typename?: 'Mutation', createOneCallMaskingProvider: { __typename?: 'CallMaskingProvider', id: string } };
+
+export type UpdateCallMaskingProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: CallMaskingProviderInput;
+}>;
+
+
+export type UpdateCallMaskingProviderMutation = { __typename?: 'Mutation', updateOneCallMaskingProvider: { __typename?: 'CallMaskingProvider', id: string } };
+
+export type SetDefaultCallMaskingProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type SetDefaultCallMaskingProviderMutation = { __typename?: 'Mutation', setDefaultCallMaskingProvider: { __typename?: 'CallMaskingProvider', id: string, isDefault: boolean } };
+
+export type TestMaskedCallMutationVariables = Exact<{
+  number: Scalars['String']['input'];
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type TestMaskedCallMutation = { __typename?: 'Mutation', testMaskedCall: boolean };
 
 export type CarsListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8188,6 +8385,129 @@ export const RiderRegistrationsDocument = gql`
   })
   export class RiderRegistrationsGQL extends Apollo.Query<RiderRegistrationsQuery, RiderRegistrationsQueryVariables> {
     document = RiderRegistrationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CallMaskingProviderListDocument = gql`
+    query CallMaskingProviderList($paging: OffsetPaging) {
+  callMaskingProviders(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      enabled
+      isDefault
+      proxyNumber
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CallMaskingProviderListGQL extends Apollo.Query<CallMaskingProviderListQuery, CallMaskingProviderListQueryVariables> {
+    document = CallMaskingProviderListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CallMaskingProviderViewDocument = gql`
+    query CallMaskingProviderView($id: ID!) {
+  callMaskingProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    accountId
+    proxyNumber
+    sessionTtlMinutes
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CallMaskingProviderViewGQL extends Apollo.Query<CallMaskingProviderViewQuery, CallMaskingProviderViewQueryVariables> {
+    document = CallMaskingProviderViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateCallMaskingProviderDocument = gql`
+    mutation CreateCallMaskingProvider($input: CallMaskingProviderInput!) {
+  createOneCallMaskingProvider(input: {callMaskingProvider: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateCallMaskingProviderGQL extends Apollo.Mutation<CreateCallMaskingProviderMutation, CreateCallMaskingProviderMutationVariables> {
+    document = CreateCallMaskingProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateCallMaskingProviderDocument = gql`
+    mutation UpdateCallMaskingProvider($id: ID!, $update: CallMaskingProviderInput!) {
+  updateOneCallMaskingProvider(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateCallMaskingProviderGQL extends Apollo.Mutation<UpdateCallMaskingProviderMutation, UpdateCallMaskingProviderMutationVariables> {
+    document = UpdateCallMaskingProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SetDefaultCallMaskingProviderDocument = gql`
+    mutation SetDefaultCallMaskingProvider($id: ID!) {
+  setDefaultCallMaskingProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SetDefaultCallMaskingProviderGQL extends Apollo.Mutation<SetDefaultCallMaskingProviderMutation, SetDefaultCallMaskingProviderMutationVariables> {
+    document = SetDefaultCallMaskingProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const TestMaskedCallDocument = gql`
+    mutation TestMaskedCall($number: String!, $providerId: ID) {
+  testMaskedCall(number: $number, providerId: $providerId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class TestMaskedCallGQL extends Apollo.Mutation<TestMaskedCallMutation, TestMaskedCallMutationVariables> {
+    document = TestMaskedCallDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

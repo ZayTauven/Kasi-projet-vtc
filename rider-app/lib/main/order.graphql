@@ -126,6 +126,13 @@ mutation updateOrder($id: ID!, $update: UpdateOrderInput!) {
   }
 }
 
+mutation RequestMaskedCall($orderId: ID!) {
+  requestMaskedCall(orderId: $orderId) {
+    proxyNumber
+    expiresAt
+  }
+}
+
 subscription UpdatedOrder {
   orderUpdated {
     ...CurrentOrder
