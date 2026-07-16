@@ -1,4 +1,27 @@
 {
+  "ride_safety_title": "Sécurité de conduite",
+  "ride_safety_share_trip_information": "Partager des informations sur le voyage",
+  "ride_safety_sos": "SOS",
+  "ride_safety_report_problem": "Signaler un problème",
+  "sos_title": "Signal de détresse",
+  "sos_body": "Les signaux de détresse sont destinés aux urgences et les appels aux autorités telles que la police peuvent être effectués en votre nom. Veuillez n'utiliser cette fonction qu'en cas d'urgence où vous pourriez être en danger.",
+  "sos_sent_alert": "SOS est envoyé",
+  "sos_ok_action": "C'est une urgence",
+  "share_trip_text_locations": "Je suis en route pour {destination} depuis {pickup}.",
+  "@share_trip_text_locations": {
+    "placeholders": {
+      "destination": {},
+      "pickup": {}
+    }
+  },
+  "share_trip_text_client": " Mon passager est {firstName} {lastName} et son numéro de portable est +{mobileNumber}.",
+  "@share_trip_text_client": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "mobileNumber": {}
+    }
+  },
   "statusOffline": "Aller en ligne",
   "statusOnline": "Se déconnecter",
   "message_notification_permission_title": "Autorisation de notification",
@@ -55,6 +78,11 @@
   "order_status_action_arrived": "Arrivé",
   "order_status_action_start": "Commencer le voyage",
   "order_status_action_finished": "Finir",
+  "swipe_to_confirm_arrival": "Glisser pour confirmer l'arrivée",
+  "swipe_to_start": "Glisser pour démarrer la course",
+  "swipe_to_finish": "Glisser pour terminer",
+  "swipe_to_next_stop": "Glisser vers l'arrêt suivant",
+  "ride_late_badge": "En retard",
   "message_cant_open_url": "La commande n'est pas prise en charge",
   "enum_driver_recharge_type_bank_transfer": "Virement",
   "enum_driver_recharge_type_gift": "Cadeau",
@@ -243,5 +271,30 @@
   "delivery_tag": "Livraison",
   "package_size_small": "Petit colis",
   "package_size_medium": "Colis moyen",
-  "package_size_large": "Grand colis"
+  "package_size_large": "Grand colis",
+  "earnings_toggle_day": "Jour",
+  "earnings_toggle_month": "Mois",
+  "earnings_kpi_trips": "Trajets",
+  "earnings_kpi_distance": "Distance",
+  "earnings_kpi_time": "Temps",
+  "payout_methods_title": "Méthodes de retrait",
+  "payout_info_text": "Vos gains vous sont versés périodiquement par Kasi sur la méthode que vous choisissez.",
+  "payout_account_number_label": "Numéro de compte",
+  "payout_account_number_hint": "Numéro de téléphone (Wave / Orange Money) ou compte bancaire",
+  "payout_save": "Enregistrer",
+  "payout_saved_message": "Méthode de retrait enregistrée",
+  "payout_minimum_amount": "Minimum : {amount}",
+  "@payout_minimum_amount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "payout_history_title": "Derniers versements",
+  "payout_status_paid": "Versé",
+  "payout_status_pending": "En attente",
+  "payout_status_canceled": "Annulé",
+  "payout_method_wave": "Wave",
+  "payout_method_orange_money": "Orange Money",
+  "payout_method_bank_transfer": "Virement bancaire",
+  "payout_method_cash": "Espèces"
 }

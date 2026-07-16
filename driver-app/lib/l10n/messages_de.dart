@@ -9,6 +9,42 @@ class SDe extends S {
   SDe([String locale = 'de']) : super(locale);
 
   @override
+  String get ride_safety_title => 'Ride Safety';
+
+  @override
+  String get ride_safety_share_trip_information => 'Share trip information';
+
+  @override
+  String get ride_safety_sos => 'SOS';
+
+  @override
+  String get ride_safety_report_problem => 'Report a problem';
+
+  @override
+  String get sos_title => 'Distress Signal';
+
+  @override
+  String get sos_body =>
+      'Distress signals are for emergencies and contacting authorities, such as the police or law enforcement. Please use the distress signal in the event that you experience an emergency and require immediate assistance.';
+
+  @override
+  String get sos_sent_alert => 'SOS is sent';
+
+  @override
+  String get sos_ok_action => 'It\'s an emergency';
+
+  @override
+  String share_trip_text_locations(Object destination, Object pickup) {
+    return 'I am on my way to $destination from $pickup.';
+  }
+
+  @override
+  String share_trip_text_client(
+      Object firstName, Object lastName, Object mobileNumber) {
+    return ' My passenger is $firstName $lastName, the mobile number is +$mobileNumber.';
+  }
+
+  @override
   String get statusOffline => 'Online gehen';
 
   @override
@@ -183,6 +219,21 @@ class SDe extends S {
 
   @override
   String get order_status_action_finished => 'Fertig';
+
+  @override
+  String get swipe_to_confirm_arrival => 'Swipe to confirm arrival';
+
+  @override
+  String get swipe_to_start => 'Swipe to start the trip';
+
+  @override
+  String get swipe_to_finish => 'Swipe to finish';
+
+  @override
+  String get swipe_to_next_stop => 'Swipe for next stop';
+
+  @override
+  String get ride_late_badge => 'Late';
 
   @override
   String get message_cant_open_url => 'Befehl wird nicht unterstützt';
@@ -577,4 +628,68 @@ class SDe extends S {
 
   @override
   String get package_size_large => 'Large package';
+
+  @override
+  String get earnings_toggle_day => 'Day';
+
+  @override
+  String get earnings_toggle_month => 'Month';
+
+  @override
+  String get earnings_kpi_trips => 'Trips';
+
+  @override
+  String get earnings_kpi_distance => 'Distance';
+
+  @override
+  String get earnings_kpi_time => 'Time';
+
+  @override
+  String get payout_methods_title => 'Withdrawal methods';
+
+  @override
+  String get payout_info_text =>
+      'Your earnings are paid out to you periodically by Kasi on the method you choose.';
+
+  @override
+  String get payout_account_number_label => 'Account number';
+
+  @override
+  String get payout_account_number_hint =>
+      'Phone number (Wave / Orange Money) or bank account';
+
+  @override
+  String get payout_save => 'Save';
+
+  @override
+  String get payout_saved_message => 'Withdrawal method saved';
+
+  @override
+  String payout_minimum_amount(Object amount) {
+    return 'Minimum: $amount';
+  }
+
+  @override
+  String get payout_history_title => 'Latest payouts';
+
+  @override
+  String get payout_status_paid => 'Paid';
+
+  @override
+  String get payout_status_pending => 'Pending';
+
+  @override
+  String get payout_status_canceled => 'Canceled';
+
+  @override
+  String get payout_method_wave => 'Wave';
+
+  @override
+  String get payout_method_orange_money => 'Orange Money';
+
+  @override
+  String get payout_method_bank_transfer => 'Bank transfer';
+
+  @override
+  String get payout_method_cash => 'Cash';
 }

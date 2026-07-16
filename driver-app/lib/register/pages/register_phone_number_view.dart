@@ -237,7 +237,7 @@ class RegistrationPhoneNumberTermsCheckbox extends StatelessWidget {
                 style: const TextStyle(color: Colors.black),
                 text: S.of(context).terms_and_condition_first_part),
             TextSpan(
-                style: const TextStyle(color: Colors.blue),
+                style: TextStyle(color: CustomTheme.primaryColors),
                 text: S.of(context).terms_and_conditions_clickable_part,
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {

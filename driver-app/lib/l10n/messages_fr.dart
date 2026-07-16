@@ -9,6 +9,43 @@ class SFr extends S {
   SFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get ride_safety_title => 'Sécurité de conduite';
+
+  @override
+  String get ride_safety_share_trip_information =>
+      'Partager des informations sur le voyage';
+
+  @override
+  String get ride_safety_sos => 'SOS';
+
+  @override
+  String get ride_safety_report_problem => 'Signaler un problème';
+
+  @override
+  String get sos_title => 'Signal de détresse';
+
+  @override
+  String get sos_body =>
+      'Les signaux de détresse sont destinés aux urgences et les appels aux autorités telles que la police peuvent être effectués en votre nom. Veuillez n\'utiliser cette fonction qu\'en cas d\'urgence où vous pourriez être en danger.';
+
+  @override
+  String get sos_sent_alert => 'SOS est envoyé';
+
+  @override
+  String get sos_ok_action => 'C\'est une urgence';
+
+  @override
+  String share_trip_text_locations(Object destination, Object pickup) {
+    return 'Je suis en route pour $destination depuis $pickup.';
+  }
+
+  @override
+  String share_trip_text_client(
+      Object firstName, Object lastName, Object mobileNumber) {
+    return ' Mon passager est $firstName $lastName et son numéro de portable est +$mobileNumber.';
+  }
+
+  @override
   String get statusOffline => 'Aller en ligne';
 
   @override
@@ -184,6 +221,21 @@ class SFr extends S {
 
   @override
   String get order_status_action_finished => 'Finir';
+
+  @override
+  String get swipe_to_confirm_arrival => 'Glisser pour confirmer l\'arrivée';
+
+  @override
+  String get swipe_to_start => 'Glisser pour démarrer la course';
+
+  @override
+  String get swipe_to_finish => 'Glisser pour terminer';
+
+  @override
+  String get swipe_to_next_stop => 'Glisser vers l\'arrêt suivant';
+
+  @override
+  String get ride_late_badge => 'En retard';
 
   @override
   String get message_cant_open_url => 'La commande n\'est pas prise en charge';
@@ -582,4 +634,68 @@ class SFr extends S {
 
   @override
   String get package_size_large => 'Grand colis';
+
+  @override
+  String get earnings_toggle_day => 'Jour';
+
+  @override
+  String get earnings_toggle_month => 'Mois';
+
+  @override
+  String get earnings_kpi_trips => 'Trajets';
+
+  @override
+  String get earnings_kpi_distance => 'Distance';
+
+  @override
+  String get earnings_kpi_time => 'Temps';
+
+  @override
+  String get payout_methods_title => 'Méthodes de retrait';
+
+  @override
+  String get payout_info_text =>
+      'Vos gains vous sont versés périodiquement par Kasi sur la méthode que vous choisissez.';
+
+  @override
+  String get payout_account_number_label => 'Numéro de compte';
+
+  @override
+  String get payout_account_number_hint =>
+      'Numéro de téléphone (Wave / Orange Money) ou compte bancaire';
+
+  @override
+  String get payout_save => 'Enregistrer';
+
+  @override
+  String get payout_saved_message => 'Méthode de retrait enregistrée';
+
+  @override
+  String payout_minimum_amount(Object amount) {
+    return 'Minimum : $amount';
+  }
+
+  @override
+  String get payout_history_title => 'Derniers versements';
+
+  @override
+  String get payout_status_paid => 'Versé';
+
+  @override
+  String get payout_status_pending => 'En attente';
+
+  @override
+  String get payout_status_canceled => 'Annulé';
+
+  @override
+  String get payout_method_wave => 'Wave';
+
+  @override
+  String get payout_method_orange_money => 'Orange Money';
+
+  @override
+  String get payout_method_bank_transfer => 'Virement bancaire';
+
+  @override
+  String get payout_method_cash => 'Espèces';
 }

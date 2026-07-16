@@ -122,7 +122,7 @@ class _LoginNumberPageState extends State<LoginNumberPage> {
                       style: const TextStyle(color: Colors.black),
                       text: S.of(context).terms_and_condition_text),
                   TextSpan(
-                      style: const TextStyle(color: Colors.blue),
+                      style: TextStyle(color: CustomTheme.primaryColors),
                       text: S.of(context).terms_and_condition_button,
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {

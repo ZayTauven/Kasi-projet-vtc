@@ -8,6 +8,7 @@ import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/profile/profile.graphql.dart';
 import 'package:kasi_driver/profile/profile_info_card.dart';
+import 'package:kasi_driver/profile/payout_methods_view.dart';
 import 'package:kasi_driver/unit_of_measurement.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:collection/collection.dart';
@@ -168,6 +169,45 @@ class _ProfileViewState extends State<ProfileView> {
                                 _isOpen[0] = !isExpanded;
                               });
                             }),
+                      ),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => PayoutMethodsView(
+                              currentPayoutMethodId: driver.payoutMethodId,
+                              currentAccountNumber: driver.payoutAccountNumber,
+                            ),
+                          ));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                              color: CustomTheme.primaryColors.shade100,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Ionicons.wallet_outline,
+                                color: CustomTheme.primaryColors.shade700,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  S.of(context).payout_methods_title,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                              Icon(
+                                Ionicons.chevron_forward,
+                                color: CustomTheme.neutralColors.shade500,
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Container(

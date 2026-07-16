@@ -202,6 +202,12 @@ mutation RequestMaskedCall($orderId: ID!) {
   }
 }
 
+mutation SendSOS($orderId: ID!, $location: PointInput) {
+  sosSignal(orderId: $orderId, location: $location) {
+    id
+  }
+}
+
 mutation UpdateDriverStatus($status: DriverStatus!, $fcmId: String) {
   updateOneDriver(
     input: {

@@ -114,7 +114,7 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                           return CircleLayer(circles: <CircleMarker>[
                             CircleMarker(
                                 point: state.location!,
-                                color: Colors.blue.withOpacity(0.3),
+                                color: CustomTheme.primaryColors.withOpacity(0.15),
                                 borderStrokeWidth: 2,
                                 borderColor:
                                     CustomTheme.secondaryColors.shade200,

@@ -1,4 +1,5 @@
 import 'package:client_shared/config.dart';
+import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -97,7 +98,7 @@ class _GoogleMapMapViewState extends State<GoogleMapView> {
                     points: widget.polylinePoints
                         .map((e) => LatLng(e.lat, e.lng))
                         .toList(),
-                    color: Colors.blue,
+                    color: CustomTheme.primaryColors,
                     width: 5)
               },
               initialCameraPosition: CameraPosition(

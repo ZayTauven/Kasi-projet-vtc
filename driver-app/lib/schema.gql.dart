@@ -11151,6 +11151,8 @@ class Input$UpdateDriverInput {
     String? bankName,
     String? bankRoutingNumber,
     String? bankSwift,
+    String? payoutMethodId,
+    String? payoutAccountNumber,
     String? address,
     String? notificationPlayerId,
   }) => Input$UpdateDriverInput._({
@@ -11171,6 +11173,9 @@ class Input$UpdateDriverInput {
     if (bankName != null) r'bankName': bankName,
     if (bankRoutingNumber != null) r'bankRoutingNumber': bankRoutingNumber,
     if (bankSwift != null) r'bankSwift': bankSwift,
+    if (payoutMethodId != null) r'payoutMethodId': payoutMethodId,
+    if (payoutAccountNumber != null)
+      r'payoutAccountNumber': payoutAccountNumber,
     if (address != null) r'address': address,
     if (notificationPlayerId != null)
       r'notificationPlayerId': notificationPlayerId,
@@ -11252,6 +11257,14 @@ class Input$UpdateDriverInput {
       final l$bankSwift = data['bankSwift'];
       result$data['bankSwift'] = (l$bankSwift as String?);
     }
+    if (data.containsKey('payoutMethodId')) {
+      final l$payoutMethodId = data['payoutMethodId'];
+      result$data['payoutMethodId'] = (l$payoutMethodId as String?);
+    }
+    if (data.containsKey('payoutAccountNumber')) {
+      final l$payoutAccountNumber = data['payoutAccountNumber'];
+      result$data['payoutAccountNumber'] = (l$payoutAccountNumber as String?);
+    }
     if (data.containsKey('address')) {
       final l$address = data['address'];
       result$data['address'] = (l$address as String?);
@@ -11298,6 +11311,10 @@ class Input$UpdateDriverInput {
   String? get bankRoutingNumber => (_$data['bankRoutingNumber'] as String?);
 
   String? get bankSwift => (_$data['bankSwift'] as String?);
+
+  String? get payoutMethodId => (_$data['payoutMethodId'] as String?);
+
+  String? get payoutAccountNumber => (_$data['payoutAccountNumber'] as String?);
 
   String? get address => (_$data['address'] as String?);
 
@@ -11377,6 +11394,14 @@ class Input$UpdateDriverInput {
     if (_$data.containsKey('bankSwift')) {
       final l$bankSwift = bankSwift;
       result$data['bankSwift'] = l$bankSwift;
+    }
+    if (_$data.containsKey('payoutMethodId')) {
+      final l$payoutMethodId = payoutMethodId;
+      result$data['payoutMethodId'] = l$payoutMethodId;
+    }
+    if (_$data.containsKey('payoutAccountNumber')) {
+      final l$payoutAccountNumber = payoutAccountNumber;
+      result$data['payoutAccountNumber'] = l$payoutAccountNumber;
     }
     if (_$data.containsKey('address')) {
       final l$address = address;
@@ -11548,6 +11573,24 @@ class Input$UpdateDriverInput {
     if (l$bankSwift != lOther$bankSwift) {
       return false;
     }
+    final l$payoutMethodId = payoutMethodId;
+    final lOther$payoutMethodId = other.payoutMethodId;
+    if (_$data.containsKey('payoutMethodId') !=
+        other._$data.containsKey('payoutMethodId')) {
+      return false;
+    }
+    if (l$payoutMethodId != lOther$payoutMethodId) {
+      return false;
+    }
+    final l$payoutAccountNumber = payoutAccountNumber;
+    final lOther$payoutAccountNumber = other.payoutAccountNumber;
+    if (_$data.containsKey('payoutAccountNumber') !=
+        other._$data.containsKey('payoutAccountNumber')) {
+      return false;
+    }
+    if (l$payoutAccountNumber != lOther$payoutAccountNumber) {
+      return false;
+    }
     final l$address = address;
     final lOther$address = other.address;
     if (_$data.containsKey('address') != other._$data.containsKey('address')) {
@@ -11587,6 +11630,8 @@ class Input$UpdateDriverInput {
     final l$bankName = bankName;
     final l$bankRoutingNumber = bankRoutingNumber;
     final l$bankSwift = bankSwift;
+    final l$payoutMethodId = payoutMethodId;
+    final l$payoutAccountNumber = payoutAccountNumber;
     final l$address = address;
     final l$notificationPlayerId = notificationPlayerId;
     return Object.hashAll([
@@ -11607,6 +11652,10 @@ class Input$UpdateDriverInput {
       _$data.containsKey('bankName') ? l$bankName : const {},
       _$data.containsKey('bankRoutingNumber') ? l$bankRoutingNumber : const {},
       _$data.containsKey('bankSwift') ? l$bankSwift : const {},
+      _$data.containsKey('payoutMethodId') ? l$payoutMethodId : const {},
+      _$data.containsKey('payoutAccountNumber')
+          ? l$payoutAccountNumber
+          : const {},
       _$data.containsKey('address') ? l$address : const {},
       _$data.containsKey('notificationPlayerId')
           ? l$notificationPlayerId
@@ -11642,6 +11691,8 @@ abstract class CopyWith$Input$UpdateDriverInput<TRes> {
     String? bankName,
     String? bankRoutingNumber,
     String? bankSwift,
+    String? payoutMethodId,
+    String? payoutAccountNumber,
     String? address,
     String? notificationPlayerId,
   });
@@ -11675,6 +11726,8 @@ class _CopyWithImpl$Input$UpdateDriverInput<TRes>
     Object? bankName = _undefined,
     Object? bankRoutingNumber = _undefined,
     Object? bankSwift = _undefined,
+    Object? payoutMethodId = _undefined,
+    Object? payoutAccountNumber = _undefined,
     Object? address = _undefined,
     Object? notificationPlayerId = _undefined,
   }) => _then(
@@ -11702,6 +11755,10 @@ class _CopyWithImpl$Input$UpdateDriverInput<TRes>
       if (bankRoutingNumber != _undefined)
         'bankRoutingNumber': (bankRoutingNumber as String?),
       if (bankSwift != _undefined) 'bankSwift': (bankSwift as String?),
+      if (payoutMethodId != _undefined)
+        'payoutMethodId': (payoutMethodId as String?),
+      if (payoutAccountNumber != _undefined)
+        'payoutAccountNumber': (payoutAccountNumber as String?),
       if (address != _undefined) 'address': (address as String?),
       if (notificationPlayerId != _undefined)
         'notificationPlayerId': (notificationPlayerId as String?),
@@ -11733,6 +11790,8 @@ class _CopyWithStubImpl$Input$UpdateDriverInput<TRes>
     String? bankName,
     String? bankRoutingNumber,
     String? bankSwift,
+    String? payoutMethodId,
+    String? payoutAccountNumber,
     String? address,
     String? notificationPlayerId,
   }) => _res;
@@ -13634,6 +13693,87 @@ Enum$ComplaintStatus fromJson$Enum$ComplaintStatus(String value) {
       return Enum$ComplaintStatus.Resolved;
     default:
       return Enum$ComplaintStatus.$unknown;
+  }
+}
+
+enum Enum$PayoutMethodType {
+  Wave,
+  OrangeMoney,
+  BankTransfer,
+  Cash,
+  $unknown;
+
+  factory Enum$PayoutMethodType.fromJson(String value) =>
+      fromJson$Enum$PayoutMethodType(value);
+
+  String toJson() => toJson$Enum$PayoutMethodType(this);
+}
+
+String toJson$Enum$PayoutMethodType(Enum$PayoutMethodType e) {
+  switch (e) {
+    case Enum$PayoutMethodType.Wave:
+      return r'Wave';
+    case Enum$PayoutMethodType.OrangeMoney:
+      return r'OrangeMoney';
+    case Enum$PayoutMethodType.BankTransfer:
+      return r'BankTransfer';
+    case Enum$PayoutMethodType.Cash:
+      return r'Cash';
+    case Enum$PayoutMethodType.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$PayoutMethodType fromJson$Enum$PayoutMethodType(String value) {
+  switch (value) {
+    case r'Wave':
+      return Enum$PayoutMethodType.Wave;
+    case r'OrangeMoney':
+      return Enum$PayoutMethodType.OrangeMoney;
+    case r'BankTransfer':
+      return Enum$PayoutMethodType.BankTransfer;
+    case r'Cash':
+      return Enum$PayoutMethodType.Cash;
+    default:
+      return Enum$PayoutMethodType.$unknown;
+  }
+}
+
+enum Enum$PayoutStatus {
+  Pending,
+  Paid,
+  Canceled,
+  $unknown;
+
+  factory Enum$PayoutStatus.fromJson(String value) =>
+      fromJson$Enum$PayoutStatus(value);
+
+  String toJson() => toJson$Enum$PayoutStatus(this);
+}
+
+String toJson$Enum$PayoutStatus(Enum$PayoutStatus e) {
+  switch (e) {
+    case Enum$PayoutStatus.Pending:
+      return r'Pending';
+    case Enum$PayoutStatus.Paid:
+      return r'Paid';
+    case Enum$PayoutStatus.Canceled:
+      return r'Canceled';
+    case Enum$PayoutStatus.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$PayoutStatus fromJson$Enum$PayoutStatus(String value) {
+  switch (value) {
+    case r'Pending':
+      return Enum$PayoutStatus.Pending;
+    case r'Paid':
+      return Enum$PayoutStatus.Paid;
+    case r'Canceled':
+      return Enum$PayoutStatus.Canceled;
+    default:
+      return Enum$PayoutStatus.$unknown;
   }
 }
 

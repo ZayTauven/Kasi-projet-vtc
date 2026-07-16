@@ -173,7 +173,8 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
                                         radius:
                                             (currentLocationState.radius ?? 0)
                                                 .toDouble(),
-                                        fillColor: Colors.blue.withOpacity(0.3),
+                                        fillColor: CustomTheme.primaryColors
+                                            .withOpacity(0.15),
                                         strokeColor: CustomTheme
                                             .secondaryColors.shade200,
                                         strokeWidth: 2)

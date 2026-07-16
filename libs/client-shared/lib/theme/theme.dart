@@ -18,35 +18,37 @@ mixin CustomTheme {
       900: Color(0xff0a1833), //100%
     },
   );
+  // Kasi pétrole (ancre 600 = #1285a2, teal échantillonné du logo). Identité alignée sur la console admin + la landing.
   static const MaterialColor primaryColors = MaterialColor(
-    0xff226bf2, // 0% comes in here, this will be color picked if no shade is selected when defining a Color property which doesn’t require a swatch.
+    0xff1285a2, // couleur par défaut quand aucune nuance n'est demandée = pétrole de marque
     <int, Color>{
-      50: Color(0xfffafbfc), //10%
-      100: Color(0xffedf3ff), //20%
-      200: Color(0xffd0e0ff), //30%
-      300: Color(0xffc4d9ff), //40%
-      400: Color(0xff89b3ff), //50%
-      500: Color(0xff5892fa), //60%
-      600: Color(0xff094ac3), //70%
-      700: Color(0xff0037a5), //80%
-      800: Color(0xff002771), //90%
-      900: Color(0xff031e52), //100%
+      50: Color(0xffe7f3f7), //10%
+      100: Color(0xffc3e1ea), //20%
+      200: Color(0xff9bcedc), //30%
+      300: Color(0xff72bace), //40%
+      400: Color(0xff53abc3), //50%
+      500: Color(0xff349cb9), //60%
+      600: Color(0xff1285a2), //70% — ancre pétrole (logo)
+      700: Color(0xff0f6c85), //80%
+      800: Color(0xff0b5468), //90%
+      900: Color(0xff073544), //100%
     },
   );
 
+  // Kasi orange accent (ancre 500 = #f0982e), aligné sur la console admin.
   static const MaterialColor secondaryColors = MaterialColor(
-    0xffdd7414, // 0% comes in here, this will be color picked if no shade is selected when defining a Color property which doesn’t require a swatch.
+    0xfff0982e, // 0% comes in here, this will be color picked if no shade is selected when defining a Color property which doesn’t require a swatch.
     <int, Color>{
-      50: Color(0xffffefe0), //10%
-      100: Color(0xffffdbba), //20%
-      200: Color(0xffffc590), //30%
-      300: Color(0xffffa757), //40%
-      400: Color(0xffef8728), //50%
-      500: Color(0xffdd7414), //60%
-      600: Color(0xffad5300), //70%
-      700: Color(0xff964700), //80%
-      800: Color(0xff6c3201), //90%
-      900: Color(0xff602e00), //100%
+      50: Color(0xfffef3e6), //10%
+      100: Color(0xfffbdfc0), //20%
+      200: Color(0xfff8c996), //30%
+      300: Color(0xfff5b26b), //40%
+      400: Color(0xfff2a24b), //50%
+      500: Color(0xfff0982e), //60% — ancre orange Kasi
+      600: Color(0xffe07d10), //70%
+      700: Color(0xffbd6410), //80%
+      800: Color(0xff964f0e), //90%
+      900: Color(0xff6f3a0a), //100%
     },
   );
 
@@ -54,14 +56,14 @@ mixin CustomTheme {
 
   static final ThemeData theme1 = ThemeData(
     useMaterial3: true,
-    fontFamily: GoogleFonts.openSans().fontFamily,
+    fontFamily: GoogleFonts.dmSans().fontFamily, // corps de texte = DM Sans (identité Kasi)
     dividerColor: Color(0xffb9c5db),
     dividerTheme: DividerThemeData(thickness: 0.5, color: Color(0xffb9c5db)),
     bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: primaryColors.shade50,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
-          top: Radius.circular(12),
+          top: Radius.circular(20), // arrondi v3 (les poignées sont gérées écran par écran)
         ))),
     snackBarTheme:
         SnackBarThemeData(backgroundColor: Colors.transparent, elevation: 0),
@@ -84,28 +86,29 @@ mixin CustomTheme {
         surface: neutralColors.shade100,
         onSurface: neutralColors.shade700),
     textTheme: TextTheme(
-        displayLarge: TextStyle(
+        // Titres display/headline = Bricolage Grotesque (identité Kasi)
+        displayLarge: GoogleFonts.bricolageGrotesque(
           color: primaryColors.shade900,
           fontSize: 45,
           fontWeight: FontWeight.w700,
           fontStyle: FontStyle.normal,
           letterSpacing: -1.125,
         ),
-        displayMedium: TextStyle(
+        displayMedium: GoogleFonts.bricolageGrotesque(
           color: primaryColors.shade900,
           fontSize: 36,
           fontWeight: FontWeight.w700,
           fontStyle: FontStyle.normal,
           letterSpacing: -0.9,
         ),
-        displaySmall: TextStyle(
+        displaySmall: GoogleFonts.bricolageGrotesque(
           color: primaryColors.shade900,
           fontSize: 28,
           fontWeight: FontWeight.w700,
           fontStyle: FontStyle.normal,
           letterSpacing: -0.7,
         ),
-        headlineLarge: TextStyle(
+        headlineLarge: GoogleFonts.bricolageGrotesque(
           color: neutralColors.shade900,
           fontSize: 22,
           fontWeight: FontWeight.w700,

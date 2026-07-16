@@ -1,7 +1,10 @@
 import 'package:client_shared/components/light_colored_button.dart';
 import 'package:client_shared/components/kasi_banner.dart';
 import 'package:client_shared/components/kasi_sheet_view.dart';
+import 'package:client_shared/components/kasi_swipe_button.dart';
 import 'package:client_shared/components/rounded_button.dart';
+import 'package:client_shared/theme/theme.dart';
+import 'package:intl/intl.dart';
 import 'package:client_shared/components/sheet_title_view.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
@@ -12,6 +15,7 @@ import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/order_invoice_view.dart';
 import 'package:kasi_driver/query_result_view.dart';
 import 'package:kasi_driver/ride_options_sheet_view.dart';
+import 'package:kasi_driver/ride_safety_sheet_view.dart';
 import 'package:kasi_driver/rider_preferences_sheet_view.dart';
 import 'package:kasi_driver/schema.gql.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
@@ -93,6 +97,8 @@ class OrderStatusCardView extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        _buildServiceBanner(context),
+                        const SizedBox(height: 12),
                         SheetTitleView(
                             title: getTitleForStatus(context, order.addresses,
                                 order.status, order.destinationArrivedTo)),
@@ -229,6 +235,17 @@ class OrderStatusCardView extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             ChatIconButton(order: order),
+                            const SizedBox(width: 8),
+                            RoundedButton(
+                                icon: Ionicons.shield,
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return RideSafetySheetView(
+                                            order: order);
+                                      });
+                                }),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -272,59 +289,55 @@ class OrderStatusCardView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
+                        // Avancement d'état = swipe de confirmation v3. La
+                        // logique des mutations est strictement inchangée ;
+                        // seule l'interaction (glisser) remplace le clic.
                         if (order.status == Enum$OrderStatus.DriverAccepted)
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                onPressed: (result?.isLoading ?? false)
-                                    ? null
-                                    : () => runMutation(
-                                        Variables$Mutation$UpdateOrderStatus(
-                                            orderId: order.id,
-                                            status: Enum$OrderStatus.Arrived)),
-                                child: Text(
-                                    S.of(context).order_status_action_arrived)),
+                          KasiSwipeButton(
+                            label: S.of(context).swipe_to_confirm_arrival,
+                            isLoading: result?.isLoading ?? false,
+                            onConfirmed: () async {
+                              await runMutation(
+                                      Variables$Mutation$UpdateOrderStatus(
+                                          orderId: order.id,
+                                          status: Enum$OrderStatus.Arrived))
+                                  .networkResult;
+                            },
                           ),
                         if (order.status == Enum$OrderStatus.Arrived)
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                onPressed: (result?.isLoading ?? false)
-                                    ? null
-                                    : () => runMutation(
-                                        Variables$Mutation$UpdateOrderStatus(
-                                            orderId: order.id,
-                                            status: Enum$OrderStatus.Started)),
-                                child: Text(
-                                    S.of(context).order_status_action_start)),
+                          KasiSwipeButton(
+                            label: S.of(context).swipe_to_start,
+                            isLoading: result?.isLoading ?? false,
+                            onConfirmed: () async {
+                              await runMutation(
+                                      Variables$Mutation$UpdateOrderStatus(
+                                          orderId: order.id,
+                                          status: Enum$OrderStatus.Started))
+                                  .networkResult;
+                            },
                           ),
                         if (order.status == Enum$OrderStatus.Started)
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                onPressed: (result?.isLoading ?? false)
-                                    ? null
-                                    : () {
-                                        if (order.destinationArrivedTo ==
-                                            order.addresses.length - 2) {
-                                          runMutation(
-                                              Variables$Mutation$UpdateOrderStatus(
-                                                  orderId: order.id,
-                                                  status: Enum$OrderStatus
-                                                      .Finished));
-                                        } else {
-                                          runMutation(
-                                              Variables$Mutation$UpdateOrderStatus(
-                                                  orderId: order.id,
-                                                  destinationArrivedTo: order
-                                                          .destinationArrivedTo +
-                                                      1));
-                                        }
-                                      },
-                                child: Text(getFinishedButtonText(
-                                    context,
-                                    order.addresses,
-                                    order.destinationArrivedTo))),
+                          KasiSwipeButton(
+                            label: getStartedSwipeLabel(context, order.addresses,
+                                order.destinationArrivedTo),
+                            isLoading: result?.isLoading ?? false,
+                            onConfirmed: () async {
+                              if (order.destinationArrivedTo ==
+                                  order.addresses.length - 2) {
+                                await runMutation(
+                                        Variables$Mutation$UpdateOrderStatus(
+                                            orderId: order.id,
+                                            status: Enum$OrderStatus.Finished))
+                                    .networkResult;
+                              } else {
+                                await runMutation(
+                                        Variables$Mutation$UpdateOrderStatus(
+                                            orderId: order.id,
+                                            destinationArrivedTo:
+                                                order.destinationArrivedTo + 1))
+                                    .networkResult;
+                              }
+                            },
                           )
                       ],
                     ),
@@ -385,6 +398,96 @@ class OrderStatusCardView extends StatelessWidget {
     );
   }
 
+  /// Retard sur l'ETA d'arrivée au point de prise en charge.
+  /// Champ exploité : `etaPickup` (présent dans le fragment CurrentOrder).
+  /// Ne s'active que tant que le driver se rend au pickup (DriverAccepted).
+  bool _isLate() {
+    final eta = order.etaPickup;
+    if (eta == null) return false;
+    return order.status == Enum$OrderStatus.DriverAccepted &&
+        eta.isBefore(DateTime.now());
+  }
+
+  /// Bandeau de tête mettant en avant le service et le prix (fond dégradé
+  /// pétrole → pétrole foncé, prix en gros Bricolage).
+  Widget _buildServiceBanner(BuildContext context) {
+    final price = NumberFormat.simpleCurrency(name: order.currency)
+        .format(order.costAfterCoupon);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            CustomTheme.primaryColors.shade600,
+            CustomTheme.primaryColors.shade900,
+          ],
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    order.service?.name ?? "",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.white),
+                  ),
+                ),
+                if (_isLate()) ...[
+                  const SizedBox(width: 8),
+                  _buildLateBadge(context),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            price,
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Chip « En retard » (orange accent Kasi).
+  Widget _buildLateBadge(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: CustomTheme.secondaryColors.shade500,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.schedule, size: 12, color: Colors.white),
+          const SizedBox(width: 4),
+          Text(
+            S.of(context).ride_late_badge,
+            style: Theme.of(context)
+                .textTheme
+                .labelSmall
+                ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
   String getTitleForStatus(BuildContext context, List<String> addresses,
       Enum$OrderStatus status, int destionationIndex) {
     switch (status) {
@@ -410,6 +513,15 @@ class OrderStatusCardView extends StatelessWidget {
     return destinationIndex == addresses.length - 1
         ? S.of(context).order_status_action_finished
         : S.of(context).actionArrivedToDestination(destinationIndex + 1);
+  }
+
+  /// Libellé du swipe pendant une course démarrée : « terminer » sur la
+  /// dernière destination, sinon « aller à l'arrêt suivant » (multi-arrêts).
+  String getStartedSwipeLabel(
+      BuildContext context, List<String> addresses, int destinationIndex) {
+    return destinationIndex == addresses.length - 1
+        ? S.of(context).swipe_to_finish
+        : S.of(context).swipe_to_next_stop;
   }
 
   _launchUrl(BuildContext context, String url) async {

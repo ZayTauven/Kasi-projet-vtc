@@ -318,6 +318,8 @@ type Driver {
   bankName: String
   bankRoutingNumber: String
   bankSwift: String
+  payoutMethodId: ID
+  payoutAccountNumber: String
   address: String
   softRejectionNote: String
   canDeliver: Boolean!
@@ -1009,8 +1011,46 @@ input PointInput {
   lng: Float!
 }
 
+enum PayoutMethodType {
+  Wave
+  OrangeMoney
+  BankTransfer
+  Cash
+}
+
+enum PayoutStatus {
+  Pending
+  Paid
+  Canceled
+}
+
+"""Méthode de retrait proposée au Kasiman (écran « Méthodes de retrait »)."""
+type PayoutMethod {
+  id: ID!
+  type: PayoutMethodType!
+  name: String!
+  currency: String!
+  minimumAmount: Float!
+  instructions: String
+}
+
+"""Historique des versements reçus par le Kasiman."""
+type Payout {
+  id: ID!
+  createdAt: Timestamp!
+  status: PayoutStatus!
+  amount: Float!
+  currency: String!
+  methodType: PayoutMethodType!
+  methodName: String!
+  accountNumber: String
+  processedAt: Timestamp
+}
+
 type Query {
   requireUpdate(versionCode: Int!): VersionStatus!
+  payoutMethods: [PayoutMethod!]!
+  driverPayouts: [Payout!]!
   orderAggregate(
     """Filter to find records to aggregate on"""
     filter: OrderAggregateFilter
@@ -1229,12 +1269,17 @@ type MaskedCallDTO {
   expiresAt: Timestamp
 }
 
+type SOS {
+  id: ID!
+}
+
 type Mutation {
   login(input: LoginInput!): Login!
   deleteUser: Driver!
   skipVerification(mobileNumber: String!): Login!
   updateOneOrder(input: UpdateOneOrderInput!): Order!
   requestMaskedCall(orderId: ID!): MaskedCallDTO!
+  sosSignal(orderId: ID!, location: PointInput): SOS!
   updateDriversLocationNew(point: PointInput!): [Order!]!
   addDocumentsToDriver(input: AddDocumentsToDriverInput!): Driver!
   setDocumentsOnDriver(input: SetDocumentsOnDriverInput!): Driver!
@@ -1305,6 +1350,8 @@ input UpdateDriverInput {
   bankName: String
   bankRoutingNumber: String
   bankSwift: String
+  payoutMethodId: ID
+  payoutAccountNumber: String
   address: String
   notificationPlayerId: String
 }

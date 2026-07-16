@@ -19,6 +19,7 @@ import { ServiceModule } from './service/service.module';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { ChatModule } from './chat/chat.module';
 import { ComplaintModule } from './complaint/complaint.module';
+import { SOSModule } from './sos/sos.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
@@ -70,6 +71,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     }),
     AnnouncementsModule,
     ComplaintModule,
+    SOSModule,
   ],
   controllers: [DriverAPIController],
   providers: [CryptoService, SharedDriverService],

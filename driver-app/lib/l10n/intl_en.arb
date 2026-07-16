@@ -1,4 +1,27 @@
 {
+  "ride_safety_title": "Ride Safety",
+  "ride_safety_share_trip_information": "Share trip information",
+  "ride_safety_sos": "SOS",
+  "ride_safety_report_problem": "Report a problem",
+  "sos_title": "Distress Signal",
+  "sos_body": "Distress signals are for emergencies and contacting authorities, such as the police or law enforcement. Please use the distress signal in the event that you experience an emergency and require immediate assistance.",
+  "sos_sent_alert": "SOS is sent",
+  "sos_ok_action": "It's an emergency",
+  "share_trip_text_locations": "I am on my way to {destination} from {pickup}.",
+  "@share_trip_text_locations": {
+    "placeholders": {
+      "destination": {},
+      "pickup": {}
+    }
+  },
+  "share_trip_text_client": " My passenger is {firstName} {lastName}, the mobile number is +{mobileNumber}.",
+  "@share_trip_text_client": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "mobileNumber": {}
+    }
+  },
   "statusOffline": "Go Online",
   "statusOnline": "Go Offline",
   "message_notification_permission_title": "Notification Permission",
@@ -55,6 +78,11 @@
   "order_status_action_arrived": "Arrived to pickup location",
   "order_status_action_start": "Start Trip",
   "order_status_action_finished": "Finish",
+  "swipe_to_confirm_arrival": "Swipe to confirm arrival",
+  "swipe_to_start": "Swipe to start the trip",
+  "swipe_to_finish": "Swipe to finish",
+  "swipe_to_next_stop": "Swipe for next stop",
+  "ride_late_badge": "Late",
   "message_cant_open_url": "Command is not supported",
   "enum_driver_recharge_type_bank_transfer": "Bank Transfer",
   "enum_driver_recharge_type_gift": "Gift",
@@ -243,5 +271,30 @@
   "delivery_tag": "Delivery",
   "package_size_small": "Small package",
   "package_size_medium": "Medium package",
-  "package_size_large": "Large package"
+  "package_size_large": "Large package",
+  "earnings_toggle_day": "Day",
+  "earnings_toggle_month": "Month",
+  "earnings_kpi_trips": "Trips",
+  "earnings_kpi_distance": "Distance",
+  "earnings_kpi_time": "Time",
+  "payout_methods_title": "Withdrawal methods",
+  "payout_info_text": "Your earnings are paid out to you periodically by Kasi on the method you choose.",
+  "payout_account_number_label": "Account number",
+  "payout_account_number_hint": "Phone number (Wave / Orange Money) or bank account",
+  "payout_save": "Save",
+  "payout_saved_message": "Withdrawal method saved",
+  "payout_minimum_amount": "Minimum: {amount}",
+  "@payout_minimum_amount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "payout_history_title": "Latest payouts",
+  "payout_status_paid": "Paid",
+  "payout_status_pending": "Pending",
+  "payout_status_canceled": "Canceled",
+  "payout_method_wave": "Wave",
+  "payout_method_orange_money": "Orange Money",
+  "payout_method_bank_transfer": "Bank transfer",
+  "payout_method_cash": "Cash"
 }

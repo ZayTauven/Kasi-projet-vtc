@@ -1,5 +1,9 @@
-query GetStats($startDate: DateTime!, $endDate: DateTime!) {
-  getStatsNew(timeframe: Daily, startDate: $startDate, endDate: $endDate) {
+query GetStats(
+  $timeframe: TimeQuery!
+  $startDate: DateTime!
+  $endDate: DateTime!
+) {
+  getStatsNew(timeframe: $timeframe, startDate: $startDate, endDate: $endDate) {
     currency
     dataset {
       count

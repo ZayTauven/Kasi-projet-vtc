@@ -135,6 +135,67 @@ abstract class S {
     Locale('zh')
   ];
 
+  /// No description provided for @ride_safety_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride Safety'**
+  String get ride_safety_title;
+
+  /// No description provided for @ride_safety_share_trip_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Share trip information'**
+  String get ride_safety_share_trip_information;
+
+  /// No description provided for @ride_safety_sos.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS'**
+  String get ride_safety_sos;
+
+  /// No description provided for @ride_safety_report_problem.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem'**
+  String get ride_safety_report_problem;
+
+  /// No description provided for @sos_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress Signal'**
+  String get sos_title;
+
+  /// No description provided for @sos_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress signals are for emergencies and contacting authorities, such as the police or law enforcement. Please use the distress signal in the event that you experience an emergency and require immediate assistance.'**
+  String get sos_body;
+
+  /// No description provided for @sos_sent_alert.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS is sent'**
+  String get sos_sent_alert;
+
+  /// No description provided for @sos_ok_action.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s an emergency'**
+  String get sos_ok_action;
+
+  /// No description provided for @share_trip_text_locations.
+  ///
+  /// In en, this message translates to:
+  /// **'I am on my way to {destination} from {pickup}.'**
+  String share_trip_text_locations(Object destination, Object pickup);
+
+  /// No description provided for @share_trip_text_client.
+  ///
+  /// In en, this message translates to:
+  /// **' My passenger is {firstName} {lastName}, the mobile number is +{mobileNumber}.'**
+  String share_trip_text_client(
+      Object firstName, Object lastName, Object mobileNumber);
+
   /// No description provided for @statusOffline.
   ///
   /// In en, this message translates to:
@@ -470,6 +531,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Finish'**
   String get order_status_action_finished;
+
+  /// No description provided for @swipe_to_confirm_arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to confirm arrival'**
+  String get swipe_to_confirm_arrival;
+
+  /// No description provided for @swipe_to_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to start the trip'**
+  String get swipe_to_start;
+
+  /// No description provided for @swipe_to_finish.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to finish'**
+  String get swipe_to_finish;
+
+  /// No description provided for @swipe_to_next_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for next stop'**
+  String get swipe_to_next_stop;
+
+  /// No description provided for @ride_late_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get ride_late_badge;
 
   /// No description provided for @message_cant_open_url.
   ///
@@ -1160,6 +1251,126 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Large package'**
   String get package_size_large;
+
+  /// No description provided for @earnings_toggle_day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get earnings_toggle_day;
+
+  /// No description provided for @earnings_toggle_month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get earnings_toggle_month;
+
+  /// No description provided for @earnings_kpi_trips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get earnings_kpi_trips;
+
+  /// No description provided for @earnings_kpi_distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get earnings_kpi_distance;
+
+  /// No description provided for @earnings_kpi_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get earnings_kpi_time;
+
+  /// No description provided for @payout_methods_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal methods'**
+  String get payout_methods_title;
+
+  /// No description provided for @payout_info_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Your earnings are paid out to you periodically by Kasi on the method you choose.'**
+  String get payout_info_text;
+
+  /// No description provided for @payout_account_number_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number'**
+  String get payout_account_number_label;
+
+  /// No description provided for @payout_account_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number (Wave / Orange Money) or bank account'**
+  String get payout_account_number_hint;
+
+  /// No description provided for @payout_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get payout_save;
+
+  /// No description provided for @payout_saved_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal method saved'**
+  String get payout_saved_message;
+
+  /// No description provided for @payout_minimum_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum: {amount}'**
+  String payout_minimum_amount(Object amount);
+
+  /// No description provided for @payout_history_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest payouts'**
+  String get payout_history_title;
+
+  /// No description provided for @payout_status_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get payout_status_paid;
+
+  /// No description provided for @payout_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get payout_status_pending;
+
+  /// No description provided for @payout_status_canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get payout_status_canceled;
+
+  /// No description provided for @payout_method_wave.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave'**
+  String get payout_method_wave;
+
+  /// No description provided for @payout_method_orange_money.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange Money'**
+  String get payout_method_orange_money;
+
+  /// No description provided for @payout_method_bank_transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get payout_method_bank_transfer;
+
+  /// No description provided for @payout_method_cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get payout_method_cash;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

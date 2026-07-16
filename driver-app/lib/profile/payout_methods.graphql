@@ -1,0 +1,25 @@
+# Méthodes de retrait disponibles pour le Kasiman (activées côté back-office Kasi).
+query PayoutMethods {
+  payoutMethods {
+    id
+    type
+    name
+    currency
+    minimumAmount
+    instructions
+  }
+}
+
+# Historique des versements manuels effectués par Kasi au Kasiman.
+query DriverPayouts {
+  driverPayouts {
+    id
+    createdAt
+    status
+    amount
+    currency
+    methodName
+    accountNumber
+    processedAt
+  }
+}

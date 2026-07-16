@@ -8,6 +8,8 @@ query GetProfile {
     bankName
     address
     rating
+    payoutMethodId
+    payoutAccountNumber
     documents {
       id
       address

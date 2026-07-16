@@ -12,6 +12,16 @@ class SheetTitleView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Poignée v3 (grabber) — signature des bottom-sheets Kasi
+        Container(
+          width: 40,
+          height: 4,
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: CustomTheme.neutralColors.shade300,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
         Stack(
           children: [
             if (closeAction != null)

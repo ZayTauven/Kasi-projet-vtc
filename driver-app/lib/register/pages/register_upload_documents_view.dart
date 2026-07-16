@@ -135,20 +135,23 @@ class _RegisterUploadDocumentsViewState
                         width: 75,
                         height: 75,
                         child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Ionicons.cloud_upload),
-                              const SizedBox(height: 4),
-                              Text(
-                                S.of(context).action_upload_document,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall
-                                    ?.copyWith(fontSize: 14),
-                              ),
-                            ],
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Ionicons.cloud_upload),
+                                const SizedBox(height: 4),
+                                Text(
+                                  S.of(context).action_upload_document,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontSize: 14),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       )),
