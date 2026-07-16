@@ -1,80 +1,336 @@
-/* .container {
-height: 100vh;
-display: table-cell;
-vertical-align: middle;
-}
-.login-form {
-position: absolute;
-top: 50%;
-left: 50%;
-margin-top: -150px;
-margin-left: -150px;
-width: 300px;
-height: 300px;
-}
-.login-form-forgot {
-float: right;
-}
-.login-form-button {
-width: 100%;
-} */
-.login-form-button {
-  margin-top: 12px;
-  }
-.page-content {
-  background-color: rgb(0, 21, 41) !important;
-}
-.full-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+/* ==========================================================================
+   Kasi Admin Console — page de connexion (split-screen). Refonte P4, 2026-07-16.
+   Hero de marque pétrole + signature ligne-de-trajet à gauche, panneau sombre
+   de connexion à droite. Indépendant du thème clair/sombre (toujours sombre).
+   ========================================================================== */
+
+:host {
+  display: block;
 }
 
-.full {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-.wrapper {
-display: flex;
-flex-direction: column;
-align-items: center;
-min-height: 400px;
-max-height: 420px;
-height: 60vh;
-min-width: 300px;
-width: 30vw;
-max-width: 400px;
-}
-.logo-img {
-  width: 100px;
-  height: 100px;
-}
-form {
-  width: 100%;
+.kasi-login {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  min-height: 100vh;
+  background: #08171d;
+  color: #fff;
 }
 
-.text-wrapper {
-  flex: 1;
+/* --- Hero (gauche) -------------------------------------------------------- */
+.kasi-login__hero {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  padding: 44px 56px;
+  background: radial-gradient(120% 130% at 15% 12%, #1a97b8 0%, #12708a 34%, #0c4b60 62%, #082f3d 100%);
 }
-.title-text {
-  font-size: 24px;
-  color: #a5a5a5;
+.kasi-login__grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(120% 120% at 20% 20%, #000 40%, transparent 92%);
+  -webkit-mask-image: radial-gradient(120% 120% at 20% 20%, #000 40%, transparent 92%);
 }
-button {
+.kasi-login__route {
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
-div.page-content {
-display: flex;
-justify-content: center;
-align-items: center;
-padding-top: 50px;
+
+.kasi-login__herotop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.kasi-login__logo {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+}
+.kasi-login__logo img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.kasi-login__wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.kasi-login__wordmark strong {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.kasi-login__wordmark small {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.kasi-login__pitch {
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 40px;
+  max-width: 520px;
+}
+.kasi-login__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.92);
+}
+.kasi-login__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f0982e;
+  box-shadow: 0 0 0 0 rgba(240, 152, 46, 0.6);
+  animation: kasi-pulse 2s infinite;
+}
+@keyframes kasi-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(240, 152, 46, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(240, 152, 46, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(240, 152, 46, 0);
+  }
+}
+.kasi-login__headline {
+  margin: 20px 0 16px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(34px, 3.6vw, 52px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+.kasi-login__sub {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 460px;
+}
+
+.kasi-login__stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.kasi-login__stat {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+}
+.kasi-login__stat i {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.kasi-login__stat strong {
+  display: block;
+  margin-top: 10px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.kasi-login__stat small {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.kasi-login__herofoot {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 26px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* --- Panneau de connexion (droite) --------------------------------------- */
+.kasi-login__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #0a0e11;
+}
+.kasi-login__card {
+  width: 100%;
+  max-width: 380px;
+}
+.kasi-login__title {
+  margin: 0;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+}
+.kasi-login__caption {
+  margin: 8px 0 30px;
+  font-size: 14px;
+  color: #8a9aa5;
+}
+
+.kasi-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.kasi-field {
+  display: block;
+}
+.kasi-field__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c4d0d8;
+}
+.kasi-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.kasi-field__icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  color: #6b7f8a;
+  pointer-events: none;
+}
+.kasi-field__control input {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px;
+  border-radius: 12px;
+  background: #14191d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e8eef2;
+  font-size: 15px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.kasi-field__control input::placeholder {
+  color: #55666f;
+}
+.kasi-field__control input:focus {
+  outline: none;
+  border-color: #1a97b8;
+  box-shadow: 0 0 0 3px rgba(26, 151, 184, 0.22);
+}
+.kasi-field__eye {
+  position: absolute;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 9px;
+  background: transparent !important;
+  color: #6b7f8a;
+  cursor: pointer;
+}
+.kasi-field__eye:hover {
+  color: #c4d0d8;
+}
+
+.kasi-login__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 50px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1a97b8, #12708a) !important;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -12px rgba(18, 133, 162, 0.9);
+  transition: filter 0.15s, transform 0.05s, opacity 0.15s;
+}
+.kasi-login__submit:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.kasi-login__submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.kasi-login__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.kasi-login__submit i {
+  font-size: 15px;
+}
+
+.kasi-login__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 26px;
+  font-size: 12.5px;
+  color: #6b7f8a;
+}
+.kasi-login__health {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.kasi-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+@media (max-width: 900px) {
+  .kasi-login {
+    grid-template-columns: 1fr;
+  }
+  .kasi-login__hero {
+    display: none;
+  }
+  .kasi-login__panel {
+    min-height: 100vh;
+  }
 }

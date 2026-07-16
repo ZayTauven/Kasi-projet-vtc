@@ -1,46 +1,68 @@
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'menu.home.overview' | translate }}</h1>
+    <p>Indicateurs clés de l'activité, en temps réel.</p>
+  </div>
+</div>
+
+<!-- Squelette de chargement -->
 <div *ngIf="(query | async)?.loading == null">
   <nz-skeleton [nzActive]="true"></nz-skeleton>
 </div>
-<div class="lg:grid lg:grid-cols-4 lg:gap-2 mb-2" *ngIf="(query | async)?.data as data">
-  <div class="mt-2">
-    <nz-card>
-      <nz-statistic [nzValue]="data.complaintAggregate[0].count?.id ?? 0"
-        [nzTitle]="'overview.complaints.title' | translate" [nzPrefix]="prefixTplComplaints"
-        [nzSuffix]="'overview.complaints.suffix' | translate">
-      </nz-statistic>
-      <ng-template #prefixTplComplaints><i nz-icon nzType="customer-service"></i></ng-template>
-    </nz-card>
+
+<!-- Cartes de métriques -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
+  *ngIf="(query | async)?.data as data">
+  <div class="kasi-metric">
+    <div class="kasi-metric__label">
+      <i nz-icon nzType="customer-service"></i>{{ 'overview.complaints.title' | translate }}
+    </div>
+    <div class="kasi-metric__value">
+      {{ data.complaintAggregate[0].count?.id ?? 0 }}
+      <small>{{ 'overview.complaints.suffix' | translate }}</small>
+    </div>
   </div>
-  <div class="mt-2">
-    <nz-card>
-      <nz-statistic [nzValue]="data.activeOrders[0].count?.id ?? 0"
-        [nzTitle]="'overview.activeOrders.title' | translate" [nzPrefix]="prefixTplpaymentRequests"
-        [nzSuffix]="'overview.activeOrders.suffix' | translate">
-      </nz-statistic>
-      <ng-template #prefixTplpaymentRequests><i nz-icon nzType="field-time"></i></ng-template>
-    </nz-card>
+
+  <div class="kasi-metric">
+    <div class="kasi-metric__label">
+      <i nz-icon nzType="field-time"></i>{{ 'overview.activeOrders.title' | translate }}
+    </div>
+    <div class="kasi-metric__value">
+      {{ data.activeOrders[0].count?.id ?? 0 }}
+      <small>{{ 'overview.activeOrders.suffix' | translate }}</small>
+    </div>
   </div>
-  <div class="mt-2">
-    <nz-card>
-      <nz-statistic [nzValue]="data.driverAggregate[0].count?.id ?? 0"
-        [nzTitle]="'overview.pendingDrivers.title' | translate" [nzPrefix]="prefixTplPendingDrivers"
-        [nzSuffix]="'overview.pendingDrivers.suffix' | translate">
-      </nz-statistic>
-      <ng-template #prefixTplPendingDrivers><i nz-icon nzType="car"></i></ng-template>
-    </nz-card>
+
+  <div class="kasi-metric">
+    <div class="kasi-metric__label">
+      <i nz-icon nzType="car"></i>{{ 'overview.pendingDrivers.title' | translate }}
+    </div>
+    <div class="kasi-metric__value">
+      {{ data.driverAggregate[0].count?.id ?? 0 }}
+      <small>{{ 'overview.pendingDrivers.suffix' | translate }}</small>
+    </div>
   </div>
-  <div class="mt-2">
-    <nz-card>
-      <nz-statistic [nzValue]="data.bookedOrders[0].count?.id ?? 0"
-        [nzTitle]="'overview.bookedOrders.title' | translate" [nzPrefix]="prefixTplAvailableDrivers"
-        [nzSuffix]="'overview.bookedOrders.suffix' | translate">
-      </nz-statistic>
-      <ng-template #prefixTplAvailableDrivers><i nz-icon nzType="schedule"></i></ng-template>
-    </nz-card>
+
+  <div class="kasi-metric">
+    <div class="kasi-metric__label">
+      <i nz-icon nzType="schedule"></i>{{ 'overview.bookedOrders.title' | translate }}
+    </div>
+    <div class="kasi-metric__value">
+      {{ data.bookedOrders[0].count?.id ?? 0 }}
+      <small>{{ 'overview.bookedOrders.suffix' | translate }}</small>
+    </div>
   </div>
 </div>
-<app-overview-drivers-map></app-overview-drivers-map>
-<div class="lg:grid lg:grid-cols-2 lg:gap-2">
+
+<!-- Carte des Kasimen en direct -->
+<h2 class="kasi-section-title">{{ 'menu.home.dispatcher' | translate }}</h2>
+<div class="mb-4">
+  <app-overview-drivers-map></app-overview-drivers-map>
+</div>
+
+<!-- Graphes de tendance -->
+<div class="lg:grid lg:grid-cols-2 lg:gap-3">
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.requestsTitle' | translate" [nzExtra]="requestsExtrasTmpl">
       <div [ngClass]="{ hidden : isChartRequestsEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"
@@ -66,7 +88,7 @@
     </ng-template>
   </div>
 </div>
-<div class="lg:grid lg:grid-cols-2 lg:gap-2">
+<div class="lg:grid lg:grid-cols-2 lg:gap-3">
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.newDriverRegisters' | translate" [nzExtra]="driverRegistersTempl">
       <div [ngClass]="{ hidden : isChartDriverRegistrationsEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"

@@ -1,4 +1,4 @@
-﻿import { Component, HostBinding, Inject } from '@angular/core';
+﻿import { Component, HostBinding, Inject, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginGQL } from '@kasi/admin-panel/generated/graphql';
@@ -14,7 +14,7 @@ import { ThemeService } from '../@services/theme.service';
   styleUrls: ['./login.component.css'],
   animations: [loginTransition],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   @HostBinding('@loginTransition') state = 'activated';
   validateForm = this.fb.group({
     userName: [null, [Validators.required]],
@@ -23,6 +23,27 @@ export class LoginComponent {
   });
   validating = false;
   passwordVisible = false;
+
+  /** Horloge live du hero (fuseau Dakar). */
+  clock = '';
+  private clockTimer?: ReturnType<typeof setInterval>;
+
+  ngOnInit(): void {
+    this.tick();
+    this.clockTimer = setInterval(() => this.tick(), 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.clockTimer) clearInterval(this.clockTimer);
+  }
+
+  private tick(): void {
+    this.clock = new Intl.DateTimeFormat('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Africa/Dakar',
+    }).format(new Date());
+  }
 
   submitForm(): void {
     for (const i in this.validateForm.controls) {

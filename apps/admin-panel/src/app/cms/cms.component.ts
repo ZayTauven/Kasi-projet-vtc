@@ -1,11 +1,11 @@
-﻿import {
+import {
   Component,
   OnInit,
   HostBinding,
   OnDestroy,
   AfterViewInit,
 } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { mainPageSwitchTransition } from '../@animations/main.animation';
 
@@ -44,9 +44,25 @@ import {
   NotificationsQuery,
   SosSubscriptionGQL,
 } from '@kasi/admin-panel/generated/graphql';
-import { map, Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { ThemeService } from '../@services/theme.service';
+
+/** Lien de navigation simple du rail latéral. */
+interface NavLink {
+  labelKey: string;
+  route: string;
+  icon: string;
+  queryParams?: Record<string, unknown>;
+}
+
+/** Groupe repliable du rail latéral. */
+interface NavGroup {
+  key: string;
+  labelKey: string;
+  icon: string;
+  children: NavLink[];
+}
 
 @Component({
   selector: 'app-cms',
@@ -56,13 +72,164 @@ import { ThemeService } from '../@services/theme.service';
 })
 export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostBinding('@mainPageSwitchTransition') state = 'activated';
-  isCollapsed = true;
+
+  /** Tiroir latéral (mobile) ouvert. */
+  mobileNavOpen = false;
+  /** État déplié des groupes du rail (clé -> ouvert). */
+  navGroupsOpen: Record<string, boolean> = {};
+
   isDarkMode = false;
   stats!: Observable<ApolloQueryResult<NotificationsQuery>>;
   newSos = 0;
   newComplaints = 0;
   sosSubription?: Subscription;
   complaintSubscription?: Subscription;
+  private routerSub?: Subscription;
+
+  /** Langues proposées (code -> libellé natif). */
+  readonly languages: { code: string; label: string }[] = [
+    { code: 'fr', label: 'Français' },
+    { code: 'en', label: 'English' },
+    { code: 'es', label: 'Español' },
+    { code: 'it', label: 'Italiano' },
+    { code: 'de', label: 'Deutsch' },
+    { code: 'pt', label: 'Português' },
+    { code: 'sv', label: 'Svenska' },
+    { code: 'hy', label: 'Հայերեն' },
+    { code: 'ja', label: '日本語' },
+    { code: 'zh', label: '中文' },
+    { code: 'ru', label: 'русский' },
+    { code: 'ur', label: 'اردو' },
+    { code: 'hi', label: 'हिन्दी' },
+    { code: 'bn', label: 'বাংলা' },
+    { code: 'ko', label: '한국어' },
+    { code: 'id', label: 'Indonesian' },
+    { code: 'ar', label: 'العربية' },
+    { code: 'ro', label: 'Română' },
+  ];
+
+  /** Liens de tête (sans groupe). */
+  readonly navTop: NavLink[] = [
+    {
+      labelKey: 'menu.riders',
+      route: '/riders',
+      icon: 'user',
+      queryParams: { sort: 'id|DESC' },
+    },
+    {
+      labelKey: 'menu.requests',
+      route: '/requests',
+      icon: 'container',
+      queryParams: { sort: 'id|DESC' },
+    },
+    {
+      labelKey: 'menu.sos',
+      route: '/sos',
+      icon: 'alert',
+      queryParams: { sort: 'id|DESC' },
+    },
+    {
+      labelKey: 'menu.complaints',
+      route: '/complaints',
+      icon: 'customer-service',
+      queryParams: { sort: 'id|DESC' },
+    },
+  ];
+
+  /** Groupes repliables. */
+  readonly navGroups: NavGroup[] = [
+    {
+      key: 'home',
+      labelKey: 'menu.home.header',
+      icon: 'dashboard',
+      children: [
+        { labelKey: 'menu.home.overview', route: '/home/overview', icon: 'pie-chart' },
+        { labelKey: 'menu.home.dispatcher', route: '/home/dispatcher', icon: 'radar-chart' },
+      ],
+    },
+    {
+      key: 'drivers',
+      labelKey: 'menu.driver.header',
+      icon: 'car',
+      children: [
+        {
+          labelKey: 'menu.driver.pendingVerification',
+          route: '/drivers',
+          icon: 'clock-circle',
+          queryParams: { filter: 'status|in|PendingApproval' },
+        },
+        {
+          labelKey: 'menu.driver.all',
+          route: '/drivers',
+          icon: 'idcard',
+          queryParams: { sort: 'id|DESC' },
+        },
+      ],
+    },
+    {
+      key: 'payouts',
+      labelKey: 'menu.payouts.header',
+      icon: 'wallet',
+      children: [
+        { labelKey: 'menu.payouts.sessions', route: '/payouts/sessions', icon: 'schedule' },
+        { labelKey: 'menu.payouts.methods', route: '/payouts/methods', icon: 'credit-card' },
+      ],
+    },
+    {
+      key: 'marketing',
+      labelKey: 'menu.marketing.header',
+      icon: 'notification',
+      children: [
+        { labelKey: 'menu.marketing.coupons', route: '/marketing/coupons', icon: 'tag' },
+        { labelKey: 'menu.marketing.announcements', route: '/marketing/announcements', icon: 'sound' },
+        { labelKey: 'menu.marketing.rewards', route: '/marketing/rewards', icon: 'gift' },
+      ],
+    },
+    {
+      key: 'accounting',
+      labelKey: 'menu.accounting.header',
+      icon: 'bank',
+      children: [
+        { labelKey: 'menu.accounting.admin', route: '/financials/provider', icon: 'audit' },
+        { labelKey: 'menu.accounting.fleets', route: '/financials/fleet', icon: 'team' },
+        { labelKey: 'menu.accounting.drivers', route: '/financials/driver', icon: 'car' },
+        { labelKey: 'menu.accounting.riders', route: '/financials/rider', icon: 'user' },
+      ],
+    },
+    {
+      key: 'management',
+      labelKey: 'menu.management.header',
+      icon: 'setting',
+      children: [
+        { labelKey: 'menu.management.regions', route: '/management/regions', icon: 'environment' },
+        { labelKey: 'menu.management.services', route: '/management/services', icon: 'appstore' },
+        { labelKey: 'menu.management.serviceOptions', route: '/management/service-options', icon: 'appstore-add' },
+        { labelKey: 'menu.management.fleets', route: '/management/fleets', icon: 'team' },
+        { labelKey: 'menu.management.zonePrices', route: '/management/zone-prices', icon: 'dollar' },
+        { labelKey: 'menu.management.orderCancelReasons', route: '/management/order-cancel-reasons', icon: 'stop' },
+        { labelKey: 'menu.management.smsProviders', route: '/management/sms-providers', icon: 'message' },
+        { labelKey: 'menu.management.callMaskingProviders', route: '/management/call-masking-providers', icon: 'phone' },
+        { labelKey: 'menu.management.reviewParameters', route: '/management/review-parameters', icon: 'star' },
+        { labelKey: 'menu.management.cars', route: '/management/cars', icon: 'car' },
+        { labelKey: 'menu.management.userRoles', route: '/management/user-roles', icon: 'safety-certificate' },
+        { labelKey: 'menu.management.users', route: '/management/users', icon: 'usergroup-add' },
+        { labelKey: 'menu.management.paymentGateways', route: '/management/payment-gateways', icon: 'credit-card' },
+        { labelKey: 'menu.management.settings', route: '/management/settings', icon: 'setting' },
+      ],
+    },
+  ];
+
+  /** Groupes affichés en tête du rail (avant les liens plats). */
+  get navGroupsTop(): NavGroup[] {
+    return this.navGroups.filter((g) => g.key === 'home' || g.key === 'drivers');
+  }
+
+  /** Groupes affichés après les liens plats (opérations & configuration). */
+  get navGroupsBottom(): NavGroup[] {
+    return this.navGroups.filter(
+      (g) => !['home', 'drivers'].includes(g.key)
+    );
+  }
 
   constructor(
     private router: Router,
@@ -102,6 +269,7 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.sosSubription?.unsubscribe();
     this.complaintSubscription?.unsubscribe();
+    this.routerSub?.unsubscribe();
   }
 
   playNotificationSound() {
@@ -113,6 +281,28 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.stats = this.route.data.pipe(map((data) => data.notifications));
+
+    // Déplie d'emblée le groupe contenant la route active, referme le tiroir
+    // mobile à chaque navigation.
+    this.syncOpenGroups(this.router.url);
+    this.routerSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        this.syncOpenGroups(e.urlAfterRedirects);
+        this.mobileNavOpen = false;
+      });
+  }
+
+  /** Ouvre le groupe dont un enfant correspond à l'URL courante. */
+  private syncOpenGroups(url: string): void {
+    for (const group of this.navGroups) {
+      const active = group.children.some((c) => url.startsWith(c.route));
+      if (active) this.navGroupsOpen[group.key] = true;
+    }
+  }
+
+  toggleGroup(key: string): void {
+    this.navGroupsOpen[key] = !this.navGroupsOpen[key];
   }
 
   logout() {

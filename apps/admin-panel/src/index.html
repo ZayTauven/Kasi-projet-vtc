@@ -2,13 +2,27 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8"/>
-    <title></title>
+    <title>Kasi · Console d'administration</title>
     <base href="/"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
     <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    <!-- Kasi brand fonts : Bricolage Grotesque (display) + DM Sans (texte) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..500&display=swap" rel="stylesheet">
     <script>
       window.mAPI="";
+      // Pose la classe de thème avant le premier rendu pour éviter tout flash
+      // clair→sombre. Suit prefers-color-scheme sauf choix manuel mémorisé.
+      (function () {
+        try {
+          var saved = localStorage.getItem('kasi_theme');
+          var dark = saved ? saved === 'dark'
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
     </script>
     <style>
       @-webkit-keyframes spin {
@@ -42,8 +56,11 @@
         width: 100%;
         height: 100%;
         z-index: 1003;
-        background: #ffffff;
+        background: #f3f7fa;
         overflow: hidden;
+      }
+      .dark .spinner {
+        background: #0a0e11;
       }
       .spinner div:first-child {
         display: block;
@@ -54,7 +71,7 @@
         height: 150px;
         margin: -75px 0 0 -75px;
         border-radius: 50%;
-        box-shadow: 0 3px 3px 0 #1976d2;
+        box-shadow: 0 3px 3px 0 #1285a2;
         transform: translate3d(0, 0, 0);
         animation: spin 2s linear infinite;
       }
@@ -69,7 +86,7 @@
         left: 5px;
         right: 5px;
         bottom: 5px;
-        box-shadow: 0 3px 3px 0 #1976d2;
+        box-shadow: 0 3px 3px 0 #1285a2;
         -webkit-animation: spin 3s linear infinite;
         animation: spin 3s linear infinite;
       }
@@ -78,7 +95,7 @@
         left: 15px;
         right: 15px;
         bottom: 15px;
-        box-shadow: 0 3px 3px 0 rgba(61, 175, 255, 1);
+        box-shadow: 0 3px 3px 0 rgba(240, 152, 46, 1);
         animation: spin 1.5s linear infinite;
       }
     </style>

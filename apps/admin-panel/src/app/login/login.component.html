@@ -1,65 +1,97 @@
-<div class="full-screen page-content">
-  <nz-card class="w-[500px] flex flex-col items-center justify-center">
-    <img class="ml-[20px]" src="./assets/logo-kasi-blue.png" alt="" />
-    <div class="text-wrapper">
-      <h1 class="title-text">{{ 'login.title' | translate }}</h1>
+<div class="kasi-login">
+  <!-- ============ Hero de marque (gauche) ============ -->
+  <aside class="kasi-login__hero">
+    <div class="kasi-login__grid" aria-hidden="true"></div>
+
+    <!-- Signature Kasi : ligne de trajet + pin orange -->
+    <svg class="kasi-login__route" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M-20,560 C180,540 260,470 420,430 C600,385 640,250 820,170 C900,135 970,110 1040,60"
+        fill="none" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-dasharray="7 9"
+        stroke-linecap="round" />
+      <circle cx="820" cy="170" r="8" fill="#f0982e" />
+      <circle cx="820" cy="170" r="15" fill="none" stroke="#f0982e" stroke-opacity="0.45" stroke-width="2" />
+    </svg>
+
+    <div class="kasi-login__herotop">
+      <span class="kasi-login__logo"><img src="./assets/logo-kasi-white.png" alt="Kasi" /></span>
+      <span class="kasi-login__wordmark">
+        <strong>{{ 'branding.menu.header' | translate }}</strong>
+        <small>ADMIN CONSOLE</small>
+      </span>
     </div>
-    <form
-      nz-form
-      [formGroup]="validateForm"
-      class="login-form w-[600px]"
-      (ngSubmit)="submitForm()"
-    >
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="'login.usernameRequired' | translate">
-          <nz-input-group nzPrefixIcon="user">
-            <input
-              type="text"
-              nz-input
-              formControlName="userName"
-              placeholder="{{ 'login.username' | translate }}"
-            />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <nz-input-group
-            nzPrefixIcon="lock"
-            [nzSuffix]="passwordSuffixTemplate"
-          >
-            <input
-              [type]="passwordVisible ? 'text' : 'password'"
-              nz-input
-              formControlName="password"
-              placeholder="{{ 'form.password' | translate }}"
-            />
-          </nz-input-group>
-          <ng-template #passwordSuffixTemplate>
-            <i
-              nz-icon
-              [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
-              (click)="passwordVisible = !passwordVisible"
-            ></i>
-          </ng-template>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <!--label nz-checkbox formControlName="remember">
-            <span>Remember me</span>
-          </label-->
-          <button
-            nz-button
-            class="login-form-button"
-            nzType="primary"
-            (click)="onLogin()"
-            [disabled]="!validateForm.valid"
-          >
-            {{ 'login.submit' | translate }}
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </nz-card>
+
+    <div class="kasi-login__pitch">
+      <span class="kasi-login__badge"><span class="kasi-login__pulse"></span>OPÉRATIONS EN DIRECT</span>
+      <h1 class="kasi-login__headline">Pilotez toute votre flotte<br />depuis un seul endroit.</h1>
+      <p class="kasi-login__sub">
+        Attribuez les courses, gérez les Kasimen, suivez les revenus et répondez
+        aux incidents — en temps réel.
+      </p>
+    </div>
+
+    <div class="kasi-login__stats">
+      <div class="kasi-login__stat">
+        <i nz-icon nzType="car"></i>
+        <strong>312</strong>
+        <small>KASIMEN EN LIGNE</small>
+      </div>
+      <div class="kasi-login__stat">
+        <i nz-icon nzType="environment"></i>
+        <strong>1 847</strong>
+        <small>COURSES AUJOURD'HUI</small>
+      </div>
+      <div class="kasi-login__stat">
+        <i nz-icon nzType="clock-circle"></i>
+        <strong>3:12</strong>
+        <small>PRISE EN CHARGE MOY.</small>
+      </div>
+    </div>
+
+    <div class="kasi-login__herofoot">
+      <span>DAKAR · {{ clock }}</span>
+      <span>CHARGE 41,8 / 60</span>
+    </div>
+  </aside>
+
+  <!-- ============ Panneau de connexion (droite) ============ -->
+  <main class="kasi-login__panel">
+    <div class="kasi-login__card">
+      <h2 class="kasi-login__title">{{ 'login.title' | translate }}</h2>
+      <p class="kasi-login__caption">Accédez à la console d'exploitation de votre flotte.</p>
+
+      <form [formGroup]="validateForm" class="kasi-login__form" (ngSubmit)="onLogin()">
+        <label class="kasi-field">
+          <span class="kasi-field__label">{{ 'login.username' | translate }}</span>
+          <span class="kasi-field__control">
+            <i class="kasi-field__icon" nz-icon nzType="user"></i>
+            <input type="text" formControlName="userName" autocomplete="username"
+              placeholder="{{ 'login.username' | translate }}" />
+          </span>
+        </label>
+
+        <label class="kasi-field">
+          <span class="kasi-field__label">{{ 'form.password' | translate }}</span>
+          <span class="kasi-field__control">
+            <i class="kasi-field__icon" nz-icon nzType="lock"></i>
+            <input [type]="passwordVisible ? 'text' : 'password'" formControlName="password"
+              autocomplete="current-password" placeholder="••••••••" />
+            <button type="button" class="kasi-field__eye" (click)="passwordVisible = !passwordVisible"
+              [attr.aria-label]="passwordVisible ? 'Masquer' : 'Afficher'">
+              <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"></i>
+            </button>
+          </span>
+        </label>
+
+        <button type="submit" class="kasi-login__submit" [disabled]="!validateForm.valid">
+          <span>{{ 'login.submit' | translate }}</span>
+          <i nz-icon nzType="arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="kasi-login__foot">
+        <span>{{ 'branding.menu.header' | translate }} Admin · v3</span>
+        <span class="kasi-login__health"><span class="kasi-status-dot"></span>Tous systèmes normaux</span>
+      </div>
+    </div>
+  </main>
 </div>

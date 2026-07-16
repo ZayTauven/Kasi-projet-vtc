@@ -1,231 +1,167 @@
-<nz-layout class="app-layout">
-  <nz-sider nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
-    <div class="sidebar-logo">
-      <a href="{{'branding.footer.address' | translate}}" target="_blank">
-        <img src="../../assets/logo-kasi-white.png" alt="logo">
-        <h1>{{'branding.menu.header' | translate}}</h1>
-      </a>
+<div class="kasi-shell">
+  <!-- Voile (tiroir mobile) -->
+  <div class="kasi-scrim" [class.is-visible]="mobileNavOpen" (click)="mobileNavOpen = false"></div>
+
+  <!-- ================= Rail latéral ================= -->
+  <aside class="kasi-rail" [class.is-open]="mobileNavOpen">
+    <a class="kasi-rail__brand" href="{{ 'branding.footer.address' | translate }}" target="_blank" rel="noopener">
+      <span class="kasi-rail__logo">
+        <img src="../../assets/logo-kasi-white.png" alt="Kasi" />
+      </span>
+      <span class="kasi-rail__brandtext">
+        <strong>{{ 'branding.menu.header' | translate }}</strong>
+        <small>ADMIN CONSOLE</small>
+      </span>
+    </a>
+
+    <nav class="kasi-rail__nav">
+      <!-- Groupes de tête : Accueil, Chauffeurs -->
+      <ng-container *ngFor="let group of navGroupsTop">
+        <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group }"></ng-container>
+      </ng-container>
+
+      <!-- Liens plats : Riders, Requests, SOS, Complaints -->
+      <div class="kasi-rail__section">
+        <ng-container *ngFor="let link of navTop">
+          <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link }"></ng-container>
+        </ng-container>
+      </div>
+
+      <!-- Groupes de configuration : Versements, Marketing, Comptabilité, Gestion -->
+      <ng-container *ngFor="let group of navGroupsBottom">
+        <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group }"></ng-container>
+      </ng-container>
+    </nav>
+
+    <div class="kasi-rail__footer">
+      <span class="kasi-status-dot"></span>
+      <span>{{ 'branding.menu.header' | translate }} · Console</span>
     </div>
-    <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" nzTheme="dark">
-      <li nz-submenu nzTitle="{{'menu.home.header' | translate}}" nzIcon="dashboard">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/home/overview">{{ 'menu.home.overview' | translate }}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/home/dispatcher">{{ 'menu.home.dispatcher' | translate }}</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu [nzTitle]="'menu.driver.header' | translate" nzIcon="car">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/drivers" [queryParams]="{filter: 'status|in|PendingApproval'}"
-              routerLinkActive="router-link-active">{{'menu.driver.pendingVerification' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/drivers" [queryParams]="{sort:'id|DESC'}">{{'menu.driver.all' | translate}}</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu [nzTitle]="'menu.marketing.header' | translate" nzIcon="fund">
-        <ul>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/marketing/coupons">{{'menu.marketing.coupons' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/marketing/announcements">{{'menu.marketing.announcements' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/marketing/rewards">{{'menu.marketing.rewards' | translate}}</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu [nzTitle]="'menu.accounting.header' | translate" nzIcon="bank">
-        <ul>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/financials/provider">{{'menu.accounting.admin' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/financials/fleet">{{'menu.accounting.fleets' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/financials/driver">{{'menu.accounting.drivers' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/financials/rider">{{'menu.accounting.riders' | translate}}</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu [nzTitle]="'menu.payouts.header' | translate" nzIcon="wallet">
-        <ul>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/payouts/sessions">{{'menu.payouts.sessions' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-            <a routerLink="/payouts/methods">{{'menu.payouts.methods' | translate}}</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-        <a routerLink="/riders" [queryParams]="{sort:'id|DESC'}"><i nz-icon nzType="user"></i><span
-            *ngIf="!isCollapsed">{{'menu.riders' |
-            translate}}</span></a>
-      </li>
-      <li nz-menu-item nzMatchRouter nzMatchRouterExact="false">
-        <a routerLink="/requests" [queryParams]="{sort:'id|DESC'}"><i nz-icon nzType="container"></i><span
-            *ngIf="!isCollapsed">{{'menu.requests' |
-            translate}}</span></a>
-      </li>
-      <li nz-menu-item nzMatchRouter>
-        <a routerLink="/sos" [queryParams]="{sort:'id|DESC'}"><i nz-icon nzType="alert"></i><span
-            *ngIf="!isCollapsed">{{'menu.sos' | translate}}</span></a>
-      </li>
-      <li nz-menu-item nzMatchRouter>
-        <a routerLink="/complaints" [queryParams]="{sort:'id|DESC'}"><i nz-icon nzType="customer-service"></i><span
-            *ngIf="!isCollapsed">{{'menu.complaints' | translate}}</span></a>
-      </li>
-      <li nz-submenu [nzTitle]="'menu.management.header' | translate" nzIcon="control">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/regions">{{'menu.management.regions' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/services">{{'menu.management.services' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/service-options">{{'menu.management.serviceOptions' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/fleets">{{'menu.management.fleets' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/zone-prices">{{'menu.management.zonePrices' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/order-cancel-reasons">{{'menu.management.orderCancelReasons' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/sms-providers">{{'menu.management.smsProviders' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/call-masking-providers">{{'menu.management.callMaskingProviders' |
-              translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/review-parameters">{{'menu.management.reviewParameters' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/cars">{{'menu.management.cars' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/user-roles">{{'menu.management.userRoles' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/users">{{'menu.management.users' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/payment-gateways">{{'menu.management.paymentGateways' | translate}}</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/management/settings">{{'menu.management.settings' | translate}}</a>
-          </li>
-        </ul>
-      </li>
+  </aside>
 
-    </ul>
-  </nz-sider>
-  <nz-layout>
-    <nz-header>
-      <nz-page-header [nzGhost]="false">
-        <nz-page-header-title>
-          <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-            <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
-          </span>
-        </nz-page-header-title>
-        <nz-page-header-extra>
-          <span class="header-trigger" style="margin-right: 15px;">
-            <a nz-dropdown [nzDropdownMenu]="menu">
-              <i class="trigger" nz-icon nz-tooltip="{{ 'overview.switch.language' | translate }}" nzType="global"></i>
-            </a>
-            <nz-dropdown-menu #menu="nzDropdownMenu">
-              <ul nz-menu nzSelectable>
-                <li nz-menu-item (click)="changeLanguage('en')">English</li>
-                <li nz-menu-item (click)="changeLanguage('es')">Español</li>
-                <li nz-menu-item (click)="changeLanguage('fr')">français</li>
-                <li nz-menu-item (click)="changeLanguage('it')">Italiano</li>
-                <li nz-menu-item (click)="changeLanguage('de')">Deutsch</li>
-                <li nz-menu-item (click)="changeLanguage('pt')">Português</li>
-                <li nz-menu-item (click)="changeLanguage('sv')">Svenska</li>
-                <li nz-menu-item (click)="changeLanguage('hy')">Հայերեն</li>
-                <li nz-menu-item (click)="changeLanguage('ja')">日本語</li>
-                <li nz-menu-item (click)="changeLanguage('zh')">中文</li>
-                <li nz-menu-item (click)="changeLanguage('ru')">русский</li>
-                <li nz-menu-item (click)="changeLanguage('ur')">اردو</li>
-                <li nz-menu-item (click)="changeLanguage('hi')">हिन्दी</li>
-                <li nz-menu-item (click)="changeLanguage('bn')">বাংলা</li>
-                <li nz-menu-item (click)="changeLanguage('ko')">한국어</li>
-                <li nz-menu-item (click)="changeLanguage('id')">Indonesian</li>
-                <li nz-menu-item (click)="changeLanguage('ar')">العربية</li>
-                <li nz-menu-item (click)="changeLanguage('ro')">Română</li>
-              </ul>
-            </nz-dropdown-menu>
-          </span>
-          <span class="header-trigger" (click)="themeService.switchTheme()" style="margin-right: 15px;">
-            <i class="trigger" nz-icon nz-tooltip="{{ 'overview.switch.darkMode' | translate }}" nzType="bulb"></i>
-          </span>
-          <nz-badge *ngIf="(stats | async)?.data as aggregates"
-            [nzDot]="aggregates.complaintAggregate[0].count?.id !== 0 || aggregates.distressSignalAggregate[0].count?.id !== 0 || aggregates.driverAggregate[0].count?.id !== 0 || newComplaints != 0 || newSos != 0"
-            style="margin-right: 15px;">
-            <span nz-popover nzPopoverTitle="{{ 'overview.notification.title' | translate }}"
-              [nzPopoverContent]="notificationTemplate" nzPopoverPlacement="bottomRight" class="header-trigger">
-              <i class="trigger" nz-icon nzType="notification"></i>
-            </span>
-          </nz-badge>
-          <ng-template #notificationTemplate>
+  <!-- Modèle : lien simple -->
+  <ng-template #linkTpl let-link>
+    <a class="kasi-navlink" [routerLink]="link.route" [queryParams]="link.queryParams || null"
+      routerLinkActive="is-active">
+      <i class="kasi-navlink__icon" nz-icon [nzType]="link.icon"></i>
+      <span class="kasi-navlink__label">{{ link.labelKey | translate }}</span>
+    </a>
+  </ng-template>
 
-            <nz-row *ngIf="(stats | async)?.data?.distressSignalAggregate as distressSignals">
-              <div>
-                <nz-avatar class="not-avatar" routerLink="/sos" nzShape="square" nzIcon="alert"
-                  [ngStyle]="{'background-color':((distressSignals[0].count?.id ?? 0) + newSos) == 0 ? null : '#d3adf7'}"></nz-avatar><span
-                  class="not-desc"><b>{{(distressSignals[0].count?.id ?? 0) + newSos}}</b>
-                  {{'notification.distressSignals.suffix' | translate}}</span>
-              </div>
-            </nz-row>
-            <nz-row>
-              <nz-divider></nz-divider>
-              <div *ngIf="(stats | async)?.data?.complaintAggregate as complaints">
-                <nz-avatar class="not-avatar" nzShape="square" nzIcon="customer-service" routerLink="/complaints"
-                  [ngStyle]="{'background-color':((complaints[0].count?.id ?? 0) + newComplaints) == 0 ? null : '#b7eb8f'}"></nz-avatar><span
-                  class="not-desc"><b>{{(complaints[0].count?.id ?? 0) + newComplaints}}</b>
-                  {{'notification.complaints.suffix' | translate}}</span>
-              </div>
-            </nz-row>
-            <nz-row *ngIf="(stats | async)?.data?.driverAggregate as pendingDrivers">
-              <nz-divider></nz-divider>
-              <div>
-                <nz-avatar class="not-avatar" nzShape="square" nzIcon="car" routerLink="/drivers"
-                  [queryParams]="{filter: 'status|in|PendingApproval'}"
-                  [ngStyle]="{'background-color':pendingDrivers[0].count?.id == 0 ? null : '#87e8de'}"></nz-avatar><span
-                  class="not-desc"><b>{{pendingDrivers[0].count?.id}}</b>
-                  {{'notification.pendingDrivers.suffix' | translate}}</span>
-              </div>
-            </nz-row>
+  <!-- Modèle : groupe repliable -->
+  <ng-template #groupTpl let-group>
+    <div class="kasi-rail__group" [class.is-open]="navGroupsOpen[group.key]">
+      <button type="button" class="kasi-grouphead" (click)="toggleGroup(group.key)">
+        <i class="kasi-grouphead__icon" nz-icon [nzType]="group.icon"></i>
+        <span class="kasi-grouphead__label">{{ group.labelKey | translate }}</span>
+        <i class="kasi-grouphead__chevron" nz-icon nzType="right"></i>
+      </button>
+      <div class="kasi-group__items">
+        <a *ngFor="let child of group.children" class="kasi-navlink is-child" [routerLink]="child.route"
+          [queryParams]="child.queryParams || null" routerLinkActive="is-active">
+          <i class="kasi-navlink__icon" nz-icon [nzType]="child.icon"></i>
+          <span class="kasi-navlink__label">{{ child.labelKey | translate }}</span>
+        </a>
+      </div>
+    </div>
+  </ng-template>
 
-          </ng-template>
-          <span class="header-trigger" (click)="logout()">
-            <i class="trigger" nz-icon nzType="logout" nz-tooltip="{{ 'overview.logout' | translate }}"></i>
+  <!-- ================= Colonne principale ================= -->
+  <div class="kasi-main">
+    <!-- Topbar -->
+    <header class="kasi-topbar">
+      <div class="kasi-topbar__left">
+        <button type="button" class="kasi-iconbtn kasi-burger" (click)="mobileNavOpen = !mobileNavOpen"
+          aria-label="Menu">
+          <i nz-icon nzType="menu"></i>
+        </button>
+        <div class="kasi-account">
+          <span class="kasi-account__avatar">K</span>
+          <span class="kasi-account__meta">
+            <strong>{{ 'branding.menu.header' | translate }}</strong>
+            <small><span class="kasi-status-dot"></span>ADMIN CONSOLE</small>
           </span>
-        </nz-page-header-extra>
-      </nz-page-header>
-    </nz-header>
-    <nz-content>
-      <div class="inner-content">
+        </div>
+      </div>
+
+      <div class="kasi-topbar__right">
+        <!-- Langue -->
+        <a class="kasi-iconbtn" nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight"
+          nz-tooltip="{{ 'overview.switch.language' | translate }}">
+          <i nz-icon nzType="global"></i>
+        </a>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item *ngFor="let lang of languages" (click)="changeLanguage(lang.code)">
+              {{ lang.label }}
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+
+        <!-- Thème -->
+        <button type="button" class="kasi-iconbtn" (click)="themeService.switchTheme()"
+          nz-tooltip="{{ 'overview.switch.darkMode' | translate }}">
+          <i nz-icon nzType="bulb"></i>
+        </button>
+
+        <!-- Notifications -->
+        <nz-badge *ngIf="(stats | async)?.data as aggregates"
+          [nzDot]="aggregates.complaintAggregate[0].count?.id !== 0 || aggregates.distressSignalAggregate[0].count?.id !== 0 || aggregates.driverAggregate[0].count?.id !== 0 || newComplaints != 0 || newSos != 0">
+          <button type="button" class="kasi-iconbtn" nz-popover
+            nzPopoverTitle="{{ 'overview.notification.title' | translate }}"
+            [nzPopoverContent]="notificationTemplate" nzPopoverPlacement="bottomRight">
+            <i nz-icon nzType="bell"></i>
+          </button>
+        </nz-badge>
+        <ng-template #notificationTemplate>
+          <nz-row *ngIf="(stats | async)?.data?.distressSignalAggregate as distressSignals">
+            <div>
+              <nz-avatar class="not-avatar" routerLink="/sos" nzShape="square" nzIcon="alert"
+                [ngStyle]="{'background-color':((distressSignals[0].count?.id ?? 0) + newSos) == 0 ? null : '#d3adf7'}"></nz-avatar><span
+                class="not-desc"><b>{{(distressSignals[0].count?.id ?? 0) + newSos}}</b>
+                {{'notification.distressSignals.suffix' | translate}}</span>
+            </div>
+          </nz-row>
+          <nz-row>
+            <nz-divider></nz-divider>
+            <div *ngIf="(stats | async)?.data?.complaintAggregate as complaints">
+              <nz-avatar class="not-avatar" nzShape="square" nzIcon="customer-service" routerLink="/complaints"
+                [ngStyle]="{'background-color':((complaints[0].count?.id ?? 0) + newComplaints) == 0 ? null : '#b7eb8f'}"></nz-avatar><span
+                class="not-desc"><b>{{(complaints[0].count?.id ?? 0) + newComplaints}}</b>
+                {{'notification.complaints.suffix' | translate}}</span>
+            </div>
+          </nz-row>
+          <nz-row *ngIf="(stats | async)?.data?.driverAggregate as pendingDrivers">
+            <nz-divider></nz-divider>
+            <div>
+              <nz-avatar class="not-avatar" nzShape="square" nzIcon="car" routerLink="/drivers"
+                [queryParams]="{filter: 'status|in|PendingApproval'}"
+                [ngStyle]="{'background-color':pendingDrivers[0].count?.id == 0 ? null : '#87e8de'}"></nz-avatar><span
+                class="not-desc"><b>{{pendingDrivers[0].count?.id}}</b>
+                {{'notification.pendingDrivers.suffix' | translate}}</span>
+            </div>
+          </nz-row>
+        </ng-template>
+
+        <!-- Déconnexion -->
+        <button type="button" class="kasi-iconbtn kasi-iconbtn--danger" (click)="logout()"
+          nz-tooltip="{{ 'overview.logout' | translate }}">
+          <i nz-icon nzType="logout"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenu -->
+    <main class="kasi-content">
+      <div class="kasi-content__inner">
         <router-outlet></router-outlet>
       </div>
-    </nz-content>
-    <nz-footer><span>{{'branding.footer.prefix' | translate}} <a
-          href="{{'branding.footer.address' | translate}}">{{'branding.footer.title' | translate}}</a>
-        {{'branding.footer.suffix' | translate}}</span></nz-footer>
-  </nz-layout>
-</nz-layout>
+    </main>
+
+    <footer class="kasi-footer">
+      <span>{{ 'branding.footer.prefix' | translate }}
+        <a href="{{ 'branding.footer.address' | translate }}">{{ 'branding.footer.title' | translate }}</a>
+        {{ 'branding.footer.suffix' | translate }}</span>
+    </footer>
+  </div>
+</div>
