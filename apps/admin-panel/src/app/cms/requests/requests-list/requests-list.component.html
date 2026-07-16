@@ -1,17 +1,21 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'requests.title' | translate" [nzSubtitle]="'requests.subtitle' | translate">
-  <nz-page-header-extra>
-  </nz-page-header-extra>
-  <nz-page-header-content>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'requests.title' | translate }}</h1>
+    <p>{{ 'requests.subtitle' | translate }}</p>
+  </div>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
     <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.orders as orders"
       [nzData]="orders.nodes" [nzTotal]="orders.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
       <thead>
         <tr>
           <th>
             {{ 'profile.dateTime' | translate }}
-            <!--nz-filter-trigger [nzActive]="dateRanges[0] != null" [nzDropdownMenu]="filterDateRange">
-              <i nz-icon nzType="filter" nzTheme="fill"></i>
-            </nz-filter-trigger-->
           </th>
           <th>
             {{ 'profile.cost' | translate }}
@@ -32,16 +36,17 @@
         </tr>
       </tbody>
     </nz-table>
-    <nz-dropdown-menu #filterDateRange="nzDropdownMenu">
-      <div class="ant-table-filter-dropdown">
-        <div class="search-box">
-          <nz-range-picker [(ngModel)]="dateRanges"></nz-range-picker><br>
-          <button nz-button nzSize="small" nzType="primary" (click)="tableService.filterText('createdOn', undefined)"
-            class="search-button">{{ 'profile.search' | translate }}</button>
-          <button nz-button nzSize="small" (click)="tableService.filterText('createdOn', undefined)">{{ 'profile.reset'
-            | translate }}</button>
-        </div>
-      </div>
-    </nz-dropdown-menu>
-  </nz-page-header-content>
-</nz-page-header>
+  </div>
+</div>
+
+<nz-dropdown-menu #filterDateRange="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <nz-range-picker [(ngModel)]="dateRanges"></nz-range-picker><br>
+      <button nz-button nzSize="small" nzType="primary" (click)="tableService.filterText('createdOn', undefined)"
+        class="search-button">{{ 'profile.search' | translate }}</button>
+      <button nz-button nzSize="small" (click)="tableService.filterText('createdOn', undefined)">{{ 'profile.reset'
+        | translate }}</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

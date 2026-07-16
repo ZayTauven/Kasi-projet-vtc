@@ -509,6 +509,20 @@ a:hover {
   background: rgba(18, 133, 162, 0.14) !important;
 }
 
+/* Liens dans les tableaux (actions, numéros) -> pétrole Kasi, pas le bleu Ant */
+.ant-table a,
+.kasi-card a:not(.kasi-btn):not(.ant-btn) {
+  color: var(--kasi-petrol-600) !important;
+}
+.ant-table a:hover,
+.kasi-card a:not(.kasi-btn):not(.ant-btn):hover {
+  color: var(--kasi-petrol-500) !important;
+}
+.dark .ant-table a,
+.dark .kasi-card a:not(.kasi-btn):not(.ant-btn) {
+  color: var(--kasi-petrol-400) !important;
+}
+
 /* Rayon d'angle un peu plus doux, cohérent avec la marque */
 .ant-card,
 .ant-modal-content,

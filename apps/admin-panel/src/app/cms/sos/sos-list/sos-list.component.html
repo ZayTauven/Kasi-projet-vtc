@@ -1,8 +1,16 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'sos.title' | translate" [nzSubtitle]="'sos.subtitle' | translate">
-  <nz-page-header-content>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'sos.title' | translate }}</h1>
+    <p>{{ 'sos.subtitle' | translate }}</p>
+  </div>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
     <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.distressSignals as sos"
-      [nzData]="sos.nodes" [nzTotal]="sos.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)"
-      nzBordered>
+      [nzData]="sos.nodes" [nzTotal]="sos.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
       <thead>
         <tr>
           <th>{{ 'profile.dateTime' | translate }}</th>
@@ -19,5 +27,5 @@
         </tr>
       </tbody>
     </nz-table>
-  </nz-page-header-content>
-</nz-page-header>
+  </div>
+</div>

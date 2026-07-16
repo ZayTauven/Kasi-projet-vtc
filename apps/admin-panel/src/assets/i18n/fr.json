@@ -578,6 +578,8 @@
 		"bad": "Négatif"
 	},
 	"services": {
+		"title": "Prestations de service",
+		"subtitle": "Gérez les catégories et les services proposés dans les applications",
 		"editCategory": "Modifier la catégorie",
 		"newCategory": "Nouvelle catégorie",
 		"newService": "Nouveau service"

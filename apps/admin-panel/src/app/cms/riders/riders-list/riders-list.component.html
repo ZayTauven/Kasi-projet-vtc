@@ -1,12 +1,20 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'riders.title' | translate" [nzSubtitle]="'riders.subtitle' | translate">
-  <nz-page-header-extra>
-    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'profile.add' | translate
-      }}</button>
-  </nz-page-header-extra>
-  <nz-page-header-content>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'riders.title' | translate }}</h1>
+    <p>{{ 'riders.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
     <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.riders as riders"
       [nzData]="riders.nodes" [nzTotal]="riders.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
       <thead>
         <tr>
           <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
@@ -44,31 +52,32 @@
         </tr>
       </tbody>
     </nz-table>
-    <nz-dropdown-menu #filtername="nzDropdownMenu">
-      <div class="ant-table-filter-dropdown">
-        <div class="search-box">
-          <input nz-input #lastNameInput placeholder="{{ 'profile.lastName' | translate }}" />
-          <button nz-button nzSize="small" nzType="primary"
-            (click)="tableService.filterText('lastName', lastNameInput.value)" class="search-button">
-            {{ 'profile.search' | translate }}
-          </button>
-          <button nz-button nzSize="small" (click)="tableService.resetFilter('lastName', lastNameInput)">{{
-            'profile.reset' | translate }}</button>
-        </div>
-      </div>
-    </nz-dropdown-menu>
-    <nz-dropdown-menu #filtermobile="nzDropdownMenu">
-      <div class="ant-table-filter-dropdown">
-        <div class="search-box">
-          <input #mobileNumberInput nz-input placeholder="{{ 'profile.searchMobileNumber' | translate }}">
-          <button nz-button nzSize="small" nzType="primary" class="search-button"
-            (click)="tableService.filterText('mobileNumber', mobileNumberInput.value)">
-            {{ 'profile.search' | translate }}
-          </button>
-          <button nz-button nzSize="small" (click)="tableService.resetFilter('mobileNumber', mobileNumberInput)">{{
-            'profile.reset' | translate }}</button>
-        </div>
-      </div>
-    </nz-dropdown-menu>
-  </nz-page-header-content>
-</nz-page-header>
+  </div>
+</div>
+
+<nz-dropdown-menu #filtername="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input nz-input #lastNameInput placeholder="{{ 'profile.lastName' | translate }}" />
+      <button nz-button nzSize="small" nzType="primary"
+        (click)="tableService.filterText('lastName', lastNameInput.value)" class="search-button">
+        {{ 'profile.search' | translate }}
+      </button>
+      <button nz-button nzSize="small" (click)="tableService.resetFilter('lastName', lastNameInput)">{{
+        'profile.reset' | translate }}</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #filtermobile="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input #mobileNumberInput nz-input placeholder="{{ 'profile.searchMobileNumber' | translate }}">
+      <button nz-button nzSize="small" nzType="primary" class="search-button"
+        (click)="tableService.filterText('mobileNumber', mobileNumberInput.value)">
+        {{ 'profile.search' | translate }}
+      </button>
+      <button nz-button nzSize="small" (click)="tableService.resetFilter('mobileNumber', mobileNumberInput)">{{
+        'profile.reset' | translate }}</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

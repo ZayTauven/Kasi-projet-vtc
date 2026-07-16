@@ -1,24 +1,32 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'roles.title' | translate" [nzSubtitle]="'roles.subtitle' | translate">
-    <nz-page-header-extra>
-      <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'profile.add' | translate
-        }}</button>
-    </nz-page-header-extra>
-    <nz-page-header-content>
-      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-        *ngIf="(query | async)?.data?.operatorRoles as roles" [nzData]="roles ?? []"
-        [nzTotal]="roles.length" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
-        <thead>
-          <tr>
-            <th>
-              {{ 'profile.title' | translate }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-            <td>{{ data.title }}</td>
-          </tr>
-        </tbody>
-      </nz-table>
-    </nz-page-header-content>
-  </nz-page-header>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'roles.title' | translate }}</h1>
+    <p>{{ 'roles.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.operatorRoles as roles" [nzData]="roles ?? []"
+      [nzTotal]="roles.length" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+      <thead>
+        <tr>
+          <th>
+            {{ 'profile.title' | translate }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>{{ data.title }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>

@@ -1,13 +1,19 @@
-<nz-page-header
-  [nzGhost]="false"
-  nzBackIcon
-  [nzTitle]="'reviewParameters.title' | translate"
-  [nzSubtitle]="'reviewParameters.subtitle' | translate">
-  <nz-page-header-extra>
-    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}</button>
-  </nz-page-header-extra>
-  <nz-page-header-content>
-    <nz-table #ajaxTable nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.feedbackParameters as regions" [nzData]="regions" [nzTotal]="regions.length" nzBordered>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'reviewParameters.title' | translate }}</h1>
+    <p>{{ 'reviewParameters.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #ajaxTable nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.feedbackParameters as regions" [nzData]="regions" [nzTotal]="regions.length">
       <thead>
         <tr>
           <th>{{ 'profile.name' | translate }}</th>
@@ -23,5 +29,5 @@
         </tr>
       </tbody>
     </nz-table>
-  </nz-page-header-content>
-</nz-page-header>
+  </div>
+</div>

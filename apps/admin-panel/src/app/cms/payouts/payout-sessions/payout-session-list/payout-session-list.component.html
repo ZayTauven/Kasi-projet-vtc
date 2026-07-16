@@ -1,13 +1,20 @@
-<nz-page-header [nzGhost]="false" nzBackIcon [nzTitle]="'payoutSessions.title' | translate"
-  [nzSubtitle]="'payoutSessions.subtitle' | translate">
-  <nz-page-header-extra>
-    <button nz-button nzType="primary" routerLink="new"><i nz-icon nzType="plus"></i>{{ 'payouts.createSession' |
-      translate }}</button>
-  </nz-page-header-extra>
-  <nz-page-header-content>
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'payoutSessions.title' | translate }}</h1>
+    <p>{{ 'payoutSessions.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'payouts.createSession' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
     <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
       *ngIf="(query | async)?.data?.payoutSessions as payoutSessions" [nzData]="payoutSessions.nodes"
-      [nzTotal]="payoutSessions.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)" nzBordered>
+      [nzTotal]="payoutSessions.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
       <thead>
         <tr>
           <th>#</th>
@@ -32,5 +39,5 @@
         </tr>
       </tbody>
     </nz-table>
-  </nz-page-header-content>
-</nz-page-header>
+  </div>
+</div>
