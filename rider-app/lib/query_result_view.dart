@@ -80,7 +80,17 @@ void showOperationErrorMessage(
 
 String getErrorMessage(BuildContext context, OperationException? exception) {
   if (exception?.graphqlErrors.isNotEmpty ?? false) {
-    return exception!.graphqlErrors.first.message;
+    final message = exception!.graphqlErrors.first.message;
+    // Messages techniques d'authentification du backend → message convivial
+    // (ex. le garde NestJS renvoie "GqlAuthGuard" quand la session est absente/expirée).
+    final lower = message.toLowerCase();
+    if (message == 'GqlAuthGuard' ||
+        lower.contains('unauthorized') ||
+        lower.contains('unauthenticated') ||
+        lower.contains('forbidden')) {
+      return "Votre session a expiré. Veuillez vous reconnecter.";
+    }
+    return message;
   }
   if (exception.toString().contains("Connection closed") ||
       exception.toString().contains("Connection reset") ||
@@ -88,7 +98,7 @@ String getErrorMessage(BuildContext context, OperationException? exception) {
       exception.toString().contains("Connection timed out") ||
       exception.toString().contains("Connection terminated") ||
       exception.toString().contains("Connection failed")) {
-    return "Network error, Please try again.";
+    return "Erreur réseau. Veuillez réessayer.";
   }
-  return "We encountered a problem while processing your request. please try again.";
+  return "Un problème est survenu lors du traitement de votre demande. Veuillez réessayer.";
 }

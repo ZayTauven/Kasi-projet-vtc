@@ -49,7 +49,7 @@ class SFr extends S {
   String get statusOffline => 'Aller en ligne';
 
   @override
-  String get statusOnline => 'Se déconnecter';
+  String get statusOnline => 'Passer hors ligne';
 
   @override
   String get message_notification_permission_title =>
@@ -66,10 +66,10 @@ class SFr extends S {
   String get menu_logout => 'Se déconnecter';
 
   @override
-  String get menu_about => 'À propos de';
+  String get menu_about => 'À propos';
 
   @override
-  String get menu_wallet => 'Porte monnaie';
+  String get menu_wallet => 'Porte-monnaie';
 
   @override
   String get menu_trip_history => 'Historique des trajets';
@@ -124,13 +124,13 @@ class SFr extends S {
   String get certificate_number => 'Numéro de certificat';
 
   @override
-  String get gender => 'Le genre';
+  String get gender => 'Genre';
 
   @override
   String get gender_male => 'Homme';
 
   @override
-  String get gender_female => 'Femelle';
+  String get gender_female => 'Femme';
 
   @override
   String get address => 'Adresse';
@@ -173,14 +173,13 @@ class SFr extends S {
       'Afin de vérifier les documents ci-dessus, nous avons besoin des documents ci-dessous en cours de téléchargement';
 
   @override
-  String get driver_register_document_first => '1-ID';
+  String get driver_register_document_first => '1 - Pièce d\'identité';
 
   @override
-  String get driver_register_document_second => 'Permis 2 conducteurs';
+  String get driver_register_document_second => '2 - Permis de conduire';
 
   @override
-  String get driver_register_document_third =>
-      'Document de propriété de 3-Ride';
+  String get driver_register_document_third => '3 - Carte grise du véhicule';
 
   @override
   String get action_upload_document => 'Télécharger un document';
@@ -255,7 +254,7 @@ class SFr extends S {
       'Frais de commande';
 
   @override
-  String get enum_driver_deduct_transaction_type_withdraw => 'Se désister';
+  String get enum_driver_deduct_transaction_type_withdraw => 'Retrait';
 
   @override
   String get enum_driver_deduct_transaction_type_correction => 'Correction';
@@ -281,13 +280,13 @@ class SFr extends S {
   String get issue_submit_title => 'Signaler un problème';
 
   @override
-  String get issue_subject_placeholder => 'Matière';
+  String get issue_subject_placeholder => 'Sujet';
 
   @override
   String get error_field_cant_be_empty => 'Ne peux pas être vide';
 
   @override
-  String get issue_description_placeholder => 'La description';
+  String get issue_description_placeholder => 'Description';
 
   @override
   String get complaint_submit_success_message =>
@@ -308,7 +307,7 @@ class SFr extends S {
       'Le passager sera informé une fois que vous aurez appuyé sur Arrivé';
 
   @override
-  String get order_status_card_title_arrived => 'Le coureur a été informé';
+  String get order_status_card_title_arrived => 'Le passager a été informé';
 
   @override
   String get order_status_card_title_started => 'En route vers la destination';
@@ -335,10 +334,10 @@ class SFr extends S {
       'Le trajet n\'a pas encore été payé';
 
   @override
-  String get order_payment_status_paid => 'Le passager a été payé';
+  String get order_payment_status_paid => 'Le trajet a été payé';
 
   @override
-  String get action_ride_preferences => 'Préférences du pilote';
+  String get action_ride_preferences => 'Préférences du passager';
 
   @override
   String get navigation_dialog_title_pickup_point =>
@@ -356,7 +355,7 @@ class SFr extends S {
 
   @override
   String get invoice_dialog_body =>
-      'Vous pouvez également recevoir de l\'argent au lieu d\'un paiement en ligne si vous et l\'auteur êtes tous les deux disposés à le faire.';
+      'Vous pouvez également être payé en espèces au lieu d\'un paiement en ligne si vous et le passager êtes tous les deux d\'accord.';
 
   @override
   String get invoice_dialog_heading => 'En attente du paiement du passager';
@@ -365,10 +364,10 @@ class SFr extends S {
   String get invoice_dialog_title => 'Information de paiement';
 
   @override
-  String get invoice_item_tip => 'Pointe';
+  String get invoice_item_tip => 'Pourboire';
 
   @override
-  String get invoice_item_subtotal => 'Total';
+  String get invoice_item_subtotal => 'Sous-total';
 
   @override
   String get add_credit_dialog_title => 'Ajouter un crédit';
@@ -422,13 +421,13 @@ class SFr extends S {
   String get terms_and_conditions_clickable_part => 'termes et conditions';
 
   @override
-  String get onboarding_welcome => 'Accueillir !';
+  String get onboarding_welcome => 'Bienvenue !';
 
   @override
-  String get action_login_signup => 'Se connecter S\'inscrire';
+  String get action_login_signup => 'Se connecter / S\'inscrire';
 
   @override
-  String get action_complete_registration => 'Enregistrement complet';
+  String get action_complete_registration => 'Compléter l\'inscription';
 
   @override
   String get action_edit_submission => 'Modifier la soumission';
@@ -549,7 +548,7 @@ class SFr extends S {
 
   @override
   String get register_upload_documents_subtitle =>
-      'Afin de vérifier votre identité et de vous conformer à la réglementation, nous aurons besoin que vous téléchargiez les documents ci-dessous : \\n1-Photo d\'identité\\n2-Permis de conduire\\n3-Document de propriété du trajet';
+      'Afin de vérifier votre identité et de vous conformer à la réglementation, nous aurons besoin que vous téléchargiez les documents ci-dessous : \\n1-Photo d\'identité\\n2-Permis de conduire\\n3-Carte grise du véhicule';
 
   @override
   String get register_step_phone_number => 'Numéro de téléphone';
@@ -574,7 +573,7 @@ class SFr extends S {
 
   @override
   String get error_cancel_not_allowed =>
-      'Cancel is not allowed for an already started trip';
+      'L\'annulation n\'est pas autorisée pour un trajet déjà commencé.';
 
   @override
   String distanceMeters(String distance) {
@@ -598,30 +597,31 @@ class SFr extends S {
 
   @override
   String distanceAway(String distance) {
-    return '$distance away';
+    return 'à $distance';
   }
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Paramètres';
 
   @override
-  String get mapSettings => 'Map Settings';
+  String get mapSettings => 'Paramètres de la carte';
 
   @override
-  String get languageSettings => 'Language Settings';
+  String get languageSettings => 'Paramètres de langue';
 
   @override
   String orderStatusCardTitleMultipleDestinations(int destinationIndex) {
-    return 'Heading to ${destinationIndex}st destination';
+    return 'En route vers la destination $destinationIndex';
   }
 
   @override
   String actionArrivedToDestination(int destinationIndex) {
-    return 'Arrived to ${destinationIndex}st destination';
+    return 'Arrivé à la destination $destinationIndex';
   }
 
   @override
-  String get skipVerificationDemoOnly => 'Skip verification (Demo only)';
+  String get skipVerificationDemoOnly =>
+      'Ignorer la vérification (démo uniquement)';
 
   @override
   String get delivery_tag => 'Livraison';

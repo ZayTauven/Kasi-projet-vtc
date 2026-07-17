@@ -64,43 +64,53 @@ class _ProfileViewState extends State<ProfileView> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 12),
-                      Row(mainAxisSize: MainAxisSize.min, children: [
-                        ProfileInfoCard(
-                            title: S.of(context).profile_distance_traveled,
-                            subtitle: Text(
-                              distanceToString(
-                                  context,
-                                  driver.historyOrdersAggregate.firstOrNull?.sum
-                                          ?.distanceBest ??
-                                      0),
-                              style: Theme.of(context).textTheme.titleMedium,
-                            )),
-                        ProfileInfoCard(
-                            title: S.of(context).profile_total_trips,
-                            subtitle: Text(
-                              driver.historyOrdersAggregate.first.count?.id
-                                      .toString() ??
-                                  "0",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            )),
-                        ProfileInfoCard(
-                            title: S.of(context).profile_rating,
-                            subtitle: Row(children: [
-                              const SizedBox(width: 12),
-                              const Icon(
-                                Ionicons.star,
-                                color: Color(0xFFEFC868),
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                driver.rating == null
-                                    ? "-"
-                                    : (driver.rating! / 20).toStringAsFixed(1),
+                      Row(children: [
+                        Expanded(
+                          child: ProfileInfoCard(
+                              title: S.of(context).profile_distance_traveled,
+                              subtitle: Text(
+                                distanceToString(
+                                    context,
+                                    driver.historyOrdersAggregate.firstOrNull
+                                            ?.sum?.distanceBest ??
+                                        0),
                                 style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(width: 12)
-                            ]))
+                              )),
+                        ),
+                        Expanded(
+                          child: ProfileInfoCard(
+                              title: S.of(context).profile_total_trips,
+                              subtitle: Text(
+                                driver.historyOrdersAggregate.first.count?.id
+                                        .toString() ??
+                                    "0",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              )),
+                        ),
+                        Expanded(
+                          child: ProfileInfoCard(
+                              title: S.of(context).profile_rating,
+                              subtitle: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Ionicons.star,
+                                      color: Color(0xFFEFC868),
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      driver.rating == null
+                                          ? "-"
+                                          : (driver.rating! / 20)
+                                              .toStringAsFixed(1),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ])),
+                        )
                       ]),
                       const SizedBox(height: 24),
                       Container(
@@ -136,41 +146,8 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: CustomTheme.primaryColors.shade100,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: ExpansionPanelList(
-                            elevation: 0,
-                            children: [
-                              ExpansionPanel(
-                                  backgroundColor: Colors.transparent,
-                                  isExpanded: _isOpen[0],
-                                  canTapOnHeader: true,
-                                  headerBuilder: (context, isExpanded) {
-                                    return Container(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Text(
-                                        S
-                                            .of(context)
-                                            .profile_bank_information_title,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium,
-                                      ),
-                                    );
-                                  },
-                                  body: BankInformationTableView(
-                                    driver: driver,
-                                  ))
-                            ],
-                            expansionCallback: (panelIndex, isExpanded) {
-                              setState(() {
-                                _isOpen[0] = !isExpanded;
-                              });
-                            }),
-                      ),
-                      const SizedBox(height: 12),
+                      // « Informations bancaires » (Ridy) retiré : remplacé par
+                      // « Méthodes de retrait » ci-dessous (Wave/OM/Virement/Espèces).
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(

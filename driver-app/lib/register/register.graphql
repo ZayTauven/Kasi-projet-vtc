@@ -16,6 +16,8 @@ query GetDriver {
     accountNumber
     bankName
     bankRoutingNumber
+    payoutMethodId
+    payoutAccountNumber
     address
     documents {
       id

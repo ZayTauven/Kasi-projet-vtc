@@ -20,7 +20,7 @@ class KasiBanner extends StatelessWidget {
                 color: Color(0x15000000), offset: Offset(2, 3), blurRadius: 10)
           ]),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Icon(Ionicons.checkmark_circle, color: foregroundColorForBanner()),
+        Icon(iconForBanner(), color: foregroundColorForBanner()),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -54,6 +54,15 @@ class KasiBanner extends StatelessWidget {
         return const Color(0xff046c00);
       case BannerType.error:
         return const Color(0xff950101);
+    }
+  }
+
+  IconData iconForBanner() {
+    switch (type) {
+      case BannerType.success:
+        return Ionicons.checkmark_circle;
+      case BannerType.error:
+        return Ionicons.alert_circle;
     }
   }
 }

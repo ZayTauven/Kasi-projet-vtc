@@ -18,7 +18,7 @@ class SFr extends S {
   String get enum_rider_transaction_deduct_order_fee => 'Frais de commande';
 
   @override
-  String get enum_rider_transaction_deduct_withdraw => 'Se désister';
+  String get enum_rider_transaction_deduct_withdraw => 'Retrait';
 
   @override
   String get enum_rider_transaction_deduct_correction => 'Correction';
@@ -43,7 +43,7 @@ class SFr extends S {
   String get top_up_sheet_pay_button => 'Payer';
 
   @override
-  String get service_selection_book_now => 'Reserve maintenant';
+  String get service_selection_book_now => 'Réserver maintenant';
 
   @override
   String get action_cancel => 'Annuler';
@@ -54,7 +54,7 @@ class SFr extends S {
   }
 
   @override
-  String get menu_about => 'À propos de';
+  String get menu_about => 'À propos';
 
   @override
   String get menu_login => 'Connexion';
@@ -63,7 +63,7 @@ class SFr extends S {
   String get menu_profile => 'Profil';
 
   @override
-  String get menu_wallet => 'Porte monnaie';
+  String get menu_wallet => 'Porte-monnaie';
 
   @override
   String get menu_trip_history => 'Historique des trajets';
@@ -75,7 +75,7 @@ class SFr extends S {
   String get menu_saved_locations => 'Emplacements enregistrés';
 
   @override
-  String get action_save => 'sauvegarder';
+  String get action_save => 'Enregistrer';
 
   @override
   String get create_address_name_empty_error =>
@@ -85,7 +85,7 @@ class SFr extends S {
   String get create_address_title_textfield_hint => 'Titre';
 
   @override
-  String get action_delete => 'Effacer';
+  String get action_delete => 'Supprimer';
 
   @override
   String get trip_history_empty_state_message =>
@@ -101,13 +101,13 @@ class SFr extends S {
   String get profile_email => 'E-mail';
 
   @override
-  String get profile_gender => 'Le genre';
+  String get profile_gender => 'Genre';
 
   @override
   String get enum_gender_male => 'Homme';
 
   @override
-  String get enum_gender_female => 'Femelle';
+  String get enum_gender_female => 'Femme';
 
   @override
   String get login_cell_number_textfield_hint => 'Numéro de téléphone';
@@ -117,7 +117,7 @@ class SFr extends S {
       'Veuillez saisir le numéro de téléphone au format correct';
 
   @override
-  String get action_next => 'Prochain';
+  String get action_next => 'Suivant';
 
   @override
   String get verify_phone_code_empty_message =>
@@ -130,13 +130,13 @@ class SFr extends S {
   String get menu_logout => 'Se déconnecter';
 
   @override
-  String get enum_gender_unknown => 'Inconnue';
+  String get enum_gender_unknown => 'Inconnu';
 
   @override
   String get enum_address_type_home => 'Maison';
 
   @override
-  String get enum_address_type_work => 'Travailler';
+  String get enum_address_type_work => 'Travail';
 
   @override
   String get enum_address_type_partner => 'Partenaire';
@@ -163,7 +163,7 @@ class SFr extends S {
       'Confirmer et réserver le trajet';
 
   @override
-  String get title_reserve_ride => 'Réserver un tour';
+  String get title_reserve_ride => 'Réserver un trajet';
 
   @override
   String get error_region_unsupported =>
@@ -176,11 +176,11 @@ class SFr extends S {
   String get title_wait_time => 'Temps d\'attente';
 
   @override
-  String get notice_tip_title => 'Souhaitez-vous ajouter un conseil ?';
+  String get notice_tip_title => 'Souhaitez-vous ajouter un pourboire ?';
 
   @override
   String get notice_tip_description =>
-      'L\'ajout d\'un pourboire est facultatif. Vous pouvez ajouter le montant de votre choix comme pourboire au chauffeur.';
+      'L\'ajout d\'un pourboire est facultatif. Vous pouvez laisser le montant de votre choix comme pourboire au Kasiman.';
 
   @override
   String get action_pay_for_ride => 'Payer pour le trajet';
@@ -229,7 +229,7 @@ class SFr extends S {
 
   @override
   String get status_title_driver_arrived =>
-      'Rencontrer le chauffeur au point de ramassage';
+      'Rejoignez le Kasiman au point de prise en charge';
 
   @override
   String get status_title_trip_started => 'En route vers la destination';
@@ -288,7 +288,7 @@ class SFr extends S {
       'Nous n\'avons pas pu obtenir votre position actuelle à partir du GPS de votre appareil. Veuillez utiliser le champ de recherche pour sélectionner votre lieu de ramassage.';
 
   @override
-  String get menu_reserved_rides => 'Manèges réservés';
+  String get menu_reserved_rides => 'Trajets réservés';
 
   @override
   String get reservation_empty_state_title => 'Pas de réservations!';
@@ -310,7 +310,7 @@ class SFr extends S {
   String get enum_address_type_cafe => 'Café';
 
   @override
-  String get enum_address_type_park => 'Se garer';
+  String get enum_address_type_park => 'Parc';
 
   @override
   String get action_add_favorite_location => 'Ajouter un lieu favori';
@@ -330,7 +330,7 @@ class SFr extends S {
       'Veuillez sélectionner le type d\'adresse';
 
   @override
-  String get placeholder_type => 'Taper';
+  String get placeholder_type => 'Type';
 
   @override
   String get action_delete_account => 'Supprimer le compte';
@@ -343,7 +343,7 @@ class SFr extends S {
       'Êtes-vous sûr de vouloir supprimer votre compte ? Vous pouvez vous reconnecter dans les 30 jours pour restaurer le compte. Après cette période, vos données sont complètement supprimées, y compris tous vos crédits restants.';
 
   @override
-  String get action_edit => 'Éditer';
+  String get action_edit => 'Modifier';
 
   @override
   String get action_confirm_location => 'Confirmer l\'emplacement';
@@ -366,20 +366,20 @@ class SFr extends S {
 
   @override
   String get looking_dialog_body =>
-      'Nous recherchons pour vous le chauffeur le plus proche.';
+      'Nous recherchons pour vous le Kasiman le plus proche.';
 
   @override
-  String get action_cancel_request => 'Demande d\'annulation';
+  String get action_cancel_request => 'Annuler la demande';
 
   @override
   String get rate_ride_title => 'Comment s\'est passé votre trajet ?';
 
   @override
   String get rate_ride_body =>
-      'Aidez-nous à améliorer votre expérience en évaluant votre chauffeur';
+      'Aidez-nous à améliorer votre expérience en évaluant votre Kasiman';
 
   @override
-  String get rate_ride_good_points => 'Points sympas';
+  String get rate_ride_good_points => 'Points positifs';
 
   @override
   String get rate_ride_negative_points => 'Points négatifs';
@@ -433,7 +433,7 @@ class SFr extends S {
   @override
   String share_trip_text_driver(
       Object firstName, Object lastName, Object mobileNumber) {
-    return ' Mon nom de chauffeur est $firstName $lastName et son numéro de portable est +$mobileNumber.';
+    return ' Le nom de mon Kasiman est $firstName $lastName et son numéro de portable est +$mobileNumber.';
   }
 
   @override
@@ -443,7 +443,7 @@ class SFr extends S {
 
   @override
   String share_trip_not_arrived_time(Object duration) {
-    return ' Je m\'attends à ce que le trajet lui-même prenne environ $duration minutes une fois que je monte dans la voiture du conducteur.';
+    return ' Je m\'attends à ce que le trajet lui-même prenne environ $duration minutes une fois que je monte dans le véhicule du Kasiman.';
   }
 
   @override
@@ -491,7 +491,7 @@ class SFr extends S {
 
   @override
   String cancelation_fee_confirmation_body(Object fee) {
-    return 'L\'annulation du service après que le conducteur a accepté le voyage est soumise à une pénalité d\'annulation de $fee. Vous confirmez ?';
+    return 'L\'annulation de la course après que le Kasiman a accepté le trajet est soumise à une pénalité d\'annulation de $fee. Confirmez-vous ?';
   }
 
   @override
@@ -509,10 +509,10 @@ class SFr extends S {
   String get add_credit_custom_credit_text_placeholder => 'Personnalisé';
 
   @override
-  String get invoice_item_tip => 'Pointe';
+  String get invoice_item_tip => 'Pourboire';
 
   @override
-  String get invoice_item_wallet => 'Porte monnaie';
+  String get invoice_item_wallet => 'Porte-monnaie';
 
   @override
   String get invoice_item_total => 'Total';
@@ -524,10 +524,10 @@ class SFr extends S {
   String get add_credit_choose_amount => 'Choisissez le montant';
 
   @override
-  String get action_ride_preferences => 'Préférences de conduite';
+  String get action_ride_preferences => 'Préférences de trajet';
 
   @override
-  String get ride_preferences_title => 'Préférences de conduite';
+  String get ride_preferences_title => 'Préférences de trajet';
 
   @override
   String get action_confirm_and_continue => 'Confirmer et continuer';
@@ -577,7 +577,7 @@ class SFr extends S {
 
   @override
   String get onboarding_first_page_body =>
-      'Service de taxi conçu pour votre confort\n faites des trajets avec vos chauffeurs préférés et choisissez vos préférences de trajet';
+      'Un service conçu pour votre confort\n faites vos trajets avec vos Kasiman préférés et choisissez vos préférences de trajet';
 
   @override
   String get onboarding_second_page_title => 'Soyez récompensé !';
@@ -614,52 +614,53 @@ class SFr extends S {
   }
 
   @override
-  String get register_title_name => 'Name';
+  String get register_title_name => 'Nom';
 
   @override
-  String get register_title_verify_number => 'Verify number';
+  String get register_title_verify_number => 'Vérifier le numéro';
 
   @override
   String get login_enter_phone_subtitle =>
-      'To begin booking your ride, please sign in first. We will then send a code to your phone number.';
+      'Pour commencer à réserver votre course, veuillez d\'abord vous connecter. Nous enverrons ensuite un code à votre numéro de téléphone.';
 
   @override
-  String get action_resend_code => 'Resend Code';
+  String get action_resend_code => 'Renvoyer le code';
 
   @override
   String notice_resend_code_in_seconds(Object seconds) {
-    return 'Resend code in $seconds seconds';
+    return 'Renvoyer le code dans $seconds secondes';
   }
 
   @override
   String get sos_send_error =>
-      'There was a problem encountered while attempting to send your SOS signal. Please make another attempt or contact 911 directly.';
+      'Un problème est survenu lors de l\'envoi de votre signal SOS. Veuillez réessayer ou contacter directement les services d\'urgence.';
 
   @override
   String get complaint_submit_error_message =>
-      'The submission of your complaint was unsuccessful, likely due to connectivity issues. Please try again.';
+      'L\'envoi de votre plainte a échoué, probablement en raison d\'un problème de connexion. Veuillez réessayer.';
 
   @override
-  String get languageSettings => 'Language Settings';
+  String get languageSettings => 'Paramètres de langue';
 
   @override
-  String get mapSettings => 'Map Settings';
+  String get mapSettings => 'Paramètres de la carte';
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Paramètres';
 
   @override
-  String get actionYes => 'Yes';
+  String get actionYes => 'Oui';
 
   @override
-  String get actionNo => 'No';
+  String get actionNo => 'Non';
 
   @override
   String get messageConfirmAddressDelete =>
-      'Are you sure you want to delete this address?';
+      'Voulez-vous vraiment supprimer cette adresse ?';
 
   @override
-  String get skipVerificationDemoOnly => 'Skip Verification (Demo only)';
+  String get skipVerificationDemoOnly =>
+      'Ignorer la vérification (démo uniquement)';
 
   @override
   String get delivery_details_title => 'Détails du colis';

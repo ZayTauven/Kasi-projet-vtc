@@ -2,6 +2,7 @@ import 'package:client_shared/components/back_button.dart';
 import 'package:client_shared/components/query_result_view.dart';
 import 'package:client_shared/components/step_view.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:kasi_driver/register/pages/register_contact_details_view.dart';
@@ -68,7 +69,54 @@ class _RegisterViewState extends State<RegisterView> {
                     activePageId: activePageId,
                   ),
                   const SizedBox(height: 8),
-                  Query$GetDriver$Widget(
+                  ValueListenableBuilder(
+                    valueListenable:
+                        Hive.box('user').listenable(keys: ['jwt']),
+                    builder: (context, Box userBox, _) {
+                      // Avant login (aucun JWT), NE PAS lancer GetDriver : cette query
+                      // est auth-gardée côté backend et renverrait « GqlAuthGuard ».
+                      // On n'affiche que les étapes téléphone/OTP ; dès que le login
+                      // pose le JWT, ce builder se reconstruit et lance GetDriver
+                      // (chargement des données + reprise éventuelle de l'inscription).
+                      if (userBox.get('jwt') == null) {
+                        return Expanded(
+                          child: PageView.builder(
+                            controller: pageController,
+                            itemCount: 6,
+                            physics: const NeverScrollableScrollPhysics(),
+                            onPageChanged: (value) =>
+                                setState(() => activePageId = value),
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return RegisterPhoneNumberView(
+                                  onCodeSent: (verificationId, phoneNumber) {
+                                    this.verificationId = verificationId;
+                                    this.phoneNumber = phoneNumber;
+                                    pageController.jumpToPage(1);
+                                  },
+                                  onLoggedIn: () =>
+                                      pageController.jumpToPage(2),
+                                  onLoadingStateUpdated: (loading) =>
+                                      setState(() => isLoading = loading),
+                                );
+                              }
+                              if (index == 1) {
+                                return RegisterVerificationCodeView(
+                                  verificationCodeId: verificationId!,
+                                  phoneNumber: phoneNumber!,
+                                  onLoggedIn: () =>
+                                      pageController.jumpToPage(2),
+                                  onLoadingStateUpdated: (loading) =>
+                                      setState(() => isLoading = loading),
+                                );
+                              }
+                              // Étapes 2+ : réservées à la branche authentifiée.
+                              return const SizedBox();
+                            },
+                          ),
+                        );
+                      }
+                      return Query$GetDriver$Widget(
                       options: Options$Query$GetDriver(
                           fetchPolicy: FetchPolicy.noCache,
                           onComplete: (result, parsedData) {
@@ -167,11 +215,9 @@ class _RegisterViewState extends State<RegisterView> {
 
                                   case 4:
                                     return RegisterPayoutDetailsView(
-                                      bankName: driver?.bankName,
-                                      accountNumber: driver?.accountNumber,
-                                      bankSwift: driver?.bankSwift,
-                                      bankRoutingNumber:
-                                          driver?.bankRoutingNumber,
+                                      payoutMethodId: driver?.payoutMethodId,
+                                      payoutAccountNumber:
+                                          driver?.payoutAccountNumber,
                                       onContinue: () =>
                                           pageController.jumpToPage(5),
                                       onLoadingStateUpdated: (loading) =>
@@ -193,7 +239,9 @@ class _RegisterViewState extends State<RegisterView> {
                                 }
                               })),
                         );
-                      })
+                      });
+                    },
+                  )
                 ],
               ),
               if (isLoading)

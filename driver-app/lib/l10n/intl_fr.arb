@@ -23,13 +23,13 @@
     }
   },
   "statusOffline": "Aller en ligne",
-  "statusOnline": "Se déconnecter",
+  "statusOnline": "Passer hors ligne",
   "message_notification_permission_title": "Autorisation de notification",
   "message_notification_permission_denined_message": "L'autorisation de notification a été refusée précédemment. Afin d'obtenir de nouvelles notifications de commande, vous pouvez activer l'autorisation à partir des paramètres de l'application.",
   "action_ok": "D'ACCORD",
   "menu_logout": "Se déconnecter",
-  "menu_about": "À propos de",
-  "menu_wallet": "Porte monnaie",
+  "menu_about": "À propos",
+  "menu_wallet": "Porte-monnaie",
   "menu_trip_history": "Historique des trajets",
   "menu_announcements": "Annonces",
   "message_unknown_error": "Erreur inconnue",
@@ -46,9 +46,9 @@
   "lastname": "Nom de famille",
   "email": "E-mail",
   "certificate_number": "Numéro de certificat",
-  "gender": "Le genre",
+  "gender": "Genre",
   "gender_male": "Homme",
-  "gender_female": "Femelle",
+  "gender_female": "Femme",
   "address": "Adresse",
   "driver_register_ride_details_step_title": "Détails du trajet",
   "plate_number": "Numéro de la plaque",
@@ -62,9 +62,9 @@
   "bankRoutingNumber": "Numéro d'acheminement bancaire",
   "driver_register_step_documents_title": "Documents",
   "driver_register_step_documents_heading": "Afin de vérifier les documents ci-dessus, nous avons besoin des documents ci-dessous en cours de téléchargement",
-  "driver_register_document_first": "1-ID",
-  "driver_register_document_second": "Permis 2 conducteurs",
-  "driver_register_document_third": "Document de propriété de 3-Ride",
+  "driver_register_document_first": "1 - Pièce d'identité",
+  "driver_register_document_second": "2 - Permis de conduire",
+  "driver_register_document_third": "3 - Carte grise du véhicule",
   "action_upload_document": "Télécharger un document",
   "trip_history_empty_state": "Aucune commande passée n'a été enregistrée.",
   "wallet_empty_state_message": "Aucun historique enregistré.",
@@ -88,7 +88,7 @@
   "enum_driver_recharge_type_gift": "Cadeau",
   "enum_driver_recharge_type_in_app_payment": "Paiement intégré à l'application",
   "enum_driver_recharge_transaction_type_order_fee": "Frais de commande",
-  "enum_driver_deduct_transaction_type_withdraw": "Se désister",
+  "enum_driver_deduct_transaction_type_withdraw": "Retrait",
   "enum_driver_deduct_transaction_type_correction": "Correction",
   "enum_driver_deduct_transaction_type_commission": "Commission",
   "copyright_notice": "Copyright © {company}, Tous droits réservés.",
@@ -101,15 +101,15 @@
   "form_required_field_error": "champs requis",
   "button_report_issue": "Signaler un problème",
   "issue_submit_title": "Signaler un problème",
-  "issue_subject_placeholder": "Matière",
+  "issue_subject_placeholder": "Sujet",
   "error_field_cant_be_empty": "Ne peux pas être vide",
-  "issue_description_placeholder": "La description",
+  "issue_description_placeholder": "Description",
   "complaint_submit_success_message": "La plainte est déposée. Veuillez attendre un contact de notre représentant du support au sujet de votre demande.",
   "menu_earnings": "Gains",
   "status_offline_description": "Connectez-vous pour voir les demandes",
   "status_online_description": "Recherche de course",
   "order_status_card_title_driver_accepted": "Le passager sera informé une fois que vous aurez appuyé sur Arrivé",
-  "order_status_card_title_arrived": "Le coureur a été informé",
+  "order_status_card_title_arrived": "Le passager a été informé",
   "order_status_card_title_started": "En route vers la destination",
   "navigation_dialog_title": "Choisissez une application avec laquelle naviguer",
   "action_ride_options": "Options de trajet",
@@ -126,17 +126,17 @@
     }
   },
   "order_payment_status_unpaid": "Le trajet n'a pas encore été payé",
-  "order_payment_status_paid": "Le passager a été payé",
-  "action_ride_preferences": "Préférences du pilote",
+  "order_payment_status_paid": "Le trajet a été payé",
+  "action_ride_preferences": "Préférences du passager",
   "navigation_dialog_title_pickup_point": "Accédez au point de ramassage",
   "navigation_title_destination_point": "Naviguer jusqu'au point de dépôt",
   "rider_options_dialog_title": "Options de trajet",
   "action_cancel_ride": "Annuler le trajet",
-  "invoice_dialog_body": "Vous pouvez également recevoir de l'argent au lieu d'un paiement en ligne si vous et l'auteur êtes tous les deux disposés à le faire.",
+  "invoice_dialog_body": "Vous pouvez également être payé en espèces au lieu d'un paiement en ligne si vous et le passager êtes tous les deux d'accord.",
   "invoice_dialog_heading": "En attente du paiement du passager",
   "invoice_dialog_title": "Information de paiement",
-  "invoice_item_tip": "Pointe",
-  "invoice_item_subtotal": "Total",
+  "invoice_item_tip": "Pourboire",
+  "invoice_item_subtotal": "Sous-total",
   "add_credit_dialog_title": "Ajouter un crédit",
   "add_credit_dialog_select_payment_method": "Sélectionnez le mode de paiement:",
   "add_credit_dialog_choose_amount": "Choisissez le montant",
@@ -152,9 +152,9 @@
   "action_continue": "Continuer",
   "terms_and_condition_first_part": "J'ai lu et suis d'accord avec",
   "terms_and_conditions_clickable_part": "termes et conditions",
-  "onboarding_welcome": "Accueillir !",
-  "action_login_signup": "Se connecter S'inscrire",
-  "action_complete_registration": "Enregistrement complet",
+  "onboarding_welcome": "Bienvenue !",
+  "action_login_signup": "Se connecter / S'inscrire",
+  "action_complete_registration": "Compléter l'inscription",
   "action_edit_submission": "Modifier la soumission",
   "incomplete_registration_description": "Veuillez compléter votre\n soumission d'inscription",
   "pending_review_registration_description": "Votre soumission est en cours d'examen,\n Merci de votre patience.",
@@ -199,7 +199,7 @@
   "register_profile_photo_subtitle": "Votre visage doit être reconnaissable dans l'image téléchargée",
   "action_add_photo": "Ajouter une photo",
   "register_upload_documents_title": "Télécharger les documents requis",
-  "register_upload_documents_subtitle": "Afin de vérifier votre identité et de vous conformer à la réglementation, nous aurons besoin que vous téléchargiez les documents ci-dessous : \\n1-Photo d'identité\\n2-Permis de conduire\\n3-Document de propriété du trajet",
+  "register_upload_documents_subtitle": "Afin de vérifier votre identité et de vous conformer à la réglementation, nous aurons besoin que vous téléchargiez les documents ci-dessous : \\n1-Photo d'identité\\n2-Permis de conduire\\n3-Carte grise du véhicule",
   "register_step_phone_number": "Numéro de téléphone",
   "register_step_verify_number": "Vérifier le numéro",
   "register_step_contact_details": "Détails du contact",
@@ -207,7 +207,7 @@
   "register_step_payout_details": "Détails du paiement",
   "register_step_upload_documents": "Télécharger des documents",
   "profile_uploaded_documents_title": "Documents téléchargés",
-  "error_cancel_not_allowed": "Cancel is not allowed for an already started trip",
+  "error_cancel_not_allowed": "L'annulation n'est pas autorisée pour un trajet déjà commencé.",
   "distanceMeters": "{distance} m",
   "@distanceMeters": {
     "placeholders": {
@@ -240,7 +240,7 @@
       }
     }
   },
-  "distanceAway": "{distance} away",
+  "distanceAway": "à {distance}",
   "@distanceAway": {
     "placeholders": {
       "distance": {
@@ -248,10 +248,10 @@
       }
     }
   },
-  "settings": "Settings",
-  "mapSettings": "Map Settings",
-  "languageSettings": "Language Settings",
-  "orderStatusCardTitleMultipleDestinations": "Heading to {destinationIndex}st destination",
+  "settings": "Paramètres",
+  "mapSettings": "Paramètres de la carte",
+  "languageSettings": "Paramètres de langue",
+  "orderStatusCardTitleMultipleDestinations": "En route vers la destination {destinationIndex}",
   "@orderStatusCardTitleMultipleDestinations": {
     "placeholders": {
       "destinationIndex": {
@@ -259,7 +259,7 @@
       }
     }
   },
-  "actionArrivedToDestination": "Arrived to {destinationIndex}st destination",
+  "actionArrivedToDestination": "Arrivé à la destination {destinationIndex}",
   "@actionArrivedToDestination": {
     "placeholders": {
       "destinationIndex": {
@@ -267,7 +267,7 @@
       }
     }
   },
-  "skipVerificationDemoOnly": "Skip verification (Demo only)",
+  "skipVerificationDemoOnly": "Ignorer la vérification (démo uniquement)",
   "delivery_tag": "Livraison",
   "package_size_small": "Petit colis",
   "package_size_medium": "Colis moyen",
