@@ -465,6 +465,9 @@ class SId extends S {
   String get gift_card_title => 'Masukkan Kode Hadiah';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Masukkan kode kartu hadiah Anda';
 
   @override

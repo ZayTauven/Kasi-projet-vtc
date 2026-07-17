@@ -463,6 +463,9 @@ class SEn extends S {
   String get gift_card_title => 'Enter Gift Code';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Enter your gift card code';
 
   @override

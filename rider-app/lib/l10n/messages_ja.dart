@@ -449,6 +449,9 @@ class SJa extends S {
   String get gift_card_title => 'ギフトコードを入力';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'ギフトカードコードを入力してください';
 
   @override

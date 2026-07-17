@@ -470,6 +470,9 @@ class SFr extends S {
   String get gift_card_title => 'Entrez le code cadeau';
 
   @override
+  String get gift_redeem_success => 'Code cadeau appliqué avec succès';
+
+  @override
   String get gift_card_body => 'Saisissez le code de votre carte cadeau';
 
   @override

@@ -1,0 +1,40 @@
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'emailProviders.title' | translate }}</h1>
+    <p>{{ 'emailProviders.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.emailProviders as emailProviders" [nzData]="emailProviders.nodes"
+      [nzTotal]="emailProviders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+      <thead>
+        <tr>
+          <th>{{ 'profile.name' | translate }}</th>
+          <th>{{ 'emailProvider.type' | translate }}</th>
+          <th>{{ 'emailProvider.fromAddress' | translate }}</th>
+          <th>{{ 'profile.date' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>
+            <span class="mr-2">{{ data.name }}</span>
+            <nz-tag *ngIf="data.isDefault" nzColor="blue">{{'emailProvider.default' | translate}}</nz-tag>
+            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+          </td>
+          <td>{{ 'enum.emailProviderType.' + data.type | translate }}</td>
+          <td>{{ data.fromAddress != null ? data.fromAddress : '-' }}</td>
+          <td>{{ data.createdAt | date: 'short' }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>

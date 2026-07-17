@@ -468,6 +468,9 @@ class SEs extends S {
   String get gift_card_title => 'Introduce el código de regalo';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Introduce el código de tu tarjeta de regalo';
 
   @override

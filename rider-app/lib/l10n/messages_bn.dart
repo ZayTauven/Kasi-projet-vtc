@@ -463,6 +463,9 @@ class SBn extends S {
   String get gift_card_title => 'উপহার কোড লিখুন';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'আপনার উপহার কার্ড কোড লিখুন';
 
   @override

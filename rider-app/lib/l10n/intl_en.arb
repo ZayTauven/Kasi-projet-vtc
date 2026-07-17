@@ -173,6 +173,7 @@
   "location_not_found_alert_dialog_title": "Location",
   "location_not_found_alert_dialog_body": "We could not get your current location using your device's GPS. Please check the device location permission for the app from the device's settings. Alternatively, you can use the search field above to select your pick-up point.",
   "gift_card_title": "Enter Gift Code",
+  "gift_redeem_success": "Gift code applied successfully",
   "gift_card_body": "Enter your gift card code",
   "gift_card_text_placeholder": "Enter gift card code",
   "action_apply": "Apply",

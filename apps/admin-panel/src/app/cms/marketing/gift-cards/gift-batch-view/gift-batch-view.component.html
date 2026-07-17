@@ -1,0 +1,74 @@
+<div *ngIf="batch$ | async as batch">
+  <div class="kasi-page-head">
+    <div class="kasi-page-head__text">
+      <h1 class="kasi-title">{{ batch.name }}</h1>
+      <p>{{ 'giftCards.viewSubtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Infos du lot -->
+  <div class="kasi-card">
+    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'giftCards.batchInfo' | translate }}</span></div>
+    <div class="kasi-card__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+            class="kasi-desc__value">{{ batch.name }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'giftCards.amount' | translate }}</span><span
+            class="kasi-desc__value">{{ batch.amount | currency: batch.currency }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.currency' | translate }}</span><span
+            class="kasi-desc__value">{{ batch.currency }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'giftCards.quantity' | translate }}</span><span
+            class="kasi-desc__value">{{ batch.quantity }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'giftCards.availableTimestamp' | translate
+            }}</span><span class="kasi-desc__value">{{ batch.availableTimestamp ? (batch.availableTimestamp | date:
+            'medium') : '-' }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'giftCards.expirationTimestamp' | translate
+            }}</span><span class="kasi-desc__value">{{ batch.expirationTimestamp ? (batch.expirationTimestamp | date:
+            'medium') : '-' }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'giftCards.createdAt' | translate }}</span><span
+            class="kasi-desc__value">{{ batch.createdAt | date: 'medium' }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Codes generes : visibles uniquement avec GiftCards_ViewCodes -->
+  <div class="kasi-card mt-2" *ngIf="!codesLoading">
+    <div class="kasi-card__head">
+      <span class="kasi-card__title">{{ 'giftCards.codes' | translate }}</span>
+    </div>
+    <ng-container *ngIf="canViewCodes; else codesHidden">
+      <div class="kasi-card__body kasi-card__body--flush">
+        <nz-table #codeTable [nzData]="codeList.nodes" [nzPageSize]="20"
+          *ngIf="codes as codeList">
+          <thead>
+            <tr>
+              <th>{{ 'giftCards.code' | translate }}</th>
+              <th>{{ 'giftCards.amount' | translate }}</th>
+              <th>{{ 'profile.status' | translate }}</th>
+              <th class="hidden lg:table-cell">{{ 'giftCards.expirationTimestamp' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let card of codeTable.data">
+              <td><span class="font-mono">{{ card.code }}</span></td>
+              <td>{{ card.amount | currency: card.currency }}</td>
+              <td>
+                <nz-tag [nzColor]="card.isUsed ? 'default' : 'green'">
+                  {{ (card.isUsed ? 'giftCards.used' : 'giftCards.available') | translate }}
+                </nz-tag>
+              </td>
+              <td class="hidden lg:table-cell">
+                {{ card.expirationTimestamp ? (card.expirationTimestamp | date: 'mediumDate') : '-' }}
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+    <ng-template #codesHidden>
+      <div class="kasi-card__body">
+        <nz-alert nzType="info" nzShowIcon [nzMessage]="'giftCards.codesRestricted' | translate"></nz-alert>
+      </div>
+    </ng-template>
+  </div>
+</div>

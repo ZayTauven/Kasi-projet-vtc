@@ -1,0 +1,38 @@
+query EmailProviderView($id: ID!) {
+  emailProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    host
+    port
+    secure
+    username
+    fromAddress
+    fromName
+  }
+}
+
+mutation CreateEmailProvider($input: EmailProviderInput!) {
+  createOneEmailProvider(input: { emailProvider: $input }) {
+    id
+  }
+}
+
+mutation UpdateEmailProvider($id: ID!, $update: EmailProviderInput!) {
+  updateOneEmailProvider(input: { id: $id, update: $update }) {
+    id
+  }
+}
+
+mutation SetDefaultEmailProvider($id: ID!) {
+  setDefaultEmailProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+
+mutation SendTestEmail($to: String!, $providerId: ID) {
+  sendTestEmail(to: $to, providerId: $providerId)
+}

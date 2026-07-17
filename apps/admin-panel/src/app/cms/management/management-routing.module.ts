@@ -39,6 +39,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'email-providers',
+    loadChildren: () =>
+      import(
+        './management-email-providers/management-email-providers.module'
+      ).then((x) => x.ManagementEmailProvidersModule),
+  },
+  {
     path: 'call-masking-providers',
     loadChildren: () =>
       import(

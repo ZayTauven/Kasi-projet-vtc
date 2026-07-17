@@ -181,6 +181,7 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
       icon: 'notification',
       children: [
         { labelKey: 'menu.marketing.coupons', route: '/marketing/coupons', icon: 'tag' },
+        { labelKey: 'menu.marketing.giftCards', route: '/marketing/gift-cards', icon: 'gift' },
         { labelKey: 'menu.marketing.announcements', route: '/marketing/announcements', icon: 'sound' },
         { labelKey: 'menu.marketing.rewards', route: '/marketing/rewards', icon: 'gift' },
       ],
@@ -208,6 +209,7 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
         { labelKey: 'menu.management.zonePrices', route: '/management/zone-prices', icon: 'dollar' },
         { labelKey: 'menu.management.orderCancelReasons', route: '/management/order-cancel-reasons', icon: 'stop' },
         { labelKey: 'menu.management.smsProviders', route: '/management/sms-providers', icon: 'message' },
+        { labelKey: 'menu.management.emailProviders', route: '/management/email-providers', icon: 'mail' },
         { labelKey: 'menu.management.callMaskingProviders', route: '/management/call-masking-providers', icon: 'phone' },
         { labelKey: 'menu.management.reviewParameters', route: '/management/review-parameters', icon: 'star' },
         { labelKey: 'menu.management.cars', route: '/management/cars', icon: 'car' },

@@ -455,6 +455,9 @@ class SAm extends S {
   String get gift_card_title => 'የስጦታ ኮድ ያስገቡ';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'የስጦታ ካርድ ኮድዎን ያስገቡ';
 
   @override

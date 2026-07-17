@@ -33,7 +33,9 @@ import { SOSModule } from './sos/sos.module';
 import { RewardModule } from './reward/reward.module';
 import { PayoutModule } from './payout/payout.module';
 import { SmsProviderModule } from './sms-provider/sms-provider.module';
+import { EmailProviderModule } from './email-provider/email-provider.module';
 import { CallMaskingProviderModule } from './call-masking-provider/call-masking-provider.module';
+import { GiftModule } from './gift/gift.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -123,7 +125,9 @@ export class AdminAPIModule {
             RewardModule,
             PayoutModule,
             SmsProviderModule,
+            EmailProviderModule,
             CallMaskingProviderModule,
+            GiftModule,
             ComplaintModule,
             ConfigurationModule,
             HttpModule,

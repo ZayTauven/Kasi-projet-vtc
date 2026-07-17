@@ -976,6 +976,12 @@ abstract class S {
   /// **'Enter Gift Code'**
   String get gift_card_title;
 
+  /// No description provided for @gift_redeem_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift code applied successfully'**
+  String get gift_redeem_success;
+
   /// No description provided for @gift_card_body.
   ///
   /// In en, this message translates to:

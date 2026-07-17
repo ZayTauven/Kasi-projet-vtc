@@ -44,6 +44,10 @@
 			"Twilio": "Twilio",
 			"OrangeSms": "Orange SMS"
 		},
+		"emailProviderType": {
+			"LogOnly": "Log only (dev)",
+			"Smtp": "SMTP"
+		},
 		"callMaskingProviderType": {
 			"Direct": "Direct (dev)",
 			"TwilioVoice": "Twilio Voice"
@@ -146,6 +150,7 @@
 		},
 		"marketing": {
 			"coupons": "Coupons",
+			"giftCards": "Gift Cards",
 			"announcements": "Announcements",
 			"header": "Marketing",
 			"rewards": "Rewards & Referrals"
@@ -174,6 +179,7 @@
 			"zonePrices": "Zone Prices",
 			"orderCancelReasons": "Order Cancel Reasons",
 			"smsProviders": "SMS Providers",
+			"emailProviders": "Email Providers",
 			"callMaskingProviders": "Call Masking",
 			"reviewParameters": "Review Parameters",
 			"cars": "Cars",
@@ -540,6 +546,30 @@
 		"testNumber": "Phone number",
 		"testSent": "Test SMS sent."
 	},
+	"emailProviders": {
+		"title": "Email Providers",
+		"subtitle": "Email gateways used to send notifications and transactional messages."
+	},
+	"emailProvider": {
+		"title": "Email Provider",
+		"subtitle": "Email gateway settings.",
+		"type": "Type",
+		"host": "SMTP host",
+		"port": "Port",
+		"secure": "Secure connection (SSL/TLS)",
+		"secureHint": "Enabled = port 465 (SMTPS); disabled = port 587 (STARTTLS).",
+		"username": "Username",
+		"password": "Password",
+		"passwordHint": "Unchanged if empty.",
+		"fromAddress": "From address",
+		"fromName": "From name",
+		"setDefault": "Set as default",
+		"default": "Default",
+		"defaultSet": "Set as the default provider.",
+		"testEmail": "Test email",
+		"testTo": "Email address",
+		"testSent": "Test email sent."
+	},
 	"callMaskingProviders": {
 		"title": "Call Masking Providers",
 		"subtitle": "Voice providers used to anonymize calls between riders and drivers."
@@ -713,6 +743,26 @@
 		"discountFlat": "Discount Flat",
 		"isEnabled": "Is Enabled?",
 		"isFirstTravelOnly": "Is First Travel Only?"
+	},
+	"giftCards": {
+		"title": "Gift Cards",
+		"subtitle": "List of issued gift card batches",
+		"newBatch": "New Batch",
+		"newBatchSubtitle": "Generate a gift card batch; codes are created automatically.",
+		"viewSubtitle": "Batch detail and generated codes",
+		"batchInfo": "Batch information",
+		"amount": "Amount",
+		"quantity": "Quantity",
+		"availability": "Availability",
+		"availableTimestamp": "Available from",
+		"expirationTimestamp": "Expires on",
+		"createdAt": "Created at",
+		"generate": "Generate batch",
+		"codes": "Codes",
+		"code": "Code",
+		"used": "Used",
+		"available": "Available",
+		"codesRestricted": "You do not have permission to view the codes of this batch (GiftCards_ViewCodes)."
 	},
 	"rewards": {
 		"subtitle": "List of all the reward & referral rules",

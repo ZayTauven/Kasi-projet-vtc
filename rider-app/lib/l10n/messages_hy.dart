@@ -466,6 +466,9 @@ class SHy extends S {
   String get gift_card_title => 'Մուտքագրեք նվեր կոդը';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Մուտքագրեք ձեր նվեր քարտի կոդը';
 
   @override

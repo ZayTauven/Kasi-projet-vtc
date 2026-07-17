@@ -452,6 +452,9 @@ class SKo extends S {
   String get gift_card_title => '기프트 코드 입력';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => '기프트 카드 코드를 입력하세요.';
 
   @override

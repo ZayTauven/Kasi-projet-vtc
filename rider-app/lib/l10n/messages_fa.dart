@@ -460,6 +460,9 @@ class SFa extends S {
   String get gift_card_title => 'کارت هدیه';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'کد کارت هدیه را در کادر زیر وارد کنید.';
 
   @override

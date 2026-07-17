@@ -464,6 +464,9 @@ class SRo extends S {
   String get gift_card_title => 'Introdu Codul Cadou';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Introdu codul tău cadou';
 
   @override

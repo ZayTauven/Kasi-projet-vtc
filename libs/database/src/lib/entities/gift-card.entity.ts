@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { GiftBatchEntity } from "./gift-batch.entity";
 import { RiderTransactionEntity } from "./rider-transaction.entity";
 
 @Entity('gift_card')
@@ -31,4 +32,14 @@ export class GiftCardEntity {
 
     @OneToOne(() => RiderTransactionEntity, riderTransaction => riderTransaction.giftCard)
     riderTransaction?: RiderTransactionEntity;
+
+    // Rattachement au lot de génération (P6.1). Nullable et rétro-compatible :
+    // les gift cards historiques créées hors lot restent valides et
+    // consommables via redeemGiftCard (rider-api).
+    @Column({ nullable: true })
+    batchId?: number;
+
+    @ManyToOne(() => GiftBatchEntity, batch => batch.giftCards, { nullable: true })
+    @JoinColumn({ name: 'batchId' })
+    batch?: GiftBatchEntity;
 }

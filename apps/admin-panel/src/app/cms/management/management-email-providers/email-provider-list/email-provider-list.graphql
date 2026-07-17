@@ -1,0 +1,14 @@
+query EmailProviderList($paging: OffsetPaging) {
+  emailProviders(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      enabled
+      isDefault
+      fromAddress
+      createdAt
+    }
+    totalCount
+  }
+}

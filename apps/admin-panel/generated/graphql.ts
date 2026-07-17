@@ -672,6 +672,15 @@ export type CreateComplaintActivity = {
   type: ComplaintActivityType;
 };
 
+export type CreateGiftBatchInput = {
+  amount: Scalars['Float']['input'];
+  availableTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  currency: Scalars['String']['input'];
+  expirationTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  name: Scalars['String']['input'];
+  quantity: Scalars['Int']['input'];
+};
+
 export type CreateManyComplaintActivitiesInput = {
   /** Array of records to create */
   complaintActivities: Array<CreateComplaintActivity>;
@@ -715,6 +724,11 @@ export type CreateOneDriverInput = {
 export type CreateOneDriverTransactionInput = {
   /** The record to create */
   driverTransaction: DriverTransactionInput;
+};
+
+export type CreateOneEmailProviderInput = {
+  /** The record to create */
+  emailProvider: EmailProviderInput;
 };
 
 export type CreateOneFeedbackParameterInput = {
@@ -961,6 +975,11 @@ export type DeleteOneCarModelInput = {
 };
 
 export type DeleteOneCouponInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneEmailProviderInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -1875,6 +1894,105 @@ export type DriverWalletsSumAggregate = {
   id?: Maybe<Scalars['Float']['output']>;
 };
 
+export type EmailProvider = {
+  __typename?: 'EmailProvider';
+  createdAt: Scalars['DateTime']['output'];
+  enabled: Scalars['Boolean']['output'];
+  fromAddress?: Maybe<Scalars['String']['output']>;
+  fromName?: Maybe<Scalars['String']['output']>;
+  host?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  port?: Maybe<Scalars['Float']['output']>;
+  secure: Scalars['Boolean']['output'];
+  type: EmailProviderType;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type EmailProviderConnection = {
+  __typename?: 'EmailProviderConnection';
+  /** Array of nodes. */
+  nodes: Array<EmailProvider>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type EmailProviderDeleteResponse = {
+  __typename?: 'EmailProviderDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  fromAddress?: Maybe<Scalars['String']['output']>;
+  fromName?: Maybe<Scalars['String']['output']>;
+  host?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isDefault?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  port?: Maybe<Scalars['Float']['output']>;
+  secure?: Maybe<Scalars['Boolean']['output']>;
+  type?: Maybe<EmailProviderType>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type EmailProviderFilter = {
+  and?: InputMaybe<Array<EmailProviderFilter>>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isDefault?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<EmailProviderFilter>>;
+  type?: InputMaybe<EmailProviderTypeFilterComparison>;
+};
+
+export type EmailProviderInput = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  fromAddress?: InputMaybe<Scalars['String']['input']>;
+  fromName?: InputMaybe<Scalars['String']['input']>;
+  host?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  port?: InputMaybe<Scalars['Float']['input']>;
+  secure?: InputMaybe<Scalars['Boolean']['input']>;
+  type: EmailProviderType;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EmailProviderSort = {
+  direction: SortDirection;
+  field: EmailProviderSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum EmailProviderSortFields {
+  Enabled = 'enabled',
+  Id = 'id',
+  IsDefault = 'isDefault',
+  Type = 'type'
+}
+
+export enum EmailProviderType {
+  LogOnly = 'LogOnly',
+  Smtp = 'Smtp'
+}
+
+export type EmailProviderTypeFilterComparison = {
+  eq?: InputMaybe<EmailProviderType>;
+  gt?: InputMaybe<EmailProviderType>;
+  gte?: InputMaybe<EmailProviderType>;
+  iLike?: InputMaybe<EmailProviderType>;
+  in?: InputMaybe<Array<EmailProviderType>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<EmailProviderType>;
+  lt?: InputMaybe<EmailProviderType>;
+  lte?: InputMaybe<EmailProviderType>;
+  neq?: InputMaybe<EmailProviderType>;
+  notILike?: InputMaybe<EmailProviderType>;
+  notIn?: InputMaybe<Array<EmailProviderType>>;
+  notLike?: InputMaybe<EmailProviderType>;
+};
+
 export type ExportArgs = {
   filters?: InputMaybe<Array<ExportFilterArg>>;
   relations?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -2312,6 +2430,112 @@ export enum Gender {
   Unknown = 'Unknown'
 }
 
+export type GiftBatch = {
+  __typename?: 'GiftBatch';
+  amount: Scalars['Float']['output'];
+  availableTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  expirationTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  giftCards: GiftBatchGiftCardsConnection;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  quantity: Scalars['Int']['output'];
+};
+
+
+export type GiftBatchGiftCardsArgs = {
+  filter?: GiftCardFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<GiftCardSort>;
+};
+
+export type GiftBatchConnection = {
+  __typename?: 'GiftBatchConnection';
+  /** Array of nodes. */
+  nodes: Array<GiftBatch>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GiftBatchFilter = {
+  and?: InputMaybe<Array<GiftBatchFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<GiftBatchFilter>>;
+};
+
+export type GiftBatchGiftCardsConnection = {
+  __typename?: 'GiftBatchGiftCardsConnection';
+  /** Array of nodes. */
+  nodes: Array<GiftCard>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GiftBatchSort = {
+  direction: SortDirection;
+  field: GiftBatchSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum GiftBatchSortFields {
+  CreatedAt = 'createdAt',
+  Currency = 'currency',
+  Id = 'id',
+  Name = 'name'
+}
+
+export type GiftCard = {
+  __typename?: 'GiftCard';
+  amount: Scalars['Float']['output'];
+  availableTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  batchId?: Maybe<Scalars['ID']['output']>;
+  code: Scalars['String']['output'];
+  currency: Scalars['String']['output'];
+  expirationTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  isUsed: Scalars['Boolean']['output'];
+};
+
+export type GiftCardConnection = {
+  __typename?: 'GiftCardConnection';
+  /** Array of nodes. */
+  nodes: Array<GiftCard>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GiftCardFilter = {
+  and?: InputMaybe<Array<GiftCardFilter>>;
+  code?: InputMaybe<StringFieldComparison>;
+  currency?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isUsed?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<GiftCardFilter>>;
+};
+
+export type GiftCardSort = {
+  direction: SortDirection;
+  field: GiftCardSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum GiftCardSortFields {
+  Code = 'code',
+  Currency = 'currency',
+  Id = 'id',
+  IsUsed = 'isUsed'
+}
+
 /** Group by */
 export enum GroupBy {
   Day = 'DAY',
@@ -2400,6 +2624,7 @@ export type Mutation = {
   cancelPayoutSession: PayoutSession;
   createDriverTransaction: DriverWallet;
   createFleetTransaction: FleetWallet;
+  createGiftBatch: GiftBatch;
   createManyComplaintActivities: Array<ComplaintActivity>;
   createOneAnnouncement: Announcement;
   createOneCallMaskingProvider: CallMaskingProvider;
@@ -2409,6 +2634,7 @@ export type Mutation = {
   createOneCoupon: Coupon;
   createOneDriver: Driver;
   createOneDriverTransaction: DriverTransaction;
+  createOneEmailProvider: EmailProvider;
   createOneFeedbackParameter: FeedbackParameter;
   createOneFleet: Fleet;
   createOneOperator: Operator;
@@ -2437,6 +2663,7 @@ export type Mutation = {
   deleteOneCarModel: CarModelDeleteResponse;
   deleteOneCoupon: CouponDeleteResponse;
   deleteOneDriver: Driver;
+  deleteOneEmailProvider: EmailProviderDeleteResponse;
   deleteOneFeedbackParameter: FeedbackParameterDeleteResponse;
   deleteOneOrderCancelReason: OrderCancelReasonDeleteResponse;
   deleteOnePayoutMethod: PayoutMethodDeleteResponse;
@@ -2451,8 +2678,10 @@ export type Mutation = {
   disablePreviousServer: UpdateConfigResult;
   processPayout: Payout;
   processPayoutSession: PayoutSession;
+  sendTestEmail: Scalars['Boolean']['output'];
   sendTestSms: Scalars['Boolean']['output'];
   setDefaultCallMaskingProvider: CallMaskingProvider;
+  setDefaultEmailProvider: EmailProvider;
   setDefaultSmsProvider: SmsProvider;
   setEnabledServicesOnDriver: Driver;
   setFleetsOnZonePrice: ZonePrice;
@@ -2470,6 +2699,7 @@ export type Mutation = {
   updateOneComplaint: Complaint;
   updateOneCoupon: Coupon;
   updateOneDriver: Driver;
+  updateOneEmailProvider: EmailProvider;
   updateOneFeedback: Feedback;
   updateOneFeedbackParameter: FeedbackParameter;
   updateOneFleet: Fleet;
@@ -2548,6 +2778,11 @@ export type MutationCreateFleetTransactionArgs = {
 };
 
 
+export type MutationCreateGiftBatchArgs = {
+  input: CreateGiftBatchInput;
+};
+
+
 export type MutationCreateManyComplaintActivitiesArgs = {
   input: CreateManyComplaintActivitiesInput;
 };
@@ -2590,6 +2825,11 @@ export type MutationCreateOneDriverArgs = {
 
 export type MutationCreateOneDriverTransactionArgs = {
   input: CreateOneDriverTransactionInput;
+};
+
+
+export type MutationCreateOneEmailProviderArgs = {
+  input: CreateOneEmailProviderInput;
 };
 
 
@@ -2733,6 +2973,11 @@ export type MutationDeleteOneDriverArgs = {
 };
 
 
+export type MutationDeleteOneEmailProviderArgs = {
+  input: DeleteOneEmailProviderInput;
+};
+
+
 export type MutationDeleteOneFeedbackParameterArgs = {
   input: DeleteOneFeedbackParameterInput;
 };
@@ -2803,6 +3048,12 @@ export type MutationProcessPayoutSessionArgs = {
 };
 
 
+export type MutationSendTestEmailArgs = {
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+  to: Scalars['String']['input'];
+};
+
+
 export type MutationSendTestSmsArgs = {
   number: Scalars['String']['input'];
   providerId?: InputMaybe<Scalars['ID']['input']>;
@@ -2810,6 +3061,11 @@ export type MutationSendTestSmsArgs = {
 
 
 export type MutationSetDefaultCallMaskingProviderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSetDefaultEmailProviderArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2898,6 +3154,11 @@ export type MutationUpdateOneCouponArgs = {
 
 export type MutationUpdateOneDriverArgs = {
   input: UpdateOneDriverInput;
+};
+
+
+export type MutationUpdateOneEmailProviderArgs = {
+  input: UpdateOneEmailProviderInput;
 };
 
 
@@ -3069,16 +3330,23 @@ export enum OperatorPermission {
   ComplaintsView = 'Complaints_View',
   CouponsEdit = 'Coupons_Edit',
   CouponsView = 'Coupons_View',
+  DocumentRetentionEdit = 'DocumentRetention_Edit',
+  DocumentRetentionView = 'DocumentRetention_View',
   DriverWalletEdit = 'DriverWallet_Edit',
   DriverWalletView = 'DriverWallet_View',
   DriversEdit = 'Drivers_Edit',
   DriversView = 'Drivers_View',
+  EmailProvidersEdit = 'EmailProviders_Edit',
+  EmailProvidersView = 'EmailProviders_View',
   FleetWalletEdit = 'FleetWallet_Edit',
   FleetWalletView = 'FleetWallet_View',
   FleetsEdit = 'Fleets_Edit',
   FleetsView = 'Fleets_View',
   GatewaysEdit = 'Gateways_Edit',
   GatewaysView = 'Gateways_View',
+  GiftCardsCreate = 'GiftCards_Create',
+  GiftCardsView = 'GiftCards_View',
+  GiftCardsViewCodes = 'GiftCards_ViewCodes',
   ProviderWalletEdit = 'ProviderWallet_Edit',
   ProviderWalletView = 'ProviderWallet_View',
   RegionsEdit = 'Regions_Edit',
@@ -3091,6 +3359,8 @@ export enum OperatorPermission {
   RidersView = 'Riders_View',
   ServicesEdit = 'Services_Edit',
   ServicesView = 'Services_View',
+  ShiftRulesEdit = 'ShiftRules_Edit',
+  ShiftRulesView = 'ShiftRules_View',
   UsersEdit = 'Users_Edit',
   UsersView = 'Users_View'
 }
@@ -4313,6 +4583,8 @@ export type Query = {
   driverWallet: DriverWallet;
   driverWallets: DriverWalletConnection;
   drivers: DriverConnection;
+  emailProvider: EmailProvider;
+  emailProviders: EmailProviderConnection;
   export: ExportResult;
   feedback: Feedback;
   feedbackParameter: FeedbackParameter;
@@ -4326,6 +4598,10 @@ export type Query = {
   fleets: FleetConnection;
   getDriversLocation: Array<OnlineDriver>;
   getDriversLocationWithData: Array<OnlineDriverWithData>;
+  giftBatch: GiftBatch;
+  giftBatches: GiftBatchConnection;
+  giftCard: GiftCard;
+  giftCards: GiftCardConnection;
   incomeChart: Array<IncomeResultItem>;
   login: TokenObject;
   me: Operator;
@@ -4551,6 +4827,18 @@ export type QueryDriversArgs = {
 };
 
 
+export type QueryEmailProviderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryEmailProvidersArgs = {
+  filter?: EmailProviderFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<EmailProviderSort>;
+};
+
+
 export type QueryExportArgs = {
   input: ExportArgs;
 };
@@ -4624,6 +4912,30 @@ export type QueryGetDriversLocationArgs = {
 export type QueryGetDriversLocationWithDataArgs = {
   center: PointInput;
   count: Scalars['Int']['input'];
+};
+
+
+export type QueryGiftBatchArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGiftBatchesArgs = {
+  filter?: GiftBatchFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<GiftBatchSort>;
+};
+
+
+export type QueryGiftCardArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGiftCardsArgs = {
+  filter?: GiftCardFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<GiftCardSort>;
 };
 
 
@@ -6101,6 +6413,13 @@ export type UpdateOneDriverInput = {
   update: UpdateDriverInput;
 };
 
+export type UpdateOneEmailProviderInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: EmailProviderInput;
+};
+
 export type UpdateOneFeedbackInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -6698,6 +7017,50 @@ export type UpdateCarColorMutationVariables = Exact<{
 
 export type UpdateCarColorMutation = { __typename?: 'Mutation', updateOneCarColor: { __typename?: 'CarColor', id: string } };
 
+export type EmailProviderListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type EmailProviderListQuery = { __typename?: 'Query', emailProviders: { __typename?: 'EmailProviderConnection', totalCount: number, nodes: Array<{ __typename?: 'EmailProvider', id: string, type: EmailProviderType, name: string, enabled: boolean, isDefault: boolean, fromAddress?: string | null, createdAt: any }> } };
+
+export type EmailProviderViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type EmailProviderViewQuery = { __typename?: 'Query', emailProvider: { __typename?: 'EmailProvider', id: string, type: EmailProviderType, name: string, enabled: boolean, isDefault: boolean, host?: string | null, port?: number | null, secure: boolean, username?: string | null, fromAddress?: string | null, fromName?: string | null } };
+
+export type CreateEmailProviderMutationVariables = Exact<{
+  input: EmailProviderInput;
+}>;
+
+
+export type CreateEmailProviderMutation = { __typename?: 'Mutation', createOneEmailProvider: { __typename?: 'EmailProvider', id: string } };
+
+export type UpdateEmailProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: EmailProviderInput;
+}>;
+
+
+export type UpdateEmailProviderMutation = { __typename?: 'Mutation', updateOneEmailProvider: { __typename?: 'EmailProvider', id: string } };
+
+export type SetDefaultEmailProviderMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type SetDefaultEmailProviderMutation = { __typename?: 'Mutation', setDefaultEmailProvider: { __typename?: 'EmailProvider', id: string, isDefault: boolean } };
+
+export type SendTestEmailMutationVariables = Exact<{
+  to: Scalars['String']['input'];
+  providerId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type SendTestEmailMutation = { __typename?: 'Mutation', sendTestEmail: boolean };
+
 export type CreateFleetMutationVariables = Exact<{
   input: FleetInput;
 }>;
@@ -7221,6 +7584,35 @@ export type CouponListQueryVariables = Exact<{
 
 
 export type CouponListQuery = { __typename?: 'Query', coupons: { __typename?: 'CouponConnection', totalCount: number, nodes: Array<{ __typename?: 'Coupon', id: string, code: string, title: string, isEnabled: boolean, description: string, startAt: any, expireAt: any }> } };
+
+export type CreateGiftBatchMutationVariables = Exact<{
+  input: CreateGiftBatchInput;
+}>;
+
+
+export type CreateGiftBatchMutation = { __typename?: 'Mutation', createGiftBatch: { __typename?: 'GiftBatch', id: string } };
+
+export type ViewGiftBatchQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type ViewGiftBatchQuery = { __typename?: 'Query', giftBatch: { __typename?: 'GiftBatch', id: string, name: string, currency: string, amount: number, quantity: number, availableTimestamp?: any | null, expirationTimestamp?: any | null, createdAt: any } };
+
+export type GiftBatchCodesQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type GiftBatchCodesQuery = { __typename?: 'Query', giftBatch: { __typename?: 'GiftBatch', id: string, giftCards: { __typename?: 'GiftBatchGiftCardsConnection', totalCount: number, nodes: Array<{ __typename?: 'GiftCard', id: string, code: string, amount: number, currency: string, isUsed: boolean, availableTimestamp?: any | null, expirationTimestamp?: any | null }> } } };
+
+export type GiftBatchListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type GiftBatchListQuery = { __typename?: 'Query', giftBatches: { __typename?: 'GiftBatchConnection', totalCount: number, nodes: Array<{ __typename?: 'GiftBatch', id: string, name: string, currency: string, amount: number, quantity: number, availableTimestamp?: any | null, expirationTimestamp?: any | null, createdAt: any }> } };
 
 export type RewardListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -8641,6 +9033,132 @@ export const UpdateCarColorDocument = gql`
   })
   export class UpdateCarColorGQL extends Apollo.Mutation<UpdateCarColorMutation, UpdateCarColorMutationVariables> {
     document = UpdateCarColorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EmailProviderListDocument = gql`
+    query EmailProviderList($paging: OffsetPaging) {
+  emailProviders(paging: $paging) {
+    nodes {
+      id
+      type
+      name
+      enabled
+      isDefault
+      fromAddress
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EmailProviderListGQL extends Apollo.Query<EmailProviderListQuery, EmailProviderListQueryVariables> {
+    document = EmailProviderListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EmailProviderViewDocument = gql`
+    query EmailProviderView($id: ID!) {
+  emailProvider(id: $id) {
+    id
+    type
+    name
+    enabled
+    isDefault
+    host
+    port
+    secure
+    username
+    fromAddress
+    fromName
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EmailProviderViewGQL extends Apollo.Query<EmailProviderViewQuery, EmailProviderViewQueryVariables> {
+    document = EmailProviderViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateEmailProviderDocument = gql`
+    mutation CreateEmailProvider($input: EmailProviderInput!) {
+  createOneEmailProvider(input: {emailProvider: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateEmailProviderGQL extends Apollo.Mutation<CreateEmailProviderMutation, CreateEmailProviderMutationVariables> {
+    document = CreateEmailProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateEmailProviderDocument = gql`
+    mutation UpdateEmailProvider($id: ID!, $update: EmailProviderInput!) {
+  updateOneEmailProvider(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateEmailProviderGQL extends Apollo.Mutation<UpdateEmailProviderMutation, UpdateEmailProviderMutationVariables> {
+    document = UpdateEmailProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SetDefaultEmailProviderDocument = gql`
+    mutation SetDefaultEmailProvider($id: ID!) {
+  setDefaultEmailProvider(id: $id) {
+    id
+    isDefault
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SetDefaultEmailProviderGQL extends Apollo.Mutation<SetDefaultEmailProviderMutation, SetDefaultEmailProviderMutationVariables> {
+    document = SetDefaultEmailProviderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SendTestEmailDocument = gql`
+    mutation SendTestEmail($to: String!, $providerId: ID) {
+  sendTestEmail(to: $to, providerId: $providerId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SendTestEmailGQL extends Apollo.Mutation<SendTestEmailMutation, SendTestEmailMutationVariables> {
+    document = SendTestEmailDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -10288,6 +10806,107 @@ export const CouponListDocument = gql`
   })
   export class CouponListGQL extends Apollo.Query<CouponListQuery, CouponListQueryVariables> {
     document = CouponListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateGiftBatchDocument = gql`
+    mutation CreateGiftBatch($input: CreateGiftBatchInput!) {
+  createGiftBatch(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateGiftBatchGQL extends Apollo.Mutation<CreateGiftBatchMutation, CreateGiftBatchMutationVariables> {
+    document = CreateGiftBatchDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ViewGiftBatchDocument = gql`
+    query ViewGiftBatch($id: ID!) {
+  giftBatch(id: $id) {
+    id
+    name
+    currency
+    amount
+    quantity
+    availableTimestamp
+    expirationTimestamp
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ViewGiftBatchGQL extends Apollo.Query<ViewGiftBatchQuery, ViewGiftBatchQueryVariables> {
+    document = ViewGiftBatchDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GiftBatchCodesDocument = gql`
+    query GiftBatchCodes($id: ID!, $paging: OffsetPaging) {
+  giftBatch(id: $id) {
+    id
+    giftCards(paging: $paging) {
+      nodes {
+        id
+        code
+        amount
+        currency
+        isUsed
+        availableTimestamp
+        expirationTimestamp
+      }
+      totalCount
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GiftBatchCodesGQL extends Apollo.Query<GiftBatchCodesQuery, GiftBatchCodesQueryVariables> {
+    document = GiftBatchCodesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GiftBatchListDocument = gql`
+    query GiftBatchList($paging: OffsetPaging) {
+  giftBatches(paging: $paging) {
+    nodes {
+      id
+      name
+      currency
+      amount
+      quantity
+      availableTimestamp
+      expirationTimestamp
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GiftBatchListGQL extends Apollo.Query<GiftBatchListQuery, GiftBatchListQueryVariables> {
+    document = GiftBatchListDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

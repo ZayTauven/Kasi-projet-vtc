@@ -466,6 +466,9 @@ class SDe extends S {
   String get gift_card_title => 'Geben Sie den Geschenkcode ein';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Geben Sie Ihren Geschenkkartencode ein';
 
   @override

@@ -69,3 +69,11 @@ mutation TopUpWallet($input: TopUpWalletInput!) {
     url
   }
 }
+
+mutation RedeemGiftCard($code: String!) {
+  redeemGiftCard(code: $code) {
+    id
+    balance
+    currency
+  }
+}

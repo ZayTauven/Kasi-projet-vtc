@@ -173,6 +173,7 @@
   "location_not_found_alert_dialog_title": "Emplacement",
   "location_not_found_alert_dialog_body": "Nous n'avons pas pu obtenir votre position actuelle à l'aide du GPS de votre appareil. Veuillez vérifier l'autorisation de localisation de l'appareil pour l'application à partir des paramètres de l'appareil. Vous pouvez également utiliser le champ de recherche ci-dessus pour sélectionner votre point de prise en charge.",
   "gift_card_title": "Entrez le code cadeau",
+  "gift_redeem_success": "Code cadeau appliqué avec succès",
   "gift_card_body": "Saisissez le code de votre carte cadeau",
   "gift_card_text_placeholder": "Entrez le code de la carte-cadeau",
   "action_apply": "Appliquer",

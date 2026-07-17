@@ -1,0 +1,34 @@
+query ViewGiftBatch($id: ID!) {
+    giftBatch(id: $id) {
+        id
+        name
+        currency
+        amount
+        quantity
+        availableTimestamp
+        expirationTimestamp
+        createdAt
+    }
+}
+
+# Requête distincte des CODES : la relation giftCards est protégée côté
+# backend par l'authorizer GiftCards_ViewCodes (throw UnauthorizedException).
+# En cas de permission manquante, seule cette requête échoue — le détail du
+# lot (ViewGiftBatch) reste consultable avec GiftCards_View.
+query GiftBatchCodes($id: ID!, $paging: OffsetPaging) {
+    giftBatch(id: $id) {
+        id
+        giftCards(paging: $paging) {
+            nodes {
+                id
+                code
+                amount
+                currency
+                isUsed
+                availableTimestamp
+                expirationTimestamp
+            }
+            totalCount
+        }
+    }
+}

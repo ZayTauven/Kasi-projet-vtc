@@ -466,6 +466,9 @@ class SUr extends S {
   String get gift_card_title => 'گفٹ کوڈ درج کریں۔';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'اپنے گفٹ کارڈ کا کوڈ درج کریں۔';
 
   @override

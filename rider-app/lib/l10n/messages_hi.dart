@@ -461,6 +461,9 @@ class SHi extends S {
   String get gift_card_title => 'उपहार कोड दर्ज करें';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'अपना उपहार कार्ड कोड दर्ज करें';
 
   @override

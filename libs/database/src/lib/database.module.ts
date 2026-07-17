@@ -32,6 +32,7 @@ import { ServiceEntity } from './entities/service.entity';
 import { PaymentEntity } from './entities/payment.entity';
 import { ServiceOptionEntity } from './entities/service-option.entity';
 import { GiftCardEntity } from './entities/gift-card.entity';
+import { GiftBatchEntity } from './entities/gift-batch.entity';
 import { SOSEntity } from './entities/sos.entity';
 import { SOSActivityEntity } from './entities/sos-activity.entity';
 import { AnnouncementEntity } from './entities/announcement.entity';
@@ -43,6 +44,7 @@ import { PayoutMethodEntity } from './entities/payout-method.entity';
 import { PayoutSessionEntity } from './entities/payout-session.entity';
 import { PayoutEntity } from './entities/payout.entity';
 import { SmsProviderEntity } from './entities/sms-provider.entity';
+import { EmailProviderEntity } from './entities/email-provider.entity';
 import { CallMaskingProviderEntity } from './entities/call-masking-provider.entity';
 
 @Module({
@@ -136,6 +138,7 @@ export const entities = [
   RiderAddressEntity,
   ServiceOptionEntity,
   GiftCardEntity,
+  GiftBatchEntity,
   SOSEntity,
   SOSActivityEntity,
   AnnouncementEntity,
@@ -145,5 +148,6 @@ export const entities = [
   PayoutSessionEntity,
   PayoutEntity,
   SmsProviderEntity,
+  EmailProviderEntity,
   CallMaskingProviderEntity,
 ];

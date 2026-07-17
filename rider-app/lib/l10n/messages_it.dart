@@ -466,6 +466,9 @@ class SIt extends S {
   String get gift_card_title => 'Ingrese el código de regalo';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Ingrese el código de su tarjeta de regalo';
 
   @override

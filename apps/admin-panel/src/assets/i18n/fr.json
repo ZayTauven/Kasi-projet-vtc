@@ -44,6 +44,10 @@
 			"Twilio": "Twilio",
 			"OrangeSms": "Orange SMS"
 		},
+		"emailProviderType": {
+			"LogOnly": "Journal (dev)",
+			"Smtp": "SMTP"
+		},
 		"callMaskingProviderType": {
 			"Direct": "Direct (dev)",
 			"TwilioVoice": "Twilio Voice"
@@ -146,6 +150,7 @@
 		},
 		"marketing": {
 			"coupons": "Coupons",
+			"giftCards": "Cartes cadeaux",
 			"announcements": "Annonces",
 			"header": "Marketing",
 			"rewards": "Récompenses & parrainage"
@@ -174,6 +179,7 @@
 			"zonePrices": "Tarifs zonaux",
 			"orderCancelReasons": "Motifs d'annulation",
 			"smsProviders": "Fournisseurs SMS",
+			"emailProviders": "Fournisseurs email",
 			"callMaskingProviders": "Appels masqués",
 			"reviewParameters": "Paramètres d'avis",
 			"cars": "Voitures",
@@ -546,6 +552,30 @@
 		"testNumber": "Numéro de téléphone",
 		"testSent": "SMS de test envoyé."
 	},
+	"emailProviders": {
+		"title": "Fournisseurs email",
+		"subtitle": "Passerelles email utilisées pour envoyer les notifications et les messages transactionnels."
+	},
+	"emailProvider": {
+		"title": "Fournisseur email",
+		"subtitle": "Paramètres de la passerelle email.",
+		"type": "Type",
+		"host": "Hôte SMTP",
+		"port": "Port",
+		"secure": "Connexion sécurisée (SSL/TLS)",
+		"secureHint": "Activé = port 465 (SMTPS) ; désactivé = port 587 (STARTTLS).",
+		"username": "Nom d'utilisateur",
+		"password": "Mot de passe",
+		"passwordHint": "Inchangé si vide.",
+		"fromAddress": "Adresse d'expéditeur",
+		"fromName": "Nom d'expéditeur",
+		"setDefault": "Définir par défaut",
+		"default": "Défaut",
+		"defaultSet": "Défini comme fournisseur par défaut.",
+		"testEmail": "Email de test",
+		"testTo": "Adresse email",
+		"testSent": "Email de test envoyé."
+	},
 	"callMaskingProviders": {
 		"title": "Fournisseurs d'appels masqués",
 		"subtitle": "Fournisseurs vocaux utilisés pour anonymiser les appels entre passagers et Kasimen."
@@ -722,6 +752,26 @@
 		"discountFlat": "Réduction fixe",
 		"isEnabled": "Activé ?",
 		"isFirstTravelOnly": "Premier trajet uniquement ?"
+	},
+	"giftCards": {
+		"title": "Cartes cadeaux",
+		"subtitle": "Liste des lots de cartes cadeaux émis",
+		"newBatch": "Nouveau lot",
+		"newBatchSubtitle": "Générez un lot de cartes cadeaux ; les codes sont créés automatiquement.",
+		"viewSubtitle": "Détail du lot et codes générés",
+		"batchInfo": "Informations du lot",
+		"amount": "Montant",
+		"quantity": "Quantité",
+		"availability": "Disponibilité",
+		"availableTimestamp": "Disponible à partir du",
+		"expirationTimestamp": "Expire le",
+		"createdAt": "Créé le",
+		"generate": "Générer le lot",
+		"codes": "Codes",
+		"code": "Code",
+		"used": "Utilisée",
+		"available": "Disponible",
+		"codesRestricted": "Vous n'avez pas la permission de consulter les codes de ce lot (GiftCards_ViewCodes)."
 	},
 	"rewards": {
 		"subtitle": "Liste de toutes les règles de récompense et de parrainage",

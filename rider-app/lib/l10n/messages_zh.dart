@@ -446,6 +446,9 @@ class SZh extends S {
   String get gift_card_title => '输入礼品码';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => '输入您的礼品卡代码';
 
   @override

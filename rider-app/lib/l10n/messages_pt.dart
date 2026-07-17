@@ -468,6 +468,9 @@ class SPt extends S {
   String get gift_card_title => 'Digite o código de presente';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Digite o código do seu cartão-presente';
 
   @override

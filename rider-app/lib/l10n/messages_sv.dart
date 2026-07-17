@@ -461,6 +461,9 @@ class SSv extends S {
   String get gift_card_title => 'Ange Presentkod';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'Ange din Presentkortskod';
 
   @override

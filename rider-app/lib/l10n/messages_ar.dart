@@ -451,6 +451,9 @@ class SAr extends S {
   String get gift_card_title => 'ادخل رمز الخصم';
 
   @override
+  String get gift_redeem_success => 'Gift code applied successfully';
+
+  @override
   String get gift_card_body => 'ادخل رمز الخصم';
 
   @override

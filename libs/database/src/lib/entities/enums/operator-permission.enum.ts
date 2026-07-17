@@ -33,6 +33,15 @@ export enum OperatorPermission {
   RiderWallet_View = 'RiderWallet_View',
   RiderWallet_Edit = 'RiderWallet_Edit',
   ReviewParameter_Edit = 'ReviewParameter_Edit',
+  GiftCards_View = 'GiftCards_View',
+  GiftCards_Create = 'GiftCards_Create',
+  GiftCards_ViewCodes = 'GiftCards_ViewCodes',
+  EmailProviders_View = 'EmailProviders_View',
+  EmailProviders_Edit = 'EmailProviders_Edit',
+  ShiftRules_View = 'ShiftRules_View',
+  ShiftRules_Edit = 'ShiftRules_Edit',
+  DocumentRetention_View = 'DocumentRetention_View',
+  DocumentRetention_Edit = 'DocumentRetention_Edit',
 }
 
 registerEnumType(OperatorPermission, { name: 'OperatorPermission' });
