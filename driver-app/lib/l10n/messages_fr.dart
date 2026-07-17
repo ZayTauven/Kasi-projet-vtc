@@ -698,4 +698,19 @@ class SFr extends S {
 
   @override
   String get payout_method_cash => 'Espèces';
+
+  @override
+  String shift_rule_banner_daily(String hours) {
+    return 'Temps de service : max $hours h par jour. Pensez à faire des pauses.';
+  }
+
+  @override
+  String shift_rule_banner_weekly(String hours) {
+    return 'Temps de service : max $hours h par semaine. Pensez à faire des pauses.';
+  }
+
+  @override
+  String shift_rule_banner_break(String minutes) {
+    return 'Pause obligatoire de $minutes min.';
+  }
 }

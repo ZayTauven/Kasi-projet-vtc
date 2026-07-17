@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/schema.gql.dart';
+import 'package:kasi_driver/shift_rules/shift_rule_banner_view.dart';
 
 /// Deux modes de lecture des gains.
 ///
@@ -156,7 +157,9 @@ class _EarningsViewState extends State<EarningsView> {
             KasiBackButton(text: S.of(context).action_back),
             const SizedBox(height: 12),
             _buildToggle(context),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            const ShiftRuleBannerView(),
+            const SizedBox(height: 12),
             _buildPeriodNavigator(context),
             const SizedBox(height: 16),
             Query$GetStats$Widget(

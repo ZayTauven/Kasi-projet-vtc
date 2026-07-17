@@ -1,0 +1,46 @@
+<!-- En-tete de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'shiftRules.title' | translate }}</h1>
+    <p>{{ 'shiftRules.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.shiftRules as shiftRules" [nzData]="shiftRules.nodes"
+      [nzTotal]="shiftRules.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+      <thead>
+        <tr>
+          <th>{{ 'profile.name' | translate }}</th>
+          <th>{{ 'shiftRules.frequency' | translate }}</th>
+          <th>{{ 'shiftRules.maxHoursPerPeriod' | translate }}</th>
+          <th>{{ 'shiftRules.mandatoryBreakMinutes' | translate }}</th>
+          <th>{{ 'shiftRules.enforced' | translate }}</th>
+          <th>{{ 'profile.date' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>
+            <span class="mr-2">{{ data.name }}</span>
+            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+          </td>
+          <td>{{ 'shiftRules.frequencyEnum.' + data.frequency | translate }}</td>
+          <td>{{ data.maxHoursPerPeriod != null ? data.maxHoursPerPeriod : '-' }}</td>
+          <td>{{ data.mandatoryBreakMinutes != null ? data.mandatoryBreakMinutes : '-' }}</td>
+          <td>
+            <nz-tag *ngIf="data.enforced" nzColor="warning">{{'shiftRules.enforcedTag' | translate}}</nz-tag>
+            <nz-tag *ngIf="data.enforced == false" nzColor="default">{{'shiftRules.softTag' | translate}}</nz-tag>
+          </td>
+          <td>{{ data.createdAt | date: 'short' }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>

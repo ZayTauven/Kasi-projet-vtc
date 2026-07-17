@@ -1,0 +1,15 @@
+query ShiftRuleList($paging: OffsetPaging) {
+  shiftRules(paging: $paging) {
+    nodes {
+      id
+      name
+      enabled
+      frequency
+      maxHoursPerPeriod
+      mandatoryBreakMinutes
+      enforced
+      createdAt
+    }
+    totalCount
+  }
+}

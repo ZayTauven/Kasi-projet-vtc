@@ -1,0 +1,14 @@
+query ManagementRetentionPolicies($paging: OffsetPaging) {
+  retentionPolicies(paging: $paging) {
+    nodes {
+      id
+      name
+      enabled
+      retentionDays
+      dryRun
+      lastRunAt
+      createdAt
+    }
+    totalCount
+  }
+}

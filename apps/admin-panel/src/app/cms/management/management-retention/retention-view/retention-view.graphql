@@ -1,0 +1,33 @@
+query RetentionPolicyView($id: ID!) {
+  retentionPolicy(id: $id) {
+    id
+    name
+    enabled
+    retentionDays
+    dryRun
+    lastRunAt
+    createdAt
+  }
+}
+
+mutation CreateRetentionPolicy($input: RetentionPolicyInput!) {
+  createOneRetentionPolicy(input: { retentionPolicy: $input }) {
+    id
+  }
+}
+
+mutation UpdateRetentionPolicy($id: ID!, $update: RetentionPolicyInput!) {
+  updateOneRetentionPolicy(input: { id: $id, update: $update }) {
+    id
+  }
+}
+
+mutation DeleteRetentionPolicy($id: ID!) {
+  deleteOneRetentionPolicy(input: { id: $id }) {
+    id
+  }
+}
+
+mutation RunRetentionPolicyDryRun {
+  runRetentionPolicyDryRun
+}

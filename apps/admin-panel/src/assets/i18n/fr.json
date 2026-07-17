@@ -181,6 +181,8 @@
 			"smsProviders": "Fournisseurs SMS",
 			"emailProviders": "Fournisseurs email",
 			"callMaskingProviders": "Appels masqués",
+			"shiftRules": "Règles de temps de service",
+			"retention": "Rétention des documents",
 			"reviewParameters": "Paramètres d'avis",
 			"cars": "Voitures",
 			"userRoles": "Rôles d'utilisateur",
@@ -597,6 +599,44 @@
 		"testCall": "Appel test",
 		"testNumber": "Numéro de téléphone",
 		"testSent": "Appel test déclenché."
+	},
+	"shiftRules": {
+		"title": "Règles de temps de service",
+		"subtitle": "Définissez les limites d'heures et de pauses des Kasimans.",
+		"frequency": "Fréquence",
+		"maxHoursPerPeriod": "Heures max / période",
+		"maxHoursPerPeriodHint": "Nombre maximal d'heures de conduite autorisées sur la période choisie.",
+		"mandatoryBreakMinutes": "Pause obligatoire (min)",
+		"mandatoryBreakMinutesHint": "Durée de pause recommandée entre deux services.",
+		"enforced": "Mode bloquant",
+		"enforcedHint": "Si activé, la règle est présentée comme bloquante. Le contrôle reste indicatif (soft) côté serveur pour le moment.",
+		"enforcedTag": "Bloquant",
+		"softTag": "Indicatif",
+		"deleted": "Règle supprimée",
+		"frequencyEnum": {
+			"Daily": "Quotidien",
+			"Weekly": "Hebdomadaire"
+		}
+	},
+	"shiftRule": {
+		"title": "Règle de temps de service",
+		"subtitle": "Paramétrez les limites appliquées aux services des Kasimans."
+	},
+	"retention": {
+		"title": "Rétention des documents",
+		"subtitle": "Définissez la durée de conservation des documents avant purge automatique.",
+		"retentionDays": "Jours de rétention",
+		"retentionDaysHint": "Nombre de jours au-delà desquels un document devient éligible à la purge.",
+		"days": "{{count}} jours",
+		"dryRun": "Mode simulation",
+		"dryRunHint": "Activé : le système journalise uniquement les documents qui seraient purgés et ne supprime RIEN.",
+		"enabledHint": "Active la prise en compte de cette politique par le job de rétention.",
+		"lastRunAt": "Dernière exécution",
+		"simulationMode": "Simulation",
+		"realMode": "Purge réelle",
+		"realDeletionDisabledWarning": "La purge réelle sera activée dans une version ultérieure après validation. À ce stade, le système reste non destructif : aucun document n'est supprimé.",
+		"runDryRun": "Lancer la simulation",
+		"dryRunTriggered": "Simulation de rétention lancée (aucune suppression effectuée)."
 	},
 	"cancelReason": {
 		"title": "Motif d'annulation",

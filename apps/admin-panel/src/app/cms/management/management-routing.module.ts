@@ -46,6 +46,20 @@ const routes: Routes = [
       ).then((x) => x.ManagementEmailProvidersModule),
   },
   {
+    path: 'shift-rules',
+    loadChildren: () =>
+      import('./management-shift-rules/management-shift-rules.module').then(
+        (x) => x.ManagementShiftRulesModule
+      ),
+  },
+  {
+    path: 'retention',
+    loadChildren: () =>
+      import('./management-retention/management-retention.module').then(
+        (x) => x.ManagementRetentionModule
+      ),
+  },
+  {
     path: 'call-masking-providers',
     loadChildren: () =>
       import(

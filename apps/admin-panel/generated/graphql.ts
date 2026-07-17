@@ -776,6 +776,11 @@ export type CreateOneRegionInput = {
   region: RegionInput;
 };
 
+export type CreateOneRetentionPolicyInput = {
+  /** The record to create */
+  retentionPolicy: RetentionPolicyInput;
+};
+
 export type CreateOneRewardInput = {
   /** The record to create */
   reward: CreateReward;
@@ -814,6 +819,11 @@ export type CreateOneServiceInput = {
 export type CreateOneServiceOptionInput = {
   /** The record to create */
   serviceOption: ServiceOptionInput;
+};
+
+export type CreateOneShiftRuleInput = {
+  /** The record to create */
+  shiftRule: ShiftRuleInput;
 };
 
 export type CreateOneSmsProviderInput = {
@@ -1004,6 +1014,11 @@ export type DeleteOneRegionInput = {
   id: Scalars['ID']['input'];
 };
 
+export type DeleteOneRetentionPolicyInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
 export type DeleteOneRewardInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
@@ -1020,6 +1035,11 @@ export type DeleteOneServiceInput = {
 };
 
 export type DeleteOneServiceOptionInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneShiftRuleInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -2568,6 +2588,26 @@ export type IncomeResultItem = {
   time: Scalars['String']['output'];
 };
 
+export type IntFieldComparison = {
+  between?: InputMaybe<IntFieldComparisonBetween>;
+  eq?: InputMaybe<Scalars['Int']['input']>;
+  gt?: InputMaybe<Scalars['Int']['input']>;
+  gte?: InputMaybe<Scalars['Int']['input']>;
+  in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  lt?: InputMaybe<Scalars['Int']['input']>;
+  lte?: InputMaybe<Scalars['Int']['input']>;
+  neq?: InputMaybe<Scalars['Int']['input']>;
+  notBetween?: InputMaybe<IntFieldComparisonBetween>;
+  notIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+export type IntFieldComparisonBetween = {
+  lower: Scalars['Int']['input'];
+  upper: Scalars['Int']['input'];
+};
+
 export type Media = {
   __typename?: 'Media';
   address: Scalars['String']['output'];
@@ -2644,6 +2684,7 @@ export type Mutation = {
   createOnePayoutMethod: PayoutMethod;
   createOneProviderTransaction: ProviderTransaction;
   createOneRegion: Region;
+  createOneRetentionPolicy: RetentionPolicy;
   createOneReward: Reward;
   createOneRider: Rider;
   createOneRiderAddress: RiderAddress;
@@ -2652,6 +2693,7 @@ export type Mutation = {
   createOneService: Service;
   createOneServiceCategory: ServiceCategory;
   createOneServiceOption: ServiceOption;
+  createOneShiftRule: ShiftRule;
   createOneSmsProvider: SmsProvider;
   createOneZonePrice: ZonePrice;
   createOrder: Order;
@@ -2668,16 +2710,19 @@ export type Mutation = {
   deleteOneOrderCancelReason: OrderCancelReasonDeleteResponse;
   deleteOnePayoutMethod: PayoutMethodDeleteResponse;
   deleteOneRegion: RegionDeleteResponse;
+  deleteOneRetentionPolicy: RetentionPolicyDeleteResponse;
   deleteOneReward: RewardDeleteResponse;
   deleteOneRider: Rider;
   deleteOneService: ServiceDeleteResponse;
   deleteOneServiceCategory: ServiceCategoryDeleteResponse;
   deleteOneServiceOption: ServiceOptionDeleteResponse;
+  deleteOneShiftRule: ShiftRuleDeleteResponse;
   deleteOneSmsProvider: SmsProviderDeleteResponse;
   deleteOneZonePrice: ZonePriceDeleteResponse;
   disablePreviousServer: UpdateConfigResult;
   processPayout: Payout;
   processPayoutSession: PayoutSession;
+  runRetentionPolicyDryRun: Scalars['Boolean']['output'];
   sendTestEmail: Scalars['Boolean']['output'];
   sendTestSms: Scalars['Boolean']['output'];
   setDefaultCallMaskingProvider: CallMaskingProvider;
@@ -2709,12 +2754,14 @@ export type Mutation = {
   updateOnePaymentGateway: PaymentGateway;
   updateOnePayoutMethod: PayoutMethod;
   updateOneRegion: Region;
+  updateOneRetentionPolicy: RetentionPolicy;
   updateOneReward: Reward;
   updateOneRider: Rider;
   updateOneRiderAddress: RiderAddress;
   updateOneService: Service;
   updateOneServiceCategory: ServiceCategory;
   updateOneServiceOption: ServiceOption;
+  updateOneShiftRule: ShiftRule;
   updateOneSmsProvider: SmsProvider;
   updateOneZonePrice: ZonePrice;
   updatePassword: Operator;
@@ -2878,6 +2925,11 @@ export type MutationCreateOneRegionArgs = {
 };
 
 
+export type MutationCreateOneRetentionPolicyArgs = {
+  input: CreateOneRetentionPolicyInput;
+};
+
+
 export type MutationCreateOneRewardArgs = {
   input: CreateOneRewardInput;
 };
@@ -2915,6 +2967,11 @@ export type MutationCreateOneServiceCategoryArgs = {
 
 export type MutationCreateOneServiceOptionArgs = {
   input: CreateOneServiceOptionInput;
+};
+
+
+export type MutationCreateOneShiftRuleArgs = {
+  input: CreateOneShiftRuleInput;
 };
 
 
@@ -2998,6 +3055,11 @@ export type MutationDeleteOneRegionArgs = {
 };
 
 
+export type MutationDeleteOneRetentionPolicyArgs = {
+  input: DeleteOneRetentionPolicyInput;
+};
+
+
 export type MutationDeleteOneRewardArgs = {
   input: DeleteOneRewardInput;
 };
@@ -3020,6 +3082,11 @@ export type MutationDeleteOneServiceCategoryArgs = {
 
 export type MutationDeleteOneServiceOptionArgs = {
   input: DeleteOneServiceOptionInput;
+};
+
+
+export type MutationDeleteOneShiftRuleArgs = {
+  input: DeleteOneShiftRuleInput;
 };
 
 
@@ -3207,6 +3274,11 @@ export type MutationUpdateOneRegionArgs = {
 };
 
 
+export type MutationUpdateOneRetentionPolicyArgs = {
+  input: UpdateOneRetentionPolicyInput;
+};
+
+
 export type MutationUpdateOneRewardArgs = {
   input: UpdateOneRewardInput;
 };
@@ -3234,6 +3306,11 @@ export type MutationUpdateOneServiceCategoryArgs = {
 
 export type MutationUpdateOneServiceOptionArgs = {
   input: UpdateOneServiceOptionInput;
+};
+
+
+export type MutationUpdateOneShiftRuleArgs = {
+  input: UpdateOneShiftRuleInput;
 };
 
 
@@ -4631,6 +4708,8 @@ export type Query = {
   regionAggregate: Array<RegionAggregateResponse>;
   regions: RegionConnection;
   requestChart: Array<RequestResultItem>;
+  retentionPolicies: RetentionPolicyConnection;
+  retentionPolicy: RetentionPolicy;
   reward: Reward;
   rewards: RewardConnection;
   rider: Rider;
@@ -4648,6 +4727,8 @@ export type Query = {
   serviceOption: ServiceOption;
   serviceOptions: Array<ServiceOption>;
   services: Array<Service>;
+  shiftRule: ShiftRule;
+  shiftRules: ShiftRuleConnection;
   smsProvider: SmsProvider;
   smsProviders: SmsProviderConnection;
   zonePrice: ZonePrice;
@@ -5100,6 +5181,18 @@ export type QueryRequestChartArgs = {
 };
 
 
+export type QueryRetentionPoliciesArgs = {
+  filter?: RetentionPolicyFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<RetentionPolicySort>;
+};
+
+
+export type QueryRetentionPolicyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryRewardArgs = {
   id: Scalars['ID']['input'];
 };
@@ -5195,6 +5288,18 @@ export type QueryServiceOptionsArgs = {
 export type QueryServicesArgs = {
   filter?: ServiceFilter;
   sorting?: Array<ServiceSort>;
+};
+
+
+export type QueryShiftRuleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryShiftRulesArgs = {
+  filter?: ShiftRuleFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<ShiftRuleSort>;
 };
 
 
@@ -5383,6 +5488,67 @@ export type RequestResultItem = {
   status: OrderStatus;
   time: Scalars['String']['output'];
 };
+
+export type RetentionPolicy = {
+  __typename?: 'RetentionPolicy';
+  createdAt: Scalars['DateTime']['output'];
+  dryRun: Scalars['Boolean']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  lastRunAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  retentionDays: Scalars['Int']['output'];
+};
+
+export type RetentionPolicyConnection = {
+  __typename?: 'RetentionPolicyConnection';
+  /** Array of nodes. */
+  nodes: Array<RetentionPolicy>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type RetentionPolicyDeleteResponse = {
+  __typename?: 'RetentionPolicyDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  dryRun?: Maybe<Scalars['Boolean']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  lastRunAt?: Maybe<Scalars['DateTime']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  retentionDays?: Maybe<Scalars['Int']['output']>;
+};
+
+export type RetentionPolicyFilter = {
+  and?: InputMaybe<Array<RetentionPolicyFilter>>;
+  dryRun?: InputMaybe<BooleanFieldComparison>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<RetentionPolicyFilter>>;
+  retentionDays?: InputMaybe<IntFieldComparison>;
+};
+
+export type RetentionPolicyInput = {
+  dryRun?: InputMaybe<Scalars['Boolean']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  retentionDays: Scalars['Int']['input'];
+};
+
+export type RetentionPolicySort = {
+  direction: SortDirection;
+  field: RetentionPolicySortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum RetentionPolicySortFields {
+  DryRun = 'dryRun',
+  Enabled = 'enabled',
+  Id = 'id',
+  RetentionDays = 'retentionDays'
+}
 
 export type Reward = {
   __typename?: 'Reward';
@@ -6133,6 +6299,93 @@ export type SetServicesOnZonePriceInput = {
   relationIds: Array<Scalars['ID']['input']>;
 };
 
+export type ShiftRule = {
+  __typename?: 'ShiftRule';
+  createdAt: Scalars['DateTime']['output'];
+  enabled: Scalars['Boolean']['output'];
+  enforced: Scalars['Boolean']['output'];
+  frequency: ShiftRuleFrequency;
+  id: Scalars['ID']['output'];
+  mandatoryBreakMinutes: Scalars['Int']['output'];
+  maxHoursPerPeriod: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type ShiftRuleConnection = {
+  __typename?: 'ShiftRuleConnection';
+  /** Array of nodes. */
+  nodes: Array<ShiftRule>;
+  /** Paging information */
+  pageInfo: OffsetPageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ShiftRuleDeleteResponse = {
+  __typename?: 'ShiftRuleDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  enforced?: Maybe<Scalars['Boolean']['output']>;
+  frequency?: Maybe<ShiftRuleFrequency>;
+  id?: Maybe<Scalars['ID']['output']>;
+  mandatoryBreakMinutes?: Maybe<Scalars['Int']['output']>;
+  maxHoursPerPeriod?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type ShiftRuleFilter = {
+  and?: InputMaybe<Array<ShiftRuleFilter>>;
+  enabled?: InputMaybe<BooleanFieldComparison>;
+  enforced?: InputMaybe<BooleanFieldComparison>;
+  frequency?: InputMaybe<ShiftRuleFrequencyFilterComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<ShiftRuleFilter>>;
+};
+
+export enum ShiftRuleFrequency {
+  Daily = 'Daily',
+  Weekly = 'Weekly'
+}
+
+export type ShiftRuleFrequencyFilterComparison = {
+  eq?: InputMaybe<ShiftRuleFrequency>;
+  gt?: InputMaybe<ShiftRuleFrequency>;
+  gte?: InputMaybe<ShiftRuleFrequency>;
+  iLike?: InputMaybe<ShiftRuleFrequency>;
+  in?: InputMaybe<Array<ShiftRuleFrequency>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<ShiftRuleFrequency>;
+  lt?: InputMaybe<ShiftRuleFrequency>;
+  lte?: InputMaybe<ShiftRuleFrequency>;
+  neq?: InputMaybe<ShiftRuleFrequency>;
+  notILike?: InputMaybe<ShiftRuleFrequency>;
+  notIn?: InputMaybe<Array<ShiftRuleFrequency>>;
+  notLike?: InputMaybe<ShiftRuleFrequency>;
+};
+
+export type ShiftRuleInput = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  enforced?: InputMaybe<Scalars['Boolean']['input']>;
+  frequency: ShiftRuleFrequency;
+  mandatoryBreakMinutes?: InputMaybe<Scalars['Int']['input']>;
+  maxHoursPerPeriod: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type ShiftRuleSort = {
+  direction: SortDirection;
+  field: ShiftRuleSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export enum ShiftRuleSortFields {
+  Enabled = 'enabled',
+  Enforced = 'enforced',
+  Frequency = 'frequency',
+  Id = 'id'
+}
+
 export type SmsProvider = {
   __typename?: 'SmsProvider';
   accountId?: Maybe<Scalars['String']['output']>;
@@ -6483,6 +6736,13 @@ export type UpdateOneRegionInput = {
   update: RegionInput;
 };
 
+export type UpdateOneRetentionPolicyInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: RetentionPolicyInput;
+};
+
 export type UpdateOneRewardInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -6523,6 +6783,13 @@ export type UpdateOneServiceOptionInput = {
   id: Scalars['ID']['input'];
   /** The update to apply. */
   update: ServiceOptionInput;
+};
+
+export type UpdateOneShiftRuleInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: ShiftRuleInput;
 };
 
 export type UpdateOneSmsProviderInput = {
@@ -7213,6 +7480,47 @@ export type CreateRegionMutationVariables = Exact<{
 
 export type CreateRegionMutation = { __typename?: 'Mutation', createOneRegion: { __typename?: 'Region', id: string } };
 
+export type ManagementRetentionPoliciesQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type ManagementRetentionPoliciesQuery = { __typename?: 'Query', retentionPolicies: { __typename?: 'RetentionPolicyConnection', totalCount: number, nodes: Array<{ __typename?: 'RetentionPolicy', id: string, name: string, enabled: boolean, retentionDays: number, dryRun: boolean, lastRunAt?: any | null, createdAt: any }> } };
+
+export type RetentionPolicyViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type RetentionPolicyViewQuery = { __typename?: 'Query', retentionPolicy: { __typename?: 'RetentionPolicy', id: string, name: string, enabled: boolean, retentionDays: number, dryRun: boolean, lastRunAt?: any | null, createdAt: any } };
+
+export type CreateRetentionPolicyMutationVariables = Exact<{
+  input: RetentionPolicyInput;
+}>;
+
+
+export type CreateRetentionPolicyMutation = { __typename?: 'Mutation', createOneRetentionPolicy: { __typename?: 'RetentionPolicy', id: string } };
+
+export type UpdateRetentionPolicyMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: RetentionPolicyInput;
+}>;
+
+
+export type UpdateRetentionPolicyMutation = { __typename?: 'Mutation', updateOneRetentionPolicy: { __typename?: 'RetentionPolicy', id: string } };
+
+export type DeleteRetentionPolicyMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteRetentionPolicyMutation = { __typename?: 'Mutation', deleteOneRetentionPolicy: { __typename?: 'RetentionPolicyDeleteResponse', id?: string | null } };
+
+export type RunRetentionPolicyDryRunMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RunRetentionPolicyDryRunMutation = { __typename?: 'Mutation', runRetentionPolicyDryRun: boolean };
+
 export type ReviewParameterViewQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -7384,6 +7692,42 @@ export type UpdatePasswordMutationVariables = Exact<{
 
 
 export type UpdatePasswordMutation = { __typename?: 'Mutation', updatePassword: { __typename?: 'Operator', id: string } };
+
+export type ShiftRuleListQueryVariables = Exact<{
+  paging?: InputMaybe<OffsetPaging>;
+}>;
+
+
+export type ShiftRuleListQuery = { __typename?: 'Query', shiftRules: { __typename?: 'ShiftRuleConnection', totalCount: number, nodes: Array<{ __typename?: 'ShiftRule', id: string, name: string, enabled: boolean, frequency: ShiftRuleFrequency, maxHoursPerPeriod: number, mandatoryBreakMinutes: number, enforced: boolean, createdAt: any }> } };
+
+export type ShiftRuleViewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type ShiftRuleViewQuery = { __typename?: 'Query', shiftRule: { __typename?: 'ShiftRule', id: string, name: string, enabled: boolean, frequency: ShiftRuleFrequency, maxHoursPerPeriod: number, mandatoryBreakMinutes: number, enforced: boolean } };
+
+export type CreateShiftRuleMutationVariables = Exact<{
+  input: ShiftRuleInput;
+}>;
+
+
+export type CreateShiftRuleMutation = { __typename?: 'Mutation', createOneShiftRule: { __typename?: 'ShiftRule', id: string } };
+
+export type UpdateShiftRuleMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  update: ShiftRuleInput;
+}>;
+
+
+export type UpdateShiftRuleMutation = { __typename?: 'Mutation', updateOneShiftRule: { __typename?: 'ShiftRule', id: string } };
+
+export type DeleteShiftRuleMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteShiftRuleMutation = { __typename?: 'Mutation', deleteOneShiftRule: { __typename?: 'ShiftRuleDeleteResponse', id?: string | null } };
 
 export type SmsProviderListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -9621,6 +9965,127 @@ export const CreateRegionDocument = gql`
       super(apollo);
     }
   }
+export const ManagementRetentionPoliciesDocument = gql`
+    query ManagementRetentionPolicies($paging: OffsetPaging) {
+  retentionPolicies(paging: $paging) {
+    nodes {
+      id
+      name
+      enabled
+      retentionDays
+      dryRun
+      lastRunAt
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ManagementRetentionPoliciesGQL extends Apollo.Query<ManagementRetentionPoliciesQuery, ManagementRetentionPoliciesQueryVariables> {
+    document = ManagementRetentionPoliciesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RetentionPolicyViewDocument = gql`
+    query RetentionPolicyView($id: ID!) {
+  retentionPolicy(id: $id) {
+    id
+    name
+    enabled
+    retentionDays
+    dryRun
+    lastRunAt
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RetentionPolicyViewGQL extends Apollo.Query<RetentionPolicyViewQuery, RetentionPolicyViewQueryVariables> {
+    document = RetentionPolicyViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateRetentionPolicyDocument = gql`
+    mutation CreateRetentionPolicy($input: RetentionPolicyInput!) {
+  createOneRetentionPolicy(input: {retentionPolicy: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateRetentionPolicyGQL extends Apollo.Mutation<CreateRetentionPolicyMutation, CreateRetentionPolicyMutationVariables> {
+    document = CreateRetentionPolicyDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateRetentionPolicyDocument = gql`
+    mutation UpdateRetentionPolicy($id: ID!, $update: RetentionPolicyInput!) {
+  updateOneRetentionPolicy(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateRetentionPolicyGQL extends Apollo.Mutation<UpdateRetentionPolicyMutation, UpdateRetentionPolicyMutationVariables> {
+    document = UpdateRetentionPolicyDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeleteRetentionPolicyDocument = gql`
+    mutation DeleteRetentionPolicy($id: ID!) {
+  deleteOneRetentionPolicy(input: {id: $id}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeleteRetentionPolicyGQL extends Apollo.Mutation<DeleteRetentionPolicyMutation, DeleteRetentionPolicyMutationVariables> {
+    document = DeleteRetentionPolicyDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RunRetentionPolicyDryRunDocument = gql`
+    mutation RunRetentionPolicyDryRun {
+  runRetentionPolicyDryRun
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RunRetentionPolicyDryRunGQL extends Apollo.Mutation<RunRetentionPolicyDryRunMutation, RunRetentionPolicyDryRunMutationVariables> {
+    document = RunRetentionPolicyDryRunDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const ReviewParameterViewDocument = gql`
     query ReviewParameterView($id: ID!) {
   feedbackParameter(id: $id) {
@@ -10181,6 +10646,112 @@ export const UpdatePasswordDocument = gql`
   })
   export class UpdatePasswordGQL extends Apollo.Mutation<UpdatePasswordMutation, UpdatePasswordMutationVariables> {
     document = UpdatePasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ShiftRuleListDocument = gql`
+    query ShiftRuleList($paging: OffsetPaging) {
+  shiftRules(paging: $paging) {
+    nodes {
+      id
+      name
+      enabled
+      frequency
+      maxHoursPerPeriod
+      mandatoryBreakMinutes
+      enforced
+      createdAt
+    }
+    totalCount
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ShiftRuleListGQL extends Apollo.Query<ShiftRuleListQuery, ShiftRuleListQueryVariables> {
+    document = ShiftRuleListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ShiftRuleViewDocument = gql`
+    query ShiftRuleView($id: ID!) {
+  shiftRule(id: $id) {
+    id
+    name
+    enabled
+    frequency
+    maxHoursPerPeriod
+    mandatoryBreakMinutes
+    enforced
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ShiftRuleViewGQL extends Apollo.Query<ShiftRuleViewQuery, ShiftRuleViewQueryVariables> {
+    document = ShiftRuleViewDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateShiftRuleDocument = gql`
+    mutation CreateShiftRule($input: ShiftRuleInput!) {
+  createOneShiftRule(input: {shiftRule: $input}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateShiftRuleGQL extends Apollo.Mutation<CreateShiftRuleMutation, CreateShiftRuleMutationVariables> {
+    document = CreateShiftRuleDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateShiftRuleDocument = gql`
+    mutation UpdateShiftRule($id: ID!, $update: ShiftRuleInput!) {
+  updateOneShiftRule(input: {id: $id, update: $update}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateShiftRuleGQL extends Apollo.Mutation<UpdateShiftRuleMutation, UpdateShiftRuleMutationVariables> {
+    document = UpdateShiftRuleDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeleteShiftRuleDocument = gql`
+    mutation DeleteShiftRule($id: ID!) {
+  deleteOneShiftRule(input: {id: $id}) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeleteShiftRuleGQL extends Apollo.Mutation<DeleteShiftRuleMutation, DeleteShiftRuleMutationVariables> {
+    document = DeleteShiftRuleDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

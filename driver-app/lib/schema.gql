@@ -1049,6 +1049,20 @@ type Payout {
 
 type Query {
   requireUpdate(versionCode: Int!): VersionStatus!
+  shiftRule(
+    """The id of the record to find."""
+    id: ID!
+  ): ShiftRule!
+  shiftRules(
+    """Specify to filter the records returned."""
+    filter: ShiftRuleFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ShiftRuleSort!]! = []
+  ): ShiftRuleConnection!
   payoutMethods: [PayoutMethod!]!
   driverPayouts: [Payout!]!
   orderAggregate(
@@ -1393,4 +1407,70 @@ type Subscription {
   orderUpdated: Order!
   orderRemoved: Order!
   newMessageReceived: OrderMessage!
+}
+type ShiftRule {
+  enabled: Boolean!
+  enforced: Boolean!
+  frequency: ShiftRuleFrequency!
+  id: ID!
+  mandatoryBreakMinutes: Int!
+  maxHoursPerPeriod: Int!
+  name: String!
+}
+
+type ShiftRuleConnection {
+  """Array of nodes."""
+  nodes: [ShiftRule!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+input ShiftRuleFilter {
+  and: [ShiftRuleFilter!]
+  enabled: BooleanFieldComparison
+  frequency: ShiftRuleFrequencyFilterComparison
+  id: IDFilterComparison
+  mandatoryBreakMinutes: IntFieldComparison
+  maxHoursPerPeriod: IntFieldComparison
+  or: [ShiftRuleFilter!]
+}
+
+enum ShiftRuleFrequency {
+  Daily
+  Weekly
+}
+
+input ShiftRuleFrequencyFilterComparison {
+  eq: ShiftRuleFrequency
+  gt: ShiftRuleFrequency
+  gte: ShiftRuleFrequency
+  iLike: ShiftRuleFrequency
+  in: [ShiftRuleFrequency!]
+  is: Boolean
+  isNot: Boolean
+  like: ShiftRuleFrequency
+  lt: ShiftRuleFrequency
+  lte: ShiftRuleFrequency
+  neq: ShiftRuleFrequency
+  notILike: ShiftRuleFrequency
+  notIn: [ShiftRuleFrequency!]
+  notLike: ShiftRuleFrequency
+}
+
+input ShiftRuleSort {
+  direction: SortDirection!
+  field: ShiftRuleSortFields!
+  nulls: SortNulls
+}
+
+enum ShiftRuleSortFields {
+  enabled
+  frequency
+  id
+  mandatoryBreakMinutes
+  maxHoursPerPeriod
 }

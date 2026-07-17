@@ -1371,6 +1371,24 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Cash'**
   String get payout_method_cash;
+
+  /// No description provided for @shift_rule_banner_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Service time: max {hours}h per day. Remember to take breaks.'**
+  String shift_rule_banner_daily(String hours);
+
+  /// No description provided for @shift_rule_banner_weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Service time: max {hours}h per week. Remember to take breaks.'**
+  String shift_rule_banner_weekly(String hours);
+
+  /// No description provided for @shift_rule_banner_break.
+  ///
+  /// In en, this message translates to:
+  /// **'Mandatory break of {minutes} min.'**
+  String shift_rule_banner_break(String minutes);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

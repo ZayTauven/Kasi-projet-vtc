@@ -36,6 +36,8 @@ import { SmsProviderModule } from './sms-provider/sms-provider.module';
 import { EmailProviderModule } from './email-provider/email-provider.module';
 import { CallMaskingProviderModule } from './call-masking-provider/call-masking-provider.module';
 import { GiftModule } from './gift/gift.module';
+import { ShiftRuleModule } from './shift-rule/shift-rule.module';
+import { RetentionPolicyModule } from './retention-policy/retention-policy.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -128,6 +130,8 @@ export class AdminAPIModule {
             EmailProviderModule,
             CallMaskingProviderModule,
             GiftModule,
+            ShiftRuleModule,
+            RetentionPolicyModule,
             ComplaintModule,
             ConfigurationModule,
             HttpModule,

@@ -1,0 +1,12 @@
+query ActiveShiftRules {
+    shiftRules(filter: {enabled: {is: true}}) {
+        nodes {
+            id
+            name
+            frequency
+            maxHoursPerPeriod
+            mandatoryBreakMinutes
+            enforced
+        }
+    }
+}

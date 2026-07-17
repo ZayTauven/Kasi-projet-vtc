@@ -1,0 +1,48 @@
+<!-- En-tête de page -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'retention.title' | translate }}</h1>
+    <p>{{ 'retention.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" routerLink="new">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<!-- Avertissement global : purge réelle non active à ce stade -->
+<nz-alert class="mb-4 block" nzType="warning" [nzMessage]="'profile.warning' | translate"
+  [nzDescription]="'retention.realDeletionDisabledWarning' | translate" nzShowIcon></nz-alert>
+
+<!-- Carte tableau -->
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+      *ngIf="(query | async)?.data?.retentionPolicies as retentionPolicies" [nzData]="retentionPolicies.nodes"
+      [nzTotal]="retentionPolicies.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+      <thead>
+        <tr>
+          <th>{{ 'profile.name' | translate }}</th>
+          <th>{{ 'retention.retentionDays' | translate }}</th>
+          <th>{{ 'retention.dryRun' | translate }}</th>
+          <th>{{ 'retention.lastRunAt' | translate }}</th>
+          <th>{{ 'profile.visibilityStatus' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
+          <td>{{ data.name }}</td>
+          <td>{{ 'retention.days' | translate: { count: data.retentionDays } }}</td>
+          <td>
+            <nz-tag *ngIf="data.dryRun" nzColor="blue">{{ 'retention.simulationMode' | translate }}</nz-tag>
+            <nz-tag *ngIf="data.dryRun == false" nzColor="warning">{{ 'retention.realMode' | translate }}</nz-tag>
+          </td>
+          <td>{{ data.lastRunAt != null ? (data.lastRunAt | date: 'short') : '-' }}</td>
+          <td>
+            <nz-tag *ngIf="data.enabled" nzColor="success">{{ 'profile.enabled' | translate }}</nz-tag>
+            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{ 'profile.disabled' | translate }}</nz-tag>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>

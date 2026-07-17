@@ -1,0 +1,29 @@
+query ShiftRuleView($id: ID!) {
+  shiftRule(id: $id) {
+    id
+    name
+    enabled
+    frequency
+    maxHoursPerPeriod
+    mandatoryBreakMinutes
+    enforced
+  }
+}
+
+mutation CreateShiftRule($input: ShiftRuleInput!) {
+  createOneShiftRule(input: { shiftRule: $input }) {
+    id
+  }
+}
+
+mutation UpdateShiftRule($id: ID!, $update: ShiftRuleInput!) {
+  updateOneShiftRule(input: { id: $id, update: $update }) {
+    id
+  }
+}
+
+mutation DeleteShiftRule($id: ID!) {
+  deleteOneShiftRule(input: { id: $id }) {
+    id
+  }
+}

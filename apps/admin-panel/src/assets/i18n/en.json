@@ -181,6 +181,8 @@
 			"smsProviders": "SMS Providers",
 			"emailProviders": "Email Providers",
 			"callMaskingProviders": "Call Masking",
+			"shiftRules": "Shift Rules",
+			"retention": "Document Retention",
 			"reviewParameters": "Review Parameters",
 			"cars": "Cars",
 			"userRoles": "User Roles",
@@ -591,6 +593,44 @@
 		"testCall": "Test call",
 		"testNumber": "Phone number",
 		"testSent": "Test call triggered."
+	},
+	"shiftRules": {
+		"title": "Shift rules",
+		"subtitle": "Define drivers' working-hours and break limits.",
+		"frequency": "Frequency",
+		"maxHoursPerPeriod": "Max hours per period",
+		"maxHoursPerPeriodHint": "Maximum driving hours allowed over the selected period.",
+		"mandatoryBreakMinutes": "Mandatory break (min)",
+		"mandatoryBreakMinutesHint": "Recommended break duration between shifts.",
+		"enforced": "Enforced (blocking)",
+		"enforcedHint": "If enabled, the rule is presented as blocking. Server-side enforcement is still advisory (soft) for now.",
+		"enforcedTag": "Enforced",
+		"softTag": "Advisory",
+		"deleted": "Rule deleted",
+		"frequencyEnum": {
+			"Daily": "Daily",
+			"Weekly": "Weekly"
+		}
+	},
+	"shiftRule": {
+		"title": "Shift rule",
+		"subtitle": "Configure the limits applied to drivers' shifts."
+	},
+	"retention": {
+		"title": "Document retention",
+		"subtitle": "Define how long documents are kept before automatic purge.",
+		"retentionDays": "Retention days",
+		"retentionDaysHint": "Number of days after which a document becomes eligible for purge.",
+		"days": "{{count}} days",
+		"dryRun": "Simulation mode",
+		"dryRunHint": "Enabled: the system only logs the documents that would be purged and deletes NOTHING.",
+		"enabledHint": "Enables this policy to be considered by the retention job.",
+		"lastRunAt": "Last run",
+		"simulationMode": "Simulation",
+		"realMode": "Real purge",
+		"realDeletionDisabledWarning": "Real purge will be enabled in a later version after validation. At this stage the system stays non-destructive: no document is deleted.",
+		"runDryRun": "Run simulation",
+		"dryRunTriggered": "Retention simulation triggered (no deletion performed)."
 	},
 	"cancelReason": {
 		"title": "Cancel Reason",

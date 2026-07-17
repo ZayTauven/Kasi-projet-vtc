@@ -3,6 +3,7 @@ import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisPubSubProvider } from '@kasi/database';
+import { ShiftRuleEntity } from '@kasi/database/shift-rule.entity';
 import { DriverTransactionEntity } from '@kasi/database/driver-transaction.entity';
 import { DriverWalletEntity } from '@kasi/database/driver-wallet.entity';
 import { DriverEntity } from '@kasi/database/driver.entity';
@@ -68,6 +69,7 @@ import { HttpModule } from '@nestjs/axios';
       FleetTransactionEntity,
       ZonePriceEntity,
       PaymentEntity,
+      ShiftRuleEntity,
     ]),
     RegionModule,
     HttpModule,

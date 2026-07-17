@@ -12540,6 +12540,1152 @@ class _CopyWithStubImpl$Input$ComplaintInput<TRes>
   }) => _res;
 }
 
+class Input$ShiftRuleFilter {
+  factory Input$ShiftRuleFilter({
+    List<Input$ShiftRuleFilter>? and,
+    Input$BooleanFieldComparison? enabled,
+    Input$ShiftRuleFrequencyFilterComparison? frequency,
+    Input$IDFilterComparison? id,
+    Input$IntFieldComparison? mandatoryBreakMinutes,
+    Input$IntFieldComparison? maxHoursPerPeriod,
+    List<Input$ShiftRuleFilter>? or,
+  }) => Input$ShiftRuleFilter._({
+    if (and != null) r'and': and,
+    if (enabled != null) r'enabled': enabled,
+    if (frequency != null) r'frequency': frequency,
+    if (id != null) r'id': id,
+    if (mandatoryBreakMinutes != null)
+      r'mandatoryBreakMinutes': mandatoryBreakMinutes,
+    if (maxHoursPerPeriod != null) r'maxHoursPerPeriod': maxHoursPerPeriod,
+    if (or != null) r'or': or,
+  });
+
+  Input$ShiftRuleFilter._(this._$data);
+
+  factory Input$ShiftRuleFilter.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('and')) {
+      final l$and = data['and'];
+      result$data['and'] = (l$and as List<dynamic>?)
+          ?.map(
+            (e) => Input$ShiftRuleFilter.fromJson((e as Map<String, dynamic>)),
+          )
+          .toList();
+    }
+    if (data.containsKey('enabled')) {
+      final l$enabled = data['enabled'];
+      result$data['enabled'] = l$enabled == null
+          ? null
+          : Input$BooleanFieldComparison.fromJson(
+              (l$enabled as Map<String, dynamic>),
+            );
+    }
+    if (data.containsKey('frequency')) {
+      final l$frequency = data['frequency'];
+      result$data['frequency'] = l$frequency == null
+          ? null
+          : Input$ShiftRuleFrequencyFilterComparison.fromJson(
+              (l$frequency as Map<String, dynamic>),
+            );
+    }
+    if (data.containsKey('id')) {
+      final l$id = data['id'];
+      result$data['id'] = l$id == null
+          ? null
+          : Input$IDFilterComparison.fromJson((l$id as Map<String, dynamic>));
+    }
+    if (data.containsKey('mandatoryBreakMinutes')) {
+      final l$mandatoryBreakMinutes = data['mandatoryBreakMinutes'];
+      result$data['mandatoryBreakMinutes'] = l$mandatoryBreakMinutes == null
+          ? null
+          : Input$IntFieldComparison.fromJson(
+              (l$mandatoryBreakMinutes as Map<String, dynamic>),
+            );
+    }
+    if (data.containsKey('maxHoursPerPeriod')) {
+      final l$maxHoursPerPeriod = data['maxHoursPerPeriod'];
+      result$data['maxHoursPerPeriod'] = l$maxHoursPerPeriod == null
+          ? null
+          : Input$IntFieldComparison.fromJson(
+              (l$maxHoursPerPeriod as Map<String, dynamic>),
+            );
+    }
+    if (data.containsKey('or')) {
+      final l$or = data['or'];
+      result$data['or'] = (l$or as List<dynamic>?)
+          ?.map(
+            (e) => Input$ShiftRuleFilter.fromJson((e as Map<String, dynamic>)),
+          )
+          .toList();
+    }
+    return Input$ShiftRuleFilter._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  List<Input$ShiftRuleFilter>? get and =>
+      (_$data['and'] as List<Input$ShiftRuleFilter>?);
+
+  Input$BooleanFieldComparison? get enabled =>
+      (_$data['enabled'] as Input$BooleanFieldComparison?);
+
+  Input$ShiftRuleFrequencyFilterComparison? get frequency =>
+      (_$data['frequency'] as Input$ShiftRuleFrequencyFilterComparison?);
+
+  Input$IDFilterComparison? get id =>
+      (_$data['id'] as Input$IDFilterComparison?);
+
+  Input$IntFieldComparison? get mandatoryBreakMinutes =>
+      (_$data['mandatoryBreakMinutes'] as Input$IntFieldComparison?);
+
+  Input$IntFieldComparison? get maxHoursPerPeriod =>
+      (_$data['maxHoursPerPeriod'] as Input$IntFieldComparison?);
+
+  List<Input$ShiftRuleFilter>? get or =>
+      (_$data['or'] as List<Input$ShiftRuleFilter>?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('and')) {
+      final l$and = and;
+      result$data['and'] = l$and?.map((e) => e.toJson()).toList();
+    }
+    if (_$data.containsKey('enabled')) {
+      final l$enabled = enabled;
+      result$data['enabled'] = l$enabled?.toJson();
+    }
+    if (_$data.containsKey('frequency')) {
+      final l$frequency = frequency;
+      result$data['frequency'] = l$frequency?.toJson();
+    }
+    if (_$data.containsKey('id')) {
+      final l$id = id;
+      result$data['id'] = l$id?.toJson();
+    }
+    if (_$data.containsKey('mandatoryBreakMinutes')) {
+      final l$mandatoryBreakMinutes = mandatoryBreakMinutes;
+      result$data['mandatoryBreakMinutes'] = l$mandatoryBreakMinutes?.toJson();
+    }
+    if (_$data.containsKey('maxHoursPerPeriod')) {
+      final l$maxHoursPerPeriod = maxHoursPerPeriod;
+      result$data['maxHoursPerPeriod'] = l$maxHoursPerPeriod?.toJson();
+    }
+    if (_$data.containsKey('or')) {
+      final l$or = or;
+      result$data['or'] = l$or?.map((e) => e.toJson()).toList();
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$ShiftRuleFilter<Input$ShiftRuleFilter> get copyWith =>
+      CopyWith$Input$ShiftRuleFilter(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$ShiftRuleFilter || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$and = and;
+    final lOther$and = other.and;
+    if (_$data.containsKey('and') != other._$data.containsKey('and')) {
+      return false;
+    }
+    if (l$and != null && lOther$and != null) {
+      if (l$and.length != lOther$and.length) {
+        return false;
+      }
+      for (int i = 0; i < l$and.length; i++) {
+        final l$and$entry = l$and[i];
+        final lOther$and$entry = lOther$and[i];
+        if (l$and$entry != lOther$and$entry) {
+          return false;
+        }
+      }
+    } else if (l$and != lOther$and) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (_$data.containsKey('enabled') != other._$data.containsKey('enabled')) {
+      return false;
+    }
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$frequency = frequency;
+    final lOther$frequency = other.frequency;
+    if (_$data.containsKey('frequency') !=
+        other._$data.containsKey('frequency')) {
+      return false;
+    }
+    if (l$frequency != lOther$frequency) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (_$data.containsKey('id') != other._$data.containsKey('id')) {
+      return false;
+    }
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$mandatoryBreakMinutes = mandatoryBreakMinutes;
+    final lOther$mandatoryBreakMinutes = other.mandatoryBreakMinutes;
+    if (_$data.containsKey('mandatoryBreakMinutes') !=
+        other._$data.containsKey('mandatoryBreakMinutes')) {
+      return false;
+    }
+    if (l$mandatoryBreakMinutes != lOther$mandatoryBreakMinutes) {
+      return false;
+    }
+    final l$maxHoursPerPeriod = maxHoursPerPeriod;
+    final lOther$maxHoursPerPeriod = other.maxHoursPerPeriod;
+    if (_$data.containsKey('maxHoursPerPeriod') !=
+        other._$data.containsKey('maxHoursPerPeriod')) {
+      return false;
+    }
+    if (l$maxHoursPerPeriod != lOther$maxHoursPerPeriod) {
+      return false;
+    }
+    final l$or = or;
+    final lOther$or = other.or;
+    if (_$data.containsKey('or') != other._$data.containsKey('or')) {
+      return false;
+    }
+    if (l$or != null && lOther$or != null) {
+      if (l$or.length != lOther$or.length) {
+        return false;
+      }
+      for (int i = 0; i < l$or.length; i++) {
+        final l$or$entry = l$or[i];
+        final lOther$or$entry = lOther$or[i];
+        if (l$or$entry != lOther$or$entry) {
+          return false;
+        }
+      }
+    } else if (l$or != lOther$or) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$and = and;
+    final l$enabled = enabled;
+    final l$frequency = frequency;
+    final l$id = id;
+    final l$mandatoryBreakMinutes = mandatoryBreakMinutes;
+    final l$maxHoursPerPeriod = maxHoursPerPeriod;
+    final l$or = or;
+    return Object.hashAll([
+      _$data.containsKey('and')
+          ? l$and == null
+                ? null
+                : Object.hashAll(l$and.map((v) => v))
+          : const {},
+      _$data.containsKey('enabled') ? l$enabled : const {},
+      _$data.containsKey('frequency') ? l$frequency : const {},
+      _$data.containsKey('id') ? l$id : const {},
+      _$data.containsKey('mandatoryBreakMinutes')
+          ? l$mandatoryBreakMinutes
+          : const {},
+      _$data.containsKey('maxHoursPerPeriod') ? l$maxHoursPerPeriod : const {},
+      _$data.containsKey('or')
+          ? l$or == null
+                ? null
+                : Object.hashAll(l$or.map((v) => v))
+          : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$ShiftRuleFilter<TRes> {
+  factory CopyWith$Input$ShiftRuleFilter(
+    Input$ShiftRuleFilter instance,
+    TRes Function(Input$ShiftRuleFilter) then,
+  ) = _CopyWithImpl$Input$ShiftRuleFilter;
+
+  factory CopyWith$Input$ShiftRuleFilter.stub(TRes res) =
+      _CopyWithStubImpl$Input$ShiftRuleFilter;
+
+  TRes call({
+    List<Input$ShiftRuleFilter>? and,
+    Input$BooleanFieldComparison? enabled,
+    Input$ShiftRuleFrequencyFilterComparison? frequency,
+    Input$IDFilterComparison? id,
+    Input$IntFieldComparison? mandatoryBreakMinutes,
+    Input$IntFieldComparison? maxHoursPerPeriod,
+    List<Input$ShiftRuleFilter>? or,
+  });
+  TRes and(
+    Iterable<Input$ShiftRuleFilter>? Function(
+      Iterable<CopyWith$Input$ShiftRuleFilter<Input$ShiftRuleFilter>>?,
+    )
+    _fn,
+  );
+  CopyWith$Input$BooleanFieldComparison<TRes> get enabled;
+  CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> get frequency;
+  CopyWith$Input$IDFilterComparison<TRes> get id;
+  CopyWith$Input$IntFieldComparison<TRes> get mandatoryBreakMinutes;
+  CopyWith$Input$IntFieldComparison<TRes> get maxHoursPerPeriod;
+  TRes or(
+    Iterable<Input$ShiftRuleFilter>? Function(
+      Iterable<CopyWith$Input$ShiftRuleFilter<Input$ShiftRuleFilter>>?,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Input$ShiftRuleFilter<TRes>
+    implements CopyWith$Input$ShiftRuleFilter<TRes> {
+  _CopyWithImpl$Input$ShiftRuleFilter(this._instance, this._then);
+
+  final Input$ShiftRuleFilter _instance;
+
+  final TRes Function(Input$ShiftRuleFilter) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? and = _undefined,
+    Object? enabled = _undefined,
+    Object? frequency = _undefined,
+    Object? id = _undefined,
+    Object? mandatoryBreakMinutes = _undefined,
+    Object? maxHoursPerPeriod = _undefined,
+    Object? or = _undefined,
+  }) => _then(
+    Input$ShiftRuleFilter._({
+      ..._instance._$data,
+      if (and != _undefined) 'and': (and as List<Input$ShiftRuleFilter>?),
+      if (enabled != _undefined)
+        'enabled': (enabled as Input$BooleanFieldComparison?),
+      if (frequency != _undefined)
+        'frequency': (frequency as Input$ShiftRuleFrequencyFilterComparison?),
+      if (id != _undefined) 'id': (id as Input$IDFilterComparison?),
+      if (mandatoryBreakMinutes != _undefined)
+        'mandatoryBreakMinutes':
+            (mandatoryBreakMinutes as Input$IntFieldComparison?),
+      if (maxHoursPerPeriod != _undefined)
+        'maxHoursPerPeriod': (maxHoursPerPeriod as Input$IntFieldComparison?),
+      if (or != _undefined) 'or': (or as List<Input$ShiftRuleFilter>?),
+    }),
+  );
+
+  TRes and(
+    Iterable<Input$ShiftRuleFilter>? Function(
+      Iterable<CopyWith$Input$ShiftRuleFilter<Input$ShiftRuleFilter>>?,
+    )
+    _fn,
+  ) => call(
+    and: _fn(
+      _instance.and?.map((e) => CopyWith$Input$ShiftRuleFilter(e, (i) => i)),
+    )?.toList(),
+  );
+
+  CopyWith$Input$BooleanFieldComparison<TRes> get enabled {
+    final local$enabled = _instance.enabled;
+    return local$enabled == null
+        ? CopyWith$Input$BooleanFieldComparison.stub(_then(_instance))
+        : CopyWith$Input$BooleanFieldComparison(
+            local$enabled,
+            (e) => call(enabled: e),
+          );
+  }
+
+  CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> get frequency {
+    final local$frequency = _instance.frequency;
+    return local$frequency == null
+        ? CopyWith$Input$ShiftRuleFrequencyFilterComparison.stub(
+            _then(_instance),
+          )
+        : CopyWith$Input$ShiftRuleFrequencyFilterComparison(
+            local$frequency,
+            (e) => call(frequency: e),
+          );
+  }
+
+  CopyWith$Input$IDFilterComparison<TRes> get id {
+    final local$id = _instance.id;
+    return local$id == null
+        ? CopyWith$Input$IDFilterComparison.stub(_then(_instance))
+        : CopyWith$Input$IDFilterComparison(local$id, (e) => call(id: e));
+  }
+
+  CopyWith$Input$IntFieldComparison<TRes> get mandatoryBreakMinutes {
+    final local$mandatoryBreakMinutes = _instance.mandatoryBreakMinutes;
+    return local$mandatoryBreakMinutes == null
+        ? CopyWith$Input$IntFieldComparison.stub(_then(_instance))
+        : CopyWith$Input$IntFieldComparison(
+            local$mandatoryBreakMinutes,
+            (e) => call(mandatoryBreakMinutes: e),
+          );
+  }
+
+  CopyWith$Input$IntFieldComparison<TRes> get maxHoursPerPeriod {
+    final local$maxHoursPerPeriod = _instance.maxHoursPerPeriod;
+    return local$maxHoursPerPeriod == null
+        ? CopyWith$Input$IntFieldComparison.stub(_then(_instance))
+        : CopyWith$Input$IntFieldComparison(
+            local$maxHoursPerPeriod,
+            (e) => call(maxHoursPerPeriod: e),
+          );
+  }
+
+  TRes or(
+    Iterable<Input$ShiftRuleFilter>? Function(
+      Iterable<CopyWith$Input$ShiftRuleFilter<Input$ShiftRuleFilter>>?,
+    )
+    _fn,
+  ) => call(
+    or: _fn(
+      _instance.or?.map((e) => CopyWith$Input$ShiftRuleFilter(e, (i) => i)),
+    )?.toList(),
+  );
+}
+
+class _CopyWithStubImpl$Input$ShiftRuleFilter<TRes>
+    implements CopyWith$Input$ShiftRuleFilter<TRes> {
+  _CopyWithStubImpl$Input$ShiftRuleFilter(this._res);
+
+  TRes _res;
+
+  call({
+    List<Input$ShiftRuleFilter>? and,
+    Input$BooleanFieldComparison? enabled,
+    Input$ShiftRuleFrequencyFilterComparison? frequency,
+    Input$IDFilterComparison? id,
+    Input$IntFieldComparison? mandatoryBreakMinutes,
+    Input$IntFieldComparison? maxHoursPerPeriod,
+    List<Input$ShiftRuleFilter>? or,
+  }) => _res;
+
+  and(_fn) => _res;
+
+  CopyWith$Input$BooleanFieldComparison<TRes> get enabled =>
+      CopyWith$Input$BooleanFieldComparison.stub(_res);
+
+  CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> get frequency =>
+      CopyWith$Input$ShiftRuleFrequencyFilterComparison.stub(_res);
+
+  CopyWith$Input$IDFilterComparison<TRes> get id =>
+      CopyWith$Input$IDFilterComparison.stub(_res);
+
+  CopyWith$Input$IntFieldComparison<TRes> get mandatoryBreakMinutes =>
+      CopyWith$Input$IntFieldComparison.stub(_res);
+
+  CopyWith$Input$IntFieldComparison<TRes> get maxHoursPerPeriod =>
+      CopyWith$Input$IntFieldComparison.stub(_res);
+
+  or(_fn) => _res;
+}
+
+class Input$ShiftRuleFrequencyFilterComparison {
+  factory Input$ShiftRuleFrequencyFilterComparison({
+    Enum$ShiftRuleFrequency? eq,
+    Enum$ShiftRuleFrequency? gt,
+    Enum$ShiftRuleFrequency? gte,
+    Enum$ShiftRuleFrequency? iLike,
+    List<Enum$ShiftRuleFrequency>? $in,
+    bool? $is,
+    bool? isNot,
+    Enum$ShiftRuleFrequency? like,
+    Enum$ShiftRuleFrequency? lt,
+    Enum$ShiftRuleFrequency? lte,
+    Enum$ShiftRuleFrequency? neq,
+    Enum$ShiftRuleFrequency? notILike,
+    List<Enum$ShiftRuleFrequency>? notIn,
+    Enum$ShiftRuleFrequency? notLike,
+  }) => Input$ShiftRuleFrequencyFilterComparison._({
+    if (eq != null) r'eq': eq,
+    if (gt != null) r'gt': gt,
+    if (gte != null) r'gte': gte,
+    if (iLike != null) r'iLike': iLike,
+    if ($in != null) r'in': $in,
+    if ($is != null) r'is': $is,
+    if (isNot != null) r'isNot': isNot,
+    if (like != null) r'like': like,
+    if (lt != null) r'lt': lt,
+    if (lte != null) r'lte': lte,
+    if (neq != null) r'neq': neq,
+    if (notILike != null) r'notILike': notILike,
+    if (notIn != null) r'notIn': notIn,
+    if (notLike != null) r'notLike': notLike,
+  });
+
+  Input$ShiftRuleFrequencyFilterComparison._(this._$data);
+
+  factory Input$ShiftRuleFrequencyFilterComparison.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('eq')) {
+      final l$eq = data['eq'];
+      result$data['eq'] = l$eq == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$eq as String));
+    }
+    if (data.containsKey('gt')) {
+      final l$gt = data['gt'];
+      result$data['gt'] = l$gt == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$gt as String));
+    }
+    if (data.containsKey('gte')) {
+      final l$gte = data['gte'];
+      result$data['gte'] = l$gte == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$gte as String));
+    }
+    if (data.containsKey('iLike')) {
+      final l$iLike = data['iLike'];
+      result$data['iLike'] = l$iLike == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$iLike as String));
+    }
+    if (data.containsKey('in')) {
+      final l$$in = data['in'];
+      result$data['in'] = (l$$in as List<dynamic>?)
+          ?.map((e) => fromJson$Enum$ShiftRuleFrequency((e as String)))
+          .toList();
+    }
+    if (data.containsKey('is')) {
+      final l$$is = data['is'];
+      result$data['is'] = (l$$is as bool?);
+    }
+    if (data.containsKey('isNot')) {
+      final l$isNot = data['isNot'];
+      result$data['isNot'] = (l$isNot as bool?);
+    }
+    if (data.containsKey('like')) {
+      final l$like = data['like'];
+      result$data['like'] = l$like == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$like as String));
+    }
+    if (data.containsKey('lt')) {
+      final l$lt = data['lt'];
+      result$data['lt'] = l$lt == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$lt as String));
+    }
+    if (data.containsKey('lte')) {
+      final l$lte = data['lte'];
+      result$data['lte'] = l$lte == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$lte as String));
+    }
+    if (data.containsKey('neq')) {
+      final l$neq = data['neq'];
+      result$data['neq'] = l$neq == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$neq as String));
+    }
+    if (data.containsKey('notILike')) {
+      final l$notILike = data['notILike'];
+      result$data['notILike'] = l$notILike == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$notILike as String));
+    }
+    if (data.containsKey('notIn')) {
+      final l$notIn = data['notIn'];
+      result$data['notIn'] = (l$notIn as List<dynamic>?)
+          ?.map((e) => fromJson$Enum$ShiftRuleFrequency((e as String)))
+          .toList();
+    }
+    if (data.containsKey('notLike')) {
+      final l$notLike = data['notLike'];
+      result$data['notLike'] = l$notLike == null
+          ? null
+          : fromJson$Enum$ShiftRuleFrequency((l$notLike as String));
+    }
+    return Input$ShiftRuleFrequencyFilterComparison._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Enum$ShiftRuleFrequency? get eq => (_$data['eq'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get gt => (_$data['gt'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get gte =>
+      (_$data['gte'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get iLike =>
+      (_$data['iLike'] as Enum$ShiftRuleFrequency?);
+
+  List<Enum$ShiftRuleFrequency>? get $in =>
+      (_$data['in'] as List<Enum$ShiftRuleFrequency>?);
+
+  bool? get $is => (_$data['is'] as bool?);
+
+  bool? get isNot => (_$data['isNot'] as bool?);
+
+  Enum$ShiftRuleFrequency? get like =>
+      (_$data['like'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get lt => (_$data['lt'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get lte =>
+      (_$data['lte'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get neq =>
+      (_$data['neq'] as Enum$ShiftRuleFrequency?);
+
+  Enum$ShiftRuleFrequency? get notILike =>
+      (_$data['notILike'] as Enum$ShiftRuleFrequency?);
+
+  List<Enum$ShiftRuleFrequency>? get notIn =>
+      (_$data['notIn'] as List<Enum$ShiftRuleFrequency>?);
+
+  Enum$ShiftRuleFrequency? get notLike =>
+      (_$data['notLike'] as Enum$ShiftRuleFrequency?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('eq')) {
+      final l$eq = eq;
+      result$data['eq'] = l$eq == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$eq);
+    }
+    if (_$data.containsKey('gt')) {
+      final l$gt = gt;
+      result$data['gt'] = l$gt == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$gt);
+    }
+    if (_$data.containsKey('gte')) {
+      final l$gte = gte;
+      result$data['gte'] = l$gte == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$gte);
+    }
+    if (_$data.containsKey('iLike')) {
+      final l$iLike = iLike;
+      result$data['iLike'] = l$iLike == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$iLike);
+    }
+    if (_$data.containsKey('in')) {
+      final l$$in = $in;
+      result$data['in'] = l$$in
+          ?.map((e) => toJson$Enum$ShiftRuleFrequency(e))
+          .toList();
+    }
+    if (_$data.containsKey('is')) {
+      final l$$is = $is;
+      result$data['is'] = l$$is;
+    }
+    if (_$data.containsKey('isNot')) {
+      final l$isNot = isNot;
+      result$data['isNot'] = l$isNot;
+    }
+    if (_$data.containsKey('like')) {
+      final l$like = like;
+      result$data['like'] = l$like == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$like);
+    }
+    if (_$data.containsKey('lt')) {
+      final l$lt = lt;
+      result$data['lt'] = l$lt == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$lt);
+    }
+    if (_$data.containsKey('lte')) {
+      final l$lte = lte;
+      result$data['lte'] = l$lte == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$lte);
+    }
+    if (_$data.containsKey('neq')) {
+      final l$neq = neq;
+      result$data['neq'] = l$neq == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$neq);
+    }
+    if (_$data.containsKey('notILike')) {
+      final l$notILike = notILike;
+      result$data['notILike'] = l$notILike == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$notILike);
+    }
+    if (_$data.containsKey('notIn')) {
+      final l$notIn = notIn;
+      result$data['notIn'] = l$notIn
+          ?.map((e) => toJson$Enum$ShiftRuleFrequency(e))
+          .toList();
+    }
+    if (_$data.containsKey('notLike')) {
+      final l$notLike = notLike;
+      result$data['notLike'] = l$notLike == null
+          ? null
+          : toJson$Enum$ShiftRuleFrequency(l$notLike);
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$ShiftRuleFrequencyFilterComparison<
+    Input$ShiftRuleFrequencyFilterComparison
+  >
+  get copyWith =>
+      CopyWith$Input$ShiftRuleFrequencyFilterComparison(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$ShiftRuleFrequencyFilterComparison ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$eq = eq;
+    final lOther$eq = other.eq;
+    if (_$data.containsKey('eq') != other._$data.containsKey('eq')) {
+      return false;
+    }
+    if (l$eq != lOther$eq) {
+      return false;
+    }
+    final l$gt = gt;
+    final lOther$gt = other.gt;
+    if (_$data.containsKey('gt') != other._$data.containsKey('gt')) {
+      return false;
+    }
+    if (l$gt != lOther$gt) {
+      return false;
+    }
+    final l$gte = gte;
+    final lOther$gte = other.gte;
+    if (_$data.containsKey('gte') != other._$data.containsKey('gte')) {
+      return false;
+    }
+    if (l$gte != lOther$gte) {
+      return false;
+    }
+    final l$iLike = iLike;
+    final lOther$iLike = other.iLike;
+    if (_$data.containsKey('iLike') != other._$data.containsKey('iLike')) {
+      return false;
+    }
+    if (l$iLike != lOther$iLike) {
+      return false;
+    }
+    final l$$in = $in;
+    final lOther$$in = other.$in;
+    if (_$data.containsKey('in') != other._$data.containsKey('in')) {
+      return false;
+    }
+    if (l$$in != null && lOther$$in != null) {
+      if (l$$in.length != lOther$$in.length) {
+        return false;
+      }
+      for (int i = 0; i < l$$in.length; i++) {
+        final l$$in$entry = l$$in[i];
+        final lOther$$in$entry = lOther$$in[i];
+        if (l$$in$entry != lOther$$in$entry) {
+          return false;
+        }
+      }
+    } else if (l$$in != lOther$$in) {
+      return false;
+    }
+    final l$$is = $is;
+    final lOther$$is = other.$is;
+    if (_$data.containsKey('is') != other._$data.containsKey('is')) {
+      return false;
+    }
+    if (l$$is != lOther$$is) {
+      return false;
+    }
+    final l$isNot = isNot;
+    final lOther$isNot = other.isNot;
+    if (_$data.containsKey('isNot') != other._$data.containsKey('isNot')) {
+      return false;
+    }
+    if (l$isNot != lOther$isNot) {
+      return false;
+    }
+    final l$like = like;
+    final lOther$like = other.like;
+    if (_$data.containsKey('like') != other._$data.containsKey('like')) {
+      return false;
+    }
+    if (l$like != lOther$like) {
+      return false;
+    }
+    final l$lt = lt;
+    final lOther$lt = other.lt;
+    if (_$data.containsKey('lt') != other._$data.containsKey('lt')) {
+      return false;
+    }
+    if (l$lt != lOther$lt) {
+      return false;
+    }
+    final l$lte = lte;
+    final lOther$lte = other.lte;
+    if (_$data.containsKey('lte') != other._$data.containsKey('lte')) {
+      return false;
+    }
+    if (l$lte != lOther$lte) {
+      return false;
+    }
+    final l$neq = neq;
+    final lOther$neq = other.neq;
+    if (_$data.containsKey('neq') != other._$data.containsKey('neq')) {
+      return false;
+    }
+    if (l$neq != lOther$neq) {
+      return false;
+    }
+    final l$notILike = notILike;
+    final lOther$notILike = other.notILike;
+    if (_$data.containsKey('notILike') !=
+        other._$data.containsKey('notILike')) {
+      return false;
+    }
+    if (l$notILike != lOther$notILike) {
+      return false;
+    }
+    final l$notIn = notIn;
+    final lOther$notIn = other.notIn;
+    if (_$data.containsKey('notIn') != other._$data.containsKey('notIn')) {
+      return false;
+    }
+    if (l$notIn != null && lOther$notIn != null) {
+      if (l$notIn.length != lOther$notIn.length) {
+        return false;
+      }
+      for (int i = 0; i < l$notIn.length; i++) {
+        final l$notIn$entry = l$notIn[i];
+        final lOther$notIn$entry = lOther$notIn[i];
+        if (l$notIn$entry != lOther$notIn$entry) {
+          return false;
+        }
+      }
+    } else if (l$notIn != lOther$notIn) {
+      return false;
+    }
+    final l$notLike = notLike;
+    final lOther$notLike = other.notLike;
+    if (_$data.containsKey('notLike') != other._$data.containsKey('notLike')) {
+      return false;
+    }
+    if (l$notLike != lOther$notLike) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$eq = eq;
+    final l$gt = gt;
+    final l$gte = gte;
+    final l$iLike = iLike;
+    final l$$in = $in;
+    final l$$is = $is;
+    final l$isNot = isNot;
+    final l$like = like;
+    final l$lt = lt;
+    final l$lte = lte;
+    final l$neq = neq;
+    final l$notILike = notILike;
+    final l$notIn = notIn;
+    final l$notLike = notLike;
+    return Object.hashAll([
+      _$data.containsKey('eq') ? l$eq : const {},
+      _$data.containsKey('gt') ? l$gt : const {},
+      _$data.containsKey('gte') ? l$gte : const {},
+      _$data.containsKey('iLike') ? l$iLike : const {},
+      _$data.containsKey('in')
+          ? l$$in == null
+                ? null
+                : Object.hashAll(l$$in.map((v) => v))
+          : const {},
+      _$data.containsKey('is') ? l$$is : const {},
+      _$data.containsKey('isNot') ? l$isNot : const {},
+      _$data.containsKey('like') ? l$like : const {},
+      _$data.containsKey('lt') ? l$lt : const {},
+      _$data.containsKey('lte') ? l$lte : const {},
+      _$data.containsKey('neq') ? l$neq : const {},
+      _$data.containsKey('notILike') ? l$notILike : const {},
+      _$data.containsKey('notIn')
+          ? l$notIn == null
+                ? null
+                : Object.hashAll(l$notIn.map((v) => v))
+          : const {},
+      _$data.containsKey('notLike') ? l$notLike : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> {
+  factory CopyWith$Input$ShiftRuleFrequencyFilterComparison(
+    Input$ShiftRuleFrequencyFilterComparison instance,
+    TRes Function(Input$ShiftRuleFrequencyFilterComparison) then,
+  ) = _CopyWithImpl$Input$ShiftRuleFrequencyFilterComparison;
+
+  factory CopyWith$Input$ShiftRuleFrequencyFilterComparison.stub(TRes res) =
+      _CopyWithStubImpl$Input$ShiftRuleFrequencyFilterComparison;
+
+  TRes call({
+    Enum$ShiftRuleFrequency? eq,
+    Enum$ShiftRuleFrequency? gt,
+    Enum$ShiftRuleFrequency? gte,
+    Enum$ShiftRuleFrequency? iLike,
+    List<Enum$ShiftRuleFrequency>? $in,
+    bool? $is,
+    bool? isNot,
+    Enum$ShiftRuleFrequency? like,
+    Enum$ShiftRuleFrequency? lt,
+    Enum$ShiftRuleFrequency? lte,
+    Enum$ShiftRuleFrequency? neq,
+    Enum$ShiftRuleFrequency? notILike,
+    List<Enum$ShiftRuleFrequency>? notIn,
+    Enum$ShiftRuleFrequency? notLike,
+  });
+}
+
+class _CopyWithImpl$Input$ShiftRuleFrequencyFilterComparison<TRes>
+    implements CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> {
+  _CopyWithImpl$Input$ShiftRuleFrequencyFilterComparison(
+    this._instance,
+    this._then,
+  );
+
+  final Input$ShiftRuleFrequencyFilterComparison _instance;
+
+  final TRes Function(Input$ShiftRuleFrequencyFilterComparison) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? eq = _undefined,
+    Object? gt = _undefined,
+    Object? gte = _undefined,
+    Object? iLike = _undefined,
+    Object? $in = _undefined,
+    Object? $is = _undefined,
+    Object? isNot = _undefined,
+    Object? like = _undefined,
+    Object? lt = _undefined,
+    Object? lte = _undefined,
+    Object? neq = _undefined,
+    Object? notILike = _undefined,
+    Object? notIn = _undefined,
+    Object? notLike = _undefined,
+  }) => _then(
+    Input$ShiftRuleFrequencyFilterComparison._({
+      ..._instance._$data,
+      if (eq != _undefined) 'eq': (eq as Enum$ShiftRuleFrequency?),
+      if (gt != _undefined) 'gt': (gt as Enum$ShiftRuleFrequency?),
+      if (gte != _undefined) 'gte': (gte as Enum$ShiftRuleFrequency?),
+      if (iLike != _undefined) 'iLike': (iLike as Enum$ShiftRuleFrequency?),
+      if ($in != _undefined) 'in': ($in as List<Enum$ShiftRuleFrequency>?),
+      if ($is != _undefined) 'is': ($is as bool?),
+      if (isNot != _undefined) 'isNot': (isNot as bool?),
+      if (like != _undefined) 'like': (like as Enum$ShiftRuleFrequency?),
+      if (lt != _undefined) 'lt': (lt as Enum$ShiftRuleFrequency?),
+      if (lte != _undefined) 'lte': (lte as Enum$ShiftRuleFrequency?),
+      if (neq != _undefined) 'neq': (neq as Enum$ShiftRuleFrequency?),
+      if (notILike != _undefined)
+        'notILike': (notILike as Enum$ShiftRuleFrequency?),
+      if (notIn != _undefined)
+        'notIn': (notIn as List<Enum$ShiftRuleFrequency>?),
+      if (notLike != _undefined)
+        'notLike': (notLike as Enum$ShiftRuleFrequency?),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Input$ShiftRuleFrequencyFilterComparison<TRes>
+    implements CopyWith$Input$ShiftRuleFrequencyFilterComparison<TRes> {
+  _CopyWithStubImpl$Input$ShiftRuleFrequencyFilterComparison(this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ShiftRuleFrequency? eq,
+    Enum$ShiftRuleFrequency? gt,
+    Enum$ShiftRuleFrequency? gte,
+    Enum$ShiftRuleFrequency? iLike,
+    List<Enum$ShiftRuleFrequency>? $in,
+    bool? $is,
+    bool? isNot,
+    Enum$ShiftRuleFrequency? like,
+    Enum$ShiftRuleFrequency? lt,
+    Enum$ShiftRuleFrequency? lte,
+    Enum$ShiftRuleFrequency? neq,
+    Enum$ShiftRuleFrequency? notILike,
+    List<Enum$ShiftRuleFrequency>? notIn,
+    Enum$ShiftRuleFrequency? notLike,
+  }) => _res;
+}
+
+class Input$ShiftRuleSort {
+  factory Input$ShiftRuleSort({
+    required Enum$SortDirection direction,
+    required Enum$ShiftRuleSortFields field,
+    Enum$SortNulls? nulls,
+  }) => Input$ShiftRuleSort._({
+    r'direction': direction,
+    r'field': field,
+    if (nulls != null) r'nulls': nulls,
+  });
+
+  Input$ShiftRuleSort._(this._$data);
+
+  factory Input$ShiftRuleSort.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$direction = data['direction'];
+    result$data['direction'] = fromJson$Enum$SortDirection(
+      (l$direction as String),
+    );
+    final l$field = data['field'];
+    result$data['field'] = fromJson$Enum$ShiftRuleSortFields(
+      (l$field as String),
+    );
+    if (data.containsKey('nulls')) {
+      final l$nulls = data['nulls'];
+      result$data['nulls'] = l$nulls == null
+          ? null
+          : fromJson$Enum$SortNulls((l$nulls as String));
+    }
+    return Input$ShiftRuleSort._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Enum$SortDirection get direction =>
+      (_$data['direction'] as Enum$SortDirection);
+
+  Enum$ShiftRuleSortFields get field =>
+      (_$data['field'] as Enum$ShiftRuleSortFields);
+
+  Enum$SortNulls? get nulls => (_$data['nulls'] as Enum$SortNulls?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$direction = direction;
+    result$data['direction'] = toJson$Enum$SortDirection(l$direction);
+    final l$field = field;
+    result$data['field'] = toJson$Enum$ShiftRuleSortFields(l$field);
+    if (_$data.containsKey('nulls')) {
+      final l$nulls = nulls;
+      result$data['nulls'] = l$nulls == null
+          ? null
+          : toJson$Enum$SortNulls(l$nulls);
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$ShiftRuleSort<Input$ShiftRuleSort> get copyWith =>
+      CopyWith$Input$ShiftRuleSort(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$ShiftRuleSort || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$direction = direction;
+    final lOther$direction = other.direction;
+    if (l$direction != lOther$direction) {
+      return false;
+    }
+    final l$field = field;
+    final lOther$field = other.field;
+    if (l$field != lOther$field) {
+      return false;
+    }
+    final l$nulls = nulls;
+    final lOther$nulls = other.nulls;
+    if (_$data.containsKey('nulls') != other._$data.containsKey('nulls')) {
+      return false;
+    }
+    if (l$nulls != lOther$nulls) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$direction = direction;
+    final l$field = field;
+    final l$nulls = nulls;
+    return Object.hashAll([
+      l$direction,
+      l$field,
+      _$data.containsKey('nulls') ? l$nulls : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$ShiftRuleSort<TRes> {
+  factory CopyWith$Input$ShiftRuleSort(
+    Input$ShiftRuleSort instance,
+    TRes Function(Input$ShiftRuleSort) then,
+  ) = _CopyWithImpl$Input$ShiftRuleSort;
+
+  factory CopyWith$Input$ShiftRuleSort.stub(TRes res) =
+      _CopyWithStubImpl$Input$ShiftRuleSort;
+
+  TRes call({
+    Enum$SortDirection? direction,
+    Enum$ShiftRuleSortFields? field,
+    Enum$SortNulls? nulls,
+  });
+}
+
+class _CopyWithImpl$Input$ShiftRuleSort<TRes>
+    implements CopyWith$Input$ShiftRuleSort<TRes> {
+  _CopyWithImpl$Input$ShiftRuleSort(this._instance, this._then);
+
+  final Input$ShiftRuleSort _instance;
+
+  final TRes Function(Input$ShiftRuleSort) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? direction = _undefined,
+    Object? field = _undefined,
+    Object? nulls = _undefined,
+  }) => _then(
+    Input$ShiftRuleSort._({
+      ..._instance._$data,
+      if (direction != _undefined && direction != null)
+        'direction': (direction as Enum$SortDirection),
+      if (field != _undefined && field != null)
+        'field': (field as Enum$ShiftRuleSortFields),
+      if (nulls != _undefined) 'nulls': (nulls as Enum$SortNulls?),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Input$ShiftRuleSort<TRes>
+    implements CopyWith$Input$ShiftRuleSort<TRes> {
+  _CopyWithStubImpl$Input$ShiftRuleSort(this._res);
+
+  TRes _res;
+
+  call({
+    Enum$SortDirection? direction,
+    Enum$ShiftRuleSortFields? field,
+    Enum$SortNulls? nulls,
+  }) => _res;
+}
+
 enum Enum$RiderWalletSortFields {
   id,
   riderId,
@@ -14011,6 +15157,87 @@ Enum$AnnouncementSortFields fromJson$Enum$AnnouncementSortFields(String value) {
       return Enum$AnnouncementSortFields.userType;
     default:
       return Enum$AnnouncementSortFields.$unknown;
+  }
+}
+
+enum Enum$ShiftRuleFrequency {
+  Daily,
+  Weekly,
+  $unknown;
+
+  factory Enum$ShiftRuleFrequency.fromJson(String value) =>
+      fromJson$Enum$ShiftRuleFrequency(value);
+
+  String toJson() => toJson$Enum$ShiftRuleFrequency(this);
+}
+
+String toJson$Enum$ShiftRuleFrequency(Enum$ShiftRuleFrequency e) {
+  switch (e) {
+    case Enum$ShiftRuleFrequency.Daily:
+      return r'Daily';
+    case Enum$ShiftRuleFrequency.Weekly:
+      return r'Weekly';
+    case Enum$ShiftRuleFrequency.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ShiftRuleFrequency fromJson$Enum$ShiftRuleFrequency(String value) {
+  switch (value) {
+    case r'Daily':
+      return Enum$ShiftRuleFrequency.Daily;
+    case r'Weekly':
+      return Enum$ShiftRuleFrequency.Weekly;
+    default:
+      return Enum$ShiftRuleFrequency.$unknown;
+  }
+}
+
+enum Enum$ShiftRuleSortFields {
+  enabled,
+  frequency,
+  id,
+  mandatoryBreakMinutes,
+  maxHoursPerPeriod,
+  $unknown;
+
+  factory Enum$ShiftRuleSortFields.fromJson(String value) =>
+      fromJson$Enum$ShiftRuleSortFields(value);
+
+  String toJson() => toJson$Enum$ShiftRuleSortFields(this);
+}
+
+String toJson$Enum$ShiftRuleSortFields(Enum$ShiftRuleSortFields e) {
+  switch (e) {
+    case Enum$ShiftRuleSortFields.enabled:
+      return r'enabled';
+    case Enum$ShiftRuleSortFields.frequency:
+      return r'frequency';
+    case Enum$ShiftRuleSortFields.id:
+      return r'id';
+    case Enum$ShiftRuleSortFields.mandatoryBreakMinutes:
+      return r'mandatoryBreakMinutes';
+    case Enum$ShiftRuleSortFields.maxHoursPerPeriod:
+      return r'maxHoursPerPeriod';
+    case Enum$ShiftRuleSortFields.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ShiftRuleSortFields fromJson$Enum$ShiftRuleSortFields(String value) {
+  switch (value) {
+    case r'enabled':
+      return Enum$ShiftRuleSortFields.enabled;
+    case r'frequency':
+      return Enum$ShiftRuleSortFields.frequency;
+    case r'id':
+      return Enum$ShiftRuleSortFields.id;
+    case r'mandatoryBreakMinutes':
+      return Enum$ShiftRuleSortFields.mandatoryBreakMinutes;
+    case r'maxHoursPerPeriod':
+      return Enum$ShiftRuleSortFields.maxHoursPerPeriod;
+    default:
+      return Enum$ShiftRuleSortFields.$unknown;
   }
 }
 

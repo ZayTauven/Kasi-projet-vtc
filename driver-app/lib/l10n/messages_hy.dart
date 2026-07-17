@@ -691,4 +691,19 @@ class SHy extends S {
 
   @override
   String get payout_method_cash => 'Cash';
+
+  @override
+  String shift_rule_banner_daily(String hours) {
+    return 'Service time: max ${hours}h per day. Remember to take breaks.';
+  }
+
+  @override
+  String shift_rule_banner_weekly(String hours) {
+    return 'Service time: max ${hours}h per week. Remember to take breaks.';
+  }
+
+  @override
+  String shift_rule_banner_break(String minutes) {
+    return 'Mandatory break of $minutes min.';
+  }
 }

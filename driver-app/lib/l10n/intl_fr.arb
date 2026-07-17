@@ -296,5 +296,29 @@
   "payout_method_wave": "Wave",
   "payout_method_orange_money": "Orange Money",
   "payout_method_bank_transfer": "Virement bancaire",
-  "payout_method_cash": "Espèces"
+  "payout_method_cash": "Espèces",
+  "shift_rule_banner_daily": "Temps de service : max {hours} h par jour. Pensez à faire des pauses.",
+  "@shift_rule_banner_daily": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "shift_rule_banner_weekly": "Temps de service : max {hours} h par semaine. Pensez à faire des pauses.",
+  "@shift_rule_banner_weekly": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "shift_rule_banner_break": "Pause obligatoire de {minutes} min.",
+  "@shift_rule_banner_break": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
 }

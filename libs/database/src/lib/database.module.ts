@@ -46,6 +46,8 @@ import { PayoutEntity } from './entities/payout.entity';
 import { SmsProviderEntity } from './entities/sms-provider.entity';
 import { EmailProviderEntity } from './entities/email-provider.entity';
 import { CallMaskingProviderEntity } from './entities/call-masking-provider.entity';
+import { ShiftRuleEntity } from './entities/shift-rule.entity';
+import { RetentionPolicyEntity } from './entities/retention-policy.entity';
 
 @Module({
   imports: [
@@ -150,4 +152,6 @@ export const entities = [
   SmsProviderEntity,
   EmailProviderEntity,
   CallMaskingProviderEntity,
+  ShiftRuleEntity,
+  RetentionPolicyEntity,
 ];

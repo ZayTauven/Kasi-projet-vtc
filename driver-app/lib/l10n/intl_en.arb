@@ -296,5 +296,29 @@
   "payout_method_wave": "Wave",
   "payout_method_orange_money": "Orange Money",
   "payout_method_bank_transfer": "Bank transfer",
-  "payout_method_cash": "Cash"
+  "payout_method_cash": "Cash",
+  "shift_rule_banner_daily": "Service time: max {hours}h per day. Remember to take breaks.",
+  "@shift_rule_banner_daily": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "shift_rule_banner_weekly": "Service time: max {hours}h per week. Remember to take breaks.",
+  "@shift_rule_banner_weekly": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "shift_rule_banner_break": "Mandatory break of {minutes} min.",
+  "@shift_rule_banner_break": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  }
 }
