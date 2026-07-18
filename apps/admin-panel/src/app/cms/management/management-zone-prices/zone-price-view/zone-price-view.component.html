@@ -64,7 +64,7 @@
               <!-- Pickup map — default blue MapboxDraw polygons.
                    MapboxDraw control is injected via (mapLoad)="onMapFromLoad($event)". -->
               <mgl-map
-                style="height: 400px; width: 100%;"
+                class="h-400"
                 [style]="'mapbox://styles/mapbox/streets-v12'"
                 [zoom]="[4]"
                 [center]="center"
@@ -79,7 +79,7 @@
               <!-- Destination map — green MapboxDraw polygons (DESTINATION_DRAW_STYLES).
                    Distinct colour makes pickup vs destination immediately recognisable. -->
               <mgl-map
-                style="height: 400px; width: 100%;"
+                class="h-400"
                 [style]="'mapbox://styles/mapbox/streets-v12'"
                 [zoom]="[4]"
                 [center]="center"

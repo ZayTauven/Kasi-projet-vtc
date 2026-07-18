@@ -850,3 +850,20 @@ a:hover {
   flex-wrap: wrap;
   margin-left: auto;
 }
+
+// ===========================================================================
+// Cartes Mapbox (ngx-mapbox-gl)
+// La taille d'un <mgl-map> DOIT venir du CSS, jamais d'un attribut `style=`
+// inline : cet attribut pollue l'@Input() `style` du composant (qui porte
+// l'URL du style Mapbox, ex: mapbox://styles/mapbox/streets-v12) et mapbox-gl
+// reçoit alors "height: 400px; width: 100%; mapbox://..." → erreur
+// "URL scheme height is not supported" → les tuiles ne chargent jamais
+// (seul le canvas/logo s'initialise). On dimensionne donc via classes.
+// ===========================================================================
+mgl-map {
+  display: block;
+  width: 100%;
+}
+mgl-map.h-384 { height: 384px; }
+mgl-map.h-400 { height: 400px; }
+mgl-map.h-700 { height: 700px; }
