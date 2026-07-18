@@ -4,94 +4,131 @@
     <p>{{ 'coupons.description' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form" nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="id" type="hidden" hidden>
-      <div class="kasi-form--grid">
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="title" id="title">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="code">{{ 'profile.code' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="code" id="code">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="description">{{ 'profile.description' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="description" id="description">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="manyUsersCanUse">{{ 'coupons.manyUsersCanUse' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="manyUsersCanUse" id="manyUsersCanUse"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="manyTimesUserCanUse">{{ 'coupons.manyTimesUserCanUse' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="manyTimesUserCanUse" id="manyTimesUserCanUse"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="minimumCost">{{ 'coupons.minimumCost' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="minimumCost" id="minimumCost"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="maximumCost">{{ 'coupons.maximumCost' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="maximumCost" id="maximumCost"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="maximumCost">{{ 'coupons.availabilityTime' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-range-picker id="dates" formControlName="dates" class="w-full"></nz-range-picker>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="discountPercent">{{ 'coupons.discountPercent' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="discountPercent" id="discountPercent"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="discountFlat">{{ 'coupons.discountFlat' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="discountFlat" id="discountFlat"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="creditGift">{{ 'profile.creditGift' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="creditGift" id="creditGift"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzFor="isEnabled">{{ 'coupons.isEnabled' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-switch formControlName="isEnabled" id="isEnabled"></nz-switch>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzFor="isFirstTravelOnly">{{ 'coupons.isFirstTravelOnly' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-switch formControlName="isFirstTravelOnly" id="isFirstTravelOnly"></nz-switch>
-          </nz-form-control>
-        </nz-form-item>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'coupons.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'coupons.section.general.desc' | translate }}</p>
       </div>
-    </form>
-    <div class="kasi-form-actions">
-      <button *ngIf="form.value.id != null" nz-button nzDanger type="button" (click)="deleteCoupon()">{{'profile.delete' | translate}}</button>
-      <button nz-button nzType="primary" [disabled]="form.invalid" type="button" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
-    </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="title" id="title">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="code">{{ 'profile.code' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="code" id="code">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="kasi-form__full">
+            <nz-form-label nzRequired nzFor="description">{{ 'profile.description' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="description" id="description">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'coupons.section.usage.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'coupons.section.usage.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="manyUsersCanUse">{{ 'coupons.manyUsersCanUse' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="manyUsersCanUse" id="manyUsersCanUse"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="manyTimesUserCanUse">{{ 'coupons.manyTimesUserCanUse' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="manyTimesUserCanUse" id="manyTimesUserCanUse"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="minimumCost">{{ 'coupons.minimumCost' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="minimumCost" id="minimumCost"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="maximumCost">{{ 'coupons.maximumCost' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="maximumCost" id="maximumCost"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="kasi-form__full">
+            <nz-form-label nzRequired nzFor="maximumCost">{{ 'coupons.availabilityTime' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-range-picker id="dates" formControlName="dates" class="w-full"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'coupons.section.discount.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'coupons.section.discount.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="discountPercent">{{ 'coupons.discountPercent' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="discountPercent" id="discountPercent"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="discountFlat">{{ 'coupons.discountFlat' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="discountFlat" id="discountFlat"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="creditGift">{{ 'profile.creditGift' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="creditGift" id="creditGift"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'coupons.section.options.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'coupons.section.options.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="isEnabled">{{ 'coupons.isEnabled' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName="isEnabled" id="isEnabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="isFirstTravelOnly">{{ 'coupons.isFirstTravelOnly' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName="isFirstTravelOnly" id="isFirstTravelOnly"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button *ngIf="form.value.id != null" nz-button nzDanger type="button" (click)="deleteCoupon()">{{ 'profile.delete' | translate }}</button>
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" [disabled]="form.invalid" type="submit">{{ 'profile.saveChanges' | translate }}</button>
+  </div>
+</form>

@@ -1,0 +1,23 @@
+query MapSetting {
+  mapSetting {
+    id
+    provider
+    mapboxToken
+    mapboxStyleUser
+    mapboxStyleId
+    googleMapsApiKey
+    updatedAt
+  }
+}
+
+mutation UpdateMapSetting($input: UpdateMapSettingInput!) {
+  updateMapSetting(input: $input) {
+    id
+    provider
+    mapboxToken
+    mapboxStyleUser
+    mapboxStyleId
+    googleMapsApiKey
+    updatedAt
+  }
+}

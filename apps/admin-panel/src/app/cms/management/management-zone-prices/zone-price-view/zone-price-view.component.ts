@@ -295,6 +295,12 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
     );
   }
 
+  cancel(): void {
+    this.router.navigate(['management/zone-prices'], {
+      relativeTo: this.route.root,
+    });
+  }
+
   async onDelete(): Promise<void> {
     try {
       const { id } = this.form.value;

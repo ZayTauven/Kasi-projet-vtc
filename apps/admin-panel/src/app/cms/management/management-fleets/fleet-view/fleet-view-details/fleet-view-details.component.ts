@@ -123,6 +123,10 @@ export class FleetViewDetailsComponent implements OnDestroy {
     }
   }
 
+  cancel(): void {
+    this.router.navigateByUrl('/management/fleets');
+  }
+
   clearMap(): void {
     this.draw?.deleteAll();
     this.polygons = [];

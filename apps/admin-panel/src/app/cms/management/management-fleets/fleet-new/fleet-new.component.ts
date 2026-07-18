@@ -40,6 +40,10 @@ export class FleetNewComponent {
     });
   }
 
+  cancel() {
+    this.router.navigateByUrl('/management/fleets');
+  }
+
   async submitForm() {
     const {
       phoneNumber,

@@ -7,10 +7,15 @@ class EmptyStateCard extends StatelessWidget {
   final String description;
   final IconData icon;
 
+  /// Illustration Kasi optionnelle (story-set) affichée à la place de l'icône.
+  /// Chemin relatif au package client_shared, ex. 'assets/illustrations/empty_history.png'.
+  final String? illustration;
+
   const EmptyStateCard(
       {required this.title,
       required this.description,
       required this.icon,
+      this.illustration,
       Key? key})
       : super(key: key);
   @override
@@ -24,11 +29,19 @@ class EmptyStateCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: CustomTheme.neutralColors,
-              size: 64,
-            ),
+            if (illustration != null)
+              Image.asset(
+                illustration!,
+                package: 'client_shared',
+                height: 140,
+                fit: BoxFit.contain,
+              )
+            else
+              Icon(
+                icon,
+                color: CustomTheme.neutralColors,
+                size: 64,
+              ),
             const SizedBox(height: 9),
             Text(
               title,

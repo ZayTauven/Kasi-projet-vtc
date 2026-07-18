@@ -25,6 +25,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { SOSModule } from './sos/sos.module';
 import { GeoModule } from './geo/geo.module';
+import { MapSettingModule } from './map-setting/map-setting.module';
 
 @Module({
   imports: [
@@ -111,6 +112,7 @@ import { GeoModule } from './geo/geo.module';
     CouponModule,
     ConfigModule,
     CallMaskingModule,
+    MapSettingModule,
     RedisModule.forRoot({
       closeClient: true,
       commonOptions: { db: 2 },

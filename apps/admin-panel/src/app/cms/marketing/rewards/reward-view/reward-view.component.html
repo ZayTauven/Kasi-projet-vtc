@@ -4,91 +4,105 @@
     <p>{{ 'reward.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form" nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="id" type="hidden" hidden>
-      <div class="kasi-form--grid">
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="title">{{'profile.title' | translate}}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="title" id="title">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="dates">{{ 'profile.availabilityTime' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-range-picker id="dates" formControlName="dates" class="w-full"></nz-range-picker>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="appType">{{'profile.appType' | translate}}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="appType" id="appTyoe">
-              <nz-option [nzLabel]="'profile.driver' | translate" nzValue="Driver"></nz-option>
-              <nz-option [nzLabel]="'profile.rider' | translate" nzValue="Rider"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="beneficiary">{{ 'profile.beneficiary' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="beneficiary" id="beneficiary">
-              <nz-option [nzLabel]="'enum.rewardBeneficiary.self' | translate" nzValue="Self"></nz-option>
-              <nz-option [nzLabel]="'enum.rewardBeneficiary.referrer' | translate" nzValue="Referrer"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="event">{{ 'reward.event' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="event" id="event">
-              <nz-option [nzLabel]="'enum.rewardEvent.register' | translate" nzValue="Register"></nz-option>
-              <nz-option [nzLabel]="'enum.rewardEvent.serviceCompleted' | translate" nzValue="ServiceCompleted"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="creditGift">{{ 'profile.creditGift' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="creditGift" id="creditGift"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="tripFeePercentGift">{{ 'profile.tripFeePercentGift' | translate }}
-          </nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="tripFeePercentGift" id="tripFeePercentGift"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="creditCurrency">{{ 'profile.creditCurrency' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="creditCurrency" id="creditCurrency" nzShowSearch>
-              <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'reward.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'reward.section.general.desc' | translate }}</p>
       </div>
-      <nz-divider [nzText]="'reward.conditions' | translate" nzOrientation="left"></nz-divider>
-      <div class="kasi-form--grid">
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="conditionTripCountsLessThan">{{ 'profile.conditionTripCountsLessThan' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-input-number formControlName="conditionTripCountsLessThan" id="conditionTripCountsLessThan">
-            </nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzFor="conditionUserNumberFirstDigits">{{ 'profile.conditionUserNumberFirstDigits' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="conditionUserNumberFirstDigits" id="conditionUserNumberFirstDigits">
-          </nz-form-control>
-        </nz-form-item>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="title">{{'profile.title' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="title" id="title">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="dates">{{ 'profile.availabilityTime' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-range-picker id="dates" formControlName="dates" class="w-full"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="appType">{{'profile.appType' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="appType" id="appTyoe">
+                <nz-option [nzLabel]="'profile.driver' | translate" nzValue="Driver"></nz-option>
+                <nz-option [nzLabel]="'profile.rider' | translate" nzValue="Rider"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="beneficiary">{{ 'profile.beneficiary' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="beneficiary" id="beneficiary">
+                <nz-option [nzLabel]="'enum.rewardBeneficiary.self' | translate" nzValue="Self"></nz-option>
+                <nz-option [nzLabel]="'enum.rewardBeneficiary.referrer' | translate" nzValue="Referrer"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="event">{{ 'reward.event' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="event" id="event">
+                <nz-option [nzLabel]="'enum.rewardEvent.register' | translate" nzValue="Register"></nz-option>
+                <nz-option [nzLabel]="'enum.rewardEvent.serviceCompleted' | translate" nzValue="ServiceCompleted"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="creditGift">{{ 'profile.creditGift' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="creditGift" id="creditGift"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="tripFeePercentGift">{{ 'profile.tripFeePercentGift' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="tripFeePercentGift" id="tripFeePercentGift"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="creditCurrency">{{ 'profile.creditCurrency' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="creditCurrency" id="creditCurrency" nzShowSearch>
+                <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.submit' | translate }}</button>
-    </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'reward.conditions' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'reward.section.conditions.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="conditionTripCountsLessThan">{{ 'profile.conditionTripCountsLessThan' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="conditionTripCountsLessThan" id="conditionTripCountsLessThan">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="conditionUserNumberFirstDigits">{{ 'profile.conditionUserNumberFirstDigits' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="conditionUserNumberFirstDigits" id="conditionUserNumberFirstDigits">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

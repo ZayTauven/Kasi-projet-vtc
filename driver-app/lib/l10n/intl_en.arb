@@ -14,7 +14,7 @@
       "pickup": {}
     }
   },
-  "share_trip_text_client": " My passenger is {firstName} {lastName}, the mobile number is +{mobileNumber}.",
+  "share_trip_text_client": " My client is {firstName} {lastName}, the mobile number is +{mobileNumber}.",
   "@share_trip_text_client": {
     "placeholders": {
       "firstName": {},
@@ -108,18 +108,18 @@
   "menu_earnings": "Earnings",
   "status_offline_description": "Get online to see requests",
   "status_online_description": "Searching for ride",
-  "order_status_card_title_driver_accepted": "Rider will be notified once you tap Arrived",
-  "order_status_card_title_arrived": "Rider has been notified",
+  "order_status_card_title_driver_accepted": "Client will be notified once you tap Arrived",
+  "order_status_card_title_arrived": "Client has been notified",
   "order_status_card_title_started": "Heading to the destination",
   "navigation_dialog_title": "Choose an app to navigate with",
   "action_ride_options": "Ride Options",
-  "rider_expected_time_past": "Rider expected you {minutes} mins ago",
+  "rider_expected_time_past": "Client expected you {minutes} mins ago",
   "@rider_expected_time_past": {
     "placeholders": {
       "minutes": {}
     }
   },
-  "rider_expected_time_future": "Rider expects you in {minutes} mins",
+  "rider_expected_time_future": "Client expects you in {minutes} mins",
   "@rider_expected_time_future": {
     "placeholders": {
       "minutes": {}
@@ -127,13 +127,13 @@
   },
   "order_payment_status_unpaid": "Ride hasn't been paid yet",
   "order_payment_status_paid": "Ride Has been paid",
-  "action_ride_preferences": "Rider Preferences",
+  "action_ride_preferences": "Client Preferences",
   "navigation_dialog_title_pickup_point": "Navigate to pickup point",
   "navigation_title_destination_point": "Navigate to drop off point",
   "rider_options_dialog_title": "Ride Options",
   "action_cancel_ride": "Cancel Ride",
-  "invoice_dialog_body": "You can also receive cash instead of an online payment if you and the rider are both willing to.",
-  "invoice_dialog_heading": "Waiting for rider payment",
+  "invoice_dialog_body": "You can also receive cash instead of an online payment if you and the client are both willing to.",
+  "invoice_dialog_heading": "Waiting for client payment",
   "invoice_dialog_title": "Payment Info",
   "invoice_item_tip": "Tip",
   "invoice_item_subtotal": "Subtotal",

@@ -25,6 +25,10 @@ export class ManagementSettingsComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  cancel() {
+    this.form.reset();
+  }
+
   async onSubmit() {
     if(this.form.value.newPassword != this.form.value.newPasswordRepeat) {
       this.message.error('Passwords don\'t match.');

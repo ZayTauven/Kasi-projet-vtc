@@ -4,57 +4,75 @@
     <p>{{ 'payoutMethod.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <input formControlName="id" type="hidden" hidden>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="type">{{ 'payouts.type' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
-          <nz-option [nzLabel]="'enum.payoutMethodType.Wave' | translate" nzValue="Wave"></nz-option>
-          <nz-option [nzLabel]="'enum.payoutMethodType.OrangeMoney' | translate" nzValue="OrangeMoney"></nz-option>
-          <nz-option [nzLabel]="'enum.payoutMethodType.BankTransfer' | translate" nzValue="BankTransfer"></nz-option>
-          <nz-option [nzLabel]="'enum.payoutMethodType.Cash' | translate" nzValue="Cash"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
-      <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
-        <input nz-input formControlName="name" id="name" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="currency" id="currency" placeholder="XOF" maxlength="3"
-          style="width: 120px; text-transform: uppercase;" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="minimumAmount">{{ 'payouts.minimumAmount' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-input-number formControlName="minimumAmount" id="minimumAmount" [nzMin]="0" [nzStep]="500"
-          style="width: 160px;"></nz-input-number>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="instructions">{{ 'payouts.instructions' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="instructions" id="instructions" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
-      </nz-form-control>
-    </nz-form-item>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
-        translate}}</button>
-    </div>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'payoutMethod.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'payoutMethod.section.general.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="type">{{ 'payouts.type' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
+                <nz-option [nzLabel]="'enum.payoutMethodType.Wave' | translate" nzValue="Wave"></nz-option>
+                <nz-option [nzLabel]="'enum.payoutMethodType.OrangeMoney' | translate" nzValue="OrangeMoney"></nz-option>
+                <nz-option [nzLabel]="'enum.payoutMethodType.BankTransfer' | translate" nzValue="BankTransfer"></nz-option>
+                <nz-option [nzLabel]="'enum.payoutMethodType.Cash' | translate" nzValue="Cash"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
+              <input nz-input formControlName="name" id="name" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="currency" id="currency" placeholder="XOF" maxlength="3"
+                style="width: 120px; text-transform: uppercase;" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'payoutMethod.section.settings.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'payoutMethod.section.settings.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="minimumAmount">{{ 'payouts.minimumAmount' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="minimumAmount" id="minimumAmount" [nzMin]="0" [nzStep]="500"
+                style="width: 160px;"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="instructions">{{ 'payouts.instructions' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="instructions" id="instructions" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" [disabled]="form.invalid" type="submit">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

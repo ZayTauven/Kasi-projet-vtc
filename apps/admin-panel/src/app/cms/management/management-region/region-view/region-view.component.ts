@@ -141,6 +141,10 @@ export class RegionViewComponent implements OnDestroy {
     this.form.patchValue({ location: [] });
   }
 
+  cancel(): void {
+    this.router.navigate(['management/regions'], { relativeTo: this.route.root });
+  }
+
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
   }

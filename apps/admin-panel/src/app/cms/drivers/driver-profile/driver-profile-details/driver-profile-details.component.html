@@ -2,148 +2,188 @@
   <input formControlName="id" type="hidden" hidden>
   <input formControlName="mediaId" type="hidden" hidden>
   <input formControlName="enabledServices" type="hidden" hidden>
-  <div class="kasi-form--grid">
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="firstName">{{'profile.firstName' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input required formControlName="firstName" id="firstName">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="lastName">{{'profile.lastName' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input required formControlName="lastName" id="lastName">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="gender">{{'profile.gender' | translate}}</nz-form-label>
-      <nz-select formControlName="gender" id="gender">
-        <nz-option *ngFor="let g of genders" [nzLabel]="(('enum.gender.' + camelCase(g)) | translate)" [nzValue]="g">
-        </nz-option>
-      </nz-select>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="mobileNumber">{{'profile.mobileNumber' | translate}}</nz-form-label>
-      <nz-form-control>
-        <nz-input-number required formControlName="mobileNumber" id="mobileNumber"></nz-input-number>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="email">{{'profile.email' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="email" id="email">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="fleet">{{'profile.fleet' | translate}}</nz-form-label>
-      <nz-form-control>
-        <nz-select id="fleet" formControlName="fleetId">
-          <nz-option [nzValue]="null" nzLabel=""></nz-option>
-          <nz-option *ngFor="let fleet of data.fleets.nodes" [nzValue]="fleet.id" [nzLabel]="fleet.name"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="carId">{{'profile.carModel' | translate}}</nz-form-label>
-      <nz-form-control>
-        <nz-select id="carId" formControlName="carId">
-          <nz-option *ngFor="let car of data.carModels.nodes" [nzValue]="car.id" [nzLabel]="car.name"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="carColorId">{{ 'profile.carColor' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-select id="carColorId" formControlName="carColorId">
-          <nz-option *ngFor="let carColor of data.carColors" [nzValue]="carColor.id"
-            [nzLabel]="carColor.name"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="carProductionYear">{{ 'profile.carProductionYear' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-input-number formControlName="carProductionYear" id="carProductionYear"></nz-input-number>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="carPlate">{{ 'profile.carPlateNumber' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="carPlate" id="carPlate">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="canDeliver">{{ 'profile.canDeliver' | translate }}</nz-form-label>
-      <nz-form-control>
-        <label nz-checkbox formControlName="canDeliver" id="canDeliver"></label>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="maxPackageSize">{{ 'profile.maxPackageSize' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-select id="maxPackageSize" formControlName="maxPackageSize">
-          <nz-option [nzValue]="null" nzLabel=""></nz-option>
-          <nz-option *ngFor="let size of packageSizes" [nzValue]="size"
-            [nzLabel]="('enum.packageSize.' + camelCase(size)) | translate"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="accountNumber">{{'profile.accountNumber' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="accountNumber" id="accountNumber">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="bankName">{{'profile.bankName' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="bankName" id="bankName">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="bankRoutingNumber">{{'profile.bankRoutingNumber' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="bankRoutingNumber" id="bankRoutingNumber">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="bankSwift">{{'profile.bankSwift' | translate}}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="bankSwift" id="bankSwift">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="address">{{'profile.address' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="address" id="address">
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="kasi-form__full">
-      <nz-form-label nzRequired>
-        {{ 'profile.services' | translate }}
-      </nz-form-label>
-      <nz-form-control>
-        <nz-tag *ngFor="let service of data.services" nzMode="checkable"
-          [nzChecked]="form.value.enabledServices.indexOf(service.id) > -1"
-          (nzCheckedChange)="handleServiceCheckChange($event, service)">
-          {{ service.name }}
-        </nz-tag>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label>{{'profile.avatarImage' | translate}}</nz-form-label>
-      <nz-form-control>
-        <nz-upload [nzAction]="root + 'upload'" [nzHeaders]="{Authorization: 'Bearer ' + jwt}"
-          (nzChange)="handleUploadChange($event)" [nzBeforeUpload]="beforeUpload" nzListType="picture-card"
-          [nzShowUploadList]="false">
-          <ng-container *ngIf="!avatarUrl">
-            <i class="upload-icon" nz-icon [nzType]="loadingUpload ? 'loading' : 'plus'"></i>
-            <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
-          </ng-container>
-          <img *ngIf="avatarUrl" [src]="root + avatarUrl" style="width: 100%" />
-        </nz-upload>
-      </nz-form-control>
-    </nz-form-item>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'driverProfile.details.section.identity.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'driverProfile.details.section.identity.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="firstName">{{'profile.firstName' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required formControlName="firstName" id="firstName">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="lastName">{{'profile.lastName' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required formControlName="lastName" id="lastName">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="gender">{{'profile.gender' | translate}}</nz-form-label>
+            <nz-select formControlName="gender" id="gender">
+              <nz-option *ngFor="let g of genders" [nzLabel]="(('enum.gender.' + camelCase(g)) | translate)" [nzValue]="g">
+              </nz-option>
+            </nz-select>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="mobileNumber">{{'profile.mobileNumber' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number required formControlName="mobileNumber" id="mobileNumber"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="email">{{'profile.email' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="email" id="email">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'driverProfile.details.section.vehicle.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'driverProfile.details.section.vehicle.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="fleet">{{'profile.fleet' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-select id="fleet" formControlName="fleetId">
+                <nz-option [nzValue]="null" nzLabel=""></nz-option>
+                <nz-option *ngFor="let fleet of data.fleets.nodes" [nzValue]="fleet.id" [nzLabel]="fleet.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="carId">{{'profile.carModel' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-select id="carId" formControlName="carId">
+                <nz-option *ngFor="let car of data.carModels.nodes" [nzValue]="car.id" [nzLabel]="car.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="carColorId">{{ 'profile.carColor' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select id="carColorId" formControlName="carColorId">
+                <nz-option *ngFor="let carColor of data.carColors" [nzValue]="carColor.id"
+                  [nzLabel]="carColor.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="carProductionYear">{{ 'profile.carProductionYear' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="carProductionYear" id="carProductionYear"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="carPlate">{{ 'profile.carPlateNumber' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="carPlate" id="carPlate">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="canDeliver">{{ 'profile.canDeliver' | translate }}</nz-form-label>
+            <nz-form-control>
+              <label nz-checkbox formControlName="canDeliver" id="canDeliver"></label>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="maxPackageSize">{{ 'profile.maxPackageSize' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select id="maxPackageSize" formControlName="maxPackageSize">
+                <nz-option [nzValue]="null" nzLabel=""></nz-option>
+                <nz-option *ngFor="let size of packageSizes" [nzValue]="size"
+                  [nzLabel]="('enum.packageSize.' + camelCase(size)) | translate"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'driverProfile.details.section.financial.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'driverProfile.details.section.financial.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="accountNumber">{{'profile.accountNumber' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="accountNumber" id="accountNumber">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="bankName">{{'profile.bankName' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="bankName" id="bankName">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="bankRoutingNumber">{{'profile.bankRoutingNumber' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="bankRoutingNumber" id="bankRoutingNumber">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="bankSwift">{{'profile.bankSwift' | translate}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="bankSwift" id="bankSwift">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="address">{{'profile.address' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="address" id="address">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'driverProfile.details.section.media.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'driverProfile.details.section.media.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item class="kasi-form__full">
+            <nz-form-label nzRequired>
+              {{ 'profile.services' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-tag *ngFor="let service of data.services" nzMode="checkable"
+                [nzChecked]="form.value.enabledServices.indexOf(service.id) > -1"
+                (nzCheckedChange)="handleServiceCheckChange($event, service)">
+                {{ service.name }}
+              </nz-tag>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>{{'profile.avatarImage' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-upload [nzAction]="root + 'upload'" [nzHeaders]="{Authorization: 'Bearer ' + jwt}"
+                (nzChange)="handleUploadChange($event)" [nzBeforeUpload]="beforeUpload" nzListType="picture-card"
+                [nzShowUploadList]="false">
+                <ng-container *ngIf="!avatarUrl">
+                  <i class="upload-icon" nz-icon [nzType]="loadingUpload ? 'loading' : 'plus'"></i>
+                  <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
+                </ng-container>
+                <img *ngIf="avatarUrl" [src]="root + avatarUrl" style="width: 100%" />
+              </nz-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
   <!-- <formly-form [form]="form" [fields]="fields" [model]="model">
     </formly-form>
@@ -160,7 +200,8 @@
       <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
     </nz-upload>
     <br> -->
-  <div class="kasi-form-actions">
-    <button nz-button nzType="primary" [disabled]="!form.valid">{{ 'profile.save' | translate }}</button>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="!form.valid">{{ 'profile.save' | translate }}</button>
   </div>
 </form>

@@ -14,7 +14,7 @@
       "pickup": {}
     }
   },
-  "share_trip_text_client": " Mon passager est {firstName} {lastName} et son numéro de portable est +{mobileNumber}.",
+  "share_trip_text_client": " Mon client est {firstName} {lastName} et son numéro de portable est +{mobileNumber}.",
   "@share_trip_text_client": {
     "placeholders": {
       "firstName": {},
@@ -108,18 +108,18 @@
   "menu_earnings": "Gains",
   "status_offline_description": "Connectez-vous pour voir les demandes",
   "status_online_description": "Recherche de course",
-  "order_status_card_title_driver_accepted": "Le passager sera informé une fois que vous aurez appuyé sur Arrivé",
-  "order_status_card_title_arrived": "Le passager a été informé",
+  "order_status_card_title_driver_accepted": "Le client sera informé une fois que vous aurez appuyé sur Arrivé",
+  "order_status_card_title_arrived": "Le client a été informé",
   "order_status_card_title_started": "En route vers la destination",
   "navigation_dialog_title": "Choisissez une application avec laquelle naviguer",
   "action_ride_options": "Options de trajet",
-  "rider_expected_time_past": "Le passager vous attendait il y a {minutes}",
+  "rider_expected_time_past": "Le client vous attendait il y a {minutes}",
   "@rider_expected_time_past": {
     "placeholders": {
       "minutes": {}
     }
   },
-  "rider_expected_time_future": "Le passager vous attend dans {minutes}",
+  "rider_expected_time_future": "Le client vous attend dans {minutes}",
   "@rider_expected_time_future": {
     "placeholders": {
       "minutes": {}
@@ -127,13 +127,13 @@
   },
   "order_payment_status_unpaid": "Le trajet n'a pas encore été payé",
   "order_payment_status_paid": "Le trajet a été payé",
-  "action_ride_preferences": "Préférences du passager",
+  "action_ride_preferences": "Préférences du client",
   "navigation_dialog_title_pickup_point": "Accédez au point de ramassage",
   "navigation_title_destination_point": "Naviguer jusqu'au point de dépôt",
   "rider_options_dialog_title": "Options de trajet",
   "action_cancel_ride": "Annuler le trajet",
-  "invoice_dialog_body": "Vous pouvez également être payé en espèces au lieu d'un paiement en ligne si vous et le passager êtes tous les deux d'accord.",
-  "invoice_dialog_heading": "En attente du paiement du passager",
+  "invoice_dialog_body": "Vous pouvez également être payé en espèces au lieu d'un paiement en ligne si vous et le client êtes tous les deux d'accord.",
+  "invoice_dialog_heading": "En attente du paiement du client",
   "invoice_dialog_title": "Information de paiement",
   "invoice_item_tip": "Pourboire",
   "invoice_item_subtotal": "Sous-total",

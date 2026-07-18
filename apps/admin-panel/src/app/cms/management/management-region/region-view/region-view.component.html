@@ -4,51 +4,69 @@
     <p>{{ 'region.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="id" type="hidden" hidden>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
-        <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
-          <input nz-input formControlName="name" id="name" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
-        <nz-form-control>
-          <nz-select formControlName="currency" id="currency" nzShowSearch>
-            <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value">
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="enabled" nzRequired>{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName="enabled" id="enabled"></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'region.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'region.section.general.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <input formControlName="id" type="hidden" hidden>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
+              <input nz-input formControlName="name" id="name" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="currency" id="currency" nzShowSearch>
+                <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="enabled" nzRequired>{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName="enabled" id="enabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
 
-      <nz-form-item class="kasi-form__full">
-        <nz-form-label nzFor="enabled" nzRequired>{{ 'region.geofence' | translate }}</nz-form-label>
-        <nz-form-control>
-          <input type="hidden" hidden formControlName="location">
-          <!-- MapboxDraw polygon tool is injected via (mapLoad) — no map-polygon child needed -->
-          <mgl-map
-            style="height: 400px; width: 100%;"
-            [style]="'mapbox://styles/mapbox/streets-v12'"
-            [zoom]="[4]"
-            [center]="center"
-            (mapLoad)="onMapLoad($event)">
-          </mgl-map>
-        </nz-form-control>
-      </nz-form-item>
-
-    </form>
-    <div class="kasi-form-actions">
-      <button *ngIf="form.value.id != null" nz-button type="button" (click)="clearMap()" [disabled]="polygons.length == 0">{{ 'profile.clearMap' | translate }}</button>
-      <button nz-button nzType="primary" [disabled]="form.invalid || polygons.length == 0" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
-    </div>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'region.section.geofence.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'region.section.geofence.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item class="kasi-form__full">
+            <nz-form-label nzFor="enabled" nzRequired>{{ 'region.geofence' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input type="hidden" hidden formControlName="location">
+              <!-- MapboxDraw polygon tool is injected via (mapLoad) — no map-polygon child needed -->
+              <mgl-map
+                style="height: 400px; width: 100%;"
+                [style]="'mapbox://styles/mapbox/streets-v12'"
+                [zoom]="[4]"
+                [center]="center"
+                (mapLoad)="onMapLoad($event)">
+              </mgl-map>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button *ngIf="form.value.id != null" nz-button type="button" (click)="clearMap()" [disabled]="polygons.length == 0">{{ 'profile.clearMap' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid || polygons.length == 0">{{ 'profile.saveChanges' | translate }}</button>
+  </div>
+</form>

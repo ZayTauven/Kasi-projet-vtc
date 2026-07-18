@@ -195,8 +195,13 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient],
       },
     }),
+    // PWA/offline non utilisé par la console : le SW hérité de Ridy n'était
+    // jamais réellement généré (pas de ngsw-config.json) mais restait enregistré,
+    // laissant un service worker périmé servir un cache mort -> page blanche après
+    // redéploiement. Désactivé. Un `ngsw-worker.js` de secours (auto-désinscription)
+    // reste servi pour tuer les anciens SW encore actifs dans les navigateurs.
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
+      enabled: false,
     }),
     TimeagoModule.forRoot(),
   ],

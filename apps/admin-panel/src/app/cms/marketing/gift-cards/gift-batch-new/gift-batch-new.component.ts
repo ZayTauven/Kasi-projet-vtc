@@ -29,6 +29,10 @@ export class GiftBatchNewComponent {
     private createGQL: CreateGiftBatchGQL
   ) {}
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   async onSubmit() {
     const { availableTimestamp, expirationTimestamp, ...rest } = this.form.value;
     const input: any = { ...rest };

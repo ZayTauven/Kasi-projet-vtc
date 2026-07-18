@@ -84,6 +84,12 @@ export class CallMaskingProviderViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.router.navigate(['management/call-masking-providers'], {
+      relativeTo: this.route.root,
+    });
+  }
+
   async onSetDefault() {
     const id = this.form.value.id;
     if (id == null) {

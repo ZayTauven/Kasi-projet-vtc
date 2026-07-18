@@ -4,21 +4,30 @@
     <p>{{ 'serviceCategory.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
-          <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
-            <input nz-input formControlName="name" id="name" />
-          </nz-form-control>
-        </nz-form-item>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.save' | translate }}</button>
-    </div>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'serviceCategory.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'serviceCategory.section.general.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'error.nameInvalid' | translate">
+              <input nz-input formControlName="name" id="name" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
+  </div>
+</form>
 <div class="kasi-card mt-2" *ngIf="this.form.value?.id !== null">
   <div class="kasi-card__head">
     <span class="kasi-card__title">{{ 'profile.dangerArea' | translate }}</span>

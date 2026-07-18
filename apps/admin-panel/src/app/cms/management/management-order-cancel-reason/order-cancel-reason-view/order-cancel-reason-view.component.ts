@@ -64,4 +64,10 @@ export class OrderCancelReasonViewComponent implements AfterViewInit {
       this.msg.error(error.message);
     }
   }
+
+  cancel() {
+    this.router.navigate(['management/order-cancel-reasons'], {
+      relativeTo: this.route.root,
+    });
+  }
 }

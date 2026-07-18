@@ -71,6 +71,10 @@ export class CouponViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   async deleteCoupon() {
     await firstValueFrom(this.deleteGQL.mutate({ id: this.form.value.id }));
     this.routerHelper.goToParent(this.route);

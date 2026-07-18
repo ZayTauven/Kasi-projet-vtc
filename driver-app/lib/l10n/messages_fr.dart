@@ -42,7 +42,7 @@ class SFr extends S {
   @override
   String share_trip_text_client(
       Object firstName, Object lastName, Object mobileNumber) {
-    return ' Mon passager est $firstName $lastName et son numéro de portable est +$mobileNumber.';
+    return ' Mon client est $firstName $lastName et son numéro de portable est +$mobileNumber.';
   }
 
   @override
@@ -304,10 +304,10 @@ class SFr extends S {
 
   @override
   String get order_status_card_title_driver_accepted =>
-      'Le passager sera informé une fois que vous aurez appuyé sur Arrivé';
+      'Le client sera informé une fois que vous aurez appuyé sur Arrivé';
 
   @override
-  String get order_status_card_title_arrived => 'Le passager a été informé';
+  String get order_status_card_title_arrived => 'Le client a été informé';
 
   @override
   String get order_status_card_title_started => 'En route vers la destination';
@@ -321,12 +321,12 @@ class SFr extends S {
 
   @override
   String rider_expected_time_past(Object minutes) {
-    return 'Le passager vous attendait il y a $minutes';
+    return 'Le client vous attendait il y a $minutes';
   }
 
   @override
   String rider_expected_time_future(Object minutes) {
-    return 'Le passager vous attend dans $minutes';
+    return 'Le client vous attend dans $minutes';
   }
 
   @override
@@ -337,7 +337,7 @@ class SFr extends S {
   String get order_payment_status_paid => 'Le trajet a été payé';
 
   @override
-  String get action_ride_preferences => 'Préférences du passager';
+  String get action_ride_preferences => 'Préférences du client';
 
   @override
   String get navigation_dialog_title_pickup_point =>
@@ -355,10 +355,10 @@ class SFr extends S {
 
   @override
   String get invoice_dialog_body =>
-      'Vous pouvez également être payé en espèces au lieu d\'un paiement en ligne si vous et le passager êtes tous les deux d\'accord.';
+      'Vous pouvez également être payé en espèces au lieu d\'un paiement en ligne si vous et le client êtes tous les deux d\'accord.';
 
   @override
-  String get invoice_dialog_heading => 'En attente du paiement du passager';
+  String get invoice_dialog_heading => 'En attente du paiement du client';
 
   @override
   String get invoice_dialog_title => 'Information de paiement';

@@ -48,6 +48,10 @@ export class ManagementServiceCategoryViewComponent implements OnInit, OnDestroy
     this.routerHelper.goToParent(this.route);
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   async deleteCategory() {
     const id = this.form.value.id;
     try {

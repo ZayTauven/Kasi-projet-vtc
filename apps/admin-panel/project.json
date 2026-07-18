@@ -16,6 +16,7 @@
         "aot": true,
         "assets": [
           "apps/admin-panel/src/favicon.ico",
+          "apps/admin-panel/src/ngsw-worker.js",
           "apps/admin-panel/src/assets",
           {
             "glob": "*.min.css",

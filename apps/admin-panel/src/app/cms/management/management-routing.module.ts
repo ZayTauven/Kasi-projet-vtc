@@ -60,6 +60,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'map-settings',
+    loadChildren: () =>
+      import('./management-map-settings/management-map-settings.module').then(
+        (x) => x.ManagementMapSettingsModule
+      ),
+  },
+  {
     path: 'call-masking-providers',
     loadChildren: () =>
       import(

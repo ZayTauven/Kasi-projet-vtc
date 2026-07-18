@@ -35,7 +35,8 @@ class ReservationListView extends StatelessWidget {
                 return EmptyStateCard(
                     title: S.of(context).reservation_empty_state_title,
                     description: S.of(context).reservation_empty_state_body,
-                    icon: Ionicons.notifications_off);
+                    icon: Ionicons.notifications_off,
+                    illustration: 'assets/illustrations/empty_reservations.png');
               }
               return Expanded(
                 child: Mutation$CancelBooking$Widget(

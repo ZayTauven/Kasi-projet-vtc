@@ -192,7 +192,7 @@ abstract class S {
   /// No description provided for @share_trip_text_client.
   ///
   /// In en, this message translates to:
-  /// **' My passenger is {firstName} {lastName}, the mobile number is +{mobileNumber}.'**
+  /// **' My client is {firstName} {lastName}, the mobile number is +{mobileNumber}.'**
   String share_trip_text_client(
       Object firstName, Object lastName, Object mobileNumber);
 
@@ -685,13 +685,13 @@ abstract class S {
   /// No description provided for @order_status_card_title_driver_accepted.
   ///
   /// In en, this message translates to:
-  /// **'Rider will be notified once you tap Arrived'**
+  /// **'Client will be notified once you tap Arrived'**
   String get order_status_card_title_driver_accepted;
 
   /// No description provided for @order_status_card_title_arrived.
   ///
   /// In en, this message translates to:
-  /// **'Rider has been notified'**
+  /// **'Client has been notified'**
   String get order_status_card_title_arrived;
 
   /// No description provided for @order_status_card_title_started.
@@ -715,13 +715,13 @@ abstract class S {
   /// No description provided for @rider_expected_time_past.
   ///
   /// In en, this message translates to:
-  /// **'Rider expected you {minutes} mins ago'**
+  /// **'Client expected you {minutes} mins ago'**
   String rider_expected_time_past(Object minutes);
 
   /// No description provided for @rider_expected_time_future.
   ///
   /// In en, this message translates to:
-  /// **'Rider expects you in {minutes} mins'**
+  /// **'Client expects you in {minutes} mins'**
   String rider_expected_time_future(Object minutes);
 
   /// No description provided for @order_payment_status_unpaid.
@@ -739,7 +739,7 @@ abstract class S {
   /// No description provided for @action_ride_preferences.
   ///
   /// In en, this message translates to:
-  /// **'Rider Preferences'**
+  /// **'Client Preferences'**
   String get action_ride_preferences;
 
   /// No description provided for @navigation_dialog_title_pickup_point.
@@ -769,13 +769,13 @@ abstract class S {
   /// No description provided for @invoice_dialog_body.
   ///
   /// In en, this message translates to:
-  /// **'You can also receive cash instead of an online payment if you and the rider are both willing to.'**
+  /// **'You can also receive cash instead of an online payment if you and the client are both willing to.'**
   String get invoice_dialog_body;
 
   /// No description provided for @invoice_dialog_heading.
   ///
   /// In en, this message translates to:
-  /// **'Waiting for rider payment'**
+  /// **'Waiting for client payment'**
   String get invoice_dialog_heading;
 
   /// No description provided for @invoice_dialog_title.

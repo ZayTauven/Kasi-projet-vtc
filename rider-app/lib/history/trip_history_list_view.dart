@@ -41,6 +41,7 @@ class _TripHistoryListViewState extends State<TripHistoryListView> {
                       description:
                           S.of(context).trip_history_empty_state_message,
                       icon: Ionicons.cloud_offline,
+                      illustration: 'assets/illustrations/empty_history.png',
                     );
                   }
                   return Expanded(

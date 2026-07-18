@@ -213,6 +213,7 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
         { labelKey: 'menu.management.callMaskingProviders', route: '/management/call-masking-providers', icon: 'phone' },
         { labelKey: 'menu.management.shiftRules', route: '/management/shift-rules', icon: 'clock-circle' },
         { labelKey: 'menu.management.retention', route: '/management/retention', icon: 'file-protect' },
+        { labelKey: 'menu.management.mapSettings', route: '/management/map-settings', icon: 'environment' },
         { labelKey: 'menu.management.reviewParameters', route: '/management/review-parameters', icon: 'star' },
         { labelKey: 'menu.management.cars', route: '/management/cars', icon: 'car' },
         { labelKey: 'menu.management.userRoles', route: '/management/user-roles', icon: 'safety-certificate' },

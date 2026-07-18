@@ -4,26 +4,40 @@
     <p>{{ 'role.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form" [formGroup]="form" nzLayout="vertical" (ngSubmit)="onSubmit()">
-        <input formControlName="id" type="hidden" hidden>
-        <div class="kasi-form--grid kasi-form--3">
-            <nz-form-item>
-                <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
-                <nz-form-control>
-                    <input nz-input required id="title" formControlName="title">
-                </nz-form-control>
-            </nz-form-item>
+<form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'role.section.identity.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'role.section.identity.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required id="title" formControlName="title">
+            </nz-form-control>
+          </nz-form-item>
         </div>
-        <h4>{{ 'role.permissions' | translate }}</h4>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'role.permissions' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'role.section.permissions.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
         <div *ngFor="let category of getPermissionsCategories()" class="lg:grid lg:grid-cols-3 lg:gap-2 pt-2">
-            <h6>{{category}}</h6>
-            <label nz-checkbox (nzCheckedChange)="onPermissionCheckChanged(category, permission, $event)" [nzChecked]="isPermissionChecked(category, permission)" *ngFor="let permission of getCategoryPermissions(category)">{{permission}}</label>
+          <h6>{{category}}</h6>
+          <label nz-checkbox (nzCheckedChange)="onPermissionCheckChanged(category, permission, $event)" [nzChecked]="isPermissionChecked(category, permission)" *ngFor="let permission of getCategoryPermissions(category)">{{permission}}</label>
         </div>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.submit' | translate }}</button>
-    </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

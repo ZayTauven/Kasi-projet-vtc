@@ -94,6 +94,10 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
     this.routerHelper.goToParent(this.route);
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   handleUploadChange(event: { file: NzUploadFile }) {
     switch (event.file.status) {
       case 'uploading':

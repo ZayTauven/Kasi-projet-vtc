@@ -36,8 +36,11 @@ export class DriverNewComponent {
 
   async submitForm() {
     const { phoneNumber, ..._formValue } = this.form.value;
-    console.log(JSON.stringify(phoneNumber));
     await firstValueFrom(this.createGQL.mutate({ input: { mobileNumber: `${phoneNumber.prefix}${phoneNumber.number}`, ..._formValue } }));
+    this.routerHelper.goToParent(this.route);
+  }
+
+  cancel() {
     this.routerHelper.goToParent(this.route);
   }
 

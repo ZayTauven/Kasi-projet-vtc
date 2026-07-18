@@ -4,46 +4,55 @@
     <p>{{ 'form.newRider.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="submitForm()">
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="firstName">{{ 'profile.firstName' | translate }}</nz-form-label>
-        <nz-form-control [nzErrorTip]="'form.notValidFirstName' | translate">
-          <input nz-input formControlName="firstName" id="firstName" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="lastName">{{ 'profile.lastName' | translate }}</nz-form-label>
-        <nz-form-control [nzErrorTip]="'form.notValidLastName' | translate">
-          <input nz-input formControlName="lastName" id="lastName" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="phoneNumber" nzRequired>{{ 'profile.phoneNumber' | translate }}</nz-form-label>
-        <nz-form-control>
-          <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
-            <ng-template #addOnBeforeTemplate>
-              <nz-select formControlName="phoneNumberPrefix" class="phone-select">
-                <nz-option *ngFor="let code of countryCodes" [nzLabel]="code.name + ' (' + code.dial_code + ')'" [nzValue]="code.dial_code"></nz-option>
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'form.newRider.section.profile.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'form.newRider.section.profile.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="firstName">{{ 'profile.firstName' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'form.notValidFirstName' | translate">
+              <input nz-input formControlName="firstName" id="firstName" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="lastName">{{ 'profile.lastName' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'form.notValidLastName' | translate">
+              <input nz-input formControlName="lastName" id="lastName" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="phoneNumber" nzRequired>{{ 'profile.phoneNumber' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
+                <ng-template #addOnBeforeTemplate>
+                  <nz-select formControlName="phoneNumberPrefix" class="phone-select">
+                    <nz-option *ngFor="let code of countryCodes" [nzLabel]="code.name + ' (' + code.dial_code + ')'" [nzValue]="code.dial_code"></nz-option>
+                  </nz-select>
+                </ng-template>
+                <input formControlName="phoneNumber" id="'phoneNumber'" nz-input />
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="gender">{{ 'profile.gender' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="gender">
+                <nz-option [nzLabel]="'enum.gender.male' | translate" nzValue="Male"></nz-option>
+                <nz-option [nzLabel]="'enum.gender.female' | translate" nzValue="Female"></nz-option>
               </nz-select>
-            </ng-template>
-            <input formControlName="phoneNumber" id="'phoneNumber'" nz-input />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="gender">{{ 'profile.gender' | translate }}</nz-form-label>
-        <nz-form-control>
-          <nz-select formControlName="gender">
-            <nz-option [nzLabel]="'enum.gender.male' | translate" nzValue="Male"></nz-option>
-            <nz-option [nzLabel]="'enum.gender.female' | translate" nzValue="Female"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="submitForm()">{{ 'form.register' | translate }}</button>
-    </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'form.register' | translate }}</button>
+  </div>
+</form>

@@ -1,5 +1,5 @@
-import 'package:client_shared/config.dart';
 import 'package:client_shared/map_providers.dart';
+import 'package:kasi_rider/map/map_setting_bootstrap.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +32,15 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
   late final controller = AnimatedMapController(vsync: this);
 
   @override
+  void initState() {
+    super.initState();
+    // Synchronise le fournisseur/token de carte depuis la config backend (panel).
+    bootstrapMapSetting().then((changed) {
+      if (changed && mounted) setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();
@@ -58,9 +67,9 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
               valueListenable:
                   Hive.box('settings').listenable(keys: ['mapProvider']),
               builder: (context, value, child) {
-                final mapProvider = value.get('mapProvider') ??
-                    (mapBoxAccessToken.isNotEmpty ? 'mapbox' : 'openstreet');
-                if (mapProvider == 'mapbox') {
+                final providerId =
+                    effectiveMapProviderId(value.get('mapProvider'));
+                if (providerId == 'mapbox') {
                   return mapBoxTileLayer;
                 } else {
                   return openStreetTileLayer;

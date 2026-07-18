@@ -111,15 +111,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   }
 
   MapProvider getMapProvider(Box box) {
-    final String? provider = box.get('mapProvider', defaultValue: null);
-    if (provider == null) {
-      if (mapProvider == MapProvider.googleMap && kIsWeb) {
-        return mapBoxAccessToken.isNotEmpty
-            ? MapProvider.mapBox
-            : MapProvider.openStreetMap;
-      }
-      return mapProvider;
-    }
+    final provider =
+        effectiveMapProviderId(box.get('mapProvider', defaultValue: null));
     switch (provider) {
       case 'googlemap':
         if (mapProvider == MapProvider.googleMap && kIsWeb) {
@@ -132,11 +125,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       case 'mapbox':
         return MapProvider.mapBox;
 
-      case 'openstreet':
-        return MapProvider.openStreetMap;
-
       default:
-        throw Exception('Unknown map provider');
+        return MapProvider.openStreetMap;
     }
   }
 }

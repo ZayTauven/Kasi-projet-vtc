@@ -561,6 +561,22 @@ a:hover {
   padding-bottom: 4px;
 }
 
+/* Style de libellés v3 : pas de deux-points, astérisque requis APRÈS le libellé.
+   !important car le CSS stock ng-zorro est injecté au runtime après ce fichier. */
+.kasi-form .ant-form-item-label > label::after {
+  content: '' !important;
+  margin: 0 !important;
+}
+.kasi-form .ant-form-item-label > label.ant-form-item-required::before {
+  display: none !important;
+  content: '' !important;
+}
+.kasi-form .ant-form-item-label > label.ant-form-item-required::after {
+  content: ' *' !important;
+  color: #ff4d4f !important;
+  margin: 0 !important;
+}
+
 /* Variante grille : 1 colonne mobile -> 2 colonnes lg. */
 .kasi-form--grid {
   display: grid;
@@ -580,6 +596,16 @@ a:hover {
   grid-column: 1 / -1;
 }
 
+/* Groupe téléphone (préfixe pays + numéro) : occupe toute la largeur de la cellule
+   pour que le champ numéro ne soit pas étriqué à côté du sélecteur de préfixe. */
+.kasi-form nz-input-group {
+  display: block;
+  width: 100%;
+}
+.kasi-form .phone-select {
+  min-width: 108px;
+}
+
 /* Barre d'actions en bas de formulaire (remplace [nzActions] des nz-card). */
 .kasi-form-actions {
   display: flex;
@@ -592,6 +618,58 @@ a:hover {
 }
 .kasi-form-actions--split {
   justify-content: space-between;
+}
+
+/* --- Formulaire sectionné (disposition v3) --------------------------------
+   Chaque section = une carte avec colonne aside (titre + description) à gauche
+   et grille de champs (.kasi-form--grid) à droite. Collapse en 1 colonne < lg.
+   -------------------------------------------------------------------------- */
+.kasi-form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.kasi-form-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px 40px;
+  padding: 24px;
+  background: var(--kasi-surface);
+  border: 1px solid var(--kasi-border);
+  border-radius: 16px;
+  box-shadow: var(--kasi-shadow);
+}
+.kasi-form-section__aside {
+  min-width: 0;
+}
+.kasi-form-section__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--kasi-text);
+}
+.kasi-form-section__desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--kasi-text-faint);
+}
+.kasi-form-section__body {
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .kasi-form-section {
+    grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+  }
+}
+
+/* Barre d'actions au niveau page (hors cartes de section) : Annuler + Enregistrer. */
+.kasi-form-page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 /* --- Fiche descriptive (remplace nz-descriptions) ------------------------- */

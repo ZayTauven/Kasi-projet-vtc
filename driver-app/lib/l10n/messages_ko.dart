@@ -41,7 +41,7 @@ class SKo extends S {
   @override
   String share_trip_text_client(
       Object firstName, Object lastName, Object mobileNumber) {
-    return ' My passenger is $firstName $lastName, the mobile number is +$mobileNumber.';
+    return ' My client is $firstName $lastName, the mobile number is +$mobileNumber.';
   }
 
   @override

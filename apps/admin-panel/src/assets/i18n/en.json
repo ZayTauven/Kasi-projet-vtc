@@ -1,934 +1,1299 @@
 {
-	"enum": {
-		"request": {
-			"Requested": "Requested",
-			"NotFound": "Not Found",
-			"NoCloseFound": "Close Not Found",
-			"Found": "Found",
-			"DriverAccepted": "Kasiman Accepted",
-			"Arrived": "Arrived",
-			"WaitingForPrePay": "Waiting For Pre-Payment",
-			"DriverCanceled": "Kasiman Canceled",
-			"RiderCanceled": "Rider Canceled",
-			"Started": "Started",
-			"WaitingForPostPay": "Waiting For Post-Payment",
-			"WaitingForReview": "Waiting For Review",
-			"Finished": "Finished",
-			"Booked": "Booked",
-			"Expired": "Expired"
-		},
-		"transactionType": {
-			"OrderFee": "Order Fee",
-			"Cash": "Cash",
-			"BankTransfer": "Bank Transfer",
-			"Gift": "Gift",
-			"Commission": "Commission",
-			"Correction": "Correction",
-			"InAppPayment": "In App Payment",
-			"Withdraw": "Withdraw"
-		},
-		"transactionStatus": {
-			"Processing": "Processing",
-			"Done": "Done",
-			"Canceled": "Canceled",
-			"Rejected": "Rejected"
-		},
-		"payoutMethodType": {
-			"Wave": "Wave",
-			"OrangeMoney": "Orange Money",
-			"BankTransfer": "Bank transfer",
-			"Cash": "Cash"
-		},
-		"smsProviderType": {
-			"LogOnly": "Log only (dev)",
-			"Twilio": "Twilio",
-			"OrangeSms": "Orange SMS"
-		},
-		"emailProviderType": {
-			"LogOnly": "Log only (dev)",
-			"Smtp": "SMTP"
-		},
-		"callMaskingProviderType": {
-			"Direct": "Direct (dev)",
-			"TwilioVoice": "Twilio Voice"
-		},
-		"payoutSessionStatus": {
-			"Pending": "Pending",
-			"Processed": "Processed",
-			"Canceled": "Canceled"
-		},
-		"payoutStatus": {
-			"Pending": "Pending",
-			"Paid": "Paid",
-			"Canceled": "Canceled"
-		},
-		"gender": {
-			"male": "Male",
-			"female": "Female",
-			"genderless": "Genderless"
-		},
-		"packageSize": {
-			"small": "Small",
-			"medium": "Medium",
-			"large": "Large"
-		},
-		"complaintStatus": {
-			"submitted": "Submitted",
-			"underInvestigation": "Under Investigation",
-			"resolved": "Resolved"
-		},
-		"sosStatus": {
-			"submitted": "Submitted",
-			"underReview": "Under Review",
-			"falseAlarm": "False Alarm",
-			"resolved": "Resolved"
-		},
-		"driver": {
-			"status": {
-				"pendingApproval": "Pending Approval",
-				"approved": "Approved",
-				"blocked": "Blocked",
-				"softReject": "Soft Reject",
-				"hardReject": "Hard Reject",
-				"offline": "Offline",
-				"waitingDocuments": "Pending Submission",
-				"inService": "In Service",
-				"online": "Online"
-			}
-		},
-		"rider": {
-			"status": {
-				"blocked": "Blocked",
-				"enabled": "Enabled"
-			}
-		},
-		"sosActivityAction": {
-			"submitted": "Submitted",
-			"seen": "Seen",
-			"contactDriver": "Contacted the Kasiman",
-			"contactAuthorities": "Contacted authorities",
-			"markedAsResolved": "Marked as Resolved",
-			"markedAsFalseAlarm": "Marked as False alarm"
-		},
-		"transactionAction": {
-			"Deduct": "Deduct",
-			"Recharge": "Recharge"
-		},
-		"rewardEvent": {
-			"register": "Register",
-			"serviceCompleted": "Service Completed"
-		},
-		"rewardBeneficiary": {
-			"self": "Self",
-			"referrer": "Referrer"
-		}
-	},
-	"branding": {
-		"menu": {
-			"header": "Kasi"
-		},
-		"footer": {
-			"address": "https://kasi.app",
-			"prefix": "© 2024-2026",
-			"title": "Kasi",
-			"suffix": "All Rights reserved."
-		},
-		"page": {
-			"title": "Kasi Admin Panel"
-		}
-	},
-	"menu": {
-		"home": {
-			"overview": "Overview",
-			"dispatcher": "Dispatcher",
-			"header": "Home"
-		},
-		"driver": {
-			"pendingVerification": "Pending Verification",
-			"all": "View All",
-			"header": "Kasimen"
-		},
-		"marketing": {
-			"coupons": "Coupons",
-			"giftCards": "Gift Cards",
-			"announcements": "Announcements",
-			"header": "Marketing",
-			"rewards": "Rewards & Referrals"
-		},
-		"accounting": {
-			"admin": "Admin",
-			"fleets": "Fleets",
-			"drivers": "Kasimen",
-			"riders": "Riders",
-			"header": "Accounting"
-		},
-		"payouts": {
-			"header": "Payouts",
-			"sessions": "Payout sessions",
-			"methods": "Payout methods"
-		},
-		"riders": "Riders",
-		"requests": "Requests",
-		"sos": "SOS",
-		"complaints": "Complaints",
-		"management": {
-			"regions": "Regions",
-			"services": "Services",
-			"serviceOptions": "Service Options",
-			"fleets": "Fleets",
-			"zonePrices": "Zone Prices",
-			"orderCancelReasons": "Order Cancel Reasons",
-			"smsProviders": "SMS Providers",
-			"emailProviders": "Email Providers",
-			"callMaskingProviders": "Call Masking",
-			"shiftRules": "Shift Rules",
-			"retention": "Document Retention",
-			"reviewParameters": "Review Parameters",
-			"cars": "Cars",
-			"userRoles": "User Roles",
-			"users": "Users",
-			"paymentGateways": "Payment Gateways",
-			"settings": "Settings",
-			"header": "Management"
-		},
-		"drivers": {
-			"header": "Kasimen",
-			"subtitle": "List of all Kasimen registered."
-		}
-	},
-	"overview": {
-		"switch": {
-			"language": "Switch Language",
-			"darkMode": "Toggle light/dark mode"
-		},
-		"notification": {
-			"title": "Notification Center"
-		},
-		"logout": "Logout",
-		"driversOnline": "Online Kasimen",
-		"autoZoom": "Auto Zoom",
-		"viewDriver": "View Kasiman",
-		"showOnMap": "Show on Map",
-		"complaints": {
-			"title": "Complaints",
-			"suffix": "Unreviewed"
-		},
-		"activeOrders": {
-			"title": "Active Orders",
-			"suffix": "Orders"
-		},
-		"pendingDrivers": {
-			"title": "Pending Kasimen",
-			"suffix": "Unverified"
-		},
-		"bookedOrders": {
-			"title": "Booked Orders",
-			"suffix": "Booked"
-		},
-		"chart": {
-			"requestsTitle": "Orders",
-			"revenue": "Revenue",
-			"newDriverRegisters": "New Kasiman registrations",
-			"newRiderRegisters": "New rider registrations"
-		}
-	},
-	"notification": {
-		"distressSignals": {
-			"suffix": "Pending Distress signals"
-		},
-		"complaints": {
-			"suffix": "Complaints unreviewed"
-		},
-		"pendingDrivers": {
-			"suffix": "Kasimen unverified"
-		}
-	},
-	"requests": {
-		"title": "Requests",
-		"subtitle": "List of all the order requests",
-		"searchDriverPlaceholder": "Enter Kasiman last name or mobile number",
-		"bookedFor": "(Booked for {{time}})",
-		"expectedTime": "Expected Time",
-		"startTime": "Start Time",
-		"finishTime": "Finish Time",
-		"costAfterCoupon": "Cost After Coupon",
-		"estimatedCost": "Estimated Cost",
-		"header": "Request #",
-		"requestTIme": "Request Time",
-		"service": "Service",
-		"distance": "Distance",
-		"duration": "Duration",
-		"chats": "Chats",
-		"complaints": "Complaints",
-		"assign": "Assign Kasiman (Alpha)"
-	},
-	"profile": {
-		"status": "Status",
-		"locations": "Locations",
-		"view": "View",
-		"requestInfo": "Request Info",
-		"name": "Name",
-		"mobileNumber": "Mobile Number",
-		"registeredOn": "Registered On",
-		"driverInfo": "Kasiman Info",
-		"riderInfo": "Rider Info",
-		"details": "Details",
-		"title": "Title",
-		"content": "Content",
-		"firstName": "First Name",
-		"lastName": "Last Name",
-		"gender": "Gender",
-		"canDeliver": "Can deliver (Kasi Moto)",
-		"maxPackageSize": "Max package size",
-		"email": "E-Mail",
-		"fleet": "Fleet",
-		"carModel": "Car Model",
-		"carColor": "Car Color",
-		"carProductionYear": "Car Production Year",
-		"carPlateNumber": "Car Plate Number",
-		"accountNumber": "Account Number",
-		"bankName": "Bank Name",
-		"bankRoutingNumber": "Bank Routing Number",
-		"bankSwift": "Bank Swift",
-		"address": "Address",
-		"services": "Services",
-		"avatarImage": "Avatar Image",
-		"upload": "Upload",
-		"save": "Save",
-		"dateTime": "Date & Time",
-		"rating": "Rating",
-		"review": "Review",
-		"actions": "Actions",
-		"transactionType": "Transaction Type",
-		"amount": "Amount",
-		"documentNumber": "Document Number",
-		"submit": "Submit",
-		"insertTransaction": "Insert Transaction",
-		"cost": "Cost",
-		"goToList": "Go To List",
-		"add": "Add",
-		"search": "Search",
-		"reset": "Reset",
-		"export": "Export",
-		"total": "Total",
-		"currency": "Currency",
-		"date": "Date",
-		"next": "Next",
-		"select": "Select",
-		"delete": "Delete",
-		"phoneNumber": "Phone Number",
-		"commissionPercentage": "Commission Percentage",
-		"commissionFlat": "Commission Flat",
-		"bankAccountInfo": "Bank Account Info",
-		"warning": "Warning",
-		"clearMap": "Clear Map",
-		"financialRecords": "Financial Records",
-		"disabled": "Disabled",
-		"visibilityStatus": "Visibility Status",
-		"saveChanges": "Save changes",
-		"enabled": "Enabled",
-		"deleteNotice": "Are you sure you want to delete this data? This action is irreversible",
-		"dangerArea": "Dangerous Area",
-		"userName": "User Name",
-		"code": "Code",
-		"beneficiary": "Beneficiary",
-		"availabilityTime": "Availability Time",
-		"appType": "App Type",
-		"creditGift": "Credit Gift",
-		"tripFeePercentGift": "Trip Fee Percent Gift",
-		"creditCurrency": "Credit Currency",
-		"conditionTripCountsLessThan": "Trip counts less than",
-		"conditionUserNumberFirstDigits": "Beneficiary mobile numbers first digits (list, comma separated)",
-		"subject": "Subject",
-		"type": "Type",
-		"paymentGateway": "Payment Gateway",
-		"rider": "Rider",
-		"driver": "Kasiman",
-		"admin": "Admin",
-		"coupon": "Coupon",
-		"activities": "Activities Timeline",
-		"location": "Location",
-		"submittedBy": "Submitted By",
-		"pleaseSelect": "Please select",
-		"searchMobileNumber": "Search Mobile Number",
-		"userType": "User Type",
-		"description": "Description",
-		"rechargeType": "Recharge Type",
-		"deductType": "Deduct Type",
-		"transactionsRecords": "Transactions Records",
-		"walletSummary": "Wallet Summary",
-		"isResident": "Is Resident?",
-		"idNumber": "ID Number",
-		"sender": "(Sender)",
-		"url": "URL",
-		"image": "Image",
-		"icon": "Icon",
-		"action": "Action",
-		"note": "Note",
-		"by": "by",
-		"ratingSummary": "{{percent}}% (from {{count}} reviews)",
-		"notAvailable": "N/A",
-		"parameters": "Parameters",
-		"assign": "Assign"
-	},
-	"complaint": {
-		"inscriptionTime": "Inscription Time",
-		"content": "Content"
-	},
-	"driver": {
-		"profile": {
-			"changeStatus": "Update Status",
-			"lastSeenAt": "Last Seen At",
-			"rating": "Rating",
-			"details": "Details",
-			"orders": "Orders",
-			"financials": "Credit Records",
-			"reviews": "Reviews",
-			"documents": "Documents",
-			"ratingSummary": "Rating summary"
-		}
-	},
-	"table": {
-		"viewRequest": "View Request",
-		"viewOperator": "View Operator",
-		"viewGateway": "View Gateway",
-		"min": "Min",
-		"max": "Max",
-		"viewDriver": "View Kasiman",
-		"viewFleet": "View Fleet",
-		"viewRider": "View Rider",
-		"viewComplaint": "View Complaint",
-		"openInGoogleMaps": "Open In Google Maps",
-		"registeredOn": "Registered on",
-		"submittedOn": "Submitted on"
-	},
-	"drivers": {
-		"notFoundMessage": "Kasiman Not Found!"
-	},
-	"dispatcher": {
-		"removeLastPoint": "Remove Last Point",
-		"rider": {
-			"title": "Rider",
-			"description": "Select rider to assign request"
-		},
-		"location": {
-			"title": "Location",
-			"description": "Pickup & Drop-off location(s)"
-		},
-		"service": {
-			"title": "Service",
-			"description": "Service to be requested"
-		},
-		"looking": {
-			"title": "Looking",
-			"description": "Searching for an eligible Kasiman",
-			"waitMessage": "Looking for a suitable Kasiman. Please wait..."
-		},
-		"determiningLocation": "Determining Location, Please wait...",
-		"viewRequestDetails": "View Request Details",
-		"cancelRequest": "Cancel Request",
-		"driverAcceptedRequestSuffix": "has accepted the request. Go to the trip page for more information.",
-		"tripStatusUpdated": "Trip status is updated to {{status}}.",
-		"time": "Time"
-	},
-	"chart": {
-		"emptyState": "Nothing to see here."
-	},
-	"message": {
-		"areYouSure": "Are you sure?",
-		"deleteDriverConfirmation": {
-			"title": "Are you sure you want to delete the Kasiman?",
-			"content": "Deleting Kasiman information will hide the Kasiman from the list of Kasimen and the profile won't be accessible anymore."
-		},
-		"deleteDriverCofirmAlert": "Kasiman has been deleted",
-		"driverAssignedSuccessfully": "Kasiman is assigned successfully",
-		"deleteConfirmation": {
-			"title": "Are you sure you want to delete?"
-		},
-		"deleteRiderConfirmation": {
-			"content": "Deleting rider information will hide the rider from the list of riders and the profile won't be accessible anymore."
-		},
-		"deleteRiderCofirmAlert": "Rider Has been deleted."
-	},
-	"error": {
-		"nameInvalid": "Name is not valid",
-		"titleInvalid": "Title is not valid",
-		"PERMISSION_NOT_GRANTED": "Permission not granted"
-	},
-	"fleet": {
-		"exclusitivityAreaTitle": "Exclusitivity Area",
-		"exclusitivityAreaWarning": "Exercise caution when utilizing this feature. Once you designate an exclusivity area to a fleet, all ride requests originating within that region will be directed solely to Kasimen belonging to that specific fleet. Kasimen who are not affiliated with the fleet will not receive these requests.",
-		"feeMultiplier": "Fee Multiplier"
-	},
-	"fleets": {
-		"title": "Fleets",
-		"subtitle": "List of all the fleets registered."
-	},
-	"cars": {
-		"title": "Cars",
-		"subtitle": "Basic car info definitions",
-		"models": "Models",
-		"colors": "Colors"
-	},
-	"regions": {
-		"title": "Regions",
-		"subtitle": "List of all the regions the app operates within."
-	},
-	"region": {
-		"title": "New Region",
-		"subtitle": "Parameters of the region the app is operating within.",
-		"geofence": "Geofence"
-	},
-	"cancelReasons": {
-		"title": "Cancel Reasons",
-		"subtitle": "Reasons for cancellation that riders will encounter and can choose from when canceling a ride."
-	},
-	"payoutSessions": {
-		"title": "Payout Sessions",
-		"subtitle": "Batch payments of Kasimen earnings."
-	},
-	"payoutSession": {
-		"title": "Payout Session",
-		"subtitle": "Payouts generated for this session."
-	},
-	"payoutSessionNew": {
-		"title": "New Payout Session",
-		"subtitle": "Generates a payout for every eligible Kasiman (balance above the minimum, active payout method)."
-	},
-	"payoutMethods": {
-		"title": "Payout Methods",
-		"subtitle": "Channels used to pay Kasimen earnings (Wave, Orange Money, bank transfer, cash)."
-	},
-	"payoutMethod": {
-		"title": "Payout Method",
-		"subtitle": "Payout channel settings."
-	},
-	"payouts": {
-		"type": "Type",
-		"method": "Method",
-		"accountNumber": "Account number",
-		"minimumAmount": "Minimum amount",
-		"minimumAmountHint": "Kasimen below this balance are excluded from the session.",
-		"totalAmount": "Total amount",
-		"instructions": "Instructions",
-		"targetMethods": "Targeted methods",
-		"targetMethodsHint": "Leave empty to include every active method.",
-		"allMethods": "All methods",
-		"createSession": "New session",
-		"preview": "Preview",
-		"previewResult": "{{count}} eligible Kasimen",
-		"noEligible": "No eligible Kasiman for these criteria.",
-		"processAll": "Pay all",
-		"processAllConfirm": "Mark every pending payout as paid and deduct wallets?",
-		"cancelSession": "Cancel session",
-		"cancelSessionConfirm": "Cancel every pending payout of this session?",
-		"markPaid": "Mark paid",
-		"markPaidConfirm": "Payment done outside the app? The wallet will be deducted.",
-		"cancel": "Cancel",
-		"cancelPayoutConfirm": "Cancel this payout?"
-	},
-	"smsProviders": {
-		"title": "SMS Providers",
-		"subtitle": "SMS gateways used to send verification codes and text notifications."
-	},
-	"smsProvider": {
-		"title": "SMS Provider",
-		"subtitle": "SMS gateway settings.",
-		"type": "Type",
-		"accountId": "Account ID",
-		"apiSecret": "API secret",
-		"apiSecretHint": "Unchanged if empty.",
-		"senderId": "Sender ID",
-		"template": "Verification template",
-		"templateHint": "{code} will be replaced by the 6-digit code.",
-		"setDefault": "Set as default",
-		"default": "Default",
-		"defaultSet": "Set as the default provider.",
-		"testSms": "Test SMS",
-		"testNumber": "Phone number",
-		"testSent": "Test SMS sent."
-	},
-	"emailProviders": {
-		"title": "Email Providers",
-		"subtitle": "Email gateways used to send notifications and transactional messages."
-	},
-	"emailProvider": {
-		"title": "Email Provider",
-		"subtitle": "Email gateway settings.",
-		"type": "Type",
-		"host": "SMTP host",
-		"port": "Port",
-		"secure": "Secure connection (SSL/TLS)",
-		"secureHint": "Enabled = port 465 (SMTPS); disabled = port 587 (STARTTLS).",
-		"username": "Username",
-		"password": "Password",
-		"passwordHint": "Unchanged if empty.",
-		"fromAddress": "From address",
-		"fromName": "From name",
-		"setDefault": "Set as default",
-		"default": "Default",
-		"defaultSet": "Set as the default provider.",
-		"testEmail": "Test email",
-		"testTo": "Email address",
-		"testSent": "Test email sent."
-	},
-	"callMaskingProviders": {
-		"title": "Call Masking Providers",
-		"subtitle": "Voice providers used to anonymize calls between riders and drivers."
-	},
-	"callMaskingProvider": {
-		"title": "Call Masking Provider",
-		"subtitle": "Anonymized call provider settings.",
-		"type": "Type",
-		"accountId": "Account SID",
-		"apiSecret": "Auth token",
-		"apiSecretHint": "Unchanged if empty.",
-		"proxyNumber": "Proxy number",
-		"webhookAuthToken": "Webhook auth token",
-		"webhookAuthTokenHint": "Unchanged if empty.",
-		"sessionTtlMinutes": "Session TTL (minutes)",
-		"setDefault": "Set as default",
-		"default": "Default",
-		"defaultSet": "Set as the default provider.",
-		"testCall": "Test call",
-		"testNumber": "Phone number",
-		"testSent": "Test call triggered."
-	},
-	"shiftRules": {
-		"title": "Shift rules",
-		"subtitle": "Define drivers' working-hours and break limits.",
-		"frequency": "Frequency",
-		"maxHoursPerPeriod": "Max hours per period",
-		"maxHoursPerPeriodHint": "Maximum driving hours allowed over the selected period.",
-		"mandatoryBreakMinutes": "Mandatory break (min)",
-		"mandatoryBreakMinutesHint": "Recommended break duration between shifts.",
-		"enforced": "Enforced (blocking)",
-		"enforcedHint": "If enabled, the rule is presented as blocking. Server-side enforcement is still advisory (soft) for now.",
-		"enforcedTag": "Enforced",
-		"softTag": "Advisory",
-		"deleted": "Rule deleted",
-		"frequencyEnum": {
-			"Daily": "Daily",
-			"Weekly": "Weekly"
-		}
-	},
-	"shiftRule": {
-		"title": "Shift rule",
-		"subtitle": "Configure the limits applied to drivers' shifts."
-	},
-	"retention": {
-		"title": "Document retention",
-		"subtitle": "Define how long documents are kept before automatic purge.",
-		"retentionDays": "Retention days",
-		"retentionDaysHint": "Number of days after which a document becomes eligible for purge.",
-		"days": "{{count}} days",
-		"dryRun": "Simulation mode",
-		"dryRunHint": "Enabled: the system only logs the documents that would be purged and deletes NOTHING.",
-		"enabledHint": "Enables this policy to be considered by the retention job.",
-		"lastRunAt": "Last run",
-		"simulationMode": "Simulation",
-		"realMode": "Real purge",
-		"realDeletionDisabledWarning": "Real purge will be enabled in a later version after validation. At this stage the system stays non-destructive: no document is deleted.",
-		"runDryRun": "Run simulation",
-		"dryRunTriggered": "Retention simulation triggered (no deletion performed)."
-	},
-	"cancelReason": {
-		"title": "Cancel Reason",
-		"subtitle": "Reason for cancellation that riders will encounter and can choose from when canceling a ride"
-	},
-	"reviewParameters": {
-		"title": "Review Parameters",
-		"subtitle": "The parameters available for riders to assess their service quality on the rating page after the completion of the trip."
-	},
-	"reviewParameter": {
-		"title": "New Review Parameter",
-		"subtitle": "Parameters of reviews that the rider can select for their rating.",
-		"isGood": "Is Good",
-		"good": "Good",
-		"bad": "Bad"
-	},
-	"services": {
-		"editCategory": "Edit Category",
-		"newCategory": "New Category",
-		"newService": "New Service"
-	},
-	"service": {
-		"title": "Service",
-		"subtitle": "View and edit the service details",
-		"createFirstNotice": "Create your first service category to be displayed in client applications",
-		"Regions": "Regions",
-		"category": "Category",
-		"maxPersonCapacity": "Max Person Capacity",
-		"baseFare": "Base Fare",
-		"perHundredMeters": "Per Hundred Meters",
-		"perMinuteDrive": "Per Minute Drive",
-		"perMinuteWait": "Per Minute Wait",
-		"prepayPercent": "Prepay Percent",
-		"minimumFee": "Minimum Fee",
-		"roundingFactor": "Rounding Factor",
-		"roundingFactorError": "The value needs to be more than zero and less than 100",
-		"maximumDistance": "Maximum Distance",
-		"searchRadius": "Search Radius",
-		"paymentMethod": "Payment Method",
-		"orderType": "Order Type",
-		"orderTypes": {
-			"Ride": "Ride",
-			"Delivery": "Delivery"
-		},
-		"providerSharePercent": "Provider Share Percent",
-		"providerShareFlat": "Provider Share Flat",
-		"cancellationTotalFee": "Cancellation Total Fee",
-		"cancellationDriverShare": "Cancellation Kasiman Share",
-		"twoWayAvailable": "Two way available?",
-		"timeMultiplierTitle": "Time of the day Multiplier",
-		"distanceMultiplierTitle": "Distance Multiplier",
-		"weekdayMultiplierTitle": "Weekday Multipliers",
-		"dateRangeMultiplierTitle": "Date range Multiplier",
-		"ridePreferences": "Ride preferences",
-		"timeMultiplierTable": {
-			"startTime": "Start Time",
-			"endTime": "End Time",
-			"multiplyBy": "Multiply By"
-		},
-		"insertRule": "Insert Rule",
-		"distanceMultiplierTable": {
-			"distanceFrom": "Distance From",
-			"distanceTo": "Distance To"
-		},
-		"weekdayMultiplierTable": {
-			"weekday": "Weekday"
-		},
-		"dateRangeMultiplierTable": {
-			"dateRange": "Date Range"
-		}
-	},
-	"serviceCategory": {
-		"title": "Service Category",
-		"subtitle": "Input service category details below."
-	},
-	"serviceOptions": {
-		"title": "Service Options",
-		"subtitle": "List of options that can be enabled on specific services."
-	},
-	"serviceOption": {
-		"title": "Service option definition",
-		"subtitle": "Options that can be enabled on specific services.",
-		"additionalFee": "Additional fee"
-	},
-	"settings": {
-		"generalSettings": "General Settings",
-		"changePasswordTitle": "Change Password",
-		"changePasswordSubtitle": "Update your password used to access this panel",
-		"oldPassword": "Old Password",
-		"newPassword": "New Password",
-		"newPasswordRepeat": "New Password Repeat",
-		"passwordIncorrect": "Password is incorrect"
-	},
-	"users": {
-		"title": "Operators",
-		"subtitle": "Users of Admin panel (Operators and admins)",
-		"tab": {
-			"details": "Details"
-		},
-		"noRole": "No Role assigned"
-	},
-	"role": {
-		"title": "User Role",
-		"subtitle": "Admin Panel user role definition",
-		"permissions": "Permissions"
-	},
-	"roles": {
-		"title": "User Roles",
-		"subtitle": "Role definitions for Admin panel users."
-	},
-	"zonePrice": {
-		"pickupAreas": "Pickup area(s)",
-		"destinationAres": "Destination area(s)",
-		"title": "New Zone Price",
-		"subtitle": "Define zones with static pricing to override the default distance-based calculation.",
-		"timeMultiplierTitle": "Time Multiplier",
-		"moreSelected": "and {{count}} more selected"
-	},
-	"zonePrices": {
-		"title": "Zone prices",
-		"subtitle": "Define specific regions that override the default price and have an specific price for customer's ride"
-	},
-	"paymentGateways": {
-		"title": "Payment Gateways",
-		"subtitle": "Payment options of clients"
-	},
-	"paymentGateway": {
-		"subtitle": "API keys and client facing definitions.",
-		"apiKeys": "API Keys"
-	},
-	"announcement": {
-		"title": "Announcement",
-		"subtitle": "Definition of announcements & news that users will see under the menu on their app."
-	},
-	"announcements": {
-		"title": "Announcements",
-		"subtitle": "List of all the announcements"
-	},
-	"coupons": {
-		"title": "Coupons",
-		"subtitle": "List of all the coupons",
-		"availabilityTime": "Availability Time",
-		"description": "Create coupons to be used by riders to get discounts on their rides",
-		"expirationTime": "Expiration Time",
-		"manyUsersCanUse": "# Users can use",
-		"manyTimesUserCanUse": "# Times User Can Use",
-		"minimumCost": "Minimum Cost",
-		"maximumCost": "Maximum Cost",
-		"discountPercent": "Discount Percent",
-		"discountFlat": "Discount Flat",
-		"isEnabled": "Is Enabled?",
-		"isFirstTravelOnly": "Is First Travel Only?"
-	},
-	"giftCards": {
-		"title": "Gift Cards",
-		"subtitle": "List of issued gift card batches",
-		"newBatch": "New Batch",
-		"newBatchSubtitle": "Generate a gift card batch; codes are created automatically.",
-		"viewSubtitle": "Batch detail and generated codes",
-		"batchInfo": "Batch information",
-		"amount": "Amount",
-		"quantity": "Quantity",
-		"availability": "Availability",
-		"availableTimestamp": "Available from",
-		"expirationTimestamp": "Expires on",
-		"createdAt": "Created at",
-		"generate": "Generate batch",
-		"codes": "Codes",
-		"code": "Code",
-		"used": "Used",
-		"available": "Available",
-		"codesRestricted": "You do not have permission to view the codes of this batch (GiftCards_ViewCodes)."
-	},
-	"rewards": {
-		"subtitle": "List of all the reward & referral rules",
-		"underDevelopmentNotice": "This feature is still under development and the application side is yet to be integrated. Full roll-out of this feature is planned for coming weeks."
-	},
-	"reward": {
-		"newTitle": "New reward rule",
-		"editTitle": "Edit reward rule #",
-		"subtitle": "Definitions of rewarding rule.",
-		"event": "Event",
-		"conditions": "Conditions"
-	},
-	"riders": {
-		"title": "Riders",
-		"subtitle": "List of all the clients registered.",
-		"notFoundMessage": "Rider Not Found!",
-		"tab": {
-			"details": "Details",
-			"creditrecords": "Credit Records",
-			"orders": "Orders",
-			"addresses": "Addresses"
-		}
-	},
-	"complaints": {
-		"title": "Complaints",
-		"subtitle": "Complaints submitted by riders/Kasimen"
-	},
-	"sos": {
-		"title": "SOS",
-		"subtitle": "Distress Signals submitted by users",
-		"activities": "Activities",
-		"insertActivity": "Insert Activity"
-	},
-	"weekday": {
-		"monday": "Monday",
-		"tuesday": "Tuesday",
-		"wednesday": "Wednesday",
-		"thursday": "Thursday",
-		"friday": "Friday",
-		"saturday": "Saturday",
-		"sunday": "Sunday"
-	},
-	"requestActivityType": {
-		"arrivedToDestination": "Arrived To Destination",
-		"arrivedToPickupPoint": "Arrived To Pickup Point",
-		"bookedByOperator": "Book By Operator",
-		"bookedByRider": "Bookd By Rider",
-		"canceledByDriver": "Canceled By Kasiman",
-		"canceledByOperator": "Canceled By Operator",
-		"canceledByRider": "Canceled By Rider",
-		"driverAccepted": "Kasiman Accepted",
-		"expired": "Expired",
-		"paid": "Paid",
-		"requestedByOperator": "Requested By Operator",
-		"requestedByRider": "Requested By Rider",
-		"reviewed": "Reviewed & Rated",
-		"started": "Started"
-	},
-	"form": {
-		"role": "Role",
-		"password": "Password",
-		"register": "Register",
-		"notValidFirstName": "The input is not valid First Name",
-		"notValidLastName": "The input is not valid Last Name",
-		"notValidUserName": "The input is not valid User Name",
-		"notValidMobileNumber": "The input is not valid Mobile Number",
-		"notValidPassword": "The input is not valid Password",
-		"notValidEmail": "The input is not valid E-mail",
-		"roleNotSelected": "Role is not selected",
-		"newRider": {
-			"title": "New Rider",
-			"subtitle": "Input Rider's contact details below."
-		},
-		"newDriver": {
-			"title": "New Kasiman",
-			"subtitle": "Input Kasiman's contact details below."
-		},
-		"newOperator": {
-			"title": "New Operator",
-			"subtitle": "Input Operator's details below."
-		},
-		"newFleet": {
-			"title": "New Fleet",
-			"subtitle": "Input new Fleet's details below."
-		}
-	},
-	"login": {
-		"title": "Login",
-		"usernameRequired": "Please input your username!",
-		"username": "Username",
-		"submit": "Log in"
-	},
-	"driverWallets": {
-		"title": "Kasiman Wallets",
-		"subtitle": "List of Kasimen current wallet balance"
-	},
-	"fleetWallets": {
-		"title": "Fleet Wallets",
-		"subtitle": "List of fleets current wallet balance"
-	},
-	"riderWallets": {
-		"title": "Rider Wallets",
-		"subtitle": "List of riders current wallet balance"
-	},
-	"providerWallet": {
-		"title": "Provider Wallet",
-		"subtitle": "List of system provider (you) income of services."
-	},
-	"config": {
-		"step1Title": "Mapbox API",
-		"step1Description": "Mapbox access tokens",
-		"step2Title": "Firebase Admin SDK",
-		"step2Description": "Notifications & authentication",
-		"backendMapsKey": "Backend Mapbox token",
-		"dashboardMapsKey": "Dashboard Mapbox token",
-		"invalidMapsKeys": "The Mapbox tokens seem invalid.",
-		"firebaseUploadText": "Firebase project private key",
-		"firebaseUploadHint": "Upload the private key JSON file downloaded from your Firebase project under Service Accounts, using the Generate Private Key button.",
-		"invalidFirebaseKey": "The Firebase project key seems invalid.",
-		"uploadSuccess": "{{file}} uploaded successfully.",
-		"uploadFailed": "{{file}} upload failed.",
-		"previous": "Previous",
-		"next": "Next",
-		"done": "Done",
-		"successTitle": "Configuration complete!",
-		"successSubtitle": "Your configuration is saved. Please wait around 30 seconds for the system to apply it, then go to the login screen using the button below.",
-		"goLogin": "Go to login"
-	}
+  "enum": {
+    "request": {
+      "Requested": "Requested",
+      "NotFound": "Not Found",
+      "NoCloseFound": "Close Not Found",
+      "Found": "Found",
+      "DriverAccepted": "Kasiman Accepted",
+      "Arrived": "Arrived",
+      "WaitingForPrePay": "Waiting For Pre-Payment",
+      "DriverCanceled": "Kasiman Canceled",
+      "RiderCanceled": "Client Canceled",
+      "Started": "Started",
+      "WaitingForPostPay": "Waiting For Post-Payment",
+      "WaitingForReview": "Waiting For Review",
+      "Finished": "Finished",
+      "Booked": "Booked",
+      "Expired": "Expired"
+    },
+    "transactionType": {
+      "OrderFee": "Order Fee",
+      "Cash": "Cash",
+      "BankTransfer": "Bank Transfer",
+      "Gift": "Gift",
+      "Commission": "Commission",
+      "Correction": "Correction",
+      "InAppPayment": "In App Payment",
+      "Withdraw": "Withdraw"
+    },
+    "transactionStatus": {
+      "Processing": "Processing",
+      "Done": "Done",
+      "Canceled": "Canceled",
+      "Rejected": "Rejected"
+    },
+    "payoutMethodType": {
+      "Wave": "Wave",
+      "OrangeMoney": "Orange Money",
+      "BankTransfer": "Bank transfer",
+      "Cash": "Cash"
+    },
+    "smsProviderType": {
+      "LogOnly": "Log only (dev)",
+      "Twilio": "Twilio",
+      "OrangeSms": "Orange SMS"
+    },
+    "emailProviderType": {
+      "LogOnly": "Log only (dev)",
+      "Smtp": "SMTP"
+    },
+    "callMaskingProviderType": {
+      "Direct": "Direct (dev)",
+      "TwilioVoice": "Twilio Voice"
+    },
+    "payoutSessionStatus": {
+      "Pending": "Pending",
+      "Processed": "Processed",
+      "Canceled": "Canceled"
+    },
+    "payoutStatus": {
+      "Pending": "Pending",
+      "Paid": "Paid",
+      "Canceled": "Canceled"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "genderless": "Genderless"
+    },
+    "packageSize": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "complaintStatus": {
+      "submitted": "Submitted",
+      "underInvestigation": "Under Investigation",
+      "resolved": "Resolved"
+    },
+    "sosStatus": {
+      "submitted": "Submitted",
+      "underReview": "Under Review",
+      "falseAlarm": "False Alarm",
+      "resolved": "Resolved"
+    },
+    "driver": {
+      "status": {
+        "pendingApproval": "Pending Approval",
+        "approved": "Approved",
+        "blocked": "Blocked",
+        "softReject": "Soft Reject",
+        "hardReject": "Hard Reject",
+        "offline": "Offline",
+        "waitingDocuments": "Pending Submission",
+        "inService": "In Service",
+        "online": "Online"
+      }
+    },
+    "rider": {
+      "status": {
+        "blocked": "Blocked",
+        "enabled": "Enabled"
+      }
+    },
+    "sosActivityAction": {
+      "submitted": "Submitted",
+      "seen": "Seen",
+      "contactDriver": "Contacted the Kasiman",
+      "contactAuthorities": "Contacted authorities",
+      "markedAsResolved": "Marked as Resolved",
+      "markedAsFalseAlarm": "Marked as False alarm"
+    },
+    "transactionAction": {
+      "Deduct": "Deduct",
+      "Recharge": "Recharge"
+    },
+    "rewardEvent": {
+      "register": "Register",
+      "serviceCompleted": "Service Completed"
+    },
+    "rewardBeneficiary": {
+      "self": "Self",
+      "referrer": "Referrer"
+    }
+  },
+  "branding": {
+    "menu": {
+      "header": "Kasi"
+    },
+    "footer": {
+      "address": "https://kasigroupe.com",
+      "prefix": "© 2024-2026",
+      "title": "Kasi",
+      "suffix": "All Rights reserved."
+    },
+    "page": {
+      "title": "Kasi Admin Panel"
+    }
+  },
+  "menu": {
+    "home": {
+      "overview": "Overview",
+      "dispatcher": "Dispatcher",
+      "header": "Home"
+    },
+    "driver": {
+      "pendingVerification": "Pending Verification",
+      "all": "View All",
+      "header": "Kasimen"
+    },
+    "marketing": {
+      "coupons": "Coupons",
+      "giftCards": "Gift Cards",
+      "announcements": "Announcements",
+      "header": "Marketing",
+      "rewards": "Rewards & Referrals"
+    },
+    "accounting": {
+      "admin": "Admin",
+      "fleets": "Fleets",
+      "drivers": "Kasimen",
+      "riders": "Clients",
+      "header": "Accounting"
+    },
+    "payouts": {
+      "header": "Payouts",
+      "sessions": "Payout sessions",
+      "methods": "Payout methods"
+    },
+    "riders": "Clients",
+    "requests": "Requests",
+    "sos": "SOS",
+    "complaints": "Complaints",
+    "management": {
+      "regions": "Regions",
+      "services": "Services",
+      "serviceOptions": "Service Options",
+      "fleets": "Fleets",
+      "zonePrices": "Zone Prices",
+      "orderCancelReasons": "Order Cancel Reasons",
+      "smsProviders": "SMS Providers",
+      "emailProviders": "Email Providers",
+      "callMaskingProviders": "Call Masking",
+      "shiftRules": "Shift Rules",
+      "retention": "Document Retention",
+      "reviewParameters": "Review Parameters",
+      "cars": "Cars",
+      "userRoles": "User Roles",
+      "users": "Users",
+      "paymentGateways": "Payment Gateways",
+      "settings": "Settings",
+      "header": "Management",
+      "mapSettings": "Map Settings"
+    },
+    "drivers": {
+      "header": "Kasimen",
+      "subtitle": "List of all Kasimen registered."
+    }
+  },
+  "overview": {
+    "switch": {
+      "language": "Switch Language",
+      "darkMode": "Toggle light/dark mode"
+    },
+    "notification": {
+      "title": "Notification Center"
+    },
+    "logout": "Logout",
+    "driversOnline": "Online Kasimen",
+    "autoZoom": "Auto Zoom",
+    "viewDriver": "View Kasiman",
+    "showOnMap": "Show on Map",
+    "complaints": {
+      "title": "Complaints",
+      "suffix": "Unreviewed"
+    },
+    "activeOrders": {
+      "title": "Active Orders",
+      "suffix": "Orders"
+    },
+    "pendingDrivers": {
+      "title": "Pending Kasimen",
+      "suffix": "Unverified"
+    },
+    "bookedOrders": {
+      "title": "Booked Orders",
+      "suffix": "Booked"
+    },
+    "chart": {
+      "requestsTitle": "Orders",
+      "revenue": "Revenue",
+      "newDriverRegisters": "New Kasiman registrations",
+      "newRiderRegisters": "New client registrations"
+    }
+  },
+  "notification": {
+    "distressSignals": {
+      "suffix": "Pending Distress signals"
+    },
+    "complaints": {
+      "suffix": "Complaints unreviewed"
+    },
+    "pendingDrivers": {
+      "suffix": "Kasimen unverified"
+    }
+  },
+  "requests": {
+    "title": "Requests",
+    "subtitle": "List of all the order requests",
+    "searchDriverPlaceholder": "Enter Kasiman last name or mobile number",
+    "bookedFor": "(Booked for {{time}})",
+    "expectedTime": "Expected Time",
+    "startTime": "Start Time",
+    "finishTime": "Finish Time",
+    "costAfterCoupon": "Cost After Coupon",
+    "estimatedCost": "Estimated Cost",
+    "header": "Request #",
+    "requestTIme": "Request Time",
+    "service": "Service",
+    "distance": "Distance",
+    "duration": "Duration",
+    "chats": "Chats",
+    "complaints": "Complaints",
+    "assign": "Assign Kasiman (Alpha)"
+  },
+  "profile": {
+    "status": "Status",
+    "locations": "Locations",
+    "view": "View",
+    "requestInfo": "Request Info",
+    "name": "Name",
+    "mobileNumber": "Mobile Number",
+    "registeredOn": "Registered On",
+    "driverInfo": "Kasiman Info",
+    "riderInfo": "Client Info",
+    "details": "Details",
+    "title": "Title",
+    "content": "Content",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "gender": "Gender",
+    "canDeliver": "Can deliver (Kasi Moto)",
+    "maxPackageSize": "Max package size",
+    "email": "E-Mail",
+    "fleet": "Fleet",
+    "carModel": "Car Model",
+    "carColor": "Car Color",
+    "carProductionYear": "Car Production Year",
+    "carPlateNumber": "Car Plate Number",
+    "accountNumber": "Account Number",
+    "bankName": "Bank Name",
+    "bankRoutingNumber": "Bank Routing Number",
+    "bankSwift": "Bank Swift",
+    "address": "Address",
+    "services": "Services",
+    "avatarImage": "Avatar Image",
+    "upload": "Upload",
+    "save": "Save",
+    "dateTime": "Date & Time",
+    "rating": "Rating",
+    "review": "Review",
+    "actions": "Actions",
+    "transactionType": "Transaction Type",
+    "amount": "Amount",
+    "documentNumber": "Document Number",
+    "submit": "Submit",
+    "insertTransaction": "Insert Transaction",
+    "cost": "Cost",
+    "goToList": "Go To List",
+    "add": "Add",
+    "search": "Search",
+    "reset": "Reset",
+    "export": "Export",
+    "total": "Total",
+    "currency": "Currency",
+    "date": "Date",
+    "next": "Next",
+    "select": "Select",
+    "delete": "Delete",
+    "phoneNumber": "Phone Number",
+    "commissionPercentage": "Commission Percentage",
+    "commissionFlat": "Commission Flat",
+    "bankAccountInfo": "Bank Account Info",
+    "warning": "Warning",
+    "clearMap": "Clear Map",
+    "financialRecords": "Financial Records",
+    "disabled": "Disabled",
+    "visibilityStatus": "Visibility Status",
+    "saveChanges": "Save changes",
+    "enabled": "Enabled",
+    "deleteNotice": "Are you sure you want to delete this data? This action is irreversible",
+    "dangerArea": "Dangerous Area",
+    "userName": "User Name",
+    "code": "Code",
+    "beneficiary": "Beneficiary",
+    "availabilityTime": "Availability Time",
+    "appType": "App Type",
+    "creditGift": "Credit Gift",
+    "tripFeePercentGift": "Trip Fee Percent Gift",
+    "creditCurrency": "Credit Currency",
+    "conditionTripCountsLessThan": "Trip counts less than",
+    "conditionUserNumberFirstDigits": "Beneficiary mobile numbers first digits (list, comma separated)",
+    "subject": "Subject",
+    "type": "Type",
+    "paymentGateway": "Payment Gateway",
+    "rider": "Client",
+    "driver": "Kasiman",
+    "admin": "Admin",
+    "coupon": "Coupon",
+    "activities": "Activities Timeline",
+    "location": "Location",
+    "submittedBy": "Submitted By",
+    "pleaseSelect": "Please select",
+    "searchMobileNumber": "Search Mobile Number",
+    "userType": "User Type",
+    "description": "Description",
+    "rechargeType": "Recharge Type",
+    "deductType": "Deduct Type",
+    "transactionsRecords": "Transactions Records",
+    "walletSummary": "Wallet Summary",
+    "isResident": "Is Resident?",
+    "idNumber": "ID Number",
+    "sender": "(Sender)",
+    "url": "URL",
+    "image": "Image",
+    "icon": "Icon",
+    "action": "Action",
+    "note": "Note",
+    "by": "by",
+    "ratingSummary": "{{percent}}% (from {{count}} reviews)",
+    "notAvailable": "N/A",
+    "parameters": "Parameters",
+    "assign": "Assign",
+    "photo": "Photo"
+  },
+  "complaint": {
+    "inscriptionTime": "Inscription Time",
+    "content": "Content"
+  },
+  "driver": {
+    "profile": {
+      "changeStatus": "Update Status",
+      "lastSeenAt": "Last Seen At",
+      "rating": "Rating",
+      "details": "Details",
+      "orders": "Orders",
+      "financials": "Credit Records",
+      "reviews": "Reviews",
+      "documents": "Documents",
+      "ratingSummary": "Rating summary"
+    }
+  },
+  "table": {
+    "viewRequest": "View Request",
+    "viewOperator": "View Operator",
+    "viewGateway": "View Gateway",
+    "min": "Min",
+    "max": "Max",
+    "viewDriver": "View Kasiman",
+    "viewFleet": "View Fleet",
+    "viewRider": "View Client",
+    "viewComplaint": "View Complaint",
+    "openInGoogleMaps": "Open In Google Maps",
+    "registeredOn": "Registered on",
+    "submittedOn": "Submitted on"
+  },
+  "drivers": {
+    "notFoundMessage": "Kasiman Not Found!"
+  },
+  "dispatcher": {
+    "removeLastPoint": "Remove Last Point",
+    "rider": {
+      "title": "Client",
+      "description": "Select client to assign request"
+    },
+    "location": {
+      "title": "Location",
+      "description": "Pickup & Drop-off location(s)"
+    },
+    "service": {
+      "title": "Service",
+      "description": "Service to be requested"
+    },
+    "looking": {
+      "title": "Looking",
+      "description": "Searching for an eligible Kasiman",
+      "waitMessage": "Looking for a suitable Kasiman. Please wait..."
+    },
+    "determiningLocation": "Determining Location, Please wait...",
+    "viewRequestDetails": "View Request Details",
+    "cancelRequest": "Cancel Request",
+    "driverAcceptedRequestSuffix": "has accepted the request. Go to the trip page for more information.",
+    "tripStatusUpdated": "Trip status is updated to {{status}}.",
+    "time": "Time"
+  },
+  "chart": {
+    "emptyState": "Nothing to see here."
+  },
+  "message": {
+    "areYouSure": "Are you sure?",
+    "deleteDriverConfirmation": {
+      "title": "Are you sure you want to delete the Kasiman?",
+      "content": "Deleting Kasiman information will hide the Kasiman from the list of Kasimen and the profile won't be accessible anymore."
+    },
+    "deleteDriverCofirmAlert": "Kasiman has been deleted",
+    "driverAssignedSuccessfully": "Kasiman is assigned successfully",
+    "deleteConfirmation": {
+      "title": "Are you sure you want to delete?"
+    },
+    "deleteRiderConfirmation": {
+      "content": "Deleting client information will hide the client from the list of clients and the profile won't be accessible anymore."
+    },
+    "deleteRiderCofirmAlert": "Client Has been deleted."
+  },
+  "error": {
+    "nameInvalid": "Name is not valid",
+    "titleInvalid": "Title is not valid",
+    "PERMISSION_NOT_GRANTED": "Permission not granted"
+  },
+  "fleet": {
+    "exclusitivityAreaTitle": "Exclusitivity Area",
+    "exclusitivityAreaWarning": "Exercise caution when utilizing this feature. Once you designate an exclusivity area to a fleet, all ride requests originating within that region will be directed solely to Kasimen belonging to that specific fleet. Kasimen who are not affiliated with the fleet will not receive these requests.",
+    "feeMultiplier": "Fee Multiplier",
+    "section": {
+      "identity": {
+        "title": "Identity",
+        "desc": "Fleet name and contact details."
+      },
+      "commission": {
+        "title": "Commission",
+        "desc": "Fleet share taken on rides."
+      },
+      "bank": {
+        "title": "Banking",
+        "desc": "Bank details used for payouts."
+      },
+      "exclusivity": {
+        "desc": "Restricts the fleet to its own Kasimen."
+      },
+      "transaction": {
+        "desc": "Add a manual transaction to the fleet wallet."
+      }
+    }
+  },
+  "fleets": {
+    "title": "Fleets",
+    "subtitle": "List of all the fleets registered."
+  },
+  "cars": {
+    "title": "Cars",
+    "subtitle": "Basic car info definitions",
+    "models": "Models",
+    "colors": "Colors"
+  },
+  "regions": {
+    "title": "Regions",
+    "subtitle": "List of all the regions the app operates within."
+  },
+  "region": {
+    "title": "New Region",
+    "subtitle": "Parameters of the region the app is operating within.",
+    "geofence": "Geofence",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Region name, currency and visibility."
+      },
+      "geofence": {
+        "title": "Geofence",
+        "desc": "Draw the coverage area on the map."
+      }
+    }
+  },
+  "cancelReasons": {
+    "title": "Cancel Reasons",
+    "subtitle": "Reasons for cancellation that clients will encounter and can choose from when canceling a ride."
+  },
+  "payoutSessions": {
+    "title": "Payout Sessions",
+    "subtitle": "Batch payments of Kasimen earnings."
+  },
+  "payoutSession": {
+    "title": "Payout Session",
+    "subtitle": "Payouts generated for this session."
+  },
+  "payoutSessionNew": {
+    "title": "New Payout Session",
+    "subtitle": "Generates a payout for every eligible Kasiman (balance above the minimum, active payout method).",
+    "section": {
+      "criteria": {
+        "title": "Criteria",
+        "desc": "Kasimen selection and thresholds for the payout session."
+      }
+    }
+  },
+  "payoutMethods": {
+    "title": "Payout Methods",
+    "subtitle": "Channels used to pay Kasimen earnings (Wave, Orange Money, bank transfer, cash)."
+  },
+  "payoutMethod": {
+    "title": "Payout Method",
+    "subtitle": "Payout channel settings.",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Method type, name and activation state."
+      },
+      "settings": {
+        "title": "Settings",
+        "desc": "Options specific to the payout method."
+      }
+    }
+  },
+  "payouts": {
+    "type": "Type",
+    "method": "Method",
+    "accountNumber": "Account number",
+    "minimumAmount": "Minimum amount",
+    "minimumAmountHint": "Kasimen below this balance are excluded from the session.",
+    "totalAmount": "Total amount",
+    "instructions": "Instructions",
+    "targetMethods": "Targeted methods",
+    "targetMethodsHint": "Leave empty to include every active method.",
+    "allMethods": "All methods",
+    "createSession": "New session",
+    "preview": "Preview",
+    "previewResult": "{{count}} eligible Kasimen",
+    "noEligible": "No eligible Kasiman for these criteria.",
+    "processAll": "Pay all",
+    "processAllConfirm": "Mark every pending payout as paid and deduct wallets?",
+    "cancelSession": "Cancel session",
+    "cancelSessionConfirm": "Cancel every pending payout of this session?",
+    "markPaid": "Mark paid",
+    "markPaidConfirm": "Payment done outside the app? The wallet will be deducted.",
+    "cancel": "Cancel",
+    "cancelPayoutConfirm": "Cancel this payout?"
+  },
+  "smsProviders": {
+    "title": "SMS Providers",
+    "subtitle": "SMS gateways used to send verification codes and text notifications."
+  },
+  "smsProvider": {
+    "title": "SMS Provider",
+    "subtitle": "SMS gateway settings.",
+    "type": "Type",
+    "accountId": "Account ID",
+    "apiSecret": "API secret",
+    "apiSecretHint": "Unchanged if empty.",
+    "senderId": "Sender ID",
+    "template": "Verification template",
+    "templateHint": "{code} will be replaced by the 6-digit code.",
+    "setDefault": "Set as default",
+    "default": "Default",
+    "defaultSet": "Set as the default provider.",
+    "testSms": "Test SMS",
+    "testNumber": "Phone number",
+    "testSent": "Test SMS sent.",
+    "section": {
+      "provider": {
+        "title": "Provider",
+        "desc": "Provider type, name and activation state."
+      },
+      "credentials": {
+        "title": "Credentials",
+        "desc": "SMS service API keys and sender ID."
+      },
+      "template": {
+        "title": "Template",
+        "desc": "Verification SMS template sent to users."
+      }
+    }
+  },
+  "emailProviders": {
+    "title": "Email Providers",
+    "subtitle": "Email gateways used to send notifications and transactional messages."
+  },
+  "emailProvider": {
+    "title": "Email Provider",
+    "subtitle": "Email gateway settings.",
+    "type": "Type",
+    "host": "SMTP host",
+    "port": "Port",
+    "secure": "Secure connection (SSL/TLS)",
+    "secureHint": "Enabled = port 465 (SMTPS); disabled = port 587 (STARTTLS).",
+    "username": "Username",
+    "password": "Password",
+    "passwordHint": "Unchanged if empty.",
+    "fromAddress": "From address",
+    "fromName": "From name",
+    "setDefault": "Set as default",
+    "default": "Default",
+    "defaultSet": "Set as the default provider.",
+    "testEmail": "Test email",
+    "testTo": "Email address",
+    "testSent": "Test email sent.",
+    "section": {
+      "provider": {
+        "title": "Provider",
+        "desc": "Provider type, name and activation state."
+      },
+      "smtp": {
+        "title": "SMTP configuration",
+        "desc": "Server, credentials and sender address."
+      }
+    }
+  },
+  "callMaskingProviders": {
+    "title": "Call Masking Providers",
+    "subtitle": "Voice providers used to anonymize calls between clients and drivers."
+  },
+  "callMaskingProvider": {
+    "title": "Call Masking Provider",
+    "subtitle": "Anonymized call provider settings.",
+    "type": "Type",
+    "accountId": "Account SID",
+    "apiSecret": "Auth token",
+    "apiSecretHint": "Unchanged if empty.",
+    "proxyNumber": "Proxy number",
+    "webhookAuthToken": "Webhook auth token",
+    "webhookAuthTokenHint": "Unchanged if empty.",
+    "sessionTtlMinutes": "Session TTL (minutes)",
+    "setDefault": "Set as default",
+    "default": "Default",
+    "defaultSet": "Set as the default provider.",
+    "testCall": "Test call",
+    "testNumber": "Phone number",
+    "testSent": "Test call triggered.",
+    "section": {
+      "provider": {
+        "title": "Provider",
+        "desc": "Provider type, name and activation state."
+      },
+      "credentials": {
+        "title": "Credentials",
+        "desc": "Service API keys and authentication tokens."
+      },
+      "routing": {
+        "title": "Routing",
+        "desc": "Proxy number and masked-call session lifetime."
+      }
+    }
+  },
+  "shiftRules": {
+    "title": "Shift rules",
+    "subtitle": "Define drivers' working-hours and break limits.",
+    "frequency": "Frequency",
+    "maxHoursPerPeriod": "Max hours per period",
+    "maxHoursPerPeriodHint": "Maximum driving hours allowed over the selected period.",
+    "mandatoryBreakMinutes": "Mandatory break (min)",
+    "mandatoryBreakMinutesHint": "Recommended break duration between shifts.",
+    "enforced": "Enforced (blocking)",
+    "enforcedHint": "If enabled, the rule is presented as blocking. Server-side enforcement is still advisory (soft) for now.",
+    "enforcedTag": "Enforced",
+    "softTag": "Advisory",
+    "deleted": "Rule deleted",
+    "frequencyEnum": {
+      "Daily": "Daily",
+      "Weekly": "Weekly"
+    }
+  },
+  "shiftRule": {
+    "title": "Shift rule",
+    "subtitle": "Configure the limits applied to drivers' shifts.",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Name, frequency and state of the shift rule."
+      },
+      "limits": {
+        "title": "Limits",
+        "desc": "Maximum duration and mandatory break per period."
+      }
+    }
+  },
+  "retention": {
+    "title": "Document retention",
+    "subtitle": "Define how long documents are kept before automatic purge.",
+    "retentionDays": "Retention days",
+    "retentionDaysHint": "Number of days after which a document becomes eligible for purge.",
+    "days": "{{count}} days",
+    "dryRun": "Simulation mode",
+    "dryRunHint": "Enabled: the system only logs the documents that would be purged and deletes NOTHING.",
+    "enabledHint": "Enables this policy to be considered by the retention job.",
+    "lastRunAt": "Last run",
+    "simulationMode": "Simulation",
+    "realMode": "Real purge",
+    "realDeletionDisabledWarning": "Real purge will be enabled in a later version after validation. At this stage the system stays non-destructive: no document is deleted.",
+    "runDryRun": "Run simulation",
+    "dryRunTriggered": "Retention simulation triggered (no deletion performed).",
+    "section": {
+      "policy": {
+        "title": "Policy",
+        "desc": "Name, retention period and policy state."
+      },
+      "execution": {
+        "title": "Execution",
+        "desc": "Simulation mode and purge triggering."
+      }
+    }
+  },
+  "cancelReason": {
+    "title": "Cancel Reason",
+    "subtitle": "Reason for cancellation that clients will encounter and can choose from when canceling a ride",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Title, user type and visibility."
+      }
+    }
+  },
+  "reviewParameters": {
+    "title": "Review Parameters",
+    "subtitle": "The parameters available for clients to assess their service quality on the rating page after the completion of the trip."
+  },
+  "reviewParameter": {
+    "title": "New Review Parameter",
+    "subtitle": "Parameters of reviews that the client can select for their rating.",
+    "isGood": "Is Good",
+    "good": "Good",
+    "bad": "Bad",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Parameter title and its sentiment."
+      }
+    }
+  },
+  "services": {
+    "editCategory": "Edit Category",
+    "newCategory": "New Category",
+    "newService": "New Service",
+    "title": "Services",
+    "subtitle": "List of all available services."
+  },
+  "service": {
+    "title": "Service",
+    "subtitle": "View and edit the service details",
+    "createFirstNotice": "Create your first service category to be displayed in client applications",
+    "Regions": "Regions",
+    "category": "Category",
+    "maxPersonCapacity": "Max Person Capacity",
+    "baseFare": "Base Fare",
+    "perHundredMeters": "Per Hundred Meters",
+    "perMinuteDrive": "Per Minute Drive",
+    "perMinuteWait": "Per Minute Wait",
+    "prepayPercent": "Prepay Percent",
+    "minimumFee": "Minimum Fee",
+    "roundingFactor": "Rounding Factor",
+    "roundingFactorError": "The value needs to be more than zero and less than 100",
+    "maximumDistance": "Maximum Distance",
+    "searchRadius": "Search Radius",
+    "paymentMethod": "Payment Method",
+    "orderType": "Order Type",
+    "orderTypes": {
+      "Ride": "Ride",
+      "Delivery": "Delivery"
+    },
+    "providerSharePercent": "Provider Share Percent",
+    "providerShareFlat": "Provider Share Flat",
+    "cancellationTotalFee": "Cancellation Total Fee",
+    "cancellationDriverShare": "Cancellation Kasiman Share",
+    "twoWayAvailable": "Two way available?",
+    "timeMultiplierTitle": "Time of the day Multiplier",
+    "distanceMultiplierTitle": "Distance Multiplier",
+    "weekdayMultiplierTitle": "Weekday Multipliers",
+    "dateRangeMultiplierTitle": "Date range Multiplier",
+    "ridePreferences": "Ride preferences",
+    "timeMultiplierTable": {
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "multiplyBy": "Multiply By"
+    },
+    "insertRule": "Insert Rule",
+    "distanceMultiplierTable": {
+      "distanceFrom": "Distance From",
+      "distanceTo": "Distance To"
+    },
+    "weekdayMultiplierTable": {
+      "weekday": "Weekday"
+    },
+    "dateRangeMultiplierTable": {
+      "dateRange": "Date Range"
+    },
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Service name, category, capacity and image."
+      },
+      "pricing": {
+        "title": "Pricing",
+        "desc": "Base fares and price calculation parameters."
+      },
+      "commission": {
+        "title": "Commission & cancellation",
+        "desc": "Provider share and cancellation fees."
+      },
+      "availability": {
+        "title": "Ride & availability",
+        "desc": "Distances, payment and order type."
+      }
+    }
+  },
+  "serviceCategory": {
+    "title": "Service Category",
+    "subtitle": "Input service category details below.",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Service category name."
+      }
+    }
+  },
+  "serviceOptions": {
+    "title": "Service Options",
+    "subtitle": "List of options that can be enabled on specific services."
+  },
+  "serviceOption": {
+    "title": "Service option definition",
+    "subtitle": "Options that can be enabled on specific services.",
+    "additionalFee": "Additional fee",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Option name, type and icon."
+      }
+    }
+  },
+  "settings": {
+    "generalSettings": "General Settings",
+    "changePasswordTitle": "Change Password",
+    "changePasswordSubtitle": "Update your password used to access this panel",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "newPasswordRepeat": "New Password Repeat",
+    "passwordIncorrect": "Password is incorrect",
+    "section": {
+      "changePassword": {
+        "desc": "Change your administrator account password."
+      }
+    }
+  },
+  "users": {
+    "title": "Operators",
+    "subtitle": "Users of Admin panel (Operators and admins)",
+    "tab": {
+      "details": "Details"
+    },
+    "noRole": "No Role assigned"
+  },
+  "role": {
+    "title": "User Role",
+    "subtitle": "Admin Panel user role definition",
+    "permissions": "Permissions",
+    "section": {
+      "identity": {
+        "title": "Identity",
+        "desc": "User role name."
+      },
+      "permissions": {
+        "desc": "Permissions granted to this role."
+      }
+    }
+  },
+  "roles": {
+    "title": "User Roles",
+    "subtitle": "Role definitions for Admin panel users."
+  },
+  "zonePrice": {
+    "pickupAreas": "Pickup area(s)",
+    "destinationAres": "Destination area(s)",
+    "title": "New Zone Price",
+    "subtitle": "Define zones with static pricing to override the default distance-based calculation.",
+    "timeMultiplierTitle": "Time Multiplier",
+    "moreSelected": "and {{count}} more selected",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Name, fleets, services and fixed fare."
+      },
+      "zones": {
+        "title": "Zones",
+        "desc": "Pickup and destination areas on the map."
+      }
+    }
+  },
+  "zonePrices": {
+    "title": "Zone prices",
+    "subtitle": "Define specific regions that override the default price and have an specific price for customer's ride"
+  },
+  "paymentGateways": {
+    "title": "Payment Gateways",
+    "subtitle": "Payment options of clients"
+  },
+  "paymentGateway": {
+    "subtitle": "API keys and client facing definitions.",
+    "apiKeys": "API Keys",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Gateway type, name and activation state."
+      },
+      "branding": {
+        "title": "Branding",
+        "desc": "Display name and logo shown to the user."
+      },
+      "apiKeys": {
+        "desc": "Payment gateway API keys and secrets."
+      }
+    }
+  },
+  "announcement": {
+    "title": "Announcement",
+    "subtitle": "Definition of announcements & news that users will see under the menu on their app.",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Title and content of the broadcast announcement."
+      }
+    }
+  },
+  "announcements": {
+    "title": "Announcements",
+    "subtitle": "List of all the announcements"
+  },
+  "coupons": {
+    "title": "Coupons",
+    "subtitle": "List of all the coupons",
+    "availabilityTime": "Availability Time",
+    "description": "Create coupons to be used by clients to get discounts on their rides",
+    "expirationTime": "Expiration Time",
+    "manyUsersCanUse": "# Users can use",
+    "manyTimesUserCanUse": "# Times User Can Use",
+    "minimumCost": "Minimum Cost",
+    "maximumCost": "Maximum Cost",
+    "discountPercent": "Discount Percent",
+    "discountFlat": "Discount Flat",
+    "isEnabled": "Is Enabled?",
+    "isFirstTravelOnly": "Is First Travel Only?",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Coupon code and applicable service."
+      },
+      "discount": {
+        "title": "Discount",
+        "desc": "Type and amount of the applied discount."
+      },
+      "options": {
+        "title": "Options",
+        "desc": "Additional settings and coupon restrictions."
+      },
+      "usage": {
+        "title": "Usage",
+        "desc": "Usage limits and validity period."
+      }
+    }
+  },
+  "giftCards": {
+    "title": "Gift Cards",
+    "subtitle": "List of issued gift card batches",
+    "newBatch": "New Batch",
+    "newBatchSubtitle": "Generate a gift card batch; codes are created automatically.",
+    "viewSubtitle": "Batch detail and generated codes",
+    "batchInfo": "Batch information",
+    "amount": "Amount",
+    "quantity": "Quantity",
+    "availability": "Availability",
+    "availableTimestamp": "Available from",
+    "expirationTimestamp": "Expires on",
+    "createdAt": "Created at",
+    "generate": "Generate batch",
+    "codes": "Codes",
+    "code": "Code",
+    "used": "Used",
+    "available": "Available",
+    "codesRestricted": "You do not have permission to view the codes of this batch (GiftCards_ViewCodes).",
+    "section": {
+      "batch": {
+        "title": "Gift card batch",
+        "desc": "Quantity, value and settings of the batch to generate."
+      }
+    }
+  },
+  "rewards": {
+    "subtitle": "List of all the reward & referral rules",
+    "underDevelopmentNotice": "This feature is still under development and the application side is yet to be integrated. Full roll-out of this feature is planned for coming weeks."
+  },
+  "reward": {
+    "newTitle": "New reward rule",
+    "editTitle": "Edit reward rule #",
+    "subtitle": "Definitions of rewarding rule.",
+    "event": "Event",
+    "conditions": "Conditions",
+    "section": {
+      "general": {
+        "title": "General",
+        "desc": "Reward name and triggering event."
+      },
+      "conditions": {
+        "desc": "Beneficiary, amount and awarding conditions."
+      }
+    }
+  },
+  "riders": {
+    "title": "Clients",
+    "subtitle": "List of all the clients registered.",
+    "notFoundMessage": "Client Not Found!",
+    "tab": {
+      "details": "Details",
+      "creditrecords": "Credit Records",
+      "orders": "Orders",
+      "addresses": "Addresses"
+    }
+  },
+  "complaints": {
+    "title": "Complaints",
+    "subtitle": "Complaints submitted by clients/Kasimen"
+  },
+  "sos": {
+    "title": "SOS",
+    "subtitle": "Distress Signals submitted by users",
+    "activities": "Activities",
+    "insertActivity": "Insert Activity",
+    "section": {
+      "request": {
+        "desc": "Details of the ride linked to the alert."
+      },
+      "driver": {
+        "desc": "Kasiman involved in the alert."
+      },
+      "rider": {
+        "desc": "Client involved in the alert."
+      },
+      "activities": {
+        "desc": "History of actions taken on this alert."
+      },
+      "newActivity": {
+        "desc": "Log a new action on this alert."
+      }
+    }
+  },
+  "weekday": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "requestActivityType": {
+    "arrivedToDestination": "Arrived To Destination",
+    "arrivedToPickupPoint": "Arrived To Pickup Point",
+    "bookedByOperator": "Book By Operator",
+    "bookedByRider": "Bookd By Client",
+    "canceledByDriver": "Canceled By Kasiman",
+    "canceledByOperator": "Canceled By Operator",
+    "canceledByRider": "Canceled By Client",
+    "driverAccepted": "Kasiman Accepted",
+    "expired": "Expired",
+    "paid": "Paid",
+    "requestedByOperator": "Requested By Operator",
+    "requestedByRider": "Requested By Client",
+    "reviewed": "Reviewed & Rated",
+    "started": "Started"
+  },
+  "form": {
+    "role": "Role",
+    "password": "Password",
+    "register": "Register",
+    "cancel": "Cancel",
+    "notValidFirstName": "The input is not valid First Name",
+    "notValidLastName": "The input is not valid Last Name",
+    "notValidUserName": "The input is not valid User Name",
+    "notValidMobileNumber": "The input is not valid Mobile Number",
+    "notValidPassword": "The input is not valid Password",
+    "notValidEmail": "The input is not valid E-mail",
+    "roleNotSelected": "Role is not selected",
+    "newRider": {
+      "title": "New Client",
+      "subtitle": "Input Client's contact details below.",
+      "section": {
+        "profile": {
+          "title": "Profile",
+          "desc": "Passenger identity and contact details."
+        }
+      }
+    },
+    "newDriver": {
+      "title": "New Kasiman",
+      "subtitle": "Input Kasiman's contact details below.",
+      "section": {
+        "profile": {
+          "title": "Profile",
+          "desc": "Kasiman identity and contact details."
+        }
+      }
+    },
+    "newOperator": {
+      "title": "New Operator",
+      "subtitle": "Input Operator's details below.",
+      "section": {
+        "identity": {
+          "title": "Identity",
+          "desc": "Operator name and contact details."
+        },
+        "account": {
+          "title": "Account",
+          "desc": "Role and sign-in credentials."
+        }
+      }
+    },
+    "newFleet": {
+      "title": "New Fleet",
+      "subtitle": "Input new Fleet's details below.",
+      "section": {
+        "identity": {
+          "title": "Identity",
+          "desc": "Name and contact details of the new fleet."
+        },
+        "commission": {
+          "title": "Commission",
+          "desc": "Fleet share taken on rides."
+        },
+        "bank": {
+          "title": "Banking",
+          "desc": "Bank details used for payouts."
+        }
+      }
+    }
+  },
+  "login": {
+    "title": "Login",
+    "usernameRequired": "Please input your username!",
+    "username": "Username",
+    "submit": "Log in"
+  },
+  "driverWallets": {
+    "title": "Kasiman Wallets",
+    "subtitle": "List of Kasimen current wallet balance"
+  },
+  "fleetWallets": {
+    "title": "Fleet Wallets",
+    "subtitle": "List of fleets current wallet balance"
+  },
+  "riderWallets": {
+    "title": "Client Wallets",
+    "subtitle": "List of clients current wallet balance"
+  },
+  "providerWallet": {
+    "title": "Provider Wallet",
+    "subtitle": "List of system provider (you) income of services."
+  },
+  "config": {
+    "step1Title": "Mapbox API",
+    "step1Description": "Mapbox access tokens",
+    "step2Title": "Firebase Admin SDK",
+    "step2Description": "Notifications & authentication",
+    "backendMapsKey": "Backend Mapbox token",
+    "dashboardMapsKey": "Dashboard Mapbox token",
+    "invalidMapsKeys": "The Mapbox tokens seem invalid.",
+    "firebaseUploadText": "Firebase project private key",
+    "firebaseUploadHint": "Upload the private key JSON file downloaded from your Firebase project under Service Accounts, using the Generate Private Key button.",
+    "invalidFirebaseKey": "The Firebase project key seems invalid.",
+    "uploadSuccess": "{{file}} uploaded successfully.",
+    "uploadFailed": "{{file}} upload failed.",
+    "previous": "Previous",
+    "next": "Next",
+    "done": "Done",
+    "successTitle": "Configuration complete!",
+    "successSubtitle": "Your configuration is saved. Please wait around 30 seconds for the system to apply it, then go to the login screen using the button below.",
+    "goLogin": "Go to login"
+  },
+  "driverProfile": {
+    "details": {
+      "section": {
+        "identity": {
+          "title": "Identity",
+          "desc": "Kasiman name, gender and contact details."
+        },
+        "vehicle": {
+          "title": "Vehicle",
+          "desc": "Vehicle details and delivery capabilities."
+        },
+        "financial": {
+          "title": "Banking details",
+          "desc": "Bank details used for payouts."
+        },
+        "media": {
+          "title": "Services and photo",
+          "desc": "Enabled services and Kasiman profile photo."
+        }
+      }
+    },
+    "financial": {
+      "section": {
+        "insert": {
+          "desc": "Manually credit or debit the Kasiman wallet."
+        }
+      }
+    }
+  },
+  "riderView": {
+    "info": {
+      "section": {
+        "identity": {
+          "title": "Identity",
+          "desc": "Passenger name, gender and contact details."
+        },
+        "residency": {
+          "title": "Residency",
+          "desc": "Passenger residency status and identification."
+        }
+      }
+    },
+    "financial": {
+      "section": {
+        "insert": {
+          "desc": "Manually credit or debit the passenger wallet."
+        }
+      }
+    }
+  },
+  "mapSettings": {
+    "title": "Map Settings",
+    "subtitle": "Configure the map provider used by the Kasi mobile apps.",
+    "saved": "Map settings saved.",
+    "section": {
+      "provider": {
+        "title": "Provider",
+        "desc": "Select the map tile service applied to the client and Kasiman apps."
+      },
+      "mapbox": {
+        "title": "Mapbox",
+        "desc": "Settings used when the provider is Mapbox (token and style)."
+      },
+      "google": {
+        "title": "Google",
+        "desc": "Settings used when the provider is Google Maps."
+      }
+    },
+    "provider": "Map provider",
+    "providerNote": "This choice directly drives the maps shown in the mobile apps.",
+    "mapboxToken": "Mapbox token",
+    "mapboxTokenHint": "Public pk token. Remember to restrict it on the Mapbox side (allowed domains/URLs).",
+    "mapboxStyleUser": "Style user",
+    "mapboxStyleUserHint": "Default: mapbox.",
+    "mapboxStyleId": "Style ID",
+    "mapboxStyleIdHint": "Default: streets-v12.",
+    "googleMapsApiKey": "Google Maps API key",
+    "googleMapsApiKeyHint": "Web key used to render Google map tiles.",
+    "googleNativeNote": "Switching to Google also requires the native Android/iOS key (set at compile time).",
+    "enum": {
+      "Mapbox": "Mapbox",
+      "OpenStreetMap": "OpenStreetMap",
+      "Google": "Google Maps"
+    }
+  }
 }

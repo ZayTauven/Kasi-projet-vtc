@@ -42,6 +42,8 @@ export enum OperatorPermission {
   ShiftRules_Edit = 'ShiftRules_Edit',
   DocumentRetention_View = 'DocumentRetention_View',
   DocumentRetention_Edit = 'DocumentRetention_Edit',
+  MapSettings_View = 'MapSettings_View',
+  MapSettings_Edit = 'MapSettings_Edit',
 }
 
 registerEnumType(OperatorPermission, { name: 'OperatorPermission' });

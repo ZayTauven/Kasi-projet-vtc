@@ -4,48 +4,65 @@
     <p>{{ 'retention.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="id" type="hidden" hidden>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
-        <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
-          <input nz-input formControlName="name" id="name" />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="retentionDays">{{ 'retention.retentionDays' | translate }}</nz-form-label>
-        <nz-form-control [nzExtra]="'retention.retentionDaysHint' | translate">
-          <nz-input-number formControlName="retentionDays" id="retentionDays" [nzMin]="1" [nzMax]="3650" [nzStep]="1"
-            style="width: 100%;"></nz-input-number>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
-        <nz-form-control [nzExtra]="'retention.enabledHint' | translate">
-          <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzRequired nzFor="dryRun">{{ 'retention.dryRun' | translate }}</nz-form-label>
-        <nz-form-control [nzExtra]="'retention.dryRunHint' | translate">
-          <nz-switch required id="dryRun" formControlName="dryRun"></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <!-- SÉCURITÉ : avertissement quand le mode simulation est désactivé. -->
-      <nz-alert *ngIf="form.get('dryRun')?.value === false" class="kasi-form__full mb-4" nzType="warning" nzShowIcon
-        [nzMessage]="'profile.warning' | translate"
-        [nzDescription]="'retention.realDeletionDisabledWarning' | translate"></nz-alert>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.submit' |
-        translate }}</button>
-      <button *ngIf="isEdit" nz-button nzType="default" type="button" [nzLoading]="running"
-        (click)="onRunDryRun()">{{ 'retention.runDryRun' | translate }}</button>
-      <button *ngIf="isEdit" nz-button nzDanger type="button" nz-popconfirm
-        [nzPopconfirmTitle]="'message.areYouSure' | translate" (nzOnConfirm)="onDelete()">{{ 'profile.delete' |
-        translate }}</button>
-    </div>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'retention.section.policy.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'retention.section.policy.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
+              <input nz-input formControlName="name" id="name" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="retentionDays">{{ 'retention.retentionDays' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'retention.retentionDaysHint' | translate">
+              <nz-input-number formControlName="retentionDays" id="retentionDays" [nzMin]="1" [nzMax]="3650" [nzStep]="1"
+                style="width: 100%;"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'retention.section.execution.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'retention.section.execution.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'retention.enabledHint' | translate">
+              <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="dryRun">{{ 'retention.dryRun' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'retention.dryRunHint' | translate">
+              <nz-switch required id="dryRun" formControlName="dryRun"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+          <!-- SÉCURITÉ : avertissement quand le mode simulation est désactivé. -->
+          <nz-alert *ngIf="form.get('dryRun')?.value === false" class="kasi-form__full mb-4" nzType="warning" nzShowIcon
+            [nzMessage]="'profile.warning' | translate"
+            [nzDescription]="'retention.realDeletionDisabledWarning' | translate"></nz-alert>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button *ngIf="isEdit" nz-button nzType="default" type="button" [nzLoading]="running"
+      (click)="onRunDryRun()">{{ 'retention.runDryRun' | translate }}</button>
+    <button *ngIf="isEdit" nz-button nzDanger type="button" nz-popconfirm
+      [nzPopconfirmTitle]="'message.areYouSure' | translate" (nzOnConfirm)="onDelete()">{{ 'profile.delete' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

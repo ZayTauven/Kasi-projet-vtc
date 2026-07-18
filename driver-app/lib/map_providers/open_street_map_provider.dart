@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:client_shared/components/marker_new.dart';
 import 'package:client_shared/map_providers.dart';
 import 'package:client_shared/theme/theme.dart';
+import 'package:kasi_driver/map_providers/map_setting_bootstrap.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/current_location_cubit.dart';
 
-import 'package:client_shared/config.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
@@ -38,6 +38,15 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
           locationSettings: const geo.LocationSettings(distanceFilter: 50));
 
   @override
+  void initState() {
+    super.initState();
+    // Synchronise le fournisseur/token de carte depuis la config backend (panel).
+    bootstrapMapSetting().then((changed) {
+      if (changed && mounted) setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();
@@ -61,10 +70,8 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
               valueListenable:
                   Hive.box('settings').listenable(keys: ['mapProvider']),
               builder: (context, box, child) {
-                String? provider = box.get('mapProvider', defaultValue: null);
-                if (provider == null && mapProvider == MapProvider.mapBox) {
-                  provider = 'mapbox';
-                }
+                final provider =
+                    effectiveMapProviderId(box.get('mapProvider', defaultValue: null));
                 switch (provider) {
                   case 'mapbox':
                     return mapBoxTileLayer;
@@ -72,8 +79,6 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                     return openStreetTileLayer;
                 }
               }),
-          if (mapProvider == MapProvider.openStreetMap) openStreetTileLayer,
-          if (mapProvider == MapProvider.mapBox) mapBoxTileLayer,
           CurrentLocationLayer(
             followOnLocationUpdate: FollowOnLocationUpdate.once,
           ),

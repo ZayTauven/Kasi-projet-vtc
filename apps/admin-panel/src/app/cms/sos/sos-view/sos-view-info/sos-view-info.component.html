@@ -1,7 +1,11 @@
 <div *ngIf="(query | async)?.data?.distressSignal as sos">
-  <div class="kasi-card mt-2">
-    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.requestInfo' | translate }}</span></div>
-    <div class="kasi-card__body">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'profile.requestInfo' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'sos.section.request.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
       <div class="kasi-desc">
         <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.expectedTime' | translate }}</span><span
             class="kasi-desc__value">{{ sos.order.expectedTimestamp !== null ? (sos.order.expectedTimestamp | date:
@@ -26,13 +30,16 @@
             class="kasi-desc__value"><a [routerLink]="'/../requests/view/' + sos.order.id">{{ 'profile.view' | translate
             }}</a></span></div>
       </div>
-    </div>
-  </div>
+      </div>
+    </section>
 
-  <div class="kasi-card mt-2" *ngIf="sos.order.driver as driver">
-    <div class="kasi-card__head"><span class="kasi-card__title">{{ ('profile.driverInfo' | translate) +
-        (sos.submittedByRider ? '' : (' ' + ('profile.sender' | translate))) }}</span></div>
-    <div class="kasi-card__body">
+    <section class="kasi-form-section" *ngIf="sos.order.driver as driver">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ ('profile.driverInfo' | translate) +
+          (sos.submittedByRider ? '' : (' ' + ('profile.sender' | translate))) }}</h2>
+        <p class="kasi-form-section__desc">{{ 'sos.section.driver.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
       <div class="kasi-desc">
         <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
             class="kasi-desc__value">{{driver.firstName }} {{driver.lastName}}</span></div>
@@ -48,13 +55,16 @@
             class="kasi-desc__value"><a [routerLink]="'/../drivers/all/view/' + driver.id">{{ 'profile.view' | translate
             }}</a></span></div>
       </div>
-    </div>
-  </div>
+      </div>
+    </section>
 
-  <div class="kasi-card mt-2" *ngIf="sos.order.rider as rider">
-    <div class="kasi-card__head"><span class="kasi-card__title">{{ ('profile.riderInfo' | translate) +
-        (!sos.submittedByRider ? (' ' + ('profile.sender' | translate)) : '') }}</span></div>
-    <div class="kasi-card__body">
+    <section class="kasi-form-section" *ngIf="sos.order.rider as rider">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ ('profile.riderInfo' | translate) +
+          (!sos.submittedByRider ? (' ' + ('profile.sender' | translate)) : '') }}</h2>
+        <p class="kasi-form-section__desc">{{ 'sos.section.rider.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
       <div class="kasi-desc">
         <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
             class="kasi-desc__value">{{rider.firstName }} {{rider.lastName}}</span></div>
@@ -71,12 +81,15 @@
             class="kasi-desc__value"><a [routerLink]="'/../riders/view/' + rider.id">{{ 'profile.view' | translate
             }}</a></span></div>
       </div>
-    </div>
-  </div>
+      </div>
+    </section>
 
-  <div class="kasi-card mt-2 mb-2" *ngIf="sos.activities as activities">
-    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'sos.activities' | translate }}</span></div>
-    <div class="kasi-card__body kasi-card__body--flush">
+    <section class="kasi-form-section" *ngIf="sos.activities as activities">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'sos.activities' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'sos.section.activities.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
   <nz-table #activityTable [nzShowPagination]="false"
     [nzData]="activities" [nzTotal]="activities.length">
     <thead>
@@ -106,14 +119,19 @@
       </tr>
     </tbody>
   </nz-table>
-    </div>
+      </div>
+    </section>
   </div>
 
-  <div class="kasi-card">
-    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'sos.insertActivity' | translate }}</span></div>
-    <div class="kasi-card__body">
-    <form nz-form class="kasi-form" [formGroup]="formActivity" (ngSubmit)="onSubmitActivity(sos.id)">
-      <div class="kasi-form--grid">
+  <form nz-form [formGroup]="formActivity" (ngSubmit)="onSubmitActivity(sos.id)">
+    <div class="kasi-form-sections">
+      <section class="kasi-form-section">
+        <div class="kasi-form-section__aside">
+          <h2 class="kasi-form-section__title">{{ 'sos.insertActivity' | translate }}</h2>
+          <p class="kasi-form-section__desc">{{ 'sos.section.newActivity.desc' | translate }}</p>
+        </div>
+        <div class="kasi-form-section__body">
+          <div class="kasi-form kasi-form--grid">
         <nz-form-item>
           <nz-form-label nzRequired>{{ 'profile.action' | translate }}</nz-form-label>
           <nz-form-control>
@@ -139,12 +157,14 @@
             <input nz-input formControlName="note" id="note" class="w-full" required>
           </nz-form-control>
         </nz-form-item>
-      </div>
-      <div class="kasi-form-actions">
-        <button nz-button nzType="primary" type="submit" [disabled]="!formActivity.valid">{{
-        'profile.submit' | translate }}</button>
-      </div>
-    </form>
+          </div>
+        </div>
+      </section>
     </div>
-  </div>
+    <div class="kasi-form-page-actions">
+      <button nz-button nzType="default" type="button" (click)="cancelActivity()">{{ 'form.cancel' | translate }}</button>
+      <button nz-button nzType="primary" type="submit" [disabled]="!formActivity.valid">{{
+      'profile.submit' | translate }}</button>
+    </div>
+  </form>
 </div>

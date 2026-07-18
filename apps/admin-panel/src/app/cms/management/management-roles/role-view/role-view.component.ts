@@ -57,6 +57,10 @@ export class RoleViewComponent implements OnInit {
     this.routerHelper.goToParent(this.route);
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   onPermissionCheckChanged(category: string, permission: string, checked: boolean) {
     if(!(this.form.value.permissions as string[]).includes(`${category}_${permission}`) && checked) {
       (this.form.value.permissions as string[]).push(`${category}_${permission}`);

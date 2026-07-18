@@ -5,82 +5,110 @@
     <nz-tag *ngIf="isDefault" nzColor="blue">{{'callMaskingProvider.default' | translate}}</nz-tag>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form kasi-form--grid" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <input formControlName="id" type="hidden" hidden>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="type">{{ 'callMaskingProvider.type' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
-          <nz-option [nzLabel]="'enum.callMaskingProviderType.Direct' | translate" nzValue="Direct"></nz-option>
-          <nz-option [nzLabel]="'enum.callMaskingProviderType.TwilioVoice' | translate"
-            nzValue="TwilioVoice"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
-      <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
-        <input nz-input formControlName="name" id="name" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="accountId">{{ 'callMaskingProvider.accountId' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="accountId" id="accountId" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="apiSecret">{{ 'callMaskingProvider.apiSecret' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input type="password" formControlName="apiSecret" id="apiSecret" autocomplete="new-password"
-          [placeholder]="isEdit ? ('callMaskingProvider.apiSecretHint' | translate) : ''" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="proxyNumber">{{ 'callMaskingProvider.proxyNumber' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input formControlName="proxyNumber" id="proxyNumber" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="webhookAuthToken">{{ 'callMaskingProvider.webhookAuthToken' | translate }}</nz-form-label>
-      <nz-form-control>
-        <input nz-input type="password" formControlName="webhookAuthToken" id="webhookAuthToken"
-          autocomplete="new-password"
-          [placeholder]="isEdit ? ('callMaskingProvider.webhookAuthTokenHint' | translate) : ''" />
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="sessionTtlMinutes">{{ 'callMaskingProvider.sessionTtlMinutes' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-input-number formControlName="sessionTtlMinutes" id="sessionTtlMinutes" [nzMin]="1"
-          [nzStep]="1"></nz-input-number>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
-      <nz-form-control>
-        <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
-      </nz-form-control>
-    </nz-form-item>
-    </form>
-    <div *ngIf="showTestCall" class="mt-2">
-      <nz-input-group nzCompact style="max-width: 420px;">
-        <input nz-input [(ngModel)]="testNumber" [ngModelOptions]="{ standalone: true }" name="testNumber"
-          [placeholder]="'callMaskingProvider.testNumber' | translate" style="width: 60%;" />
-        <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testNumber === ''"
-          (click)="onTestCall()">{{ 'callMaskingProvider.testCall' | translate }}</button>
-      </nz-input-group>
-    </div>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" [disabled]="form.invalid" (click)="onSubmit()">{{'profile.submit' |
-        translate}}</button>
-      <button *ngIf="isEdit" nz-button nzType="default" type="button" [disabled]="isDefault"
-        (click)="onSetDefault()">{{'callMaskingProvider.setDefault' | translate}}</button>
-      <button *ngIf="isEdit" nz-button nzType="default" type="button"
-        (click)="showTestCall = !showTestCall">{{'callMaskingProvider.testCall' | translate}}</button>
-    </div>
+<form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'callMaskingProvider.section.provider.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'callMaskingProvider.section.provider.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="type">{{ 'callMaskingProvider.type' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select nzMode="default" [nzPlaceHolder]="'profile.pleaseSelect' | translate" formControlName="type">
+                <nz-option [nzLabel]="'enum.callMaskingProviderType.Direct' | translate" nzValue="Direct"></nz-option>
+                <nz-option [nzLabel]="'enum.callMaskingProviderType.TwilioVoice' | translate"
+                  nzValue="TwilioVoice"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="name">{{ 'profile.name' | translate }}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'error.titleInvalid' | translate">
+              <input nz-input formControlName="name" id="name" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="enabled">{{ 'profile.visibilityStatus' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'callMaskingProvider.section.credentials.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'callMaskingProvider.section.credentials.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="accountId">{{ 'callMaskingProvider.accountId' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="accountId" id="accountId" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="apiSecret">{{ 'callMaskingProvider.apiSecret' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input type="password" formControlName="apiSecret" id="apiSecret" autocomplete="new-password"
+                [placeholder]="isEdit ? ('callMaskingProvider.apiSecretHint' | translate) : ''" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="webhookAuthToken">{{ 'callMaskingProvider.webhookAuthToken' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input type="password" formControlName="webhookAuthToken" id="webhookAuthToken"
+                autocomplete="new-password"
+                [placeholder]="isEdit ? ('callMaskingProvider.webhookAuthTokenHint' | translate) : ''" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'callMaskingProvider.section.routing.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'callMaskingProvider.section.routing.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="proxyNumber">{{ 'callMaskingProvider.proxyNumber' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="proxyNumber" id="proxyNumber" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="sessionTtlMinutes">{{ 'callMaskingProvider.sessionTtlMinutes' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="sessionTtlMinutes" id="sessionTtlMinutes" [nzMin]="1"
+                [nzStep]="1"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <div *ngIf="showTestCall" class="kasi-form__full">
+            <nz-input-group nzCompact style="max-width: 420px;">
+              <input nz-input [(ngModel)]="testNumber" [ngModelOptions]="{ standalone: true }" name="testNumber"
+                [placeholder]="'callMaskingProvider.testNumber' | translate" style="width: 60%;" />
+              <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testNumber === ''"
+                (click)="onTestCall()">{{ 'callMaskingProvider.testCall' | translate }}</button>
+            </nz-input-group>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button *ngIf="isEdit" nz-button nzType="default" type="button" [disabled]="isDefault"
+      (click)="onSetDefault()">{{ 'callMaskingProvider.setDefault' | translate }}</button>
+    <button *ngIf="isEdit" nz-button nzType="default" type="button"
+      (click)="showTestCall = !showTestCall">{{ 'callMaskingProvider.testCall' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

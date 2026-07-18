@@ -53,6 +53,8 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   jwt = localStorage.getItem('kasi_admin_token');
   loadingUpload = false;
   avatarUrl?: string;
+  private originalValue?: any;
+  private originalAvatarUrl?: string;
 
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
@@ -90,7 +92,16 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
         );
       this.form.patchValue(data.driver.data.driver);
       this.avatarUrl = data.driver.data.driver.media?.address;
+      this.originalValue = this.form.getRawValue();
+      this.originalAvatarUrl = this.avatarUrl;
     });
+  }
+
+  cancel() {
+    if (this.originalValue) {
+      this.form.reset(this.originalValue);
+    }
+    this.avatarUrl = this.originalAvatarUrl;
   }
 
   ngOnDestroy(): void {

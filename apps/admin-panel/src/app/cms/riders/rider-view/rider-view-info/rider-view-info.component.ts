@@ -22,6 +22,7 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
     idNumber: [null]
   });
   valObserver?: Subscription;
+  private originalValue?: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +37,16 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.valObserver = this.route.parent?.data.subscribe(data => this.form.patchValue(data.rider.data.rider));
+    this.valObserver = this.route.parent?.data.subscribe(data => {
+      this.form.patchValue(data.rider.data.rider);
+      this.originalValue = this.form.getRawValue();
+    });
+  }
+
+  cancel() {
+    if (this.originalValue) {
+      this.form.reset(this.originalValue);
+    }
   }
 
   async onSubmit() {

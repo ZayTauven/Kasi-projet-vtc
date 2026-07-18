@@ -36,6 +36,10 @@ export class SOSViewInfoComponent implements OnInit {
     this.query = this.route.parent?.data.pipe(map(data => data.sos));
   }
 
+  cancelActivity() {
+    this.formActivity.reset();
+  }
+
   async onSubmitActivity(sosId: string) {
     try {
       await firstValueFrom(this.addActivityGql.mutate({activity: {...this.formActivity.value, sosId}}));

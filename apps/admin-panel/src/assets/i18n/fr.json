@@ -1,943 +1,1306 @@
 {
-	"enum": {
-		"request": {
-			"Requested": "Demandé",
-			"NotFound": "Pas trouvé",
-			"NoCloseFound": "Fermer introuvable",
-			"Found": "Trouvé",
-			"DriverAccepted": "Kasiman accepté",
-			"Arrived": "Arrivé",
-			"WaitingForPrePay": "En attente de paiement anticipé",
-			"DriverCanceled": "Kasiman annulé",
-			"RiderCanceled": "Passager annulé",
-			"Started": "Commencé",
-			"WaitingForPostPay": "En attente de post-paiement",
-			"WaitingForReview": "En attente d'évaluation",
-			"Finished": "Fini",
-			"Booked": "Réservé",
-			"Expired": "Expiré"
-		},
-		"transactionType": {
-			"OrderFee": "Frais de commande",
-			"Cash": "Espèces",
-			"BankTransfer": "Virement",
-			"Gift": "Cadeau",
-			"Commission": "Commission",
-			"Correction": "Correction",
-			"InAppPayment": "Paiement dans l'application",
-			"Withdraw": "Retirer"
-		},
-		"transactionStatus": {
-			"Processing": "Traitement",
-			"Done": "Fait",
-			"Canceled": "Annulé",
-			"Rejected": "Rejeté"
-		},
-		"payoutMethodType": {
-			"Wave": "Wave",
-			"OrangeMoney": "Orange Money",
-			"BankTransfer": "Virement bancaire",
-			"Cash": "Espèces"
-		},
-		"smsProviderType": {
-			"LogOnly": "Journal (dev)",
-			"Twilio": "Twilio",
-			"OrangeSms": "Orange SMS"
-		},
-		"emailProviderType": {
-			"LogOnly": "Journal (dev)",
-			"Smtp": "SMTP"
-		},
-		"callMaskingProviderType": {
-			"Direct": "Direct (dev)",
-			"TwilioVoice": "Twilio Voice"
-		},
-		"payoutSessionStatus": {
-			"Pending": "En attente",
-			"Processed": "Traitée",
-			"Canceled": "Annulée"
-		},
-		"payoutStatus": {
-			"Pending": "En attente",
-			"Paid": "Payé",
-			"Canceled": "Annulé"
-		},
-		"gender": {
-			"male": "Homme",
-			"female": "Femme",
-			"genderless": "Asexué"
-		},
-		"packageSize": {
-			"small": "Petit",
-			"medium": "Moyen",
-			"large": "Grand"
-		},
-		"complaintStatus": {
-			"submitted": "Soumis",
-			"underInvestigation": "Sous enquête",
-			"resolved": "Résolu"
-		},
-		"sosStatus": {
-			"submitted": "Soumis",
-			"underReview": "À l'étude",
-			"falseAlarm": "Fausse alerte",
-			"resolved": "Résolu"
-		},
-		"driver": {
-			"status": {
-				"pendingApproval": "En attente de validation",
-				"approved": "Approuvé",
-				"blocked": "Bloqué",
-				"softReject": "Rejet doux",
-				"hardReject": "Rejet définitif",
-				"offline": "Hors ligne",
-				"waitingDocuments": "En attente de soumission",
-				"inService": "En service",
-				"online": "En ligne"
-			}
-		},
-		"rider": {
-			"status": {
-				"blocked": "Bloqué",
-				"enabled": "Activé"
-			}
-		},
-		"sosActivityAction": {
-			"submitted": "Soumis",
-			"seen": "Vu",
-			"contactDriver": "J'ai contacté le Kasiman",
-			"contactAuthorities": "Autorités contactées",
-			"markedAsResolved": "Marqué comme résolu",
-			"markedAsFalseAlarm": "Marqué comme fausse alerte"
-		},
-		"transactionAction": {
-			"Deduct": "Déduire",
-			"Recharge": "Recharger"
-		},
-		"rewardEvent": {
-			"register": "Inscription",
-			"serviceCompleted": "Service terminé"
-		},
-		"rewardBeneficiary": {
-			"self": "Soi-même",
-			"referrer": "Parrain"
-		}
-	},
-	"branding": {
-		"menu": {
-			"header": "Kasi"
-		},
-		"footer": {
-			"address": "https://kasi.app",
-			"prefix": "© 2024-2026",
-			"title": "Kasi",
-			"suffix": "Tous les droits sont réservés."
-		},
-		"page": {
-			"title": "Kasi Admin Panel"
-		}
-	},
-	"menu": {
-		"home": {
-			"overview": "Aperçu",
-			"dispatcher": "Répartiteur",
-			"header": "Accueil"
-		},
-		"driver": {
-			"pendingVerification": "En attente de vérification",
-			"all": "Voir tout",
-			"header": "Kasimen"
-		},
-		"marketing": {
-			"coupons": "Coupons",
-			"giftCards": "Cartes cadeaux",
-			"announcements": "Annonces",
-			"header": "Marketing",
-			"rewards": "Récompenses & parrainage"
-		},
-		"accounting": {
-			"admin": "Administrateur",
-			"fleets": "Flottes",
-			"drivers": "Kasimen",
-			"riders": "Passagers",
-			"header": "Comptabilité"
-		},
-		"payouts": {
-			"header": "Versements",
-			"sessions": "Sessions de versement",
-			"methods": "Méthodes de versement"
-		},
-		"riders": "Passagers",
-		"requests": "Demandes",
-		"sos": "SOS",
-		"complaints": "Plaintes",
-		"management": {
-			"regions": "Régions",
-			"services": "Services",
-			"serviceOptions": "Options de service",
-			"fleets": "Flottes",
-			"zonePrices": "Tarifs zonaux",
-			"orderCancelReasons": "Motifs d'annulation",
-			"smsProviders": "Fournisseurs SMS",
-			"emailProviders": "Fournisseurs email",
-			"callMaskingProviders": "Appels masqués",
-			"shiftRules": "Règles de temps de service",
-			"retention": "Rétention des documents",
-			"reviewParameters": "Paramètres d'avis",
-			"cars": "Voitures",
-			"userRoles": "Rôles d'utilisateur",
-			"users": "Utilisateurs",
-			"paymentGateways": "Passerelles de paiement",
-			"settings": "Paramètres",
-			"header": "Gestion"
-		},
-		"drivers": {
-			"header": "Kasimen",
-			"subtitle": "Liste de tous les Kasimen inscrits."
-		}
-	},
-	"overview": {
-		"switch": {
-			"language": "Changer de langue",
-			"darkMode": "Basculer en mode clair/sombre"
-		},
-		"notification": {
-			"title": "Centre de notification"
-		},
-		"logout": "Se déconnecter",
-		"driversOnline": "Kasimen en ligne",
-		"autoZoom": "Zoom automatique",
-		"viewDriver": "Afficher le Kasiman",
-		"showOnMap": "Afficher sur la carte",
-		"complaints": {
-			"title": "Plaintes",
-			"suffix": "Non révisé"
-		},
-		"activeOrders": {
-			"title": "Commandes actives",
-			"suffix": "Ordres"
-		},
-		"pendingDrivers": {
-			"title": "Kasimen en attente",
-			"suffix": "Non vérifié"
-		},
-		"bookedOrders": {
-			"title": "Commandes enregistrées",
-			"suffix": "Réservé"
-		},
-		"chart": {
-			"requestsTitle": "Ordres",
-			"revenue": "Revenu",
-			"newDriverRegisters": "Inscriptions de nouveaux Kasimen",
-			"newRiderRegisters": "Nouvelles inscriptions de passagers"
-		}
-	},
-	"notification": {
-		"distressSignals": {
-			"suffix": "Signaux de détresse en attente"
-		},
-		"complaints": {
-			"suffix": "Plaintes non examinées"
-		},
-		"pendingDrivers": {
-			"suffix": "Kasimen non vérifiés"
-		}
-	},
-	"requests": {
-		"title": "Demandes",
-		"subtitle": "Liste de toutes les demandes de course",
-		"searchDriverPlaceholder": "Saisir le nom de famille ou le numéro de portable du Kasiman",
-		"bookedFor": "(Réservé pour {{time}})",
-		"expectedTime": "Heure prévue",
-		"startTime": "Heure de début",
-		"finishTime": "Heure de fin",
-		"costAfterCoupon": "Coût après coupon",
-		"estimatedCost": "Coût estimé",
-		"header": "Demande #",
-		"requestTIme": "Heure de la demande",
-		"service": "Service",
-		"distance": "Distance",
-		"duration": "Durée",
-		"chats": "Chats",
-		"complaints": "Plaintes",
-		"assign": "Attribuer un Kasiman (Alpha)"
-	},
-	"profile": {
-		"status": "Statut",
-		"locations": "Emplacements",
-		"view": "Voir",
-		"requestInfo": "Demande d'info",
-		"name": "Nom",
-		"mobileNumber": "Numéro de portable",
-		"registeredOn": "Inscrit le",
-		"driverInfo": "Informations sur le Kasiman",
-		"riderInfo": "Informations sur le passager",
-		"details": "Détails",
-		"title": "Titre",
-		"content": "Contenu",
-		"firstName": "Prénom",
-		"lastName": "Nom de famille",
-		"gender": "Genre",
-		"canDeliver": "Peut livrer (Kasi Moto)",
-		"maxPackageSize": "Taille max. de colis",
-		"email": "E-mail",
-		"fleet": "Flotte",
-		"carModel": "Modèle de voiture",
-		"carColor": "Couleur de la voiture",
-		"carProductionYear": "Année de production de la voiture",
-		"carPlateNumber": "Numéro de plaque de voiture",
-		"accountNumber": "Numéro de compte",
-		"bankName": "Nom de banque",
-		"bankRoutingNumber": "Numéro d'acheminement bancaire",
-		"bankSwift": "Banque Swift",
-		"address": "Adresse",
-		"services": "Prestations de service",
-		"avatarImage": "Image d'avatar",
-		"upload": "Télécharger",
-		"save": "Sauvegarder",
-		"dateTime": "Date et heure",
-		"rating": "Notation",
-		"review": "Examen",
-		"actions": "Actions",
-		"transactionType": "Type de transaction",
-		"amount": "Montant",
-		"documentNumber": "numéro de document",
-		"submit": "Soumettre",
-		"insertTransaction": "Insérer l'opération",
-		"cost": "Coût",
-		"goToList": "Aller à la liste",
-		"add": "Ajouter",
-		"search": "Recherche",
-		"reset": "Réinitialiser",
-		"export": "Exporter",
-		"total": "Total",
-		"currency": "Monnaie",
-		"date": "Date",
-		"next": "Suivant",
-		"select": "Sélectionner",
-		"delete": "Supprimer",
-		"phoneNumber": "Numéro de téléphone",
-		"commissionPercentage": "Pourcentage de commission",
-		"commissionFlat": "Commission fixe",
-		"bankAccountInfo": "Informations bancaires",
-		"warning": "Avertissement",
-		"clearMap": "Effacer la carte",
-		"financialRecords": "Dossiers financiers",
-		"disabled": "Désactivé",
-		"visibilityStatus": "Statut de visibilité",
-		"saveChanges": "Sauvegarder les modifications",
-		"enabled": "Activé",
-		"deleteNotice": "Êtes-vous sûr de vouloir supprimer ces données ? Cette action est irréversible",
-		"dangerArea": "Zone dangereuse",
-		"userName": "Nom d'utilisateur",
-		"code": "Code",
-		"beneficiary": "Bénéficiaire",
-		"availabilityTime": "Temps de disponibilité",
-		"appType": "Type d'application",
-		"creditGift": "Cadeau de crédit",
-		"tripFeePercentGift": "Cadeau en pourcentage des frais de voyage",
-		"creditCurrency": "Devise du crédit",
-		"conditionTripCountsLessThan": "Le trajet compte moins de",
-		"conditionUserNumberFirstDigits": "Premiers chiffres des numéros mobiles des bénéficiaires (liste, séparés par des virgules)",
-		"subject": "Sujet",
-		"type": "Taper",
-		"paymentGateway": "Passerelle de paiement",
-		"rider": "Passager",
-		"driver": "Kasiman",
-		"admin": "Administrateur",
-		"coupon": "Coupon",
-		"activities": "Chronologie des activités",
-		"location": "Emplacement",
-		"submittedBy": "Proposé par",
-		"pleaseSelect": "Veuillez sélectionner",
-		"searchMobileNumber": "Rechercher un numéro de portable",
-		"userType": "Type d'utilisateur",
-		"description": "Description",
-		"rechargeType": "Type de recharge",
-		"deductType": "Type de déduction",
-		"transactionsRecords": "Historique des transactions",
-		"walletSummary": "Résumé du portefeuille",
-		"isResident": "Est résident ?",
-		"idNumber": "Numéro d'identité",
-		"sender": "(Expéditeur)",
-		"url": "URL",
-		"image": "Image",
-		"icon": "Icône",
-		"action": "Action",
-		"note": "Note",
-		"by": "par",
-		"ratingSummary": "{{percent}} % (sur {{count}} avis)",
-		"notAvailable": "N/A",
-		"parameters": "Paramètres",
-		"assign": "Attribuer"
-	},
-	"complaint": {
-		"title": "Plainte",
-		"subtitle": "Détail de la plainte soumise.",
-		"inscriptionTime": "Heure d'inscription",
-		"content": "Contenu"
-	},
-	"driver": {
-		"profile": {
-			"changeStatus": "État de mise à jour",
-			"lastSeenAt": "Vu dernièrement à",
-			"rating": "Notation",
-			"details": "Détails",
-			"orders": "Ordres",
-			"financials": "Dossiers de crédit",
-			"reviews": "Commentaires",
-			"documents": "Documents",
-			"ratingSummary": "Résumé des évaluations"
-		}
-	},
-	"table": {
-		"viewRequest": "Voir la demande",
-		"viewOperator": "Afficher l'opérateur",
-		"viewGateway": "Afficher la passerelle",
-		"min": "Min",
-		"max": "Max",
-		"viewDriver": "Afficher le Kasiman",
-		"viewFleet": "Voir la flotte",
-		"viewRider": "Voir le passager",
-		"viewComplaint": "Voir la plainte",
-		"openInGoogleMaps": "Ouvrir dans Google Maps",
-		"registeredOn": "Inscrit le",
-		"submittedOn": "Soumis le"
-	},
-	"drivers": {
-		"title": "Kasimen",
-		"subtitle": "Liste de tous les Kasimen inscrits.",
-		"notFoundMessage": "Kasiman introuvable !"
-	},
-	"dispatcher": {
-		"removeLastPoint": "Supprimer le dernier point",
-		"rider": {
-			"title": "Passager",
-			"description": "Sélectionnez le passager à attribuer à la demande"
-		},
-		"location": {
-			"title": "Emplacement",
-			"description": "Lieu(x) de ramassage et de dépôt"
-		},
-		"service": {
-			"title": "Service",
-			"description": "Prestation à demander"
-		},
-		"looking": {
-			"title": "En regardant",
-			"description": "Recherche d'un Kasiman éligible",
-			"waitMessage": "Recherche d'un Kasiman adapté. Veuillez patienter..."
-		},
-		"determiningLocation": "Détermination de l'emplacement, veuillez patienter...",
-		"viewRequestDetails": "Voir les détails de la demande",
-		"cancelRequest": "Annuler la demande",
-		"driverAcceptedRequestSuffix": "a accepté la demande. Rendez-vous sur la page de la course pour plus d'informations.",
-		"tripStatusUpdated": "Le statut de la course a été mis à jour : {{status}}.",
-		"time": "Heure"
-	},
-	"chart": {
-		"emptyState": "Rien à voir ici."
-	},
-	"message": {
-		"areYouSure": "Es-tu sûr?",
-		"deleteDriverConfirmation": {
-			"title": "Voulez-vous vraiment supprimer le Kasiman ?",
-			"content": "La suppression des informations du Kasiman masquera le Kasiman de la liste des Kasimen et le profil ne sera plus accessible."
-		},
-		"deleteDriverCofirmAlert": "Le Kasiman a été supprimé",
-		"driverAssignedSuccessfully": "Le Kasiman est attribué avec succès",
-		"deleteConfirmation": {
-			"title": "Etes-vous sûr que vous voulez supprimer?"
-		},
-		"deleteRiderConfirmation": {
-			"content": "La suppression des informations sur le passager masquera le passager de la liste des passagers et le profil ne sera plus accessible."
-		},
-		"deleteRiderCofirmAlert": "Le passager a été supprimé."
-	},
-	"error": {
-		"nameInvalid": "Le nom n'est pas valide",
-		"titleInvalid": "Le titre n'est pas valide",
-		"PERMISSION_NOT_GRANTED": "Autorisation non accordée"
-	},
-	"fleet": {
-		"title": "Flotte",
-		"subtitle": "Paramètres et zone d'exclusivité de la flotte.",
-		"exclusitivityAreaTitle": "Zone d'exclusivité",
-		"exclusitivityAreaWarning": "Soyez prudent lors de l'utilisation de cette fonctionnalité. Une fois qu'une zone d'exclusivité est attribuée à une flotte, toutes les demandes de course provenant de cette zone seront destinées uniquement aux Kasimen appartenant à cette flotte. Les Kasimen qui ne font pas partie de la flotte ne recevront pas ces demandes.",
-		"feeMultiplier": "Multiplicateur de frais"
-	},
-	"fleets": {
-		"title": "Flottes",
-		"subtitle": "Liste de toutes les flottes enregistrées."
-	},
-	"cars": {
-		"title": "Voitures",
-		"subtitle": "Définitions de base des voitures",
-		"models": "Modèles",
-		"colors": "Couleurs"
-	},
-	"regions": {
-		"title": "Régions",
-		"subtitle": "Liste de toutes les régions dans lesquelles l'application opère."
-	},
-	"region": {
-		"title": "Nouvelle région",
-		"subtitle": "Paramètres de la région dans laquelle l'application opère.",
-		"geofence": "Zone géographique"
-	},
-	"cancelReasons": {
-		"title": "Motifs d'annulation",
-		"subtitle": "Motifs d'annulation que les passagers pourront choisir lors de l'annulation d'une course."
-	},
-	"payoutSessions": {
-		"title": "Sessions de versement",
-		"subtitle": "Paiements par lot des gains des Kasimen."
-	},
-	"payoutSession": {
-		"title": "Session de versement",
-		"subtitle": "Versements générés pour cette session."
-	},
-	"payoutSessionNew": {
-		"title": "Nouvelle session de versement",
-		"subtitle": "Génère un versement pour chaque Kasiman éligible (solde au-dessus du minimum, méthode de retrait active)."
-	},
-	"payoutMethods": {
-		"title": "Méthodes de versement",
-		"subtitle": "Canaux de paiement des gains des Kasimen (Wave, Orange Money, virement, espèces)."
-	},
-	"payoutMethod": {
-		"title": "Méthode de versement",
-		"subtitle": "Paramètres du canal de versement."
-	},
-	"payouts": {
-		"type": "Type",
-		"method": "Méthode",
-		"accountNumber": "Numéro de compte",
-		"minimumAmount": "Montant minimum",
-		"minimumAmountHint": "Les Kasimen sous ce solde sont exclus de la session.",
-		"totalAmount": "Montant total",
-		"instructions": "Consignes",
-		"targetMethods": "Méthodes ciblées",
-		"targetMethodsHint": "Laisser vide pour inclure toutes les méthodes actives.",
-		"allMethods": "Toutes les méthodes",
-		"createSession": "Nouvelle session",
-		"preview": "Aperçu",
-		"previewResult": "{{count}} Kasimen éligibles",
-		"noEligible": "Aucun Kasiman éligible pour ces critères.",
-		"processAll": "Tout payer",
-		"processAllConfirm": "Marquer tous les versements en attente comme payés et débiter les portefeuilles ?",
-		"cancelSession": "Annuler la session",
-		"cancelSessionConfirm": "Annuler tous les versements en attente de cette session ?",
-		"markPaid": "Marquer payé",
-		"markPaidConfirm": "Paiement effectué hors application ? Le portefeuille sera débité.",
-		"cancel": "Annuler",
-		"cancelPayoutConfirm": "Annuler ce versement ?"
-	},
-	"smsProviders": {
-		"title": "Fournisseurs SMS",
-		"subtitle": "Passerelles SMS utilisées pour envoyer les codes de vérification et les notifications."
-	},
-	"smsProvider": {
-		"title": "Fournisseur SMS",
-		"subtitle": "Paramètres de la passerelle SMS.",
-		"type": "Type",
-		"accountId": "Identifiant de compte",
-		"apiSecret": "Secret API",
-		"apiSecretHint": "Inchangé si vide.",
-		"senderId": "Identifiant d'expéditeur",
-		"template": "Modèle de vérification",
-		"templateHint": "{code} sera remplacé par le code à 6 chiffres.",
-		"setDefault": "Définir par défaut",
-		"default": "Défaut",
-		"defaultSet": "Défini comme fournisseur par défaut.",
-		"testSms": "SMS de test",
-		"testNumber": "Numéro de téléphone",
-		"testSent": "SMS de test envoyé."
-	},
-	"emailProviders": {
-		"title": "Fournisseurs email",
-		"subtitle": "Passerelles email utilisées pour envoyer les notifications et les messages transactionnels."
-	},
-	"emailProvider": {
-		"title": "Fournisseur email",
-		"subtitle": "Paramètres de la passerelle email.",
-		"type": "Type",
-		"host": "Hôte SMTP",
-		"port": "Port",
-		"secure": "Connexion sécurisée (SSL/TLS)",
-		"secureHint": "Activé = port 465 (SMTPS) ; désactivé = port 587 (STARTTLS).",
-		"username": "Nom d'utilisateur",
-		"password": "Mot de passe",
-		"passwordHint": "Inchangé si vide.",
-		"fromAddress": "Adresse d'expéditeur",
-		"fromName": "Nom d'expéditeur",
-		"setDefault": "Définir par défaut",
-		"default": "Défaut",
-		"defaultSet": "Défini comme fournisseur par défaut.",
-		"testEmail": "Email de test",
-		"testTo": "Adresse email",
-		"testSent": "Email de test envoyé."
-	},
-	"callMaskingProviders": {
-		"title": "Fournisseurs d'appels masqués",
-		"subtitle": "Fournisseurs vocaux utilisés pour anonymiser les appels entre passagers et Kasimen."
-	},
-	"callMaskingProvider": {
-		"title": "Fournisseur d'appels masqués",
-		"subtitle": "Paramètres du fournisseur d'appels anonymisés.",
-		"type": "Type",
-		"accountId": "SID du compte",
-		"apiSecret": "Jeton d'authentification",
-		"apiSecretHint": "Inchangé si vide.",
-		"proxyNumber": "Numéro proxy",
-		"webhookAuthToken": "Jeton d'authentification du webhook",
-		"webhookAuthTokenHint": "Inchangé si vide.",
-		"sessionTtlMinutes": "Durée de session (minutes)",
-		"setDefault": "Définir par défaut",
-		"default": "Défaut",
-		"defaultSet": "Défini comme fournisseur par défaut.",
-		"testCall": "Appel test",
-		"testNumber": "Numéro de téléphone",
-		"testSent": "Appel test déclenché."
-	},
-	"shiftRules": {
-		"title": "Règles de temps de service",
-		"subtitle": "Définissez les limites d'heures et de pauses des Kasimans.",
-		"frequency": "Fréquence",
-		"maxHoursPerPeriod": "Heures max / période",
-		"maxHoursPerPeriodHint": "Nombre maximal d'heures de conduite autorisées sur la période choisie.",
-		"mandatoryBreakMinutes": "Pause obligatoire (min)",
-		"mandatoryBreakMinutesHint": "Durée de pause recommandée entre deux services.",
-		"enforced": "Mode bloquant",
-		"enforcedHint": "Si activé, la règle est présentée comme bloquante. Le contrôle reste indicatif (soft) côté serveur pour le moment.",
-		"enforcedTag": "Bloquant",
-		"softTag": "Indicatif",
-		"deleted": "Règle supprimée",
-		"frequencyEnum": {
-			"Daily": "Quotidien",
-			"Weekly": "Hebdomadaire"
-		}
-	},
-	"shiftRule": {
-		"title": "Règle de temps de service",
-		"subtitle": "Paramétrez les limites appliquées aux services des Kasimans."
-	},
-	"retention": {
-		"title": "Rétention des documents",
-		"subtitle": "Définissez la durée de conservation des documents avant purge automatique.",
-		"retentionDays": "Jours de rétention",
-		"retentionDaysHint": "Nombre de jours au-delà desquels un document devient éligible à la purge.",
-		"days": "{{count}} jours",
-		"dryRun": "Mode simulation",
-		"dryRunHint": "Activé : le système journalise uniquement les documents qui seraient purgés et ne supprime RIEN.",
-		"enabledHint": "Active la prise en compte de cette politique par le job de rétention.",
-		"lastRunAt": "Dernière exécution",
-		"simulationMode": "Simulation",
-		"realMode": "Purge réelle",
-		"realDeletionDisabledWarning": "La purge réelle sera activée dans une version ultérieure après validation. À ce stade, le système reste non destructif : aucun document n'est supprimé.",
-		"runDryRun": "Lancer la simulation",
-		"dryRunTriggered": "Simulation de rétention lancée (aucune suppression effectuée)."
-	},
-	"cancelReason": {
-		"title": "Motif d'annulation",
-		"subtitle": "Motif d'annulation que les passagers pourront choisir lors de l'annulation d'une course"
-	},
-	"reviewParameters": {
-		"title": "Paramètres d'examen",
-		"subtitle": "Liste des paramètres que le Kasiman peut attribuer à l'expérience de service"
-	},
-	"reviewParameter": {
-		"title": "Nouveau paramètre d'examen",
-		"subtitle": "Paramètres des avis que le passager peut sélectionner pour sa notation.",
-		"isGood": "Est positif",
-		"good": "Positif",
-		"bad": "Négatif"
-	},
-	"services": {
-		"title": "Prestations de service",
-		"subtitle": "Gérez les catégories et les services proposés dans les applications",
-		"editCategory": "Modifier la catégorie",
-		"newCategory": "Nouvelle catégorie",
-		"newService": "Nouveau service"
-	},
-	"service": {
-		"title": "Service",
-		"subtitle": "Afficher et modifier les détails du service",
-		"createFirstNotice": "Créez votre première catégorie de service à afficher dans les applications clientes",
-		"Regions": "Régions",
-		"category": "Catégorie",
-		"maxPersonCapacity": "Capacité maximale de personnes",
-		"baseFare": "Tarif de base",
-		"perHundredMeters": "Par cent mètres",
-		"perMinuteDrive": "Par minute de trajet",
-		"perMinuteWait": "Par minute d'attente",
-		"prepayPercent": "Pourcentage de prépaiement",
-		"minimumFee": "Frais minimum",
-		"roundingFactor": "Facteur d'arrondi",
-		"roundingFactorError": "La valeur doit être supérieure à zéro et inférieure à 100",
-		"maximumDistance": "Distance maximale",
-		"searchRadius": "Rayon de recherche",
-		"paymentMethod": "Méthode de paiement",
-		"orderType": "Type de commande",
-		"orderTypes": {
-			"Ride": "Course",
-			"Delivery": "Livraison"
-		},
-		"providerSharePercent": "Pourcentage de part du fournisseur",
-		"providerShareFlat": "Part fixe du fournisseur",
-		"cancellationTotalFee": "Frais totaux d'annulation",
-		"cancellationDriverShare": "Part du Kasiman à l'annulation",
-		"twoWayAvailable": "Aller-retour disponible ?",
-		"timeMultiplierTitle": "Multiplicateur horaire de la journée",
-		"distanceMultiplierTitle": "Multiplicateur de distance",
-		"weekdayMultiplierTitle": "Multiplicateurs par jour de la semaine",
-		"dateRangeMultiplierTitle": "Multiplicateur de plage de dates",
-		"ridePreferences": "Préférences de course",
-		"timeMultiplierTable": {
-			"startTime": "Heure de début",
-			"endTime": "Heure de fin",
-			"multiplyBy": "Multiplier par"
-		},
-		"insertRule": "Insérer une règle",
-		"distanceMultiplierTable": {
-			"distanceFrom": "Distance de",
-			"distanceTo": "Distance à"
-		},
-		"weekdayMultiplierTable": {
-			"weekday": "Jour de la semaine"
-		},
-		"dateRangeMultiplierTable": {
-			"dateRange": "Plage de dates"
-		}
-	},
-	"serviceCategory": {
-		"title": "Catégorie de service",
-		"subtitle": "Saisissez les détails de la catégorie de service ci-dessous."
-	},
-	"serviceOptions": {
-		"title": "Options d'entretien",
-		"subtitle": "Liste des options pouvant être activées sur des services spécifiques."
-	},
-	"serviceOption": {
-		"title": "Définition d'une option de service",
-		"subtitle": "Options pouvant être activées sur des services spécifiques.",
-		"additionalFee": "Frais supplémentaires"
-	},
-	"settings": {
-		"generalSettings": "réglages généraux",
-		"changePasswordTitle": "Changer le mot de passe",
-		"changePasswordSubtitle": "Mettez à jour le mot de passe utilisé pour accéder à ce panneau",
-		"oldPassword": "Ancien mot de passe",
-		"newPassword": "Nouveau mot de passe",
-		"newPasswordRepeat": "Répéter le nouveau mot de passe",
-		"passwordIncorrect": "Le mot de passe est incorrect"
-	},
-	"users": {
-		"title": "Opérateurs",
-		"subtitle": "Utilisateurs du panneau d'administration (opérateurs et administrateurs)",
-		"tab": {
-			"details": "Détails"
-		},
-		"noRole": "Aucun rôle attribué"
-	},
-	"role": {
-		"title": "Rôle utilisateur",
-		"subtitle": "Définition d'un rôle utilisateur du panneau d'administration",
-		"permissions": "Permissions"
-	},
-	"roles": {
-		"title": "Rôles utilisateurs",
-		"subtitle": "Définitions des rôles pour les utilisateurs du panneau d'administration."
-	},
-	"zonePrice": {
-		"pickupAreas": "Zone(s) de ramassage",
-		"destinationAres": "Zone(s) de destination",
-		"title": "Nouveau tarif zonal",
-		"subtitle": "Définissez des zones à tarification fixe qui remplacent le calcul par défaut basé sur la distance.",
-		"timeMultiplierTitle": "Multiplicateur horaire",
-		"moreSelected": "et {{count}} de plus sélectionné(s)"
-	},
-	"zonePrices": {
-		"title": "Tarifs zonaux",
-		"subtitle": "Définir des régions spécifiques qui remplacent le prix par défaut et ont un prix spécifique pour le trajet du client"
-	},
-	"paymentGateways": {
-		"title": "Passerelles de paiement",
-		"subtitle": "Options de paiement des clients"
-	},
-	"paymentGateway": {
-		"title": "Passerelle de paiement",
-		"subtitle": "Clés API et définitions destinées aux clients.",
-		"apiKeys": "Clés API"
-	},
-	"announcement": {
-		"title": "Annonce",
-		"subtitle": "Définition des annonces et actualités que les utilisateurs verront dans le menu de leur application."
-	},
-	"announcements": {
-		"title": "Annonces",
-		"subtitle": "Liste de toutes les annonces"
-	},
-	"coupons": {
-		"title": "Coupons",
-		"subtitle": "Liste de tous les coupons",
-		"availabilityTime": "Temps de disponibilité",
-		"description": "Créez des coupons à utiliser par les passagers pour obtenir des réductions sur leurs trajets",
-		"expirationTime": "Date d'expiration",
-		"manyUsersCanUse": "Nombre d'utilisateurs pouvant l'utiliser",
-		"manyTimesUserCanUse": "Nombre de fois où un utilisateur peut l'utiliser",
-		"minimumCost": "Coût minimum",
-		"maximumCost": "Coût maximum",
-		"discountPercent": "Pourcentage de réduction",
-		"discountFlat": "Réduction fixe",
-		"isEnabled": "Activé ?",
-		"isFirstTravelOnly": "Premier trajet uniquement ?"
-	},
-	"giftCards": {
-		"title": "Cartes cadeaux",
-		"subtitle": "Liste des lots de cartes cadeaux émis",
-		"newBatch": "Nouveau lot",
-		"newBatchSubtitle": "Générez un lot de cartes cadeaux ; les codes sont créés automatiquement.",
-		"viewSubtitle": "Détail du lot et codes générés",
-		"batchInfo": "Informations du lot",
-		"amount": "Montant",
-		"quantity": "Quantité",
-		"availability": "Disponibilité",
-		"availableTimestamp": "Disponible à partir du",
-		"expirationTimestamp": "Expire le",
-		"createdAt": "Créé le",
-		"generate": "Générer le lot",
-		"codes": "Codes",
-		"code": "Code",
-		"used": "Utilisée",
-		"available": "Disponible",
-		"codesRestricted": "Vous n'avez pas la permission de consulter les codes de ce lot (GiftCards_ViewCodes)."
-	},
-	"rewards": {
-		"subtitle": "Liste de toutes les règles de récompense et de parrainage",
-		"underDevelopmentNotice": "Cette fonctionnalité est encore en développement et le volet applicatif n'a pas encore été intégré. Le déploiement complet de cette fonctionnalité est prévu dans les semaines à venir."
-	},
-	"reward": {
-		"newTitle": "Nouvelle règle de récompense",
-		"editTitle": "Modifier la règle de récompense n°",
-		"subtitle": "Définitions de la règle de récompense.",
-		"event": "Événement",
-		"conditions": "Conditions"
-	},
-	"riders": {
-		"title": "Passagers",
-		"subtitle": "Liste de tous les clients inscrits.",
-		"notFoundMessage": "Passager introuvable !",
-		"tab": {
-			"details": "Détails",
-			"creditrecords": "Dossiers de crédit",
-			"orders": "Ordres",
-			"addresses": "Adresses"
-		}
-	},
-	"complaints": {
-		"title": "Plaintes",
-		"subtitle": "Plaintes soumises par les passagers/Kasimen"
-	},
-	"sos": {
-		"title": "SOS",
-		"subtitle": "Signaux de détresse soumis par les utilisateurs",
-		"activities": "Activités",
-		"insertActivity": "Insérer une activité"
-	},
-	"weekday": {
-		"monday": "Lundi",
-		"tuesday": "Mardi",
-		"wednesday": "Mercredi",
-		"thursday": "Jeudi",
-		"friday": "Vendredi",
-		"saturday": "Samedi",
-		"sunday": "Dimanche"
-	},
-	"requestActivityType": {
-		"arrivedToDestination": "Arrivé à destination",
-		"arrivedToPickupPoint": "Arrivé au point de ramassage",
-		"bookedByOperator": "Réservez par opérateur",
-		"bookedByRider": "Réservé par le passager",
-		"canceledByDriver": "Annulé par le Kasiman",
-		"canceledByOperator": "Annulé par l'opérateur",
-		"canceledByRider": "Annulé par le passager",
-		"driverAccepted": "Kasiman accepté",
-		"expired": "Expiré",
-		"paid": "Payé",
-		"requestedByOperator": "Demandé par l'opérateur",
-		"requestedByRider": "Demandé par le passager",
-		"reviewed": "Examiné et évalué",
-		"started": "Commencé"
-	},
-	"form": {
-		"role": "Rôle",
-		"password": "Mot de passe",
-		"register": "Enregistrer",
-		"notValidFirstName": "Le prénom n'est pas valide",
-		"notValidLastName": "Le nom n'est pas valide",
-		"notValidUserName": "Le nom d'utilisateur n'est pas valide",
-		"notValidMobileNumber": "Le numéro de portable n'est pas valide",
-		"notValidPassword": "Le mot de passe n'est pas valide",
-		"notValidEmail": "L'e-mail n'est pas valide",
-		"roleNotSelected": "Aucun rôle sélectionné",
-		"newRider": {
-			"title": "Nouveau passager",
-			"subtitle": "Saisissez les coordonnées du passager ci-dessous."
-		},
-		"newDriver": {
-			"title": "Nouveau Kasiman",
-			"subtitle": "Saisissez les coordonnées du Kasiman ci-dessous."
-		},
-		"newOperator": {
-			"title": "Nouvel opérateur",
-			"subtitle": "Saisissez les informations de l'opérateur ci-dessous."
-		},
-		"newFleet": {
-			"title": "Nouvelle flotte",
-			"subtitle": "Saisissez les informations de la nouvelle flotte ci-dessous."
-		}
-	},
-	"login": {
-		"title": "Connexion",
-		"usernameRequired": "Veuillez saisir votre nom d'utilisateur !",
-		"username": "Nom d'utilisateur",
-		"submit": "Se connecter"
-	},
-	"driverWallets": {
-		"title": "Portefeuilles des Kasimen",
-		"subtitle": "Liste du solde actuel des portefeuilles des Kasimen"
-	},
-	"fleetWallets": {
-		"title": "Portefeuilles des flottes",
-		"subtitle": "Liste du solde actuel des portefeuilles des flottes"
-	},
-	"riderWallets": {
-		"title": "Portefeuilles des passagers",
-		"subtitle": "Liste du solde actuel des portefeuilles des passagers"
-	},
-	"providerWallet": {
-		"title": "Portefeuille du fournisseur",
-		"subtitle": "Liste des revenus du fournisseur du système (vous) pour les services."
-	},
-	"config": {
-		"step1Title": "API Mapbox",
-		"step1Description": "Tokens d'accès Mapbox",
-		"step2Title": "SDK Firebase Admin",
-		"step2Description": "Notifications et authentification",
-		"backendMapsKey": "Token Mapbox du backend",
-		"dashboardMapsKey": "Token Mapbox du tableau de bord",
-		"invalidMapsKeys": "Les tokens Mapbox semblent invalides.",
-		"firebaseUploadText": "Clé privée du projet Firebase",
-		"firebaseUploadHint": "Déposez le fichier JSON de clé privée téléchargé depuis votre projet Firebase (Comptes de service, bouton Générer une clé privée).",
-		"invalidFirebaseKey": "La clé du projet Firebase semble invalide.",
-		"uploadSuccess": "{{file}} importé avec succès.",
-		"uploadFailed": "Échec de l'import de {{file}}.",
-		"previous": "Précédent",
-		"next": "Suivant",
-		"done": "Terminer",
-		"successTitle": "Configuration terminée !",
-		"successSubtitle": "Votre configuration est enregistrée. Patientez environ 30 secondes le temps que le système l'applique, puis rejoignez l'écran de connexion via le bouton ci-dessous.",
-		"goLogin": "Aller à la connexion"
-	}
+  "enum": {
+    "request": {
+      "Requested": "Demandé",
+      "NotFound": "Pas trouvé",
+      "NoCloseFound": "Aucun résultat trouvé",
+      "Found": "Trouvé",
+      "DriverAccepted": "Le Kasiman a accepté",
+      "Arrived": "Arrivé",
+      "WaitingForPrePay": "En attente de paiement anticipé",
+      "DriverCanceled": "Le Kasiman a annulé",
+      "RiderCanceled": "Le client a annulé",
+      "Started": "Commencé",
+      "WaitingForPostPay": "En attente de post-paiement",
+      "WaitingForReview": "En attente d'évaluation",
+      "Finished": "Fini",
+      "Booked": "Réservé",
+      "Expired": "Expiré"
+    },
+    "transactionType": {
+      "OrderFee": "Frais de commande",
+      "Cash": "Espèces",
+      "BankTransfer": "Virement",
+      "Gift": "Cadeau",
+      "Commission": "Commission",
+      "Correction": "Correction",
+      "InAppPayment": "Paiement dans l'application",
+      "Withdraw": "Retirer"
+    },
+    "transactionStatus": {
+      "Processing": "Traitement",
+      "Done": "Fait",
+      "Canceled": "Annulé",
+      "Rejected": "Rejeté"
+    },
+    "payoutMethodType": {
+      "Wave": "Wave",
+      "OrangeMoney": "Orange Money",
+      "BankTransfer": "Virement bancaire",
+      "Cash": "Espèces"
+    },
+    "smsProviderType": {
+      "LogOnly": "Journal (dev)",
+      "Twilio": "Twilio",
+      "OrangeSms": "Orange SMS"
+    },
+    "emailProviderType": {
+      "LogOnly": "Journal (dev)",
+      "Smtp": "SMTP"
+    },
+    "callMaskingProviderType": {
+      "Direct": "Direct (dev)",
+      "TwilioVoice": "Twilio Voice"
+    },
+    "payoutSessionStatus": {
+      "Pending": "En attente",
+      "Processed": "Traitée",
+      "Canceled": "Annulée"
+    },
+    "payoutStatus": {
+      "Pending": "En attente",
+      "Paid": "Payé",
+      "Canceled": "Annulé"
+    },
+    "gender": {
+      "male": "Homme",
+      "female": "Femme",
+      "genderless": "Asexué"
+    },
+    "packageSize": {
+      "small": "Petit",
+      "medium": "Moyen",
+      "large": "Grand"
+    },
+    "complaintStatus": {
+      "submitted": "Soumis",
+      "underInvestigation": "Sous enquête",
+      "resolved": "Résolu"
+    },
+    "sosStatus": {
+      "submitted": "Soumis",
+      "underReview": "À l'étude",
+      "falseAlarm": "Fausse alerte",
+      "resolved": "Résolu"
+    },
+    "driver": {
+      "status": {
+        "pendingApproval": "En attente de validation",
+        "approved": "Approuvé",
+        "blocked": "Bloqué",
+        "softReject": "Rejet doux",
+        "hardReject": "Rejet définitif",
+        "offline": "Hors ligne",
+        "waitingDocuments": "En attente de soumission",
+        "inService": "En service",
+        "online": "En ligne"
+      }
+    },
+    "rider": {
+      "status": {
+        "blocked": "Bloqué",
+        "enabled": "Activé"
+      }
+    },
+    "sosActivityAction": {
+      "submitted": "Soumis",
+      "seen": "Vu",
+      "contactDriver": "J'ai contacté le Kasiman",
+      "contactAuthorities": "Autorités contactées",
+      "markedAsResolved": "Marqué comme résolu",
+      "markedAsFalseAlarm": "Marqué comme fausse alerte"
+    },
+    "transactionAction": {
+      "Deduct": "Déduire",
+      "Recharge": "Recharger"
+    },
+    "rewardEvent": {
+      "register": "Inscription",
+      "serviceCompleted": "Service terminé"
+    },
+    "rewardBeneficiary": {
+      "self": "Soi-même",
+      "referrer": "Parrain"
+    }
+  },
+  "branding": {
+    "menu": {
+      "header": "Kasi"
+    },
+    "footer": {
+      "address": "https://kasigroupe.com",
+      "prefix": "© 2024-2026",
+      "title": "Kasi",
+      "suffix": "Tous les droits sont réservés."
+    },
+    "page": {
+      "title": "Kasi Admin Panel"
+    }
+  },
+  "menu": {
+    "home": {
+      "overview": "Aperçu",
+      "dispatcher": "Répartiteur",
+      "header": "Accueil"
+    },
+    "driver": {
+      "pendingVerification": "En attente de vérification",
+      "all": "Voir tout",
+      "header": "Kasimen"
+    },
+    "marketing": {
+      "coupons": "Coupons",
+      "giftCards": "Cartes cadeaux",
+      "announcements": "Annonces",
+      "header": "Marketing",
+      "rewards": "Récompenses & parrainage"
+    },
+    "accounting": {
+      "admin": "Administrateur",
+      "fleets": "Flottes",
+      "drivers": "Kasimen",
+      "riders": "Clients",
+      "header": "Comptabilité"
+    },
+    "payouts": {
+      "header": "Versements",
+      "sessions": "Sessions de versement",
+      "methods": "Méthodes de versement"
+    },
+    "riders": "Clients",
+    "requests": "Demandes",
+    "sos": "SOS",
+    "complaints": "Plaintes",
+    "management": {
+      "regions": "Régions",
+      "services": "Services",
+      "serviceOptions": "Options de service",
+      "fleets": "Flottes",
+      "zonePrices": "Tarifs zonaux",
+      "orderCancelReasons": "Motifs d'annulation",
+      "smsProviders": "Fournisseurs SMS",
+      "emailProviders": "Fournisseurs email",
+      "callMaskingProviders": "Appels masqués",
+      "shiftRules": "Règles de temps de service",
+      "retention": "Rétention des documents",
+      "reviewParameters": "Paramètres d'avis",
+      "cars": "Voitures",
+      "userRoles": "Rôles d'utilisateur",
+      "users": "Utilisateurs",
+      "paymentGateways": "Passerelles de paiement",
+      "settings": "Paramètres",
+      "header": "Gestion",
+      "mapSettings": "Cartographie"
+    },
+    "drivers": {
+      "header": "Kasimen",
+      "subtitle": "Liste de tous les Kasimen inscrits."
+    }
+  },
+  "overview": {
+    "switch": {
+      "language": "Changer de langue",
+      "darkMode": "Basculer en mode clair/sombre"
+    },
+    "notification": {
+      "title": "Centre de notification"
+    },
+    "logout": "Se déconnecter",
+    "driversOnline": "Kasimen en ligne",
+    "autoZoom": "Zoom automatique",
+    "viewDriver": "Afficher le Kasiman",
+    "showOnMap": "Afficher sur la carte",
+    "complaints": {
+      "title": "Plaintes",
+      "suffix": "Non révisé"
+    },
+    "activeOrders": {
+      "title": "Commandes actives",
+      "suffix": "Ordres"
+    },
+    "pendingDrivers": {
+      "title": "Kasimen en attente",
+      "suffix": "Non vérifié"
+    },
+    "bookedOrders": {
+      "title": "Commandes enregistrées",
+      "suffix": "Réservé"
+    },
+    "chart": {
+      "requestsTitle": "Ordres",
+      "revenue": "Revenu",
+      "newDriverRegisters": "Inscriptions de nouveaux Kasimen",
+      "newRiderRegisters": "Nouvelles inscriptions de clients"
+    }
+  },
+  "notification": {
+    "distressSignals": {
+      "suffix": "Signaux de détresse en attente"
+    },
+    "complaints": {
+      "suffix": "Plaintes non examinées"
+    },
+    "pendingDrivers": {
+      "suffix": "Kasimen non vérifiés"
+    }
+  },
+  "requests": {
+    "title": "Demandes",
+    "subtitle": "Liste de toutes les demandes de course",
+    "searchDriverPlaceholder": "Saisir le nom de famille ou le numéro de portable du Kasiman",
+    "bookedFor": "(Réservé pour {{time}})",
+    "expectedTime": "Heure prévue",
+    "startTime": "Heure de début",
+    "finishTime": "Heure de fin",
+    "costAfterCoupon": "Coût après coupon",
+    "estimatedCost": "Coût estimé",
+    "header": "Demande #",
+    "requestTIme": "Heure de la demande",
+    "service": "Service",
+    "distance": "Distance",
+    "duration": "Durée",
+    "chats": "Chats",
+    "complaints": "Plaintes",
+    "assign": "Attribuer un Kasiman (Alpha)"
+  },
+  "profile": {
+    "status": "Statut",
+    "locations": "Emplacements",
+    "view": "Voir",
+    "requestInfo": "Demande d'info",
+    "name": "Nom",
+    "mobileNumber": "Numéro de portable",
+    "registeredOn": "Inscrit le",
+    "driverInfo": "Informations sur le Kasiman",
+    "riderInfo": "Informations sur le client",
+    "details": "Détails",
+    "title": "Titre",
+    "content": "Contenu",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "gender": "Genre",
+    "canDeliver": "Peut livrer (Kasi Moto)",
+    "maxPackageSize": "Taille max. de colis",
+    "email": "E-mail",
+    "fleet": "Flotte",
+    "carModel": "Modèle de voiture",
+    "carColor": "Couleur de la voiture",
+    "carProductionYear": "Année de production de la voiture",
+    "carPlateNumber": "Numéro de plaque de voiture",
+    "accountNumber": "Numéro de compte",
+    "bankName": "Nom de banque",
+    "bankRoutingNumber": "Numéro d'acheminement bancaire",
+    "bankSwift": "Banque Swift",
+    "address": "Adresse",
+    "services": "Prestations de service",
+    "avatarImage": "Image d'avatar",
+    "upload": "Télécharger",
+    "save": "Sauvegarder",
+    "dateTime": "Date et heure",
+    "rating": "Notation",
+    "review": "Examen",
+    "actions": "Actions",
+    "transactionType": "Type de transaction",
+    "amount": "Montant",
+    "documentNumber": "numéro de document",
+    "submit": "Soumettre",
+    "insertTransaction": "Insérer l'opération",
+    "cost": "Coût",
+    "goToList": "Aller à la liste",
+    "add": "Ajouter",
+    "search": "Recherche",
+    "reset": "Réinitialiser",
+    "export": "Exporter",
+    "total": "Total",
+    "currency": "Monnaie",
+    "date": "Date",
+    "next": "Suivant",
+    "select": "Sélectionner",
+    "delete": "Supprimer",
+    "phoneNumber": "Numéro de téléphone",
+    "commissionPercentage": "Pourcentage de commission",
+    "commissionFlat": "Commission fixe",
+    "bankAccountInfo": "Informations bancaires",
+    "warning": "Avertissement",
+    "clearMap": "Effacer la carte",
+    "financialRecords": "Dossiers financiers",
+    "disabled": "Désactivé",
+    "visibilityStatus": "Statut de visibilité",
+    "saveChanges": "Sauvegarder les modifications",
+    "enabled": "Activé",
+    "deleteNotice": "Êtes-vous sûr de vouloir supprimer ces données ? Cette action est irréversible",
+    "dangerArea": "Zone dangereuse",
+    "userName": "Nom d'utilisateur",
+    "code": "Code",
+    "beneficiary": "Bénéficiaire",
+    "availabilityTime": "Temps de disponibilité",
+    "appType": "Type d'application",
+    "creditGift": "Cadeau de crédit",
+    "tripFeePercentGift": "Cadeau en pourcentage des frais de voyage",
+    "creditCurrency": "Devise du crédit",
+    "conditionTripCountsLessThan": "Le trajet compte moins de",
+    "conditionUserNumberFirstDigits": "Premiers chiffres des numéros mobiles des bénéficiaires (liste, séparés par des virgules)",
+    "subject": "Sujet",
+    "type": "Taper",
+    "paymentGateway": "Passerelle de paiement",
+    "rider": "Client",
+    "driver": "Kasiman",
+    "admin": "Administrateur",
+    "coupon": "Coupon",
+    "activities": "Chronologie des activités",
+    "location": "Emplacement",
+    "submittedBy": "Proposé par",
+    "pleaseSelect": "Veuillez sélectionner",
+    "searchMobileNumber": "Rechercher un numéro de portable",
+    "userType": "Type d'utilisateur",
+    "description": "Description",
+    "rechargeType": "Type de recharge",
+    "deductType": "Type de déduction",
+    "transactionsRecords": "Historique des transactions",
+    "walletSummary": "Résumé du portefeuille",
+    "isResident": "Est résident ?",
+    "idNumber": "Numéro d'identité",
+    "sender": "(Expéditeur)",
+    "url": "URL",
+    "image": "Image",
+    "icon": "Icône",
+    "action": "Action",
+    "note": "Note",
+    "by": "par",
+    "ratingSummary": "{{percent}} % (sur {{count}} avis)",
+    "notAvailable": "N/A",
+    "parameters": "Paramètres",
+    "assign": "Attribuer",
+    "photo": "Photo"
+  },
+  "complaint": {
+    "title": "Plainte",
+    "subtitle": "Détail de la plainte soumise.",
+    "inscriptionTime": "Heure d'inscription",
+    "content": "Contenu"
+  },
+  "driver": {
+    "profile": {
+      "changeStatus": "État de mise à jour",
+      "lastSeenAt": "Vu dernièrement à",
+      "rating": "Notation",
+      "details": "Détails",
+      "orders": "Ordres",
+      "financials": "Dossiers de crédit",
+      "reviews": "Commentaires",
+      "documents": "Documents",
+      "ratingSummary": "Résumé des évaluations"
+    }
+  },
+  "table": {
+    "viewRequest": "Voir la demande",
+    "viewOperator": "Afficher l'opérateur",
+    "viewGateway": "Afficher la passerelle",
+    "min": "Min",
+    "max": "Max",
+    "viewDriver": "Afficher le Kasiman",
+    "viewFleet": "Voir la flotte",
+    "viewRider": "Voir le client",
+    "viewComplaint": "Voir la plainte",
+    "openInGoogleMaps": "Ouvrir dans Google Maps",
+    "registeredOn": "Inscrit le",
+    "submittedOn": "Soumis le"
+  },
+  "drivers": {
+    "title": "Kasimen",
+    "subtitle": "Liste de tous les Kasimen inscrits.",
+    "notFoundMessage": "Kasiman introuvable !"
+  },
+  "dispatcher": {
+    "removeLastPoint": "Supprimer le dernier point",
+    "rider": {
+      "title": "Client",
+      "description": "Sélectionnez le client à attribuer à la demande"
+    },
+    "location": {
+      "title": "Emplacement",
+      "description": "Lieu(x) de ramassage et de dépôt"
+    },
+    "service": {
+      "title": "Service",
+      "description": "Prestation à demander"
+    },
+    "looking": {
+      "title": "En regardant",
+      "description": "Recherche d'un Kasiman éligible",
+      "waitMessage": "Recherche d'un Kasiman adapté. Veuillez patienter..."
+    },
+    "determiningLocation": "Détermination de l'emplacement, veuillez patienter...",
+    "viewRequestDetails": "Voir les détails de la demande",
+    "cancelRequest": "Annuler la demande",
+    "driverAcceptedRequestSuffix": "a accepté la demande. Rendez-vous sur la page de la course pour plus d'informations.",
+    "tripStatusUpdated": "Le statut de la course a été mis à jour : {{status}}.",
+    "time": "Heure"
+  },
+  "chart": {
+    "emptyState": "Rien à voir ici."
+  },
+  "message": {
+    "areYouSure": "Es-tu sûr?",
+    "deleteDriverConfirmation": {
+      "title": "Voulez-vous vraiment supprimer le Kasiman ?",
+      "content": "La suppression des informations du Kasiman masquera le Kasiman de la liste des Kasimen et le profil ne sera plus accessible."
+    },
+    "deleteDriverCofirmAlert": "Le Kasiman a été supprimé",
+    "driverAssignedSuccessfully": "Le Kasiman est attribué avec succès",
+    "deleteConfirmation": {
+      "title": "Etes-vous sûr que vous voulez supprimer?"
+    },
+    "deleteRiderConfirmation": {
+      "content": "La suppression des informations sur le client masquera le client de la liste des clients et le profil ne sera plus accessible."
+    },
+    "deleteRiderCofirmAlert": "Le client a été supprimé."
+  },
+  "error": {
+    "nameInvalid": "Le nom n'est pas valide",
+    "titleInvalid": "Le titre n'est pas valide",
+    "PERMISSION_NOT_GRANTED": "Autorisation non accordée"
+  },
+  "fleet": {
+    "title": "Flotte",
+    "subtitle": "Paramètres et zone d'exclusivité de la flotte.",
+    "exclusitivityAreaTitle": "Zone d'exclusivité",
+    "exclusitivityAreaWarning": "Soyez prudent lors de l'utilisation de cette fonctionnalité. Une fois qu'une zone d'exclusivité est attribuée à une flotte, toutes les demandes de course provenant de cette zone seront destinées uniquement aux Kasimen appartenant à cette flotte. Les Kasimen qui ne font pas partie de la flotte ne recevront pas ces demandes.",
+    "feeMultiplier": "Multiplicateur de frais",
+    "section": {
+      "identity": {
+        "title": "Identité",
+        "desc": "Nom et coordonnées de la flotte."
+      },
+      "commission": {
+        "title": "Commission",
+        "desc": "Part prélevée par la flotte sur les courses."
+      },
+      "bank": {
+        "title": "Informations bancaires",
+        "desc": "Coordonnées bancaires pour les versements."
+      },
+      "exclusivity": {
+        "desc": "Restreint la flotte à ses propres Kasimen."
+      },
+      "transaction": {
+        "desc": "Ajoutez une transaction manuelle au portefeuille de la flotte."
+      }
+    }
+  },
+  "fleets": {
+    "title": "Flottes",
+    "subtitle": "Liste de toutes les flottes enregistrées."
+  },
+  "cars": {
+    "title": "Voitures",
+    "subtitle": "Définitions de base des voitures",
+    "models": "Modèles",
+    "colors": "Couleurs"
+  },
+  "regions": {
+    "title": "Régions",
+    "subtitle": "Liste de toutes les régions dans lesquelles l'application opère."
+  },
+  "region": {
+    "title": "Nouvelle région",
+    "subtitle": "Paramètres de la région dans laquelle l'application opère.",
+    "geofence": "Zone géographique",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom, devise et visibilité de la région."
+      },
+      "geofence": {
+        "title": "Zone géographique",
+        "desc": "Délimitez la zone de couverture sur la carte."
+      }
+    }
+  },
+  "cancelReasons": {
+    "title": "Motifs d'annulation",
+    "subtitle": "Motifs d'annulation que les clients pourront choisir lors de l'annulation d'une course."
+  },
+  "payoutSessions": {
+    "title": "Sessions de versement",
+    "subtitle": "Paiements par lot des gains des Kasimen."
+  },
+  "payoutSession": {
+    "title": "Session de versement",
+    "subtitle": "Versements générés pour cette session."
+  },
+  "payoutSessionNew": {
+    "title": "Nouvelle session de versement",
+    "subtitle": "Génère un versement pour chaque Kasiman éligible (solde au-dessus du minimum, méthode de retrait active).",
+    "section": {
+      "criteria": {
+        "title": "Critères",
+        "desc": "Sélection des Kasimen et seuils de la session de versement."
+      }
+    }
+  },
+  "payoutMethods": {
+    "title": "Méthodes de versement",
+    "subtitle": "Canaux de paiement des gains des Kasimen (Wave, Orange Money, virement, espèces)."
+  },
+  "payoutMethod": {
+    "title": "Méthode de versement",
+    "subtitle": "Paramètres du canal de versement.",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Type de méthode, nom et état d'activation."
+      },
+      "settings": {
+        "title": "Paramètres",
+        "desc": "Options spécifiques à la méthode de versement."
+      }
+    }
+  },
+  "payouts": {
+    "type": "Type",
+    "method": "Méthode",
+    "accountNumber": "Numéro de compte",
+    "minimumAmount": "Montant minimum",
+    "minimumAmountHint": "Les Kasimen sous ce solde sont exclus de la session.",
+    "totalAmount": "Montant total",
+    "instructions": "Consignes",
+    "targetMethods": "Méthodes ciblées",
+    "targetMethodsHint": "Laisser vide pour inclure toutes les méthodes actives.",
+    "allMethods": "Toutes les méthodes",
+    "createSession": "Nouvelle session",
+    "preview": "Aperçu",
+    "previewResult": "{{count}} Kasimen éligibles",
+    "noEligible": "Aucun Kasiman éligible pour ces critères.",
+    "processAll": "Tout payer",
+    "processAllConfirm": "Marquer tous les versements en attente comme payés et débiter les portefeuilles ?",
+    "cancelSession": "Annuler la session",
+    "cancelSessionConfirm": "Annuler tous les versements en attente de cette session ?",
+    "markPaid": "Marquer payé",
+    "markPaidConfirm": "Paiement effectué hors application ? Le portefeuille sera débité.",
+    "cancel": "Annuler",
+    "cancelPayoutConfirm": "Annuler ce versement ?"
+  },
+  "smsProviders": {
+    "title": "Fournisseurs SMS",
+    "subtitle": "Passerelles SMS utilisées pour envoyer les codes de vérification et les notifications."
+  },
+  "smsProvider": {
+    "title": "Fournisseur SMS",
+    "subtitle": "Paramètres de la passerelle SMS.",
+    "type": "Type",
+    "accountId": "Identifiant de compte",
+    "apiSecret": "Secret API",
+    "apiSecretHint": "Inchangé si vide.",
+    "senderId": "Identifiant d'expéditeur",
+    "template": "Modèle de vérification",
+    "templateHint": "{code} sera remplacé par le code à 6 chiffres.",
+    "setDefault": "Définir par défaut",
+    "default": "Défaut",
+    "defaultSet": "Défini comme fournisseur par défaut.",
+    "testSms": "SMS de test",
+    "testNumber": "Numéro de téléphone",
+    "testSent": "SMS de test envoyé.",
+    "section": {
+      "provider": {
+        "title": "Fournisseur",
+        "desc": "Type de fournisseur, nom et état d'activation."
+      },
+      "credentials": {
+        "title": "Identifiants",
+        "desc": "Clés d'API et identifiant d'expéditeur du service SMS."
+      },
+      "template": {
+        "title": "Modèle",
+        "desc": "Modèle du SMS de vérification envoyé aux utilisateurs."
+      }
+    }
+  },
+  "emailProviders": {
+    "title": "Fournisseurs email",
+    "subtitle": "Passerelles email utilisées pour envoyer les notifications et les messages transactionnels."
+  },
+  "emailProvider": {
+    "title": "Fournisseur email",
+    "subtitle": "Paramètres de la passerelle email.",
+    "type": "Type",
+    "host": "Hôte SMTP",
+    "port": "Port",
+    "secure": "Connexion sécurisée (SSL/TLS)",
+    "secureHint": "Activé = port 465 (SMTPS) ; désactivé = port 587 (STARTTLS).",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordHint": "Inchangé si vide.",
+    "fromAddress": "Adresse d'expéditeur",
+    "fromName": "Nom d'expéditeur",
+    "setDefault": "Définir par défaut",
+    "default": "Défaut",
+    "defaultSet": "Défini comme fournisseur par défaut.",
+    "testEmail": "Email de test",
+    "testTo": "Adresse email",
+    "testSent": "Email de test envoyé.",
+    "section": {
+      "provider": {
+        "title": "Fournisseur",
+        "desc": "Type de fournisseur, nom et état d'activation."
+      },
+      "smtp": {
+        "title": "Configuration SMTP",
+        "desc": "Serveur, identifiants et adresse d'expédition."
+      }
+    }
+  },
+  "callMaskingProviders": {
+    "title": "Fournisseurs d'appels masqués",
+    "subtitle": "Fournisseurs vocaux utilisés pour anonymiser les appels entre clients et Kasimen."
+  },
+  "callMaskingProvider": {
+    "title": "Fournisseur d'appels masqués",
+    "subtitle": "Paramètres du fournisseur d'appels anonymisés.",
+    "type": "Type",
+    "accountId": "SID du compte",
+    "apiSecret": "Jeton d'authentification",
+    "apiSecretHint": "Inchangé si vide.",
+    "proxyNumber": "Numéro proxy",
+    "webhookAuthToken": "Jeton d'authentification du webhook",
+    "webhookAuthTokenHint": "Inchangé si vide.",
+    "sessionTtlMinutes": "Durée de session (minutes)",
+    "setDefault": "Définir par défaut",
+    "default": "Défaut",
+    "defaultSet": "Défini comme fournisseur par défaut.",
+    "testCall": "Appel test",
+    "testNumber": "Numéro de téléphone",
+    "testSent": "Appel test déclenché.",
+    "section": {
+      "provider": {
+        "title": "Fournisseur",
+        "desc": "Type de fournisseur, nom et état d'activation."
+      },
+      "credentials": {
+        "title": "Identifiants",
+        "desc": "Clés d'API et jetons d'authentification du service."
+      },
+      "routing": {
+        "title": "Routage",
+        "desc": "Numéro relais et durée de vie des sessions d'appel masqué."
+      }
+    }
+  },
+  "shiftRules": {
+    "title": "Règles de temps de service",
+    "subtitle": "Définissez les limites d'heures et de pauses des Kasimans.",
+    "frequency": "Fréquence",
+    "maxHoursPerPeriod": "Heures max / période",
+    "maxHoursPerPeriodHint": "Nombre maximal d'heures de conduite autorisées sur la période choisie.",
+    "mandatoryBreakMinutes": "Pause obligatoire (min)",
+    "mandatoryBreakMinutesHint": "Durée de pause recommandée entre deux services.",
+    "enforced": "Mode bloquant",
+    "enforcedHint": "Si activé, la règle est présentée comme bloquante. Le contrôle reste indicatif (soft) côté serveur pour le moment.",
+    "enforcedTag": "Bloquant",
+    "softTag": "Indicatif",
+    "deleted": "Règle supprimée",
+    "frequencyEnum": {
+      "Daily": "Quotidien",
+      "Weekly": "Hebdomadaire"
+    }
+  },
+  "shiftRule": {
+    "title": "Règle de temps de service",
+    "subtitle": "Paramétrez les limites appliquées aux services des Kasimans.",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom, fréquence et état de la règle de temps de service."
+      },
+      "limits": {
+        "title": "Limites",
+        "desc": "Durée maximale et pause obligatoire par période."
+      }
+    }
+  },
+  "retention": {
+    "title": "Rétention des documents",
+    "subtitle": "Définissez la durée de conservation des documents avant purge automatique.",
+    "retentionDays": "Jours de rétention",
+    "retentionDaysHint": "Nombre de jours au-delà desquels un document devient éligible à la purge.",
+    "days": "{{count}} jours",
+    "dryRun": "Mode simulation",
+    "dryRunHint": "Activé : le système journalise uniquement les documents qui seraient purgés et ne supprime RIEN.",
+    "enabledHint": "Active la prise en compte de cette politique par le job de rétention.",
+    "lastRunAt": "Dernière exécution",
+    "simulationMode": "Simulation",
+    "realMode": "Purge réelle",
+    "realDeletionDisabledWarning": "La purge réelle sera activée dans une version ultérieure après validation. À ce stade, le système reste non destructif : aucun document n'est supprimé.",
+    "runDryRun": "Lancer la simulation",
+    "dryRunTriggered": "Simulation de rétention lancée (aucune suppression effectuée).",
+    "section": {
+      "policy": {
+        "title": "Politique",
+        "desc": "Nom, durée de conservation et état de la politique."
+      },
+      "execution": {
+        "title": "Exécution",
+        "desc": "Mode simulation et déclenchement de la purge."
+      }
+    }
+  },
+  "cancelReason": {
+    "title": "Motif d'annulation",
+    "subtitle": "Motif d'annulation que les clients pourront choisir lors de l'annulation d'une course",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Intitulé, type d'utilisateur et visibilité."
+      }
+    }
+  },
+  "reviewParameters": {
+    "title": "Paramètres d'examen",
+    "subtitle": "Liste des paramètres que le Kasiman peut attribuer à l'expérience de service"
+  },
+  "reviewParameter": {
+    "title": "Nouveau paramètre d'examen",
+    "subtitle": "Paramètres des avis que le client peut sélectionner pour l'évaluation.",
+    "isGood": "Est positif",
+    "good": "Positif",
+    "bad": "Négatif",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Intitulé du paramètre et sa tonalité."
+      }
+    }
+  },
+  "services": {
+    "title": "Prestations de service",
+    "subtitle": "Gérez les catégories et les services proposés dans les applications",
+    "editCategory": "Modifier la catégorie",
+    "newCategory": "Nouvelle catégorie",
+    "newService": "Nouveau service"
+  },
+  "service": {
+    "title": "Service",
+    "subtitle": "Afficher et modifier les détails du service",
+    "createFirstNotice": "Créez votre première catégorie de service à afficher dans les applications clientes",
+    "Regions": "Régions",
+    "category": "Catégorie",
+    "maxPersonCapacity": "Capacité maximale de personnes",
+    "baseFare": "Tarif de base",
+    "perHundredMeters": "Par cent mètres",
+    "perMinuteDrive": "Par minute de trajet",
+    "perMinuteWait": "Par minute d'attente",
+    "prepayPercent": "Pourcentage de prépaiement",
+    "minimumFee": "Frais minimum",
+    "roundingFactor": "Facteur d'arrondi",
+    "roundingFactorError": "La valeur doit être supérieure à zéro et inférieure à 100",
+    "maximumDistance": "Distance maximale",
+    "searchRadius": "Rayon de recherche",
+    "paymentMethod": "Méthode de paiement",
+    "orderType": "Type de commande",
+    "orderTypes": {
+      "Ride": "Course",
+      "Delivery": "Livraison"
+    },
+    "providerSharePercent": "Pourcentage de part du fournisseur",
+    "providerShareFlat": "Part fixe du fournisseur",
+    "cancellationTotalFee": "Frais totaux d'annulation",
+    "cancellationDriverShare": "Part du Kasiman à l'annulation",
+    "twoWayAvailable": "Aller-retour disponible ?",
+    "timeMultiplierTitle": "Multiplicateur horaire de la journée",
+    "distanceMultiplierTitle": "Multiplicateur de distance",
+    "weekdayMultiplierTitle": "Multiplicateurs par jour de la semaine",
+    "dateRangeMultiplierTitle": "Multiplicateur de plage de dates",
+    "ridePreferences": "Préférences de course",
+    "timeMultiplierTable": {
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "multiplyBy": "Multiplier par"
+    },
+    "insertRule": "Insérer une règle",
+    "distanceMultiplierTable": {
+      "distanceFrom": "Distance de",
+      "distanceTo": "Distance à"
+    },
+    "weekdayMultiplierTable": {
+      "weekday": "Jour de la semaine"
+    },
+    "dateRangeMultiplierTable": {
+      "dateRange": "Plage de dates"
+    },
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom, catégorie, capacité et visuel du service."
+      },
+      "pricing": {
+        "title": "Tarification",
+        "desc": "Tarifs de base et paramètres de calcul du prix."
+      },
+      "commission": {
+        "title": "Répartition & annulation",
+        "desc": "Part du fournisseur et frais d'annulation."
+      },
+      "availability": {
+        "title": "Course & disponibilité",
+        "desc": "Distances, paiement et type de commande."
+      }
+    }
+  },
+  "serviceCategory": {
+    "title": "Catégorie de service",
+    "subtitle": "Saisissez les détails de la catégorie de service ci-dessous.",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom de la catégorie de service."
+      }
+    }
+  },
+  "serviceOptions": {
+    "title": "Options d'entretien",
+    "subtitle": "Liste des options pouvant être activées sur des services spécifiques."
+  },
+  "serviceOption": {
+    "title": "Définition d'une option de service",
+    "subtitle": "Options pouvant être activées sur des services spécifiques.",
+    "additionalFee": "Frais supplémentaires",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom, type et icône de l'option."
+      }
+    }
+  },
+  "settings": {
+    "generalSettings": "réglages généraux",
+    "changePasswordTitle": "Changer le mot de passe",
+    "changePasswordSubtitle": "Mettez à jour le mot de passe utilisé pour accéder à ce panneau",
+    "oldPassword": "Ancien mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordRepeat": "Répéter le nouveau mot de passe",
+    "passwordIncorrect": "Le mot de passe est incorrect",
+    "section": {
+      "changePassword": {
+        "desc": "Modifiez le mot de passe de votre compte administrateur."
+      }
+    }
+  },
+  "users": {
+    "title": "Opérateurs",
+    "subtitle": "Utilisateurs du panneau d'administration (opérateurs et administrateurs)",
+    "tab": {
+      "details": "Détails"
+    },
+    "noRole": "Aucun rôle attribué"
+  },
+  "role": {
+    "title": "Rôle utilisateur",
+    "subtitle": "Définition d'un rôle utilisateur du panneau d'administration",
+    "permissions": "Permissions",
+    "section": {
+      "identity": {
+        "title": "Identité",
+        "desc": "Nom du rôle d'utilisateur."
+      },
+      "permissions": {
+        "desc": "Autorisations accordées à ce rôle."
+      }
+    }
+  },
+  "roles": {
+    "title": "Rôles utilisateurs",
+    "subtitle": "Définitions des rôles pour les utilisateurs du panneau d'administration."
+  },
+  "zonePrice": {
+    "pickupAreas": "Zone(s) de ramassage",
+    "destinationAres": "Zone(s) de destination",
+    "title": "Nouveau tarif zonal",
+    "subtitle": "Définissez des zones à tarification fixe qui remplacent le calcul par défaut basé sur la distance.",
+    "timeMultiplierTitle": "Multiplicateur horaire",
+    "moreSelected": "et {{count}} de plus sélectionné(s)",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom, flottes, services et tarif fixe."
+      },
+      "zones": {
+        "title": "Zones",
+        "desc": "Zones de ramassage et de destination sur la carte."
+      }
+    }
+  },
+  "zonePrices": {
+    "title": "Tarifs zonaux",
+    "subtitle": "Définir des régions spécifiques qui remplacent le prix par défaut et ont un prix spécifique pour le trajet du client"
+  },
+  "paymentGateways": {
+    "title": "Passerelles de paiement",
+    "subtitle": "Options de paiement des clients"
+  },
+  "paymentGateway": {
+    "title": "Passerelle de paiement",
+    "subtitle": "Clés API et définitions destinées aux clients.",
+    "apiKeys": "Clés API",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Type de passerelle, nom et état d'activation."
+      },
+      "branding": {
+        "title": "Présentation",
+        "desc": "Nom affiché et logo présentés à l'utilisateur."
+      },
+      "apiKeys": {
+        "desc": "Clés d'API et secrets de la passerelle de paiement."
+      }
+    }
+  },
+  "announcement": {
+    "title": "Annonce",
+    "subtitle": "Définition des annonces et actualités que les utilisateurs verront dans le menu de leur application.",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Titre et contenu de l'annonce diffusée."
+      }
+    }
+  },
+  "announcements": {
+    "title": "Annonces",
+    "subtitle": "Liste de toutes les annonces"
+  },
+  "coupons": {
+    "title": "Coupons",
+    "subtitle": "Liste de tous les coupons",
+    "availabilityTime": "Temps de disponibilité",
+    "description": "Créez des coupons à utiliser par les clients pour obtenir des réductions sur leurs trajets",
+    "expirationTime": "Date d'expiration",
+    "manyUsersCanUse": "Nombre d'utilisateurs pouvant l'utiliser",
+    "manyTimesUserCanUse": "Nombre de fois où un utilisateur peut l'utiliser",
+    "minimumCost": "Coût minimum",
+    "maximumCost": "Coût maximum",
+    "discountPercent": "Pourcentage de réduction",
+    "discountFlat": "Réduction fixe",
+    "isEnabled": "Activé ?",
+    "isFirstTravelOnly": "Premier trajet uniquement ?",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Code du coupon et service concerné."
+      },
+      "discount": {
+        "title": "Remise",
+        "desc": "Type et montant de la remise appliquée."
+      },
+      "options": {
+        "title": "Options",
+        "desc": "Paramètres additionnels et restrictions du coupon."
+      },
+      "usage": {
+        "title": "Utilisation",
+        "desc": "Limites d'utilisation et période de validité."
+      }
+    }
+  },
+  "giftCards": {
+    "title": "Cartes cadeaux",
+    "subtitle": "Liste des lots de cartes cadeaux émis",
+    "newBatch": "Nouveau lot",
+    "newBatchSubtitle": "Générez un lot de cartes cadeaux ; les codes sont créés automatiquement.",
+    "viewSubtitle": "Détail du lot et codes générés",
+    "batchInfo": "Informations du lot",
+    "amount": "Montant",
+    "quantity": "Quantité",
+    "availability": "Disponibilité",
+    "availableTimestamp": "Disponible à partir du",
+    "expirationTimestamp": "Expire le",
+    "createdAt": "Créé le",
+    "generate": "Générer le lot",
+    "codes": "Codes",
+    "code": "Code",
+    "used": "Utilisée",
+    "available": "Disponible",
+    "codesRestricted": "Vous n'avez pas la permission de consulter les codes de ce lot (GiftCards_ViewCodes).",
+    "section": {
+      "batch": {
+        "title": "Lot de cartes cadeaux",
+        "desc": "Quantité, valeur et paramètres du lot à générer."
+      }
+    }
+  },
+  "rewards": {
+    "subtitle": "Liste de toutes les règles de récompense et de parrainage",
+    "underDevelopmentNotice": "Cette fonctionnalité est encore en développement et le volet applicatif n'a pas encore été intégré. Le déploiement complet de cette fonctionnalité est prévu dans les semaines à venir."
+  },
+  "reward": {
+    "newTitle": "Nouvelle règle de récompense",
+    "editTitle": "Modifier la règle de récompense n°",
+    "subtitle": "Définitions de la règle de récompense.",
+    "event": "Événement",
+    "conditions": "Conditions",
+    "section": {
+      "general": {
+        "title": "Général",
+        "desc": "Nom et événement déclencheur de la récompense."
+      },
+      "conditions": {
+        "desc": "Bénéficiaire, montant et conditions d'attribution."
+      }
+    }
+  },
+  "riders": {
+    "title": "Clients",
+    "subtitle": "Liste de tous les clients inscrits.",
+    "notFoundMessage": "Client introuvable!",
+    "tab": {
+      "details": "Détails",
+      "creditrecords": "Dossiers de crédit",
+      "orders": "Ordres",
+      "addresses": "Adresses"
+    }
+  },
+  "complaints": {
+    "title": "Plaintes",
+    "subtitle": "Plaintes soumises par les clients/Kasimen"
+  },
+  "sos": {
+    "title": "SOS",
+    "subtitle": "Signaux de détresse soumis par les utilisateurs",
+    "activities": "Activités",
+    "insertActivity": "Insérer une activité",
+    "section": {
+      "request": {
+        "desc": "Détails de la course associée au signalement."
+      },
+      "driver": {
+        "desc": "Kasiman impliqué dans le signalement."
+      },
+      "rider": {
+        "desc": "Client impliqué dans le signalement."
+      },
+      "activities": {
+        "desc": "Historique des actions menées sur ce signalement."
+      },
+      "newActivity": {
+        "desc": "Enregistrez une nouvelle action sur ce signalement."
+      }
+    }
+  },
+  "weekday": {
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
+  },
+  "requestActivityType": {
+    "arrivedToDestination": "Arrivé à destination",
+    "arrivedToPickupPoint": "Arrivé au point de ramassage",
+    "bookedByOperator": "Réservez par opérateur",
+    "bookedByRider": "Réservé par le client",
+    "canceledByDriver": "Annulé par le Kasiman",
+    "canceledByOperator": "Annulé par l'opérateur",
+    "canceledByRider": "Annulé par le client",
+    "driverAccepted": "Kasiman accepté",
+    "expired": "Expiré",
+    "paid": "Payé",
+    "requestedByOperator": "Demandé par l'opérateur",
+    "requestedByRider": "Demandé par le client",
+    "reviewed": "Examiné et évalué",
+    "started": "Commencé"
+  },
+  "form": {
+    "role": "Rôle",
+    "password": "Mot de passe",
+    "register": "Enregistrer",
+    "cancel": "Annuler",
+    "notValidFirstName": "Le prénom n'est pas valide",
+    "notValidLastName": "Le nom n'est pas valide",
+    "notValidUserName": "Le nom d'utilisateur n'est pas valide",
+    "notValidMobileNumber": "Le numéro de portable n'est pas valide",
+    "notValidPassword": "Le mot de passe n'est pas valide",
+    "notValidEmail": "L'e-mail n'est pas valide",
+    "roleNotSelected": "Aucun rôle sélectionné",
+    "newRider": {
+      "title": "Nouveau client",
+      "subtitle": "Saisissez les coordonnées du client ci-dessous.",
+      "section": {
+        "profile": {
+          "title": "Profil",
+          "desc": "Identité et coordonnées de contact du client."
+        }
+      }
+    },
+    "newDriver": {
+      "title": "Nouveau Kasiman",
+      "subtitle": "Saisissez les coordonnées du Kasiman ci-dessous.",
+      "section": {
+        "profile": {
+          "title": "Profil",
+          "desc": "Identité et coordonnées de contact du Kasiman."
+        }
+      }
+    },
+    "newOperator": {
+      "title": "Nouvel opérateur",
+      "subtitle": "Saisissez les informations de l'opérateur ci-dessous.",
+      "section": {
+        "identity": {
+          "title": "Identité",
+          "desc": "Nom et coordonnées de contact de l'opérateur."
+        },
+        "account": {
+          "title": "Compte",
+          "desc": "Rôle et identifiants de connexion."
+        }
+      }
+    },
+    "newFleet": {
+      "title": "Nouvelle flotte",
+      "subtitle": "Saisissez les informations de la nouvelle flotte ci-dessous.",
+      "section": {
+        "identity": {
+          "title": "Identité",
+          "desc": "Nom et coordonnées de la nouvelle flotte."
+        },
+        "commission": {
+          "title": "Commission",
+          "desc": "Part prélevée par la flotte sur les courses."
+        },
+        "bank": {
+          "title": "Informations bancaires",
+          "desc": "Coordonnées bancaires pour les versements."
+        }
+      }
+    }
+  },
+  "login": {
+    "title": "Connexion",
+    "usernameRequired": "Veuillez saisir votre nom d'utilisateur !",
+    "username": "Nom d'utilisateur",
+    "submit": "Se connecter"
+  },
+  "driverWallets": {
+    "title": "Portefeuilles des Kasimen",
+    "subtitle": "Liste du solde actuel des portefeuilles des Kasimen"
+  },
+  "fleetWallets": {
+    "title": "Portefeuilles des flottes",
+    "subtitle": "Liste du solde actuel des portefeuilles des flottes"
+  },
+  "riderWallets": {
+    "title": "Portefeuilles des clients",
+    "subtitle": "Liste du solde actuel des portefeuilles des clients"
+  },
+  "providerWallet": {
+    "title": "Portefeuille du fournisseur",
+    "subtitle": "Liste des revenus du fournisseur du système (vous) pour les services."
+  },
+  "config": {
+    "step1Title": "API Mapbox",
+    "step1Description": "Tokens d'accès Mapbox",
+    "step2Title": "SDK Firebase Admin",
+    "step2Description": "Notifications et authentification",
+    "backendMapsKey": "Token Mapbox du backend",
+    "dashboardMapsKey": "Token Mapbox du tableau de bord",
+    "invalidMapsKeys": "Les tokens Mapbox semblent invalides.",
+    "firebaseUploadText": "Clé privée du projet Firebase",
+    "firebaseUploadHint": "Déposez le fichier JSON de clé privée téléchargé depuis votre projet Firebase (Comptes de service, bouton Générer une clé privée).",
+    "invalidFirebaseKey": "La clé du projet Firebase semble invalide.",
+    "uploadSuccess": "{{file}} importé avec succès.",
+    "uploadFailed": "Échec de l'import de {{file}}.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "done": "Terminer",
+    "successTitle": "Configuration terminée !",
+    "successSubtitle": "Votre configuration est enregistrée. Patientez environ 30 secondes le temps que le système l'applique, puis rejoignez l'écran de connexion via le bouton ci-dessous.",
+    "goLogin": "Aller à la connexion"
+  },
+  "driverProfile": {
+    "details": {
+      "section": {
+        "identity": {
+          "title": "Identité",
+          "desc": "Nom, genre et coordonnées du Kasiman."
+        },
+        "vehicle": {
+          "title": "Véhicule",
+          "desc": "Détails du véhicule et capacités de livraison."
+        },
+        "financial": {
+          "title": "Informations bancaires",
+          "desc": "Coordonnées bancaires utilisées pour les versements."
+        },
+        "media": {
+          "title": "Services et photo",
+          "desc": "Services activés et photo de profil du Kasiman."
+        }
+      }
+    },
+    "financial": {
+      "section": {
+        "insert": {
+          "desc": "Créditez ou débitez manuellement le portefeuille du Kasiman."
+        }
+      }
+    }
+  },
+  "riderView": {
+    "info": {
+      "section": {
+        "identity": {
+          "title": "Identité",
+          "desc": "Nom, genre et coordonnées du client."
+        },
+        "residency": {
+          "title": "Résidence",
+          "desc": "Statut de résidence et pièce d'identité du client."
+        }
+      }
+    },
+    "financial": {
+      "section": {
+        "insert": {
+          "desc": "Créditez ou débitez manuellement le portefeuille du client."
+        }
+      }
+    }
+  },
+  "mapSettings": {
+    "title": "Cartographie",
+    "subtitle": "Configurez le fournisseur de cartes utilisé par les applications mobiles Kasi.",
+    "saved": "Configuration cartographique enregistrée.",
+    "section": {
+      "provider": {
+        "title": "Fournisseur",
+        "desc": "Sélectionnez le service de tuiles cartographiques appliqué aux applications client et Kasiman."
+      },
+      "mapbox": {
+        "title": "Mapbox",
+        "desc": "Paramètres utilisés lorsque le fournisseur est Mapbox (jeton et style)."
+      },
+      "google": {
+        "title": "Google",
+        "desc": "Paramètres utilisés lorsque le fournisseur est Google Maps."
+      }
+    },
+    "provider": "Fournisseur de cartes",
+    "providerNote": "Ce choix pilote directement les cartes affichées dans les applications mobiles.",
+    "mapboxToken": "Jeton Mapbox",
+    "mapboxTokenHint": "Jeton public pk. Pensez a le restreindre cote Mapbox (domaines/URL autorisees).",
+    "mapboxStyleUser": "Utilisateur du style",
+    "mapboxStyleUserHint": "Par defaut : mapbox.",
+    "mapboxStyleId": "Identifiant du style",
+    "mapboxStyleIdHint": "Par defaut : streets-v12.",
+    "googleMapsApiKey": "Cle API Google Maps",
+    "googleMapsApiKeyHint": "Cle web utilisee pour le rendu des tuiles Google.",
+    "googleNativeNote": "La bascule vers Google necessite aussi la cle native Android/iOS (definie a la compilation).",
+    "enum": {
+      "Mapbox": "Mapbox",
+      "OpenStreetMap": "OpenStreetMap",
+      "Google": "Google Maps"
+    }
+  }
 }

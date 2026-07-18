@@ -52,6 +52,10 @@ export class ReviewParameterViewComponent implements AfterViewInit {
     } catch(error: any) {
       this.msg.error(error.message);
     }
-    
+
+  }
+
+  cancel() {
+    this.router.navigate(['management/review-parameters'], { relativeTo: this.route.root });
   }
 }

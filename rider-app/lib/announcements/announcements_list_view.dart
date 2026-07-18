@@ -43,7 +43,8 @@ class AnnouncementsListView extends StatelessWidget {
                   return EmptyStateCard(
                       title: S.of(context).announcements_empty_state_title,
                       description: S.of(context).announcements_empty_state_body,
-                      icon: Ionicons.notifications_off_circle);
+                      icon: Ionicons.notifications_off_circle,
+                      illustration: 'assets/illustrations/empty_announcements.png');
                 }
                 return Expanded(
                   child: ListView.builder(

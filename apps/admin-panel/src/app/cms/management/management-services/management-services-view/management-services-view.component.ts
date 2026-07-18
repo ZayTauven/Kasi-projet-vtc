@@ -207,6 +207,10 @@ export class ManagementServicesViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   insertTimeRule() {
     if (this.form.value.timeMultipliers == null) {
       this.form.value.timeMultipliers = [];

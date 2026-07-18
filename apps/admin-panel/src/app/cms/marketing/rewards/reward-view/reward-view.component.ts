@@ -48,6 +48,10 @@ export class RewardViewComponent implements OnInit {
     });
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   async onSubmit() {
     const {id, dates, conditionUserNumber, ..._input} = this.form.value;
     const startDate = dates[0].getTime();

@@ -38,4 +38,8 @@ export class RiderNewComponent {
     this.messageService.success("Saved Successfully.");
     this.routerHelper.goToParent(this.route);
   }
+
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
 }

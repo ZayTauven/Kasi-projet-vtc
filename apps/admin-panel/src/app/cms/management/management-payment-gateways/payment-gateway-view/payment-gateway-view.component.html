@@ -4,78 +4,101 @@
     <p>{{ 'paymentGateway.subtitle' | translate }}</p>
   </div>
 </div>
-<div class="kasi-card">
-  <div class="kasi-card__body">
-    <form nz-form class="kasi-form" nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <input formControlName="id" type="hidden" hidden>
-      <div class="kasi-form--grid">
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input required id="title" formControlName="title">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="type">{{ 'profile.type' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="type" id="type">
-              <nz-option *ngFor="let type of gatewayTypes" [nzValue]="type" [nzLabel]="type"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzRequired nzFor="enabled">{{'profile.visibilityStatus' | translate}}</nz-form-label>
-          <nz-form-control>
-            <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
-          </nz-form-control>
-        </nz-form-item>
+<form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="id" type="hidden" hidden>
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'paymentGateway.section.general.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'paymentGateway.section.general.desc' | translate }}</p>
       </div>
-      <h3 class="my-2 text-sm">{{ 'paymentGateway.apiKeys' | translate }}</h3>
-      <div class="kasi-form--grid"
-        *ngIf="getPaymentGatewayAPIRequirements(form.value.type) as apiKeyObject">
-        <nz-form-item *ngIf="apiKeyObject.publicKey != null">
-          <nz-form-label nzRequired nzFor="publicKey">{{apiKeyObject.publicKey}}</nz-form-label>
-          <nz-form-control>
-            <input required nz-input formControlName="publicKey" id="publicKey">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item *ngIf="apiKeyObject.privateKey != null">
-          <nz-form-label nzRequired nzFor="privateKey">{{apiKeyObject.privateKey}}</nz-form-label>
-          <nz-form-control>
-            <input nz-input required formControlName="privateKey" id="privateKey">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item *ngIf="apiKeyObject.merchantId != null">
-          <nz-form-label nzRequired nzFor="merchantId">{{apiKeyObject.merchantId}}</nz-form-label>
-          <nz-form-control>
-            <input nz-input required formControlName="merchantId" id="merchantId">
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item *ngIf="apiKeyObject.saltKey != null">
-          <nz-form-label nzRequired nzFor="saltKey">{{apiKeyObject.saltKey}}</nz-form-label>
-          <nz-form-control>
-            <input nz-input required formControlName="saltKey" id="saltKey">
-          </nz-form-control>
-        </nz-form-item>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="title">{{ 'profile.title' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required id="title" formControlName="title">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="type">{{ 'profile.type' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="type" id="type">
+                <nz-option *ngFor="let type of gatewayTypes" [nzValue]="type" [nzLabel]="type"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="enabled">{{'profile.visibilityStatus' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-      <nz-form-item class="kasi-form__full">
-        <nz-form-label nzRequired>{{ 'profile.image' | translate }}</nz-form-label>
-        <nz-form-control>
-          <nz-upload [nzAction]="root + 'upload'" [nzHeaders]="{Authorization: 'Bearer ' + jwt}"
-            (nzChange)="handleUploadChange($event)" [nzBeforeUpload]="beforeUpload" nzListType="picture-card"
-            [nzShowUploadList]="false">
-            <ng-container *ngIf="!avatarUrl">
-              <i class="upload-icon" nz-icon [nzType]="loadingUpload ? 'loading' : 'plus'"></i>
-              <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
-            </ng-container>
-            <img *ngIf="avatarUrl" [src]="root + avatarUrl" style="width: 100%" />
-          </nz-upload>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-    <div class="kasi-form-actions">
-      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
-      <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.submit' | translate }}</button>
-    </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'paymentGateway.apiKeys' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'paymentGateway.section.apiKeys.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid"
+          *ngIf="getPaymentGatewayAPIRequirements(form.value.type) as apiKeyObject">
+          <nz-form-item *ngIf="apiKeyObject.publicKey != null">
+            <nz-form-label nzRequired nzFor="publicKey">{{apiKeyObject.publicKey}}</nz-form-label>
+            <nz-form-control>
+              <input required nz-input formControlName="publicKey" id="publicKey">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="apiKeyObject.privateKey != null">
+            <nz-form-label nzRequired nzFor="privateKey">{{apiKeyObject.privateKey}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required formControlName="privateKey" id="privateKey">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="apiKeyObject.merchantId != null">
+            <nz-form-label nzRequired nzFor="merchantId">{{apiKeyObject.merchantId}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required formControlName="merchantId" id="merchantId">
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="apiKeyObject.saltKey != null">
+            <nz-form-label nzRequired nzFor="saltKey">{{apiKeyObject.saltKey}}</nz-form-label>
+            <nz-form-control>
+              <input nz-input required formControlName="saltKey" id="saltKey">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'paymentGateway.section.branding.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'paymentGateway.section.branding.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item class="kasi-form__full">
+            <nz-form-label nzRequired>{{ 'profile.image' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-upload [nzAction]="root + 'upload'" [nzHeaders]="{Authorization: 'Bearer ' + jwt}"
+                (nzChange)="handleUploadChange($event)" [nzBeforeUpload]="beforeUpload" nzListType="picture-card"
+                [nzShowUploadList]="false">
+                <ng-container *ngIf="!avatarUrl">
+                  <i class="upload-icon" nz-icon [nzType]="loadingUpload ? 'loading' : 'plus'"></i>
+                  <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
+                </ng-container>
+                <img *ngIf="avatarUrl" [src]="root + avatarUrl" style="width: 100%" />
+              </nz-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
+  </div>
+</form>

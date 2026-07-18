@@ -44,6 +44,10 @@ export class PayoutMethodViewComponent implements OnInit {
     });
   }
 
+  cancel() {
+    this.router.navigate(['payouts/methods'], { relativeTo: this.route.root });
+  }
+
   async onSubmit() {
     try {
       const { id, ...update } = this.form.value;

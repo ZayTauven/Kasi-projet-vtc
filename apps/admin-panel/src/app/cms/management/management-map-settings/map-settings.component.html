@@ -1,0 +1,83 @@
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'mapSettings.title' | translate }}</h1>
+    <p>{{ 'mapSettings.subtitle' | translate }}</p>
+  </div>
+</div>
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'mapSettings.section.provider.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'mapSettings.section.provider.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="provider">{{ 'mapSettings.provider' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'mapSettings.providerNote' | translate">
+              <nz-select nzMode="default" id="provider" formControlName="provider">
+                <nz-option [nzLabel]="'mapSettings.enum.Mapbox' | translate" nzValue="Mapbox"></nz-option>
+                <nz-option [nzLabel]="'mapSettings.enum.OpenStreetMap' | translate" nzValue="OpenStreetMap"></nz-option>
+                <nz-option [nzLabel]="'mapSettings.enum.Google' | translate" nzValue="Google"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'mapSettings.section.mapbox.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'mapSettings.section.mapbox.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="mapboxToken">{{ 'mapSettings.mapboxToken' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'mapSettings.mapboxTokenHint' | translate">
+              <input nz-input formControlName="mapboxToken" id="mapboxToken" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="mapboxStyleUser">{{ 'mapSettings.mapboxStyleUser' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'mapSettings.mapboxStyleUserHint' | translate">
+              <input nz-input formControlName="mapboxStyleUser" id="mapboxStyleUser" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="mapboxStyleId">{{ 'mapSettings.mapboxStyleId' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'mapSettings.mapboxStyleIdHint' | translate">
+              <input nz-input formControlName="mapboxStyleId" id="mapboxStyleId" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'mapSettings.section.google.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'mapSettings.section.google.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzFor="googleMapsApiKey">{{ 'mapSettings.googleMapsApiKey' | translate }}</nz-form-label>
+            <nz-form-control [nzExtra]="'mapSettings.googleMapsApiKeyHint' | translate">
+              <input nz-input formControlName="googleMapsApiKey" id="googleMapsApiKey" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <nz-alert nzType="info" nzShowIcon [nzMessage]="'mapSettings.googleNativeNote' | translate"></nz-alert>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
+  </div>
+</form>

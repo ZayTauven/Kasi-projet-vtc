@@ -68,6 +68,12 @@ export class ShiftRuleViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.router.navigate(['management/shift-rules'], {
+      relativeTo: this.route.root,
+    });
+  }
+
   async onDelete() {
     const id = this.form.value.id;
     if (id == null) {

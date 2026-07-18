@@ -41,7 +41,7 @@ class SEn extends S {
   @override
   String share_trip_text_client(
       Object firstName, Object lastName, Object mobileNumber) {
-    return ' My passenger is $firstName $lastName, the mobile number is +$mobileNumber.';
+    return ' My client is $firstName $lastName, the mobile number is +$mobileNumber.';
   }
 
   @override
@@ -297,10 +297,10 @@ class SEn extends S {
 
   @override
   String get order_status_card_title_driver_accepted =>
-      'Rider will be notified once you tap Arrived';
+      'Client will be notified once you tap Arrived';
 
   @override
-  String get order_status_card_title_arrived => 'Rider has been notified';
+  String get order_status_card_title_arrived => 'Client has been notified';
 
   @override
   String get order_status_card_title_started => 'Heading to the destination';
@@ -313,12 +313,12 @@ class SEn extends S {
 
   @override
   String rider_expected_time_past(Object minutes) {
-    return 'Rider expected you $minutes mins ago';
+    return 'Client expected you $minutes mins ago';
   }
 
   @override
   String rider_expected_time_future(Object minutes) {
-    return 'Rider expects you in $minutes mins';
+    return 'Client expects you in $minutes mins';
   }
 
   @override
@@ -328,7 +328,7 @@ class SEn extends S {
   String get order_payment_status_paid => 'Ride Has been paid';
 
   @override
-  String get action_ride_preferences => 'Rider Preferences';
+  String get action_ride_preferences => 'Client Preferences';
 
   @override
   String get navigation_dialog_title_pickup_point => 'Navigate to pickup point';
@@ -344,10 +344,10 @@ class SEn extends S {
 
   @override
   String get invoice_dialog_body =>
-      'You can also receive cash instead of an online payment if you and the rider are both willing to.';
+      'You can also receive cash instead of an online payment if you and the client are both willing to.';
 
   @override
-  String get invoice_dialog_heading => 'Waiting for rider payment';
+  String get invoice_dialog_heading => 'Waiting for client payment';
 
   @override
   String get invoice_dialog_title => 'Payment Info';

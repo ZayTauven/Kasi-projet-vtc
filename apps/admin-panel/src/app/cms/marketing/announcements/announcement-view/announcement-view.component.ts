@@ -65,6 +65,10 @@ export class AnnouncementViewComponent implements OnInit {
     this.routerHelper.goToParent(this.route);
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
   async deleteAnnouncement() {
     const result = await firstValueFrom(
       this.deleteGQL.mutate({ id: this.form.value.id })

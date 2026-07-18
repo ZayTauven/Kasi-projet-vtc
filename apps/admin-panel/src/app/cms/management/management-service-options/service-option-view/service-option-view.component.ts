@@ -91,4 +91,10 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
       this.msg.error(error.message);
     }
   }
+
+  cancel() {
+    this.router.navigate(['management/service-options'], {
+      relativeTo: this.route.root,
+    });
+  }
 }

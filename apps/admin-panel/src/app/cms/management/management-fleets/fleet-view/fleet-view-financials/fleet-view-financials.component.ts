@@ -45,6 +45,10 @@ export class FleetViewFinancialsComponent implements OnInit {
     return [...new Set(currencies)];
   }
   
+  cancelTransaction() {
+    this.formTransaction.reset();
+  }
+
   async onSubmitTransaction() {
     this.formTransaction.value.fleetId = this.route.parent?.snapshot.params.id;
     if(this.formTransaction.value.action == 'Deduct' && this.formTransaction.value.deductType == null) {

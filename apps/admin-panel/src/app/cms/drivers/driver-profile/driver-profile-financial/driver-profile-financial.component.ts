@@ -60,6 +60,10 @@ export class DriverProfileFinancialComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.formTransaction.reset({ amount: 0 });
+  }
+
   getUniquieCurrencies(currencies: {currency: string}[] | undefined) {
     if(currencies == undefined) return [];
     return [...new Set(currencies)];

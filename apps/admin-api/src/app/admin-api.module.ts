@@ -38,6 +38,7 @@ import { CallMaskingProviderModule } from './call-masking-provider/call-masking-
 import { GiftModule } from './gift/gift.module';
 import { ShiftRuleModule } from './shift-rule/shift-rule.module';
 import { RetentionPolicyModule } from './retention-policy/retention-policy.module';
+import { MapSettingModule } from './map-setting/map-setting.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -132,6 +133,7 @@ export class AdminAPIModule {
             GiftModule,
             ShiftRuleModule,
             RetentionPolicyModule,
+            MapSettingModule,
             ComplaintModule,
             ConfigurationModule,
             HttpModule,

@@ -21,6 +21,7 @@ import { ChatModule } from './chat/chat.module';
 import { ComplaintModule } from './complaint/complaint.module';
 import { SOSModule } from './sos/sos.module';
 import { ShiftRuleModule } from './shift-rule/shift-rule.module';
+import { MapSettingModule } from './map-setting/map-setting.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
@@ -74,6 +75,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     ComplaintModule,
     SOSModule,
     ShiftRuleModule,
+    MapSettingModule,
   ],
   controllers: [DriverAPIController],
   providers: [CryptoService, SharedDriverService],

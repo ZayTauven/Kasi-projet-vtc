@@ -70,6 +70,12 @@ export class RetentionViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.router.navigate(['management/retention'], {
+      relativeTo: this.route.root,
+    });
+  }
+
   async onDelete() {
     const id = this.form.value.id;
     if (id == null) {

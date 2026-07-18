@@ -181,7 +181,8 @@ class _EarningsViewState extends State<EarningsView> {
                     return EmptyStateCard(
                         title: S.of(context).empty_state_title_no_record,
                         description: S.of(context).earnings_empty_state_body,
-                        icon: Ionicons.cloud_offline);
+                        icon: Ionicons.cloud_offline,
+                        illustration: 'assets/illustrations/empty_earnings.png');
                   }
                   return Expanded(child: _buildContent(context, stats));
                 })

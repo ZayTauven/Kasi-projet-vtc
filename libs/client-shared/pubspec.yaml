@@ -25,6 +25,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/illustrations/
+
   module:
     androidX: true
     androidPackage: com.example.client_shared

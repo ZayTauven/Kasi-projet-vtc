@@ -2608,6 +2608,23 @@ export type IntFieldComparisonBetween = {
   upper: Scalars['Int']['input'];
 };
 
+export type MapSetting = {
+  __typename?: 'MapSetting';
+  googleMapsApiKey?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  mapboxStyleId: Scalars['String']['output'];
+  mapboxStyleUser: Scalars['String']['output'];
+  mapboxToken?: Maybe<Scalars['String']['output']>;
+  provider: MapTileProvider;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum MapTileProvider {
+  Google = 'Google',
+  Mapbox = 'Mapbox',
+  OpenStreetMap = 'OpenStreetMap'
+}
+
 export type Media = {
   __typename?: 'Media';
   address: Scalars['String']['output'];
@@ -2736,6 +2753,7 @@ export type Mutation = {
   testMaskedCall: Scalars['Boolean']['output'];
   updateFirebase: UpdateConfigResult;
   updateManyRiderAddresses: UpdateManyResponse;
+  updateMapSetting: MapSetting;
   updateMapsAPIKey: UpdateConfigResult;
   updateOneAnnouncement: Announcement;
   updateOneCallMaskingProvider: CallMaskingProvider;
@@ -3183,6 +3201,11 @@ export type MutationUpdateManyRiderAddressesArgs = {
 };
 
 
+export type MutationUpdateMapSettingArgs = {
+  input: UpdateMapSettingInput;
+};
+
+
 export type MutationUpdateMapsApiKeyArgs = {
   adminPanel: Scalars['String']['input'];
   backend: Scalars['String']['input'];
@@ -3424,6 +3447,8 @@ export enum OperatorPermission {
   GiftCardsCreate = 'GiftCards_Create',
   GiftCardsView = 'GiftCards_View',
   GiftCardsViewCodes = 'GiftCards_ViewCodes',
+  MapSettingsEdit = 'MapSettings_Edit',
+  MapSettingsView = 'MapSettings_View',
   ProviderWalletEdit = 'ProviderWallet_Edit',
   ProviderWalletView = 'ProviderWallet_View',
   RegionsEdit = 'Regions_Edit',
@@ -4681,6 +4706,7 @@ export type Query = {
   giftCards: GiftCardConnection;
   incomeChart: Array<IncomeResultItem>;
   login: TokenObject;
+  mapSetting: MapSetting;
   me: Operator;
   operator: Operator;
   operatorRole: OperatorRole;
@@ -6617,6 +6643,14 @@ export type UpdateManyRiderAddressesInput = {
   update: UpdateRiderAddress;
 };
 
+export type UpdateMapSettingInput = {
+  googleMapsApiKey?: InputMaybe<Scalars['String']['input']>;
+  mapboxStyleId?: InputMaybe<Scalars['String']['input']>;
+  mapboxStyleUser?: InputMaybe<Scalars['String']['input']>;
+  mapboxToken?: InputMaybe<Scalars['String']['input']>;
+  provider?: InputMaybe<MapTileProvider>;
+};
+
 export type UpdateOneAnnouncementInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -7392,6 +7426,18 @@ export type FleetsListQueryVariables = Exact<{
 
 
 export type FleetsListQuery = { __typename?: 'Query', fleets: { __typename?: 'FleetConnection', totalCount: number, nodes: Array<{ __typename?: 'Fleet', id: string, name: string, phoneNumber: string, address?: string | null }> } };
+
+export type MapSettingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MapSettingQuery = { __typename?: 'Query', mapSetting: { __typename?: 'MapSetting', id: string, provider: MapTileProvider, mapboxToken?: string | null, mapboxStyleUser: string, mapboxStyleId: string, googleMapsApiKey?: string | null, updatedAt: any } };
+
+export type UpdateMapSettingMutationVariables = Exact<{
+  input: UpdateMapSettingInput;
+}>;
+
+
+export type UpdateMapSettingMutation = { __typename?: 'Mutation', updateMapSetting: { __typename?: 'MapSetting', id: string, provider: MapTileProvider, mapboxToken?: string | null, mapboxStyleUser: string, mapboxStyleId: string, googleMapsApiKey?: string | null, updatedAt: any } };
 
 export type OrderCancelReasonListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -9699,6 +9745,54 @@ export const FleetsListDocument = gql`
   })
   export class FleetsListGQL extends Apollo.Query<FleetsListQuery, FleetsListQueryVariables> {
     document = FleetsListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const MapSettingDocument = gql`
+    query MapSetting {
+  mapSetting {
+    id
+    provider
+    mapboxToken
+    mapboxStyleUser
+    mapboxStyleId
+    googleMapsApiKey
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class MapSettingGQL extends Apollo.Query<MapSettingQuery, MapSettingQueryVariables> {
+    document = MapSettingDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMapSettingDocument = gql`
+    mutation UpdateMapSetting($input: UpdateMapSettingInput!) {
+  updateMapSetting(input: $input) {
+    id
+    provider
+    mapboxToken
+    mapboxStyleUser
+    mapboxStyleId
+    googleMapsApiKey
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMapSettingGQL extends Apollo.Mutation<UpdateMapSettingMutation, UpdateMapSettingMutationVariables> {
+    document = UpdateMapSettingDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

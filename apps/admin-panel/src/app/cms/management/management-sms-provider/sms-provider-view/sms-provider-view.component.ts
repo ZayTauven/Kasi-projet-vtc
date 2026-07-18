@@ -80,6 +80,12 @@ export class SmsProviderViewComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.router.navigate(['management/sms-providers'], {
+      relativeTo: this.route.root,
+    });
+  }
+
   async onSetDefault() {
     const id = this.form.value.id;
     if (id == null) {

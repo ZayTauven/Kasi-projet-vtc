@@ -52,6 +52,10 @@ export class PayoutSessionNewComponent implements OnInit {
     };
   }
 
+  cancel() {
+    this.router.navigate(['payouts/sessions'], { relativeTo: this.route.root });
+  }
+
   async onPreview() {
     if (this.form.invalid) return;
     this.loading = true;

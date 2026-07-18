@@ -1047,7 +1047,24 @@ type Payout {
   processedAt: Timestamp
 }
 
+enum MapTileProvider {
+  Mapbox
+  OpenStreetMap
+  Google
+}
+
+type MapSetting {
+  id: ID!
+  provider: MapTileProvider!
+  mapboxToken: String
+  mapboxStyleUser: String!
+  mapboxStyleId: String!
+  googleMapsApiKey: String
+  updatedAt: Timestamp!
+}
+
 type Query {
+  mapSetting: MapSetting!
   requireUpdate(versionCode: Int!): VersionStatus!
   shiftRule(
     """The id of the record to find."""

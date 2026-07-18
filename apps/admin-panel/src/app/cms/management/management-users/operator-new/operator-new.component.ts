@@ -47,4 +47,8 @@ export class OperatorNewComponent implements OnInit {
     this.routerHelper.goToParent(this.route);
   }
 
+  cancel() {
+    this.routerHelper.goToParent(this.route);
+  }
+
 }
