@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { RewardAppType } from "./enums/reward-app-type";
 import { RewardBeneficiary } from "./enums/reward-beneficiary";
@@ -37,7 +38,8 @@ export class RewardEntity {
     event!: RewardEvent;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

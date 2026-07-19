@@ -294,5 +294,11 @@
   "package_size_large": "Grand",
   "delivery_recipient_name": "Nom du destinataire (facultatif)",
   "delivery_recipient_mobile": "Téléphone du destinataire",
-  "delivery_instructions": "Instructions de livraison (facultatif)"
+  "delivery_instructions": "Instructions de livraison (facultatif)",
+  "action_my_location": "Ma position",
+  "picker_search_hint": "Rechercher un lieu",
+  "create_address_location_hint": "Rechercher ou choisir sur la carte",
+  "create_address_location_empty_error": "Sélectionnez l'emplacement sur la carte",
+  "message_error_network": "Erreur réseau. Veuillez réessayer.",
+  "action_retry": "Réessayer"
 }

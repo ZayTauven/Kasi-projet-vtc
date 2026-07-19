@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { OffsetConnection } from '@ptc-org/nestjs-query-graphql';
 import {
   Column,
@@ -53,6 +54,7 @@ export class FleetEntity {
   password?: string;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
     nullable: true,

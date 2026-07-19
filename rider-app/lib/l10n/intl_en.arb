@@ -294,5 +294,11 @@
   "package_size_large": "Large",
   "delivery_recipient_name": "Recipient name (optional)",
   "delivery_recipient_mobile": "Recipient phone number",
-  "delivery_instructions": "Delivery instructions (optional)"
+  "delivery_instructions": "Delivery instructions (optional)",
+  "action_my_location": "My location",
+  "picker_search_hint": "Search for a place",
+  "create_address_location_hint": "Search or pick on the map",
+  "create_address_location_empty_error": "Select the location on the map",
+  "message_error_network": "Network error. Please try again.",
+  "action_retry": "Retry"
 }

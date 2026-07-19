@@ -680,4 +680,23 @@ class SHi extends S {
 
   @override
   String get delivery_instructions => 'Delivery instructions (optional)';
+
+  @override
+  String get action_my_location => 'My location';
+
+  @override
+  String get picker_search_hint => 'Search for a place';
+
+  @override
+  String get create_address_location_hint => 'Search or pick on the map';
+
+  @override
+  String get create_address_location_empty_error =>
+      'Select the location on the map';
+
+  @override
+  String get message_error_network => 'Network error. Please try again.';
+
+  @override
+  String get action_retry => 'Retry';
 }

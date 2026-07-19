@@ -1,0 +1,9 @@
+{
+  // Remplace le glob shell « *.ts » de la cible build d'admin-api : cmd.exe
+  // (Windows) n'étend pas les globs, seul un tsconfig est portable.
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/apps/admin-api/migration",
+    "skipLibCheck": true
+  },
+  "include": ["*.ts"]
+}

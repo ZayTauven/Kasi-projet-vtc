@@ -1,29 +1,54 @@
 import { ValueTransformer } from 'typeorm';
 import { Point } from '../interfaces/point';
 
+interface GeoJSONPolygon {
+    type: 'Polygon';
+    coordinates: number[][][];
+}
+
 export class PolygonTransformer implements ValueTransformer {
     /**
-     * Called before writing to the database.
-     * Outputs EWKT (Extended WKT with explicit SRID) so PostGIS stores the
-     * geometry with the correct SRID 4326 and the column constraint is satisfied.
+     * Appelé avant écriture. Le driver Postgres de TypeORM (0.3.x) fait
+     * JSON.stringify(valeur) puis enveloppe le paramètre avec
+     * ST_SetSRID(ST_GeomFromGeoJSON($n), 4326)::geometry : il faut donc
+     * produire un objet GeoJSON, PAS du EWKT (sinon « unknown GeoJSON type »).
+     * Ordre GeoJSON : [lng, lat]. Les anneaux sont fermés si besoin
+     * (premier point répété en dernier), exigence des polygones PostGIS.
      */
-    to(value: Point[][]): string | null {
+    to(value: Point[][]): GeoJSONPolygon | null {
         if (value == null) return null;
-        const str = value.map((ring: Point[]) => {
-            const pts = ring.map((p: Point) => `${p.lng} ${p.lat}`);
-            return `(${pts.join(',')})`;
-        }).join(',');
-        return `SRID=4326;POLYGON(${str})`;
+        const coordinates = value.map((ring: Point[]) => {
+            const coords = ring.map((p: Point) => [p.lng, p.lat]);
+            const first = coords[0];
+            const last = coords[coords.length - 1];
+            if (first != null && (first[0] !== last[0] || first[1] !== last[1])) {
+                coords.push([first[0], first[1]]);
+            }
+            return coords;
+        });
+        return { type: 'Polygon', coordinates };
     }
 
     /**
-     * Called after reading from the database.
-     * PostGIS returns EWKB as a hex string (byte-order byte = 0x01 → starts with '0').
-     * Falls back to WKT / EWKT parsing for tests or legacy contexts.
+     * Appelé après lecture. TypeORM sélectionne ST_AsGeoJSON(col)::json : le
+     * driver pg livre donc un objet GeoJSON déjà parsé (cas nominal).
+     * Replis conservés pour les requêtes brutes type SELECT * (EWKB hex) et
+     * les tests (WKT / EWKT / chaîne GeoJSON).
      */
-    from(value: string): Point[][] {
+    from(value: unknown): Point[][] {
         if (value == null || value === undefined) return [];
-        if (typeof value === 'string' && value[0] === '0') {
+        if (typeof value === 'object') {
+            const coords = (value as GeoJSONPolygon).coordinates;
+            if (coords == null) return [];
+            return coords.map((ring) =>
+                ring.map((pair) => ({ lng: pair[0], lat: pair[1] })),
+            );
+        }
+        if (typeof value !== 'string') return [];
+        if (value[0] === '{') {
+            return this.from(JSON.parse(value));
+        }
+        if (value[0] === '0') {
             return this.parsePolygonEWKB(value);
         }
         // WKT / EWKT fallback

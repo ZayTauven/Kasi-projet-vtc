@@ -18,6 +18,9 @@ import 'package:kasi_rider/login/login_page.dart';
 import 'package:kasi_rider/main/bloc/jwt_cubit.dart';
 import 'package:kasi_rider/main/bloc/last_orders_cubit.dart';
 import 'package:kasi_rider/main/bloc/rider_profile_cubit.dart';
+import 'package:client_shared/map_diagnostics.dart';
+import 'package:client_shared/map_providers.dart';
+import 'package:kasi_rider/map/map_setting_bootstrap.dart';
 import 'package:kasi_rider/onboarding/onboarding_view.dart';
 import 'package:kasi_rider/settings/settings_page.dart';
 import 'address/address_list_view.dart';
@@ -55,7 +58,29 @@ void main() async {
     }
   }
   await Geolocator.requestPermission();
+  // Synchronise le fournisseur de carte choisi au panel dès le démarrage, sans
+  // attendre le login ni le montage d'un widget carte. NON bloquant : on
+  // n'attend pas le réseau pour afficher la 1re frame. Dès que la réponse
+  // arrive, `mapProvider` est réécrit dans Hive et les ValueListenableBuilder
+  // abonnés à cette clé permutent la TileLayer à chaud.
+  // Diagnostic tuiles (no-op hors debug) : journalise la vraie réponse Mapbox,
+  // que flutter_map masque derrière un ArgumentError trompeur. Chaîné après le
+  // bootstrap pour sonder le token/style réellement fournis par le panel.
+  // Cache image dimensionné pour la carte (voir configureMapImageCache).
+  configureMapImageCache();
   runApp(const MyApp());
+  // Synchro carte lancée APRÈS la première frame. Émise pendant le démarrage,
+  // elle expirait systématiquement : l'isolat est alors bloqué plusieurs
+  // secondes (compilation de shaders, ProfileInstaller, >170 frames sautées) et
+  // les délais réseau s'épuisent avant que la réponse ne puisse être traitée —
+  // on lisait « ECHEC » là où le réseau était sain. Le rendu n'attend de toute
+  // façon pas cette synchro : la couche permute à chaud via Hive.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    bootstrapMapSetting().then((ok) => debugProbeMapTiles(
+          bootstrapOk: ok,
+          savedProviderId: Hive.box('settings').get('mapProvider'),
+        ));
+  });
 }
 
 class MyApp extends StatelessWidget {

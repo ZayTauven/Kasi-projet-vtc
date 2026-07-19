@@ -1,24 +1,42 @@
 import { ValueTransformer } from 'typeorm';
 import { Point } from '../interfaces/point';
 
+interface GeoJSONPoint {
+    type: 'Point';
+    coordinates: [number, number];
+}
+
 export class PointTransformer implements ValueTransformer {
     /**
-     * Called before writing to the database.
-     * Outputs EWKT with SRID=4326 so PostGIS stores the geometry correctly.
+     * Appelé avant écriture. Le driver Postgres de TypeORM (0.3.x) fait
+     * JSON.stringify(valeur) puis enveloppe le paramètre avec
+     * ST_SetSRID(ST_GeomFromGeoJSON($n), 4326)::geometry : il faut donc
+     * produire un objet GeoJSON, PAS du EWKT (sinon « unknown GeoJSON type »).
+     * Ordre GeoJSON : coordinates = [lng, lat].
      */
-    to(value: Point): string | null {
+    to(value: Point): GeoJSONPoint | null {
         if (value == null) return null;
-        return `SRID=4326;POINT(${value.lng} ${value.lat})`;
+        return { type: 'Point', coordinates: [value.lng, value.lat] };
     }
 
     /**
-     * Called after reading from the database.
-     * PostGIS returns EWKB as a hex string (starts with '0' for the byte-order byte).
-     * Falls back to WKT / EWKT parsing for tests or legacy contexts.
+     * Appelé après lecture. TypeORM sélectionne ST_AsGeoJSON(col)::json : le
+     * driver pg livre donc un objet GeoJSON déjà parsé (cas nominal).
+     * Replis conservés pour les requêtes brutes type SELECT * (EWKB hex) et
+     * les tests (WKT / EWKT / chaîne GeoJSON).
      */
-    from(value: string): Point | null {
+    from(value: unknown): Point | null {
         if (value == null || value === '') return null;
-        if (typeof value === 'string' && value[0] === '0') {
+        if (typeof value === 'object') {
+            const coords = (value as GeoJSONPoint).coordinates;
+            if (coords == null) return null;
+            return { lng: coords[0], lat: coords[1] };
+        }
+        if (typeof value !== 'string') return null;
+        if (value[0] === '{') {
+            return this.from(JSON.parse(value));
+        }
+        if (value[0] === '0') {
             return this.parsePointEWKB(value);
         }
         // WKT / EWKT fallback

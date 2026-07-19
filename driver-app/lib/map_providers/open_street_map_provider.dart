@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:client_shared/components/marker_new.dart';
+import 'package:client_shared/config.dart';
 import 'package:client_shared/map_providers.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:kasi_driver/map_providers/map_setting_bootstrap.dart';
@@ -13,6 +14,7 @@ import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
 import '../main_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -37,6 +39,13 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
       geo.Geolocator.getPositionStream(
           locationSettings: const geo.LocationSettings(distanceFilter: 50));
 
+  StreamSubscription<geo.Position>? _positionSub;
+
+  // Dernier cadrage appliqué, pour ne pas relancer `animatedFitBounds` sur une
+  // zone déjà cadrée (voir la garde dans le listener plus bas).
+  LatLng? _lastFitCenter;
+  int? _lastFitRadius;
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +56,28 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // L'abonnement au flux de position vit ICI, pas dans un `builder`.
+    // Auparavant `onLocationUpdated()` était appelé depuis le `builder` d'un
+    // StreamBuilder : chaque appel déclenchait une mutation réseau puis
+    // `bloc.add(...)`, donc une reconstruction, donc un nouvel appel — une
+    // boucle de rétroaction qui ne s'armait qu'en ligne et maintenait la carte
+    // en animation permanente (zoom oscillant sans fin), empêchant toute tuile
+    // de se charger. Un `builder` doit rester PUR, sans effet de bord.
+    _positionSub ??= streamServerLocation.listen((position) {
+      if (!mounted) return;
+      onLocationUpdated(
+        position,
+        context.read<MainBloc>(),
+        context.read<CurrentLocationCubit>(),
+      );
+    });
+  }
+
+  @override
   void dispose() {
+    _positionSub?.cancel();
     controller.dispose();
     super.dispose();
   }
@@ -59,8 +89,31 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
     return FlutterMap(
         mapController: controller.mapController,
         options: MapOptions(
+            // Sans `center` explicite, flutter_map retombe sur SA valeur par
+            // défaut codée en dur — LatLng(50.5, 30.51), soit Kiev. On ancre
+            // donc la carte sur `fallbackLocation` (Dakar) le temps que la
+            // position réelle arrive.
+            center: fallbackLocation,
             maxZoom: 20,
             zoom: 12,
+            // Diagnostic caméra (debug) : le rider affiche les tuiles avec la
+            // MÊME couche partagée, pas le driver, et aucun errorTileCallback ne
+            // se déclenche — donc les tuiles ne sont jamais DEMANDÉES. Reste à
+            // savoir si la caméra est dans un état exploitable (centre/zoom).
+            onMapReady: () {
+              if (kDebugMode) {
+                debugPrint('[CARTE DRIVER] prete — '
+                    'centre=${controller.mapController.center} '
+                    'zoom=${controller.mapController.zoom} '
+                    'bounds=${controller.mapController.bounds}');
+              }
+            },
+            onPositionChanged: (pos, hasGesture) {
+              if (kDebugMode) {
+                debugPrint('[CARTE DRIVER] position — '
+                    'centre=${pos.center} zoom=${pos.zoom}');
+              }
+            },
             interactiveFlags: InteractiveFlag.drag |
                 InteractiveFlag.pinchMove |
                 InteractiveFlag.pinchZoom |
@@ -72,6 +125,13 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
               builder: (context, box, child) {
                 final provider =
                     effectiveMapProviderId(box.get('mapProvider', defaultValue: null));
+                // Confirme que ce builder est bien exécuté et quelle couche il
+                // renvoie : si cette ligne n'apparaît jamais, la couche n'est
+                // pas dans l'arbre, ce qui expliquerait l'absence totale de
+                // requêtes de tuiles.
+                if (kDebugMode) {
+                  debugPrint('[CARTE DRIVER] construction couche -> $provider');
+                }
                 switch (provider) {
                   case 'mapbox':
                     return mapBoxTileLayer;
@@ -110,6 +170,32 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                           LatLng(southwest.latitude, southwest.longitude),
                           LatLng(northeast.latitude, northeast.longitude)
                         ]);
+                        // GARDE 1 — bornes dégénérées (rayon nul) : le calcul de
+                        // zoom divergerait vers Infinity/NaN et la plage de
+                        // tuiles serait vide.
+                        if (currentLocationState.radius! <= 0 ||
+                            bounds.north <= bounds.south ||
+                            bounds.east <= bounds.west) {
+                          return;
+                        }
+                        // GARDE 2 — recadrage en boucle. Ce listener se
+                        // déclenche à CHAQUE mise à jour de position (tous les
+                        // 50 m) ; relancer `animatedFitBounds` à chaque fois
+                        // redémarrait une animation avant la fin de la
+                        // précédente, laissant la carte en mouvement perpétuel
+                        // (zoom oscillant observé entre 12,0 et 14,4) et
+                        // empêchant toute tuile de se charger. On ne recadre
+                        // donc que si la zone visée a réellement changé.
+                        final loc = currentLocationState.location!;
+                        final radius = currentLocationState.radius!;
+                        const distanceCalc = Distance();
+                        if (_lastFitRadius == radius &&
+                            _lastFitCenter != null &&
+                            distanceCalc(_lastFitCenter!, loc) < radius * 0.25) {
+                          return;
+                        }
+                        _lastFitCenter = loc;
+                        _lastFitRadius = radius;
                         controller.animatedFitBounds(bounds,
                             options: const FitBoundsOptions(
                                 padding: EdgeInsets.all(100)));
@@ -189,7 +275,7 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
               if (currentLocation == null &&
                   (state is StatusOnline || state is StatusInService)) {
                 geo.Geolocator.getCurrentPosition().then(
-                    (value) => onLocationUpdated(value, mainBloc, context));
+                    (value) => onLocationUpdated(value, mainBloc, locationCubit));
               }
             },
             builder: (context, state) {
@@ -227,14 +313,11 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                                 color: CustomTheme.neutralColors.shade500,
                               ))),
                     ),
-                  StreamBuilder<geo.Position>(
-                      stream: streamServerLocation,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          onLocationUpdated(snapshot.data!, mainBloc, context);
-                        }
-                        return const SizedBox();
-                      }),
+                  // Le StreamBuilder qui se trouvait ici a été supprimé : son
+                  // `builder` appelait `onLocationUpdated()`, un effet de bord
+                  // (mutation réseau + `bloc.add`) qui se réamorçait à chaque
+                  // reconstruction. L'abonnement vit désormais dans
+                  // `didChangeDependencies`, hors de la phase de construction.
                 ],
               );
             },
@@ -243,8 +326,14 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
   }
 }
 
-void onLocationUpdated(
-    geo.Position position, MainBloc bloc, BuildContext context) async {
+// Reçoit le [CurrentLocationCubit] plutôt qu'un [BuildContext] : cette fonction
+// est appelée depuis des callbacks asynchrones (`Geolocator.getCurrentPosition()
+// .then`, `StreamBuilder`), donc le widget peut être démonté quand elle
+// s'exécute. Un `context.read` à ce moment lève « Looking up a deactivated
+// widget's ancestor ». Le cubit est résolu SYNCHRONEMENT par l'appelant, tant
+// que le contexte est encore valide.
+void onLocationUpdated(geo.Position position, MainBloc bloc,
+    CurrentLocationCubit locationCubit) async {
   final httpLink = HttpLink(
     "${serverUrl}graphql",
   );
@@ -257,7 +346,7 @@ void onLocationUpdated(
     link: link,
   );
   final newLocation = LatLng(position.latitude, position.longitude);
-  context.read<CurrentLocationCubit>().setCurrentLocation(newLocation);
+  locationCubit.setCurrentLocation(newLocation);
   final res = await client.mutate(Options$Mutation$UpdateDriverLocation(
       variables: Variables$Mutation$UpdateDriverLocation(
           point: Input$PointInput(

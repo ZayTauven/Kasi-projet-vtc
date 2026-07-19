@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { RequestEntity } from "./request.entity";
 import { RiderEntity } from "./rider-entity";
@@ -28,14 +29,16 @@ export class CouponEntity {
     manyTimesUserCanUse!: number;
 
     @Column("numeric", {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })
     minimumCost!: number;
 
     @Column("numeric", {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })
@@ -53,14 +56,16 @@ export class CouponEntity {
     discountPercent!: number;
 
     @Column("numeric", {
-        default: 0,
+      transformer: new ColumnNumericTransformer(),
+      default: 0,
         precision: 10,
         scale: 2
     })
     discountFlat!: number;
 
     @Column("numeric", {
-        default: 0,
+      transformer: new ColumnNumericTransformer(),
+      default: 0,
         precision: 10,
         scale: 2
     })

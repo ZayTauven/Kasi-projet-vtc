@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PayoutSessionStatus } from "./enums/payout-session-status.enum";
 import { OperatorEntity } from "./operator.entity";
@@ -28,7 +29,8 @@ export class PayoutSessionEntity {
     currency!: string;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })
@@ -36,7 +38,8 @@ export class PayoutSessionEntity {
 
     // Somme des payouts générés à la création (instantané).
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 12,
         scale: 2
     })

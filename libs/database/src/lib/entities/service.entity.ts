@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import {
   Column,
   DeleteDateColumn,
@@ -54,6 +55,7 @@ export class ServiceEntity {
   personCapacity?: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 12,
     scale: 2,
@@ -61,6 +63,7 @@ export class ServiceEntity {
   baseFare!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 12,
     scale: 2,
@@ -68,6 +71,7 @@ export class ServiceEntity {
   perHundredMeters!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 12,
     scale: 2,
@@ -75,6 +79,7 @@ export class ServiceEntity {
   perMinuteDrive!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 12,
     scale: 2,
@@ -82,6 +87,7 @@ export class ServiceEntity {
   perMinuteWait!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 10,
     scale: 2,
@@ -132,6 +138,7 @@ export class ServiceEntity {
   twoWayAvailable!: boolean;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 10,
     scale: 2,
@@ -139,6 +146,7 @@ export class ServiceEntity {
   cancellationTotalFee!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 10,
     scale: 2,
@@ -149,6 +157,7 @@ export class ServiceEntity {
   providerSharePercent!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: '0.00',
     precision: 10,
     scale: 2,
@@ -156,6 +165,7 @@ export class ServiceEntity {
   providerShareFlat!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     nullable: true,
     precision: 10,
     scale: 2,

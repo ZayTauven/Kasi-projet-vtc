@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:client_shared/components/list_shimmer_skeleton.dart';
-import 'package:client_shared/config.dart';
-import 'package:client_shared/map_providers.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kasi_rider/location_selection/welcome_card/place_confirm_sheet_view.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:latlong2/latlong.dart';
@@ -17,6 +14,7 @@ import 'package:collection/collection.dart';
 import 'package:kasi_rider/main/bloc/last_orders_cubit.dart';
 import 'package:kasi_rider/main/bloc/main_bloc.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/map/geo_utils.dart';
 import 'package:kasi_rider/schema.gql.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -144,15 +142,7 @@ class _PlaceSearchSheetViewState extends State<PlaceSearchSheetView> {
                                       }
                                       _debounce = Timer(
                                           const Duration(milliseconds: 500),
-                                          () async {
-                                        var map = Hive.box('settings')
-                                            .get('mapProvider');
-                                        map ??= mapProvider ==
-                                                MapProvider.googleMap
-                                            ? 'googlemap'
-                                            : (mapProvider == MapProvider.mapBox
-                                                ? 'mapbox'
-                                                : 'openstreet');
+                                          () {
                                         setState(() {
                                           searchKeyword = value;
                                         });
@@ -318,7 +308,7 @@ class _PlaceSearchSheetViewState extends State<PlaceSearchSheetView> {
                             lng: widget.currentLocation!.latlng.longitude),
                     language: placesCountry,
                     radius: 100000,
-                    provider: getMapProvider()),
+                    provider: effectiveGeoProvider()),
                 onError: (error) {},
               ),
               builder: (result, {refetch, fetchMore}) {
@@ -391,22 +381,6 @@ class _PlaceSearchSheetViewState extends State<PlaceSearchSheetView> {
         });
   }
 
-  Enum$GeoProvider getMapProvider() {
-    var settings = Hive.box('settings').get('mapProvider');
-    var provder = mapProvider;
-    if (settings == 'googlemap') {
-      provder = MapProvider.googleMap;
-    } else if (settings == 'mapbox') {
-      provder = MapProvider.mapBox;
-    } else if (settings == 'openstreet') {
-      provder = MapProvider.openStreetMap;
-    }
-    return provder == MapProvider.googleMap
-        ? Enum$GeoProvider.GOOGLE
-        : (provder == MapProvider.mapBox
-            ? Enum$GeoProvider.MAPBOX
-            : Enum$GeoProvider.NOMINATIM);
-  }
 }
 
 class LocationSearchResultItem extends StatelessWidget {
@@ -414,10 +388,16 @@ class LocationSearchResultItem extends StatelessWidget {
   final bool isHistory;
   final Function(FullLocation) onSelected;
 
+  /// Si false, la sélection remonte directement [onSelected] sans ouvrir de
+  /// PlaceConfirmSheetView intermédiaire — indispensable quand l'item est
+  /// affiché DEPUIS le picker lui-même (évite un picker imbriqué).
+  final bool confirmOnMap;
+
   const LocationSearchResultItem(
       {required this.location,
       required this.isHistory,
       required this.onSelected,
+      this.confirmOnMap = true,
       Key? key})
       : super(key: key);
 
@@ -426,6 +406,10 @@ class LocationSearchResultItem extends StatelessWidget {
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: () async {
+        if (!confirmOnMap) {
+          onSelected(location);
+          return;
+        }
         final result = await showBarModalBottomSheet<FullLocation>(
             context: context,
             enableDrag: false,

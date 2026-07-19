@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { GiftBatchEntity } from "./gift-batch.entity";
 import { RiderTransactionEntity } from "./rider-transaction.entity";
@@ -16,7 +17,8 @@ export class GiftCardEntity {
     currency!: string;
 
     @Column('numeric', {
-        precision: 10,
+      transformer: new ColumnNumericTransformer(),
+      precision: 10,
         scale: 2
     })
     amount!: number;

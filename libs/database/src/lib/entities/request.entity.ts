@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import {
   Column,
   CreateDateColumn,
@@ -68,12 +69,14 @@ export class RequestEntity {
   etaPickup?: Date;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
   })
   costBest!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
     default: '0.00',
@@ -81,6 +84,7 @@ export class RequestEntity {
   costAfterCoupon!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
     default: '0.00',
@@ -88,6 +92,7 @@ export class RequestEntity {
   tipAmount!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     default: 0,
     precision: 10,
     scale: 2,
@@ -95,6 +100,7 @@ export class RequestEntity {
   paidAmount!: number;
 
   @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
     precision: 10,
     default: 0,
     scale: 2,

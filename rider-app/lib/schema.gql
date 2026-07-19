@@ -795,7 +795,6 @@ type MapSetting {
   mapboxToken: String
   mapboxStyleUser: String!
   mapboxStyleId: String!
-  googleMapsApiKey: String
   updatedAt: Timestamp!
 }
 

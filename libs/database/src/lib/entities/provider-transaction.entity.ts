@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProviderDeductTransactionType } from "./enums/provider-deduct-transaction-type.enum";
 import { ProviderRechargeTransactionType } from "./enums/provider-recharge-transaction-type.enum";
@@ -37,7 +38,8 @@ export class ProviderTransactionEntity {
     rechargeType?: ProviderRechargeTransactionType;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

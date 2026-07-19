@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { DriverEntity } from "./driver.entity";
 import { PayoutMethodType } from "./enums/payout-method-type.enum";
@@ -23,7 +24,8 @@ export class PayoutEntity {
     status!: PayoutStatus;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

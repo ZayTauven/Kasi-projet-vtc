@@ -13,8 +13,9 @@ export class RegionService {
   ) {}
 
   async getRegionWithPoint(point: Point): Promise<RegionEntity[]> {
+    // SQL Postgres/PostGIS : placeholders $1/$2, SRID 4326 (SRID de region.location).
     const regions: RegionEntity[] = await this.regionRepository.query(
-      `SELECT * FROM region WHERE enabled=TRUE AND ST_Within(st_geomfromtext('POINT(? ?)'), region.location)`,
+      `SELECT * FROM region WHERE enabled=TRUE AND ST_Within(ST_SetSRID(ST_MakePoint($1, $2), 4326), region.location)`,
       [point.lng, point.lat],
     );
     return regions;

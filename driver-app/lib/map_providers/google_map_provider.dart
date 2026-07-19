@@ -65,8 +65,12 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
                     geo.Geolocator.requestPermission();
                   }
                 });
-                final currentLocation =
-                    context.read<CurrentLocationCubit>().state.location;
+                // Résolu en tête de listener, AVANT tout `await` : ce listener
+                // est asynchrone, donc le widget peut être démonté plus bas et
+                // un `context.read` tardif lèverait « deactivated widget's
+                // ancestor ».
+                final locationCubit = context.read<CurrentLocationCubit>();
+                final currentLocation = locationCubit.state.location;
                 if (state.markers.isNotEmpty) {
                   final points = state.markers
                       .map((e) =>
@@ -94,8 +98,8 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
                 if ((state is StatusOnline && currentLocation == null) ||
                     (state is StatusInService &&
                         state.currentLocation == null)) {
-                  geo.Geolocator.getCurrentPosition().then(
-                      (value) => onLocationUpdated(value, mainBloc, context));
+                  geo.Geolocator.getCurrentPosition().then((value) =>
+                      onLocationUpdated(value, mainBloc, locationCubit));
                 }
               },
               builder: (context, state) => Stack(
@@ -200,8 +204,8 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
                             stream: streamServerLocation,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                onLocationUpdated(
-                                    snapshot.data!, mainBloc, context);
+                                onLocationUpdated(snapshot.data!, mainBloc,
+                                    context.read<CurrentLocationCubit>());
                               }
                               return Container();
                             })

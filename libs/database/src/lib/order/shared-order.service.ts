@@ -41,6 +41,7 @@ import {
   IRiderNotificationService,
 } from './interfaces/rider-notification.interface';
 import { GoogleServicesService } from './google-services/google-services.service';
+import { RoutingService } from './routing/routing.service';
 import { RegionService } from './region/region.service';
 import { ServiceService } from './service.service';
 import { SharedDriverService } from './shared-driver.service';
@@ -67,6 +68,7 @@ export class SharedOrderService {
     @InjectRepository(PaymentEntity)
     private paymentRepository: Repository<PaymentEntity>,
     private googleServices: GoogleServicesService,
+    private routingService: RoutingService,
     private servicesService: ServiceService,
     private riderService: SharedRiderService,
     private driverRedisService: DriverRedisService,
@@ -86,8 +88,11 @@ export class SharedOrderService {
     from: Point,
     to: Point,
   ): Promise<ZonePriceEntity[]> {
+    // SQL Postgres/PostGIS : placeholders $1..$4 (les « ? » MySQL ne sont pas
+    // des paramètres ici), mots réservés "from"/"to" entre guillemets doubles,
+    // point construit avec le SRID 4326 des colonnes de zone_price.
     let pricings: ZonePriceEntity[] = await this.zonePriceRepository.query(
-      "SELECT * FROM zone_price WHERE ST_Within(st_geomfromtext('POINT(? ?)'), `from`) AND ST_Within(st_geomfromtext('POINT(? ?)'), `to`)",
+      'SELECT * FROM zone_price WHERE ST_Within(ST_SetSRID(ST_MakePoint($1, $2), 4326), "from") AND ST_Within(ST_SetSRID(ST_MakePoint($3, $4), 4326), "to")',
       [from.lng, from.lat, to.lng, to.lat],
     );
     pricings = await this.zonePriceRepository.find({
@@ -127,7 +132,7 @@ export class SharedOrderService {
     }
     const metrics =
       servicesInRegion.findIndex((x) => x.perHundredMeters > 0) > -1
-        ? await this.googleServices.getSumDistanceAndDuration(input.points)
+        ? await this.routingService.getSumDistanceAndDuration(input.points)
         : { distance: 0, duration: 0, directions: [] };
     const cats = await this.serviceCategoryRepository.find({
       relations: ['services', 'services.media', 'services.options'],
@@ -275,7 +280,7 @@ export class SharedOrderService {
     }
     const metrics =
       service.perHundredMeters > 0
-        ? await this.googleServices.getSumDistanceAndDuration(input.points)
+        ? await this.routingService.getSumDistanceAndDuration(input.points)
         : { distance: 0, duration: 0, directions: [] };
     const eta = new Date(
       new Date().getTime() + (input.intervalMinutes | 0) * 60 * 1000,
@@ -642,7 +647,7 @@ export class SharedOrderService {
     }
     const metrics =
       driverLocation != null
-        ? await this.googleServices.getSumDistanceAndDuration([
+        ? await this.routingService.getSumDistanceAndDuration([
             travel.points[0],
             driverLocation,
           ])

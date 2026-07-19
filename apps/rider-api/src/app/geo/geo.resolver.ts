@@ -3,6 +3,7 @@ import { PlaceDTO } from './dto/place.dto';
 import { GeoProvider } from './dto/geo-provider.enum';
 import { GoogleGeoService } from './google-geo.service';
 import { NominitamGeoService } from './nominitam-geo.service';
+import { MapboxGeoService } from './mapbox-geo.service';
 import { Point } from '@kasi/database';
 
 @Resolver()
@@ -10,7 +11,26 @@ export class GeoResolver {
   constructor(
     private googleGeoService: GoogleGeoService,
     private nominitamGeoService: NominitamGeoService,
+    private mapboxGeoService: MapboxGeoService,
   ) {}
+
+  // 'nominitam' est conservé pour compat avec la faute de frappe historique
+  // de Ridy dans les déploiements existants.
+  private resolveProvider(provider?: GeoProvider): GeoProvider | undefined {
+    const serverProvider = process.env.GEO_PROVIDER as EnvGeoProvider;
+    if (serverProvider != null) {
+      if (serverProvider == 'google') {
+        return GeoProvider.GOOGLE;
+      }
+      if (serverProvider == 'nominitam' || serverProvider == 'nominatim') {
+        return GeoProvider.NOMINATIM;
+      }
+      if (serverProvider == 'mapbox') {
+        return GeoProvider.MAPBOX;
+      }
+    }
+    return provider;
+  }
 
   @Query(() => [PlaceDTO])
   async getPlaces(
@@ -26,17 +46,16 @@ export class GeoResolver {
     @Args('provider', { nullable: true, type: () => GeoProvider })
     provider?: GeoProvider,
   ): Promise<PlaceDTO[]> {
-    const serverProvider = process.env.GEO_PROVIDER as EnvGeoProvider;
-    if (serverProvider != null) {
-      if (serverProvider == 'google') {
-        provider = GeoProvider.GOOGLE;
-      }
-      if (serverProvider == 'nominitam') {
-        provider = GeoProvider.NOMINATIM;
-      }
-    }
+    provider = this.resolveProvider(provider);
     if (provider === GeoProvider.GOOGLE) {
       return this.googleGeoService.getPlaces({
+        keyword,
+        location,
+        radius,
+        language,
+      });
+    } else if (provider === GeoProvider.MAPBOX) {
+      return this.mapboxGeoService.getPlaces({
         keyword,
         location,
         radius,
@@ -59,17 +78,15 @@ export class GeoResolver {
     @Args('provider', { nullable: true, type: () => GeoProvider })
     provider?: GeoProvider,
   ): Promise<PlaceDTO> {
-    const serverProvider = process.env.GEO_PROVIDER as EnvGeoProvider;
-    if (serverProvider != null) {
-      if (serverProvider == 'google') {
-        provider = GeoProvider.GOOGLE;
-      }
-      if (serverProvider == 'nominitam') {
-        provider = GeoProvider.NOMINATIM;
-      }
-    }
+    provider = this.resolveProvider(provider);
     if (provider === GeoProvider.GOOGLE) {
       return this.googleGeoService.reverseGeocode({
+        lat: location.lat,
+        lng: location.lng,
+        language,
+      });
+    } else if (provider === GeoProvider.MAPBOX) {
+      return this.mapboxGeoService.reverseGeocode({
         lat: location.lat,
         lng: location.lng,
         language,
@@ -84,4 +101,4 @@ export class GeoResolver {
   }
 }
 
-type EnvGeoProvider = 'google' | 'nominitam';
+type EnvGeoProvider = 'google' | 'nominitam' | 'nominatim' | 'mapbox';

@@ -1359,6 +1359,42 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Delivery instructions (optional)'**
   String get delivery_instructions;
+
+  /// No description provided for @action_my_location.
+  ///
+  /// In en, this message translates to:
+  /// **'My location'**
+  String get action_my_location;
+
+  /// No description provided for @picker_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a place'**
+  String get picker_search_hint;
+
+  /// No description provided for @create_address_location_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search or pick on the map'**
+  String get create_address_location_hint;
+
+  /// No description provided for @create_address_location_empty_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the location on the map'**
+  String get create_address_location_empty_error;
+
+  /// No description provided for @message_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please try again.'**
+  String get message_error_network;
+
+  /// No description provided for @action_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get action_retry;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

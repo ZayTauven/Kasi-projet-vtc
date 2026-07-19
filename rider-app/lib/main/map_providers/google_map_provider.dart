@@ -10,9 +10,9 @@ import 'package:hive/hive.dart';
 import 'package:kasi_rider/config.dart';
 import 'package:kasi_rider/location_selection/welcome_card/place_search_sheet_view.dart';
 import 'package:kasi_rider/main/bloc/current_location_cubit.dart';
-import 'package:geolocator/geolocator.dart' as geo;
 import 'package:latlong2/latlong.dart' as latlng;
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/map/geo_utils.dart';
 import 'package:kasi_rider/schema.gql.dart';
 
 import '../bloc/main_bloc.dart';
@@ -41,18 +41,28 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
 
   @override
   void initState() {
-    geo.Geolocator.getLastKnownPosition().then((value) async {
-      if (value == null) return;
-      setCurrentLocation(context, LatLng(value.latitude, value.longitude));
-      center = LatLng(value.latitude, value.longitude);
-      (await _controller.future).animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-              target: LatLng(value.latitude, value.longitude), zoom: 15),
-        ),
-      );
-    });
     super.initState();
+    _startLocationFlow();
+  }
+
+  /// `getLastKnownPosition` seul est null à la première installation (jamais
+  /// localisé) : acquisition complète (service → permission →
+  /// `getCurrentPosition` borné, repli dernière position connue).
+  Future<void> _startLocationFlow() async {
+    final position = await acquireCurrentPosition();
+    // Callback asynchrone lancé depuis initState : le widget peut être démonté
+    // avant qu'il ne se déclenche. Sans cette garde, le `context.read` de
+    // setCurrentLocation lève « Looking up a deactivated widget's ancestor »
+    // (même défaut que celui corrigé côté driver).
+    if (position == null || !mounted) return;
+    final target = LatLng(position.latitude, position.longitude);
+    setCurrentLocation(target);
+    center = target;
+    (await _controller.future).animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: target, zoom: 15),
+      ),
+    );
   }
 
   @override
@@ -116,7 +126,18 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
             ));
   }
 
-  void setCurrentLocation(BuildContext context, LatLng position) async {
+  void setCurrentLocation(LatLng position) async {
+    if (!mounted) return;
+    final mainBloc = context.read<MainBloc>();
+    final currentLocationCubit = context.read<CurrentLocationCubit>();
+    final gpsLatLng = latlng.LatLng(position.latitude, position.longitude);
+
+    // La position GPS alimente le cubit IMMÉDIATEMENT (adresse vide) : le
+    // rider est localisé même si le backend est injoignable. Adresse et
+    // positions drivers arrivent ensuite en enrichissement.
+    currentLocationCubit.updateLocation(
+        FullLocation(title: '', latlng: gpsLatLng, address: ''));
+
     final httpLink = HttpLink(
       "${serverUrl}graphql",
     );
@@ -128,29 +149,29 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
       cache: GraphQLCache(),
       link: link,
     );
-    final mainBloc = context.read<MainBloc>();
-    final currentLocationCubit = context.read<CurrentLocationCubit>();
-    final result = await client.query(Options$Query$GetDriversLocation(
-        variables: Variables$Query$GetDriversLocation(
-            point: Input$PointInput(
-                lat: position.latitude, lng: position.longitude),
-            provider: Enum$GeoProvider.GOOGLE,
-            language: placesCountry)));
-    if (result.parsedData == null) return;
-    final fullLocation = FullLocation(
-        title: '',
-        latlng: latlng.LatLng(position.latitude, position.longitude),
-        address: result.parsedData!.reverseGeocode.address);
     try {
-      currentLocationCubit.updateLocation(fullLocation);
+      // Provider EFFECTIF (config panel) — jamais GOOGLE en dur : sans clé
+      // Google côté backend, `reverseGeocode` jette et TOUTE la query échoue.
+      final result = await client.query(Options$Query$GetDriversLocation(
+          variables: Variables$Query$GetDriversLocation(
+              point: Input$PointInput(
+                  lat: position.latitude, lng: position.longitude),
+              provider: effectiveGeoProvider(),
+              language: placesCountry)));
+      if (result.parsedData == null) return;
+      currentLocationCubit.updateLocation(FullLocation(
+          title: '',
+          latlng: gpsLatLng,
+          address: result.parsedData!.reverseGeocode.address));
+      final locations = result.parsedData!.getDriversLocation
+          .map((e) => e.toLatLng())
+          .toList();
+      mainBloc.add(SetDriversLocations(locations));
     } catch (error) {
       if (kDebugMode) {
         print(error);
       }
     }
-    final locations =
-        result.parsedData!.getDriversLocation.map((e) => e.toLatLng()).toList();
-    mainBloc.add(SetDriversLocations(locations));
   }
 
   double getStateSize(MainBlocState state) {

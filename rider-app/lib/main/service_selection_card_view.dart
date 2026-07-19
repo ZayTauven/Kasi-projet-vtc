@@ -52,10 +52,14 @@ class ServiceSelectionCardView extends StatelessWidget {
                           S.of(context).alert_coupon_unavailable,
                           type: BannerType.error));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  // `return` OBLIGATOIRE : sans lui, le ResetState plus bas
+                  // écrasait ce ShowPreview et le nouveau devis sans coupon
+                  // n'était jamais recalculé (bug de fall-through historique).
                   mainBloc.add(ShowPreview(
                       points: state.points,
                       selectedOptions: [],
                       couponCode: null));
+                  return;
                 }
                 if (error.graphqlErrors
                     .where((element) =>
@@ -67,8 +71,15 @@ class ServiceSelectionCardView extends StatelessWidget {
                     type: BannerType.error,
                   ));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  mainBloc.add(ResetState());
+                  return;
                 }
-                mainBloc.add(ResetState());
+                // Erreur générique (ex. calculateFare en panne côté backend) :
+                // on NE reset PAS l'état. L'aperçu reste affiché et le builder
+                // montre l'erreur + « Réessayer » (QueryResultView) ; le FAB
+                // retour de la carte permet toujours de revenir. L'ancien
+                // ResetState silencieux faisait disparaître la commande sans
+                // AUCUN retour visible pour l'utilisateur.
               },
               variables: Variables$Query$GetFare(
                   points: (state as OrderPreview)

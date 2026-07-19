@@ -31,37 +31,49 @@ class QueryResultView extends StatelessWidget {
       ));
     }
     if (queryResult.hasException) {
-      if (queryResult.exception.toString().contains("Connection closed") ||
+      final isNetworkError = queryResult.exception
+              .toString()
+              .contains("Connection closed") ||
           queryResult.exception.toString().contains("Connection reset") ||
           queryResult.exception.toString().contains("Connection refused") ||
           queryResult.exception.toString().contains("Connection timed out") ||
           queryResult.exception.toString().contains("Connection terminated") ||
-          queryResult.exception.toString().contains("Connection failed")) {
-        return Center(
+          queryResult.exception.toString().contains("Connection failed");
+      // Erreur réseau OU erreur backend : toujours un message lisible + un
+      // bouton « Réessayer » quand un refetch est possible. L'ancien rendu de
+      // la branche générique (exception.toString() brut, sans action) laissait
+      // l'utilisateur face à du texte technique sans issue.
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Ionicons.cloud_offline,
+                isNetworkError ? Ionicons.cloud_offline : Ionicons.alert_circle,
                 color: CustomTheme.neutralColors.shade700,
                 size: 36,
               ),
               const SizedBox(height: 12),
-              const Text("Network error, Please try again."),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                  style:
-                      const ButtonStyle(visualDensity: VisualDensity.compact),
-                  onPressed: () {
-                    refetch?.call();
-                  },
-                  child: const Text("Retry"))
+              Text(
+                isNetworkError
+                    ? S.of(context).message_error_network
+                    : getErrorMessage(context, queryResult.exception),
+                textAlign: TextAlign.center,
+              ),
+              if (refetch != null) ...[
+                const SizedBox(height: 16),
+                ElevatedButton(
+                    style:
+                        const ButtonStyle(visualDensity: VisualDensity.compact),
+                    onPressed: () {
+                      refetch?.call();
+                    },
+                    child: Text(S.of(context).action_retry))
+              ]
             ],
           ),
-        );
-      }
-      return Center(
-        child: Text(queryResult.exception.toString()),
+        ),
       );
     }
     return const SizedBox();

@@ -692,4 +692,24 @@ class SFr extends S {
 
   @override
   String get delivery_instructions => 'Instructions de livraison (facultatif)';
+
+  @override
+  String get action_my_location => 'Ma position';
+
+  @override
+  String get picker_search_hint => 'Rechercher un lieu';
+
+  @override
+  String get create_address_location_hint =>
+      'Rechercher ou choisir sur la carte';
+
+  @override
+  String get create_address_location_empty_error =>
+      'Sélectionnez l\'emplacement sur la carte';
+
+  @override
+  String get message_error_network => 'Erreur réseau. Veuillez réessayer.';
+
+  @override
+  String get action_retry => 'Réessayer';
 }

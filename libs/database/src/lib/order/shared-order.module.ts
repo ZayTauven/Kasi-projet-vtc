@@ -25,6 +25,7 @@ import { RedisHelpersModule } from '@kasi/redis/redis-helper.module';
 import { SharedConfigurationService } from '../shared-configuration.service';
 import { FirebaseNotificationModule } from './firebase-notification-service/firebase-notification-service.module';
 import { GoogleServicesModule } from './google-services/google-services.module';
+import { RoutingModule } from './routing/routing.module';
 import { RegionModule } from './region/region.module';
 import { ServiceService } from './service.service';
 import { SharedDriverService } from './shared-driver.service';
@@ -60,6 +61,7 @@ import { SharedRiderService } from './shared-rider.service';
     HttpModule,
     RegionModule,
     GoogleServicesModule,
+    RoutingModule,
     FirebaseNotificationModule.register(),
   ],
   providers: [

@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PayoutMethodType } from "./enums/payout-method-type.enum";
 import { DriverEntity } from "./driver.entity";
@@ -22,7 +23,8 @@ export class PayoutMethodEntity {
 
     // Sous ce solde, le driver n'est pas inclus dans les sessions de versement.
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

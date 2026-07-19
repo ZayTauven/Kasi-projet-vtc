@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { GiftCardEntity } from "./gift-card.entity";
 
@@ -20,7 +21,8 @@ export class GiftBatchEntity {
     currency!: string;
 
     @Column('numeric', {
-        precision: 10,
+      transformer: new ColumnNumericTransformer(),
+      precision: 10,
         scale: 2
     })
     amount!: number;

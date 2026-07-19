@@ -54,8 +54,9 @@ export class SharedFleetService {
   }
 
   async getFleetIdsInPoint(point: Point): Promise<number[]> {
+    // SQL Postgres/PostGIS : colonne camelCase à quoter, SRID 4326 explicite.
     const fleets: { id: number }[] = await this.fleetRepository.query(
-      `SELECT id FROM fleet WHERE ST_Within(st_geomfromtext('POINT(? ?)'), fleet.exclusivityAreas)`,
+      `SELECT id FROM fleet WHERE ST_Within(ST_SetSRID(ST_MakePoint($1, $2), 4326), fleet."exclusivityAreas")`,
       [point.lng, point.lat],
     );
     return fleets.map((fleet) => fleet.id);

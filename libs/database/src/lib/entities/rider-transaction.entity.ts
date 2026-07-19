@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { LegacyTransactionType } from './enums/legacy-transaction-type';
 
@@ -41,7 +42,8 @@ export class RiderTransactionEntity {
     rechargeType?: RiderRechargeTransactionType;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

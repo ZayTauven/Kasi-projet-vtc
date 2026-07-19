@@ -8,4 +8,6 @@ String wsUrl = serverUrl.replaceFirst("http", "ws"); // http -> ws (wss en prod)
 
 // Nominatim configuration (Only for Open Street Maps and MapBox)
 List<String>? nominatimCountries = ["sn"]; // ISO 3166-1alpha2 codes — Sénégal
-String placesCountry = "en";
+// Passé comme paramètre `language` au géocodage backend (getPlaces /
+// reverseGeocode) : "fr" pour des libellés d'adresses en français (Dakar).
+String placesCountry = "fr";

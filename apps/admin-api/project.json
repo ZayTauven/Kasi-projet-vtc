@@ -14,7 +14,7 @@
       "options": {
         "commands": [
           {
-            "command": "tsc libs/database/src/lib/migration/mysql-archive/*.ts --outDir dist/apps/admin-api/migration --skipLibCheck"
+            "command": "tsc -p libs/database/src/lib/migration/mysql-archive/tsconfig.json"
           }
         ]
       },

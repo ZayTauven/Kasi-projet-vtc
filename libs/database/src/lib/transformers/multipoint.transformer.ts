@@ -1,26 +1,45 @@
 import { ValueTransformer } from "typeorm";
 import { Point } from "../interfaces/point";
 
+interface GeoJSONMultiPoint {
+    type: 'MultiPoint';
+    coordinates: number[][];
+}
+
 export class MultipointTransformer implements ValueTransformer {
     /**
-     * Called before writing to the database.
-     * Outputs EWKT with SRID=4326 so PostGIS stores the geometry correctly.
-     * Points are wrapped in parentheses: MULTIPOINT((lng lat),(lng lat),...).
+     * Appelé avant écriture. Le driver Postgres de TypeORM (0.3.x) fait
+     * JSON.stringify(valeur) puis enveloppe le paramètre avec
+     * ST_SetSRID(ST_GeomFromGeoJSON($n), 4326)::geometry : il faut donc
+     * produire un objet GeoJSON, PAS du EWKT (sinon « unknown GeoJSON type »).
+     * Ordre GeoJSON : coordinates = [[lng, lat], ...].
      */
-    to(value?: Point[]): string | null {
+    to(value?: Point[]): GeoJSONMultiPoint | null {
         if (value == null || value.length < 1) return null;
-        const pts = value.map((p: Point) => `(${p.lng} ${p.lat})`).join(',');
-        return `SRID=4326;MULTIPOINT(${pts})`;
+        return {
+            type: 'MultiPoint',
+            coordinates: value.map((p: Point) => [p.lng, p.lat]),
+        };
     }
 
     /**
-     * Called after reading from the database.
-     * PostGIS returns EWKB as a hex string (starts with '0' for the byte-order byte).
-     * Falls back to WKT / EWKT parsing for tests or legacy contexts.
+     * Appelé après lecture. TypeORM sélectionne ST_AsGeoJSON(col)::json : le
+     * driver pg livre donc un objet GeoJSON déjà parsé (cas nominal).
+     * Replis conservés pour les requêtes brutes type SELECT * (EWKB hex) et
+     * les tests (WKT / EWKT / chaîne GeoJSON).
      */
-    from(value: string): Point[] {
+    from(value: unknown): Point[] {
         if (value == null) return [];
-        if (typeof value === 'string' && value[0] === '0') {
+        if (typeof value === 'object') {
+            const coords = (value as GeoJSONMultiPoint).coordinates;
+            if (coords == null) return [];
+            return coords.map((pair) => ({ lng: pair[0], lat: pair[1] }));
+        }
+        if (typeof value !== 'string') return [];
+        if (value[0] === '{') {
+            return this.from(JSON.parse(value));
+        }
+        if (value[0] === '0') {
             return this.parseMultipointEWKB(value);
         }
         // WKT / EWKT fallback

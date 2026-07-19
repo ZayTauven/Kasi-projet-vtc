@@ -1,16 +1,15 @@
 import 'package:client_shared/config.dart';
 import 'package:client_shared/theme/theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kasi_rider/config.dart';
 import 'package:kasi_rider/graphql/fragments/active-order.fragment.graphql.dart';
 import 'package:kasi_rider/location_selection/location_selection_parent_view.dart';
 import 'package:kasi_rider/location_selection/welcome_card/place_search_sheet_view.dart';
+import 'package:kasi_rider/map/geo_utils.dart';
 import 'package:kasi_rider/map/google_map/google_map_controller.dart';
 import 'package:kasi_rider/map/map_view.dart';
 import 'package:latlong2/latlong.dart' as latlong;
-import 'package:kasi_rider/schema.gql.dart';
 
 class GoogleMapView extends StatefulWidget {
   final MapViewMode mode;
@@ -50,8 +49,30 @@ class _GoogleMapMapViewState extends State<GoogleMapView> {
     super.dispose();
   }
 
+  /// Géocode inverse de [latLng] et remonte le résultat via [onMapMoved],
+  /// avec repli coordonnées formatées si le géocodage échoue — parité avec
+  /// `flutter_map_view._resolveCenterAddress` : sans repli, le bouton
+  /// « Confirmer l'emplacement » (piloté par `location != null`) peut rester
+  /// désactivé à vie.
+  Future<void> _resolveAddress(latlong.LatLng latLng) async {
+    final place = await getReverseGeocode(
+        location: latLng,
+        language: placesCountry,
+        // Provider EFFECTIF (config panel) — jamais GOOGLE en dur.
+        provider: effectiveGeoProvider());
+    if (!mounted) return;
+    widget.onMapMoved?.call(place ??
+        FullLocation(
+            title: '', address: formatLatLngAddress(latLng), latlng: latLng));
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Invariant partagé avec flutter_map_view : un sélecteur
+    // (MapViewMode.picker) est TOUJOURS manipulable, même si l'appelant a
+    // oublié `interactive: true` (défaut false dans MapView).
+    final canInteract =
+        widget.interactive || widget.mode == MapViewMode.picker;
     return FutureBuilder(
         future: Future.wait([
           BitmapDescriptor.fromAssetImage(
@@ -65,27 +86,32 @@ class _GoogleMapMapViewState extends State<GoogleMapView> {
         builder: (context, snapshot) {
           return GoogleMap(
               padding: widget.padding,
-              scrollGesturesEnabled: widget.interactive,
-              zoomGesturesEnabled: widget.interactive,
-              myLocationButtonEnabled: widget.interactive,
-              zoomControlsEnabled: widget.interactive,
-              tiltGesturesEnabled: widget.interactive,
-              rotateGesturesEnabled: widget.interactive,
+              scrollGesturesEnabled: canInteract,
+              zoomGesturesEnabled: canInteract,
+              myLocationButtonEnabled: canInteract,
+              zoomControlsEnabled: canInteract,
+              tiltGesturesEnabled: canInteract,
+              rotateGesturesEnabled: canInteract,
               onMapCreated: (controller) {
                 widget.onControllerReady(this.controller);
                 this.controller.mapController.complete(controller);
+                // Résolution d'adresse INITIALE en mode sélecteur quand aucune
+                // position n'est fournie (parité flutter_map_view) : sans
+                // elle, le bouton de confirmation reste grisé tant qu'on ne
+                // bouge pas la carte.
+                if (widget.mode == MapViewMode.picker &&
+                    widget.initialLocation == null) {
+                  _resolveAddress(fallbackLocation);
+                }
               },
               onCameraMoveStarted: () {
                 widget.onMapMoved?.call(null);
               },
               onCameraIdle: () async {
                 if (cameraPosition == null) return;
-                final reverseGeocodeResult = await getReverseGeocode(
-                    location: latlong.LatLng(cameraPosition!.target.latitude,
-                        cameraPosition!.target.longitude),
-                    language: placesCountry,
-                    provider: Enum$GeoProvider.GOOGLE);
-                widget.onMapMoved?.call(reverseGeocodeResult);
+                await _resolveAddress(latlong.LatLng(
+                    cameraPosition!.target.latitude,
+                    cameraPosition!.target.longitude));
               },
               onCameraMove: widget.mode != MapViewMode.picker
                   ? null

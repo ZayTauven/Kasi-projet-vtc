@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ServiceOptionIcon } from "./enums/service-option-icon.enum";
 import { ServiceOptionType } from "./enums/service-option-type.enum";
@@ -18,7 +19,8 @@ export class ServiceOptionEntity {
     type!: ServiceOptionType;
 
     @Column('numeric', {
-        precision: 12,
+      transformer: new ColumnNumericTransformer(),
+      precision: 12,
         scale: 2,
         nullable: true
     })

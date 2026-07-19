@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Point } from "../interfaces/point";
 import { TimeMultiplier } from "../interfaces/time-multiplier.dto";
@@ -21,7 +22,8 @@ export class ZonePriceEntity {
     to!: Point[][];
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

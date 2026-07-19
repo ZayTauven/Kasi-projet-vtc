@@ -1,3 +1,4 @@
+import { ColumnNumericTransformer } from '../transformers/column-numeric.transformer';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { DriverEntity } from "./driver.entity";
 import { DriverDeductTransactionType } from "./enums/driver-deduct-transaction-type.enum";
@@ -38,7 +39,8 @@ export class DriverTransactionEntity {
     rechargeType?: DriverRechargeTransactionType;
 
     @Column('numeric', {
-        default: '0.00',
+      transformer: new ColumnNumericTransformer(),
+      default: '0.00',
         precision: 10,
         scale: 2
     })

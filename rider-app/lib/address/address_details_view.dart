@@ -9,6 +9,7 @@ import 'package:kasi_rider/location_selection/welcome_card/place_confirm_sheet_v
 
 import 'package:kasi_rider/location_selection/welcome_card/place_search_sheet_view.dart';
 import 'package:client_shared/theme/theme.dart';
+import 'package:kasi_rider/map/geo_utils.dart';
 import 'package:kasi_rider/map/map_view.dart';
 import 'package:kasi_rider/query_result_view.dart';
 import 'package:kasi_rider/schema.gql.dart';
@@ -30,6 +31,7 @@ class AddressDetailsView extends StatefulWidget {
 
 class _AddressDetailsViewState extends State<AddressDetailsView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _addressController = TextEditingController();
   MapViewController? mapController;
   String title = "";
   FullLocation? location;
@@ -47,8 +49,51 @@ class _AddressDetailsViewState extends State<AddressDetailsView> {
       type = widget.address!.type;
     } else {
       type = widget.defaultType;
+      // Pré-remplissage : position courante (CurrentLocationCubit) quand elle
+      // existe, normalisée pour ne jamais garder une adresse vide — le GPS brut
+      // arrive AVANT l'enrichissement du géocodage, or `details` est requis à
+      // l'enregistrement.
+      location ??= _normalize(widget.currentLocation);
     }
+    _addressController.text = location?.address ?? '';
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    mapController?.dispose();
+    super.dispose();
+  }
+
+  /// Remplace une adresse vide par les coordonnées formatées (repli standard
+  /// du projet, cf. `formatLatLngAddress`).
+  FullLocation? _normalize(FullLocation? value) {
+    if (value == null) return null;
+    if (value.address.isNotEmpty) return value;
+    return FullLocation(
+        latlng: value.latlng,
+        address: formatLatLngAddress(value.latlng),
+        title: value.title);
+  }
+
+  /// Ouvre le picker moderne (carte + recherche + FAB « ma position ») et
+  /// applique le résultat au formulaire. Réutilise `PlaceConfirmSheetView`
+  /// pour ne pas dupliquer la logique recherche/debounce/résolution.
+  Future<void> _openLocationPicker(FormFieldState<FullLocation> state) async {
+    final modalResult = await showBarModalBottomSheet<FullLocation>(
+        context: context,
+        enableDrag: false,
+        builder: (context) {
+          return PlaceConfirmSheetView(location ?? widget.currentLocation);
+        });
+    if (modalResult == null || !mounted) return;
+    mapController?.moveCamera(modalResult.latlng, 16);
+    setState(() {
+      location = modalResult;
+      _addressController.text = modalResult.address;
+    });
+    state.didChange(modalResult);
   }
 
   @override
@@ -188,36 +233,41 @@ class _AddressDetailsViewState extends State<AddressDetailsView> {
                     const Spacer(),
                     FormField<FullLocation>(
                         onSaved: (newValue) => location = newValue,
-                        initialValue: location ?? widget.currentLocation,
+                        initialValue: location,
                         validator: (value) => (value != null
                             ? null
-                            : "Tap on the map to select the location"),
+                            : S
+                                .of(context)
+                                .create_address_location_empty_error),
                         builder: (state) {
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              // Champ adresse en lecture seule : montre le
+                              // libellé résolu et ouvre le picker (recherche +
+                              // ajustement au pin) au toucher.
+                              TextField(
+                                controller: _addressController,
+                                readOnly: true,
+                                onTap: () => _openLocationPicker(state),
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  prefixIcon: Icon(
+                                    Ionicons.search,
+                                    color: CustomTheme.neutralColors.shade400,
+                                  ),
+                                  hintStyle:
+                                      Theme.of(context).textTheme.labelLarge,
+                                  hintText: S
+                                      .of(context)
+                                      .create_address_location_hint,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
                               CupertinoButton(
                                 minSize: 0,
                                 padding: EdgeInsets.zero,
-                                onPressed: () async {
-                                  final modalResult =
-                                      await showBarModalBottomSheet<
-                                              FullLocation>(
-                                          context: context,
-                                          enableDrag: false,
-                                          builder: (context) {
-                                            return PlaceConfirmSheetView(
-                                                location ??
-                                                    widget.currentLocation);
-                                          });
-                                  if (modalResult == null) return;
-                                  mapController?.moveCamera(
-                                      modalResult.latlng, 16);
-                                  setState(() {
-                                    location = modalResult;
-                                  });
-                                  state.didChange(modalResult);
-                                },
+                                onPressed: () => _openLocationPicker(state),
                                 child: IgnorePointer(
                                     child: Container(
                                         clipBehavior: Clip.hardEdge,
