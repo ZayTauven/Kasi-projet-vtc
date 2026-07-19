@@ -16,6 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:kasi_driver/chat/chat_view.dart';
 import 'package:kasi_driver/current_location_cubit.dart';
 import 'package:kasi_driver/earnings/earnings_view.dart';
+import 'package:kasi_driver/location/driver_location_settings.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/map_providers/google_map_provider.dart';
 import 'package:client_shared/map_diagnostics.dart';
@@ -390,6 +391,12 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
                         onPressed: (result?.isLoading ?? false)
                             ? null
                             : () async {
+                                // Le chauffeur passe en ligne : c'est le moment
+                                // de solliciter la localisation en arrière-plan,
+                                // SÉPARÉMENT de la permission de premier plan
+                                // (contrainte Android 10+). Non bloquant : un
+                                // refus n'empêche pas de se mettre en ligne.
+                                unawaited(requestBackgroundLocationPermission());
                                 final fcmId = await getFcmId(context);
                                 runMutation(
                                     Variables$Mutation$UpdateDriverStatus(

@@ -320,5 +320,16 @@
         "type": "String"
       }
     }
+  },
+  "location_service_notification_title": "Kasi Driver is sharing your location",
+  "location_service_notification_text": "Your location is being updated so you can receive nearby rides.",
+  "location_service_notification_channel": "Location tracking",
+  "order_duration_estimate": "in {minutes} mins",
+  "@order_duration_estimate": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -17,6 +17,14 @@
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <!-- Suivi de position écran éteint / app en arrière-plan pendant que le
+       chauffeur est en ligne. ACCESS_BACKGROUND_LOCATION est demandée au
+       runtime SÉPARÉMENT de la permission de premier plan (Android 10+). Le
+       service de premier plan (notification persistante) maintient le flux GPS
+       actif ; FOREGROUND_SERVICE_LOCATION est requis à partir d'Android 14. -->
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
   <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
   <application
     android:icon="@mipmap/ic_launcher"

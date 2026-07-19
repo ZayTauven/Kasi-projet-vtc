@@ -10,6 +10,7 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthVerifierModule } from '@kasi/database';
+import { getDriverJwtSecret } from './jwt-secret';
 
 @Module({})
 export class AuthModule {
@@ -20,7 +21,7 @@ export class AuthModule {
       OrderModule,
       PassportModule,
       JwtModule.register({
-        secret: 'secret_driver',
+        secret: getDriverJwtSecret(),
       }),
       authVerifierModule,
     ];

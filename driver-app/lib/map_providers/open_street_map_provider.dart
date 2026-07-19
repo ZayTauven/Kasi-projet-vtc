@@ -9,6 +9,8 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/current_location_cubit.dart';
+import 'package:kasi_driver/l10n/messages.dart';
+import 'package:kasi_driver/location/driver_location_settings.dart';
 
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/main.graphql.dart';
@@ -34,10 +36,6 @@ class OpenStreetMapProvider extends StatefulWidget {
 class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
     with TickerProviderStateMixin {
   late final controller = AnimatedMapController(vsync: this);
-
-  final Stream<geo.Position> streamServerLocation =
-      geo.Geolocator.getPositionStream(
-          locationSettings: const geo.LocationSettings(distanceFilter: 50));
 
   StreamSubscription<geo.Position>? _positionSub;
 
@@ -65,7 +63,17 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
     // boucle de rétroaction qui ne s'armait qu'en ligne et maintenait la carte
     // en animation permanente (zoom oscillant sans fin), empêchant toute tuile
     // de se charger. Un `builder` doit rester PUR, sans effet de bord.
-    _positionSub ??= streamServerLocation.listen((position) {
+    // Les réglages du flux (service de premier plan Android + notification)
+    // sont construits ici car ils portent des chaînes i18n qui exigent un
+    // BuildContext.
+    _positionSub ??= geo.Geolocator.getPositionStream(
+      locationSettings: buildDriverLocationSettings(
+        notificationTitle: S.of(context).location_service_notification_title,
+        notificationText: S.of(context).location_service_notification_text,
+        notificationChannelName:
+            S.of(context).location_service_notification_channel,
+      ),
+    ).listen((position) {
       if (!mounted) return;
       onLocationUpdated(
         position,
@@ -346,14 +354,28 @@ void onLocationUpdated(geo.Position position, MainBloc bloc,
     link: link,
   );
   final newLocation = LatLng(position.latitude, position.longitude);
+  // La position locale est poussée AVANT le réseau : la carte et la distance
+  // aux courses restent à jour même si la mutation échoue.
   locationCubit.setCurrentLocation(newLocation);
-  final res = await client.mutate(Options$Mutation$UpdateDriverLocation(
-      variables: Variables$Mutation$UpdateDriverLocation(
-          point: Input$PointInput(
-              lat: position.latitude, lng: position.longitude))));
-  final List<Fragment$AvailableOrder> availableOrders = res
-      .parsedData!.updateDriversLocationNew
-      .map((e) => Fragment$AvailableOrder.fromJson(e.toJson()))
-      .toList();
-  bloc.add(AvailableOrdersUpdated(availableOrders));
+  // Mutation réseau en best-effort. Elle part tous les 50 m ; à la moindre
+  // défaillance (hors-ligne, jeton expiré, erreur backend) `parsedData!`
+  // lèverait une exception non gérée dans ce callback async. On sort alors
+  // proprement SANS dispatcher : ne rien émettre évite d'effacer les courses
+  // du chauffeur sur un simple hoquet réseau. La prochaine position réessaiera.
+  try {
+    final res = await client.mutate(Options$Mutation$UpdateDriverLocation(
+        variables: Variables$Mutation$UpdateDriverLocation(
+            point: Input$PointInput(
+                lat: position.latitude, lng: position.longitude))));
+    if (res.hasException || res.parsedData == null) {
+      return;
+    }
+    final List<Fragment$AvailableOrder> availableOrders = res
+        .parsedData!.updateDriversLocationNew
+        .map((e) => Fragment$AvailableOrder.fromJson(e.toJson()))
+        .toList();
+    bloc.add(AvailableOrdersUpdated(availableOrders));
+  } catch (_) {
+    return;
+  }
 }

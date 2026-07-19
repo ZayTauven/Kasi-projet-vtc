@@ -52,7 +52,13 @@ class OrdersCarouselView extends StatelessWidget {
                         showOperationErrorMessage(context, error)),
                 builder: (runMutation, result) =>
                     BlocBuilder<MainBloc, MainState>(builder: (context, state) {
-                      if ((state as StatusOnline).orders.isEmpty) {
+                      // À l'acceptation d'une course l'état devient
+                      // StatusInService ; ce builder peut se reconstruire sur
+                      // cette transition, où un `as StatusOnline` planterait.
+                      if (state is! StatusOnline) {
+                        return const SizedBox.shrink();
+                      }
+                      if (state.orders.isEmpty) {
                         return const DriverDistanceSelect();
                       }
                       return PageView.builder(

@@ -23,6 +23,7 @@ import { CallMaskingModule } from '@kasi/order/call-masking.module';
 import { SharedProviderService } from '@kasi/order/shared-provider.service';
 import { SharedFleetService } from '@kasi/order/shared-fleet.service';
 import { RegionModule } from '@kasi/order/region/region.module';
+import { RoutingModule } from '@kasi/order/routing/routing.module';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
 import { ServiceService } from '@kasi/order/service.service';
 
@@ -72,6 +73,7 @@ import { HttpModule } from '@nestjs/axios';
       ShiftRuleEntity,
     ]),
     RegionModule,
+    RoutingModule,
     HttpModule,
     FirebaseNotificationModule.register(),
     GoogleServicesModule,

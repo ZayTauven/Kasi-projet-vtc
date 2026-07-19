@@ -713,4 +713,20 @@ class SFr extends S {
   String shift_rule_banner_break(String minutes) {
     return 'Pause obligatoire de $minutes min.';
   }
+
+  @override
+  String get location_service_notification_title =>
+      'Kasi Driver partage votre position';
+
+  @override
+  String get location_service_notification_text =>
+      'Votre position est mise à jour pour vous proposer les courses à proximité.';
+
+  @override
+  String get location_service_notification_channel => 'Suivi de position';
+
+  @override
+  String order_duration_estimate(String minutes) {
+    return 'dans $minutes min';
+  }
 }

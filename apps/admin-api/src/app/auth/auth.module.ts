@@ -6,13 +6,14 @@ import { OperatorModule } from '../operator/operator.module';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { getAdminJwtSecret } from './jwt-secret';
 
 @Module({
   imports: [
     OperatorModule,
     PassportModule,
     JwtModule.register({
-      secret: 'secret',
+      secret: getAdminJwtSecret(),
     }),
   ],
   providers: [JwtStrategy, AuthService, AuthResolver],

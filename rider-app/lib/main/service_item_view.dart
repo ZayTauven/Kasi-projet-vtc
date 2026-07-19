@@ -40,17 +40,21 @@ class ServiceItemView extends StatelessWidget {
               width: 75,
               height: 75,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        service.name,
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Flexible(
+                        child: Text(
+                          service.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       if (service.personCapacity != null)
@@ -74,9 +78,9 @@ class ServiceItemView extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelMedium,
                     )
                 ],
+                ),
               ),
             ),
-            const Spacer(),
             Padding(
               padding: const EdgeInsets.only(top: 4, right: 8),
               child: Column(

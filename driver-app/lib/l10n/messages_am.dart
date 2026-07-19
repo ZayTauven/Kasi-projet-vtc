@@ -696,4 +696,20 @@ class SAm extends S {
   String shift_rule_banner_break(String minutes) {
     return 'Mandatory break of $minutes min.';
   }
+
+  @override
+  String get location_service_notification_title =>
+      'Kasi Driver is sharing your location';
+
+  @override
+  String get location_service_notification_text =>
+      'Your location is being updated so you can receive nearby rides.';
+
+  @override
+  String get location_service_notification_channel => 'Location tracking';
+
+  @override
+  String order_duration_estimate(String minutes) {
+    return 'in $minutes mins';
+  }
 }

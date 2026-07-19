@@ -86,7 +86,7 @@ Kasi repose sur une stack moderne, performante et scalable :
 ### Installation
 
 ```bash
-cd app-ridy
+cd app-kasi
 npm install
 ```
 

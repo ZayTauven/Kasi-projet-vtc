@@ -108,7 +108,7 @@ class OrderItemView extends StatelessWidget {
                             Text(
                                 order.durationBest == 0
                                     ? ""
-                                    : durationToString(
+                                    : durationToString(context,
                                         Duration(seconds: order.durationBest)),
                                 style: Theme.of(context).textTheme.bodySmall)
                         ],
@@ -168,8 +168,8 @@ class OrderItemView extends StatelessWidget {
 
 typedef OrderAcceptedCallback = void Function(String orderId);
 
-String durationToString(Duration duration) =>
-    ("in ${duration.inMinutes.toStringAsFixed(0)} mins");
+String durationToString(BuildContext context, Duration duration) =>
+    S.of(context).order_duration_estimate(duration.inMinutes.toString());
 
 class OrderPreferenceTagView extends StatelessWidget {
   final Enum$ServiceOptionIcon icon;

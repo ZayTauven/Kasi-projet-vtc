@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as map_toolkit;
 import 'package:kasi_driver/current_location_cubit.dart';
+import 'package:kasi_driver/l10n/messages.dart';
+import 'package:kasi_driver/location/driver_location_settings.dart';
 
 import '../main_bloc.dart';
 import 'package:flutter/material.dart';
@@ -31,9 +33,7 @@ class GoogleMapProvider extends StatefulWidget {
 class _GoogleMapProviderState extends State<GoogleMapProvider> {
   final Completer<GoogleMapController> _controller = Completer();
 
-  final Stream<geo.Position> streamServerLocation =
-      geo.Geolocator.getPositionStream(
-          locationSettings: const geo.LocationSettings(distanceFilter: 50));
+  StreamSubscription<geo.Position>? _positionSub;
 
   @override
   void initState() {
@@ -47,6 +47,38 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
       );
     });
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // L'abonnement au flux de position vit ICI, pas dans le `builder` d'un
+    // StreamBuilder : y appeler `onLocationUpdated()` (mutation réseau +
+    // `bloc.add`) créait un effet de bord relancé à chaque reconstruction, donc
+    // une boucle de rétroaction qui maintenait la caméra en animation
+    // perpétuelle et empêchait les tuiles de se charger. Aligné sur le provider
+    // OpenStreetMap. Les réglages portent des chaînes i18n → BuildContext requis.
+    _positionSub ??= geo.Geolocator.getPositionStream(
+      locationSettings: buildDriverLocationSettings(
+        notificationTitle: S.of(context).location_service_notification_title,
+        notificationText: S.of(context).location_service_notification_text,
+        notificationChannelName:
+            S.of(context).location_service_notification_channel,
+      ),
+    ).listen((position) {
+      if (!mounted) return;
+      onLocationUpdated(
+        position,
+        context.read<MainBloc>(),
+        context.read<CurrentLocationCubit>(),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _positionSub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -199,16 +231,9 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
                           );
                         },
                       ),
-                      if (state is! StatusOffline)
-                        StreamBuilder<geo.Position>(
-                            stream: streamServerLocation,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                onLocationUpdated(snapshot.data!, mainBloc,
-                                    context.read<CurrentLocationCubit>());
-                              }
-                              return Container();
-                            })
+                      // Le StreamBuilder qui appelait `onLocationUpdated()` dans
+                      // son `builder` a été retiré : l'abonnement vit désormais
+                      // dans `didChangeDependencies` (voir plus haut).
                     ],
                   ));
         });

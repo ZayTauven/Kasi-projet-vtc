@@ -4,6 +4,7 @@ export * from './lib/interfaces/distance-multiplier.dto';
 export * from './lib/interfaces/time-multiplier.dto';
 export * from './lib/redis-pub-sub.provider';
 export * from './lib/crypto.service';
+export * from './lib/jwt-secret';
 export * from './lib/order/interfaces/driver-notification.interface';
 export * from './lib/order/interfaces/rider-notification.interface';
 export * from './lib/order/interfaces/noop-driver-notification.service';

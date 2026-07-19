@@ -1389,6 +1389,30 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Mandatory break of {minutes} min.'**
   String shift_rule_banner_break(String minutes);
+
+  /// No description provided for @location_service_notification_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Kasi Driver is sharing your location'**
+  String get location_service_notification_title;
+
+  /// No description provided for @location_service_notification_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is being updated so you can receive nearby rides.'**
+  String get location_service_notification_text;
+
+  /// No description provided for @location_service_notification_channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location tracking'**
+  String get location_service_notification_channel;
+
+  /// No description provided for @order_duration_estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'in {minutes} mins'**
+  String order_duration_estimate(String minutes);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

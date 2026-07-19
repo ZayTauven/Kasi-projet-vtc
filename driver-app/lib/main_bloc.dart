@@ -202,23 +202,26 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       if (state is! StatusOnline) {
         return;
       }
-      // if ((listEquals((state as StatusOnline).orders.map((e) => e.id).toList(),
-      //         event.orders.map((e) => e.id).toList())) &&
-      //     event.location?.latitude ==
-      //         (state as StatusOnline).currentLocation?.latitude) {
-      //   return;
-      // }
-      List<Fragment$AvailableOrder> orders = event.orders;
-      final sumOldIds = (state as StatusOnline).orders.fold<int>(
-          0, (previousValue, element) => previousValue + int.parse(element.id));
-      final sumNewIds = orders.fold<int>(
-          0, (value, element) => value + int.parse(element.id));
-      if (sumNewIds != sumOldIds) {
-        emit(StatusOnline(
-            driver: state.driver,
-            orders: orders,
-            selectedOrder: orders.isNotEmpty ? orders.first : null));
+      final current = state as StatusOnline;
+      final List<Fragment$AvailableOrder> orders = event.orders;
+      // Comparaison réelle des ENSEMBLES d'IDs. L'ancienne détection par somme
+      // des IDs laissait passer les échanges où les sommes coïncident
+      // (ex. {2,5} -> {3,4}), donnant une liste de courses périmée au chauffeur.
+      final oldIds = current.orders.map((e) => e.id).toSet();
+      final newIds = orders.map((e) => e.id).toSet();
+      if (const SetEquality<String>().equals(oldIds, newIds)) {
+        return;
       }
+      // Conserve la course sélectionnée si elle est toujours proposée, sinon
+      // retombe sur la première.
+      final selectedOrder = current.selectedOrder != null &&
+              newIds.contains(current.selectedOrder!.id)
+          ? orders.firstWhere((e) => e.id == current.selectedOrder!.id)
+          : (orders.isNotEmpty ? orders.first : null);
+      emit(StatusOnline(
+          driver: current.driver,
+          orders: orders,
+          selectedOrder: selectedOrder));
     });
 
     on<AvailabledOrderAdded>((event, emit) {
@@ -248,16 +251,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           (state as StatusOnline).orders.firstWhereOrNull(
                   (element) => element.id == event.order.id) !=
               null) {
-        (state as StatusOnline)
-            .orders
-            .removeWhere((element) => element.id == event.order.id);
+        final current = state as StatusOnline;
+        // Nouvelle liste (et non `removeWhere` en place) : muter la liste de
+        // l'état existant conserve la même référence et peut faire manquer des
+        // rebuilds côté BLoC.
+        final newOrders =
+            current.orders.where((e) => e.id != event.order.id).toList();
         emit(StatusOnline(
-            driver: state.driver,
-            orders: (state as StatusOnline).orders,
-            selectedOrder:
-                (state as StatusOnline).selectedOrder?.id == event.order.id
-                    ? (state as StatusOnline).orders.firstOrNull
-                    : (state as StatusOnline).selectedOrder));
+            driver: current.driver,
+            orders: newOrders,
+            selectedOrder: current.selectedOrder?.id == event.order.id
+                ? newOrders.firstOrNull
+                : current.selectedOrder));
       }
     });
 
