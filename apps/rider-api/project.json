@@ -29,7 +29,8 @@
         ],
         "generatePackageJson": true,
         "target": "node",
-        "compiler": "tsc"
+        "compiler": "tsc",
+        "webpackConfig": "apps/rider-api/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -54,12 +55,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/rider-api/**/*.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": [
         "{options.outputFile}"
       ]
@@ -70,8 +66,7 @@
         "{workspaceRoot}/coverage/apps/rider-api"
       ],
       "options": {
-        "jestConfig": "apps/rider-api/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/rider-api/jest.config.ts"
       }
     }
   },

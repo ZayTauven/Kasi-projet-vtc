@@ -68,7 +68,7 @@
                 [style]="'mapbox://styles/mapbox/streets-v12'"
                 [zoom]="[4]"
                 [center]="center"
-                (mapLoad)="onMapFromLoad($event)">
+                (mapLoad)="onMapFromLoad($event.target)">
               </mgl-map>
             </nz-form-control>
           </nz-form-item>
@@ -83,7 +83,7 @@
                 [style]="'mapbox://styles/mapbox/streets-v12'"
                 [zoom]="[4]"
                 [center]="center"
-                (mapLoad)="onMapToLoad($event)">
+                (mapLoad)="onMapToLoad($event.target)">
               </mgl-map>
             </nz-form-control>
           </nz-form-item>

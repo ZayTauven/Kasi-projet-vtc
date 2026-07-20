@@ -5,24 +5,14 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/database/**/*.ts"
-        ]
-      },
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/libs/database"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/database"],
       "options": {
-        "jestConfig": "libs/database/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/database/jest.config.ts"
       }
     }
   },

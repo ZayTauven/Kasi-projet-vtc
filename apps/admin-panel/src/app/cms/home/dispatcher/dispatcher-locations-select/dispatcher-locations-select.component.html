@@ -9,7 +9,7 @@
   [style]="'mapbox://styles/mapbox/streets-v12'"
   [zoom]="[4]"
   [center]="[0, 20]"
-  (mapLoad)="onMapLoad($event)"
+  (mapLoad)="onMapLoad($event.target)"
   (mapClick)="mapClicked($event)">
 
   <!-- Driver markers -->

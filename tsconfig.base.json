@@ -12,42 +12,23 @@
     "esModuleInterop": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2017",
-      "dom",
-      "esnext.asynciterable"
-    ],
+    "lib": ["es2017", "dom", "esnext.asynciterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@kasi/admin-panel/*": [
-        "apps/admin-panel/*"
-      ],
-      "@kasi/coupon/*": [
-        "libs/database/src/lib/coupon/*"
-      ],
-      "@kasi/database": [
-        "libs/database/src/index.ts"
-      ],
-      "@kasi/database/*": [
-        "libs/database/src/lib/entities/*"
-      ],
+      "@kasi/admin-panel/*": ["apps/admin-panel/*"],
+      "@kasi/coupon/*": ["libs/database/src/lib/coupon/*"],
+      "@kasi/database": ["libs/database/src/index.ts"],
+      "@kasi/database/*": ["libs/database/src/lib/entities/*"],
+      "@kasi/geo/*": ["libs/database/src/lib/geo/*"],
       "@kasi/order/*": [
         "libs/database/src/lib/order/*",
         "libs/database/src/lib/order/region/*",
         "libs/database/src/lib/order/google-services/*"
       ],
-      "@kasi/redis/*": [
-        "libs/database/src/lib/redis/*"
-      ],
-      "@kasi/geo/*": [
-        "libs/database/src/lib/geo/*"
-      ]
+      "@kasi/redis/*": ["libs/database/src/lib/redis/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

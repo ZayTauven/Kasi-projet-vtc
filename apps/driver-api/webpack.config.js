@@ -1,22 +1,7 @@
-module.exports = (config, _context) => {
-    const tsLoader = config.module.rules.find((r) =>
-      r.loader.includes("ts-loader")
-    );
-  
-    if (tsLoader) {
-      tsLoader.options.transpileOnly = false;
-      tsLoader.options.getCustomTransformers = (program) => {
-        return {
-          before: [
-            require("@nestjs/graphql/plugin").before(
-              {
-                "typeFileNameSuffix": [".input.ts", ".dto.ts"]
-              },
-              program
-            ),
-          ],
-        };
-      };
-    }
-    return config;
-  };
+const { composePlugins, withNx } = require('@nx/webpack');
+
+// Nx 17: la config webpack doit être explicite (isolatedConfig par défaut).
+// withNx() reprend les options du target (tsPlugins NestJS GraphQL, assets, etc.).
+module.exports = composePlugins(withNx(), (config) => {
+  return config;
+});

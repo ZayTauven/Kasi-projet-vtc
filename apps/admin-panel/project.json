@@ -62,12 +62,12 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "browserTarget": "admin-panel:build",
-        "hmr": true
+        "hmr": true,
+        "buildTarget": "admin-panel:build"
       },
       "configurations": {
         "production": {
-          "browserTarget": "admin-panel:build:production"
+          "buildTarget": "admin-panel:build:production"
         }
       }
     },
@@ -79,25 +79,14 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/admin-panel/src/**/*.ts",
-          "apps/admin-panel/src/**/*.html"
-        ]
-      },
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/admin-panel"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/admin-panel"],
       "options": {
-        "jestConfig": "apps/admin-panel/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/admin-panel/jest.config.ts"
       }
     }
   },

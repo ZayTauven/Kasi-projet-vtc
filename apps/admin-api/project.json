@@ -48,7 +48,8 @@
             }
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "webpackConfig": "apps/admin-api/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -73,12 +74,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/admin-api/**/*.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": [
         "{options.outputFile}"
       ]
@@ -89,8 +85,7 @@
         "{workspaceRoot}/coverage/apps/admin-api"
       ],
       "options": {
-        "jestConfig": "apps/admin-api/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/admin-api/jest.config.ts"
       }
     }
   },

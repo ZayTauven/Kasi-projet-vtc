@@ -56,7 +56,7 @@
                 [style]="'mapbox://styles/mapbox/streets-v12'"
                 [zoom]="[4]"
                 [center]="center"
-                (mapLoad)="onMapLoad($event)">
+                (mapLoad)="onMapLoad($event.target)">
               </mgl-map>
             </nz-form-control>
           </nz-form-item>

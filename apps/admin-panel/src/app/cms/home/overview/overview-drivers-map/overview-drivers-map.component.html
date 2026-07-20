@@ -40,7 +40,7 @@
     [style]="'mapbox://styles/mapbox/streets-v12'"
     [zoom]="[4]"
     [center]="[0, 20]"
-    (mapLoad)="onMapLoad($event)">
+    (mapLoad)="onMapLoad($event.target)">
     <!-- Driver markers — [lngLat] uses Mapbox [lng, lat] order, inverted vs Google {lat, lng} -->
     <mgl-marker
       *ngFor="let markerPosition of locations"
