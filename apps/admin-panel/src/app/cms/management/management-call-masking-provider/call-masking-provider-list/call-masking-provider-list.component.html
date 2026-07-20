@@ -12,29 +12,37 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.callMaskingProviders as callMaskingProviders" [nzData]="callMaskingProviders.nodes"
-      [nzTotal]="callMaskingProviders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'callMaskingProvider.type' | translate }}</th>
-          <th>{{ 'callMaskingProvider.proxyNumber' | translate }}</th>
-          <th>{{ 'profile.date' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <span class="mr-2">{{ data.name }}</span>
-            <nz-tag *ngIf="data.isDefault" nzColor="blue">{{'callMaskingProvider.default' | translate}}</nz-tag>
-            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
-          </td>
-          <td>{{ 'enum.callMaskingProviderType.' + data.type | translate }}</td>
-          <td>{{ data.proxyNumber != null ? data.proxyNumber : '-' }}</td>
-          <td>{{ data.createdAt | date: 'short' }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.callMaskingProviders; as callMaskingProviders) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="callMaskingProviders.nodes"
+        [nzTotal]="callMaskingProviders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'callMaskingProvider.type' | translate }}</th>
+            <th>{{ 'callMaskingProvider.proxyNumber' | translate }}</th>
+            <th>{{ 'profile.date' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <span class="mr-2">{{ data.name }}</span>
+                @if (data.isDefault) {
+                  <nz-tag nzColor="blue">{{'callMaskingProvider.default' | translate}}</nz-tag>
+                }
+                @if (data.enabled == false) {
+                  <nz-tag nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+                }
+              </td>
+              <td>{{ 'enum.callMaskingProviderType.' + data.type | translate }}</td>
+              <td>{{ data.proxyNumber != null ? data.proxyNumber : '-' }}</td>
+              <td>{{ data.createdAt | date: 'short' }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

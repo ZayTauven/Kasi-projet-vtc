@@ -3,20 +3,28 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/driver-api/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/driver-api",
         "main": "apps/driver-api/src/main.ts",
         "tsConfig": "apps/driver-api/tsconfig.app.json",
-        "assets": ["apps/driver-api/src/assets"],
+        "assets": [
+          "apps/driver-api/src/assets"
+        ],
         "tsPlugins": [
           {
             "name": "@nestjs/graphql/plugin",
             "options": {
-              "typeFileNameSuffix": [".input.ts", ".dto.ts"]
+              "typeFileNameSuffix": [
+                ".input.ts",
+                ".dto.ts"
+              ]
             }
           }
         ],
@@ -49,15 +57,18 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/driver-api"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/driver-api"
+      ],
       "options": {
         "jestConfig": "apps/driver-api/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }

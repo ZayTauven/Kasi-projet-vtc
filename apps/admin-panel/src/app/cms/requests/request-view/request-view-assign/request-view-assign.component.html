@@ -7,100 +7,116 @@
         nz-input
         [formControl]="searchDriversCtrl"
         [nzAutocomplete]="auto"
-      />
-      <nz-autocomplete
-        [nzDataSource]="filteredDrivers"
-        nzBackfill
-        #auto
-        (selectionChange)="onItemSelected(auto.activeItem)"
-      ></nz-autocomplete>
-    </nz-form-control>
+        />
+        <nz-autocomplete
+          [nzDataSource]="filteredDrivers"
+          nzBackfill
+          #auto
+          (selectionChange)="onItemSelected(auto.activeItem)"
+        ></nz-autocomplete>
+      </nz-form-control>
 
-    <!-- Map: trip points + available drivers
-         [lngLat] uses Mapbox [lng, lat] order — inverted vs Google {lat, lng} -->
-    <mgl-map
-      class="h-384"
-      [style]="'mapbox://styles/mapbox/streets-v12'"
-      [zoom]="[4]"
-      [center]="[0, 20]"
-      (mapLoad)="onMapLoad($event.target)">
+      <!-- Map: trip points + available drivers
+      [lngLat] uses Mapbox [lng, lat] order — inverted vs Google {lat, lng} -->
+      <mgl-map
+        class="h-384"
+        [style]="'mapbox://styles/mapbox/streets-v12'"
+        [zoom]="[4]"
+        [center]="[0, 20]"
+        (mapLoad)="onMapLoad($event.target)">
 
-      <!-- Trip route markers (pickup = index 0, destination = last) -->
-      <mgl-marker
-        *ngFor="let markerPosition of (query | async)?.[1]?.data?.order?.points; index as i"
-        [lngLat]="[markerPosition.lng, markerPosition.lat]">
-        <img
-          [src]="i === 0 ? 'assets/marker_pickup.png' : 'assets/marker_destination.png'"
-          style="width: 32px; height: 32px;"
-          alt="trip point">
-      </mgl-marker>
+        <!-- Trip route markers (pickup = index 0, destination = last) -->
+        @for (markerPosition of (query | async)?.[1]?.data?.order?.points; track markerPosition; let i = $index) {
+          <mgl-marker
+            [lngLat]="[markerPosition.lng, markerPosition.lat]">
+            <img
+              [src]="i === 0 ? 'assets/marker_pickup.png' : 'assets/marker_destination.png'"
+              style="width: 32px; height: 32px;"
+              alt="trip point">
+            </mgl-marker>
+          }
 
-      <!-- Available driver markers -->
-      <mgl-marker
-        *ngFor="let driver of (query | async)?.[0]?.data?.getDriversLocationWithData"
-        [lngLat]="[driver.location.lng, driver.location.lat]"
-        (markerClick)="openPopup(driver)">
-        <img src="assets/marker_taxi.png"
-             style="width: 32px; height: 32px; cursor: pointer;"
-             alt="driver">
-      </mgl-marker>
+          <!-- Available driver markers -->
+          @for (driver of (query | async)?.[0]?.data?.getDriversLocationWithData; track driver) {
+            <mgl-marker
+              [lngLat]="[driver.location.lng, driver.location.lat]"
+              (markerClick)="openPopup(driver)">
+              <img src="assets/marker_taxi.png"
+                style="width: 32px; height: 32px; cursor: pointer;"
+                alt="driver">
+              </mgl-marker>
+            }
 
-      <!-- Driver info popup (one shared instance) -->
-      <mgl-popup
-        *ngIf="popupOpen && selectedDriverCoords"
-        [lngLat]="selectedDriverCoords"
-        (popupClose)="popupOpen = false; selectedDriver = undefined">
-        <div class="grid grid-cols-2 gap-2 gap-y-2" *ngIf="selectedDriver as d">
-          <p class="text-gray-600">{{ 'profile.name' | translate }}</p>
-          <p class="font-semibold">{{ d.firstName }} {{ d.lastName }}</p>
-          <p class="text-gray-600">{{ 'profile.status' | translate }}</p>
-          <p class="font-semibold">
-            <nz-tag [nzColor]="tagColor.driver(d.status)">
-              {{ 'enum.driver.status.' + toCamelCase(d.status) | translate }}
-            </nz-tag>
-          </p>
-          <p class="text-gray-600">{{ 'profile.mobileNumber' | translate }}</p>
-          <a [href]="'tel:+' + d.mobileNumber" class="font-semibold">{{ d.mobileNumber | phone }}</a>
-          <p class="text-gray-600">{{ 'profile.rating' | translate }}</p>
-          <p *ngIf="d.rating != null">{{ 'profile.ratingSummary' | translate: { percent: d.rating, count: d.reviewCount } }}</p>
-          <p *ngIf="d.rating == null">-</p>
-          <button [routerLink]="'/drivers/view/' + d.id" nz-button>{{ 'overview.viewDriver' | translate }}</button>
-          <button nz-button nzType="primary" (click)="assignToDriver(d.id.toString())">{{ 'profile.assign' | translate }}</button>
+            <!-- Driver info popup (one shared instance) -->
+            @if (popupOpen && selectedDriverCoords) {
+              <mgl-popup
+                [lngLat]="selectedDriverCoords"
+                (popupClose)="popupOpen = false; selectedDriver = undefined">
+                @if (selectedDriver; as d) {
+                  <div class="grid grid-cols-2 gap-2 gap-y-2">
+                    <p class="text-gray-600">{{ 'profile.name' | translate }}</p>
+                    <p class="font-semibold">{{ d.firstName }} {{ d.lastName }}</p>
+                    <p class="text-gray-600">{{ 'profile.status' | translate }}</p>
+                    <p class="font-semibold">
+                      <nz-tag [nzColor]="tagColor.driver(d.status)">
+                        {{ 'enum.driver.status.' + toCamelCase(d.status) | translate }}
+                      </nz-tag>
+                    </p>
+                    <p class="text-gray-600">{{ 'profile.mobileNumber' | translate }}</p>
+                    <a [href]="'tel:+' + d.mobileNumber" class="font-semibold">{{ d.mobileNumber | phone }}</a>
+                    <p class="text-gray-600">{{ 'profile.rating' | translate }}</p>
+                    @if (d.rating != null) {
+                      <p>{{ 'profile.ratingSummary' | translate: { percent: d.rating, count: d.reviewCount } }}</p>
+                    }
+                    @if (d.rating == null) {
+                      <p>-</p>
+                    }
+                    <button [routerLink]="'/drivers/view/' + d.id" nz-button>{{ 'overview.viewDriver' | translate }}</button>
+                    <button nz-button nzType="primary" (click)="assignToDriver(d.id.toString())">{{ 'profile.assign' | translate }}</button>
+                  </div>
+                }
+              </mgl-popup>
+            }
+          </mgl-map>
         </div>
-      </mgl-popup>
-    </mgl-map>
-  </div>
 
-  <div class="mt-2 lg:mt-0">
-    <div class="kasi-card">
-      <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table
-      #table
-      nzShowSizeChanger
-      [nzFrontPagination]="false"
-      *ngIf="(query | async)?.[0]?.data?.getDriversLocationWithData as drivers"
-      [nzData]="drivers">
-      <thead>
-        <tr>
-          <th nzShowSort nzColumnKey="reviewTimestamp">{{ 'profile.name' | translate }}</th>
-          <th nzShowSort nzColumnKey="score">{{ 'profile.rating' | translate }}</th>
-          <th class="hidden md:table-cell">{{ 'profile.mobileNumber' | translate }}</th>
-          <th>{{ 'profile.actions' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data">
-          <td>{{ data.firstName }} {{ data.lastName }}</td>
-          <td *ngIf="data.rating != null">{{ 'profile.ratingSummary' | translate: { percent: data.rating, count: data.reviewCount } }}</td>
-          <td *ngIf="data.rating == null">-</td>
-          <td>{{ data.mobileNumber }}</td>
-          <td>
-            <a [routerLink]="'/drivers/view/' + data.id">{{ 'table.viewDriver' | translate }}</a>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+        <div class="mt-2 lg:mt-0">
+          <div class="kasi-card">
+            <div class="kasi-card__body kasi-card__body--flush">
+              @if ((query | async)?.[0]?.data?.getDriversLocationWithData; as drivers) {
+                <nz-table
+                  #table
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="drivers">
+                  <thead>
+                    <tr>
+                      <th nzShowSort nzColumnKey="reviewTimestamp">{{ 'profile.name' | translate }}</th>
+                      <th nzShowSort nzColumnKey="score">{{ 'profile.rating' | translate }}</th>
+                      <th class="hidden md:table-cell">{{ 'profile.mobileNumber' | translate }}</th>
+                      <th>{{ 'profile.actions' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (data of table.data; track data) {
+                      <tr>
+                        <td>{{ data.firstName }} {{ data.lastName }}</td>
+                        @if (data.rating != null) {
+                          <td>{{ 'profile.ratingSummary' | translate: { percent: data.rating, count: data.reviewCount } }}</td>
+                        }
+                        @if (data.rating == null) {
+                          <td>-</td>
+                        }
+                        <td>{{ data.mobileNumber }}</td>
+                        <td>
+                          <a [routerLink]="'/drivers/view/' + data.id">{{ 'table.viewDriver' | translate }}</a>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </nz-table>
+              }
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>

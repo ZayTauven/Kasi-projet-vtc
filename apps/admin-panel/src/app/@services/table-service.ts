@@ -137,7 +137,7 @@ export class TableService {
     return {
       sorting: sorting.length > 0 ? sorting : undefined,
       paging: {
-        offset: ((pageIndex - 1) * pageSize) ?? undefined,
+        offset: (pageIndex - 1) * pageSize,
         limit: pageSize
       },
       filter: (filter != null && Object.keys(filter).length > 0) ? filter : undefined

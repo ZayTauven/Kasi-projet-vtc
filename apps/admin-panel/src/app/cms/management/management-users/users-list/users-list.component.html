@@ -12,32 +12,36 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.operators as operators"
-      [nzData]="operators.nodes" [nzTotal]="operators.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'profile.userName' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <div class="flex items-center ml-2">
-              <div>
-                <div class="table-first-line">
-                  {{ data.firstName }} {{ data.lastName }}
+    @if ((query | async)?.data?.operators; as operators) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="operators.nodes" [nzTotal]="operators.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'profile.userName' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <div class="flex items-center ml-2">
+                  <div>
+                    <div class="table-first-line">
+                      {{ data.firstName }} {{ data.lastName }}
+                    </div>
+                    <div class="table-second-line">
+                      {{ data.role?.title ?? ('users.noRole' | translate) }}
+                    </div>
+                  </div>
                 </div>
-                <div class="table-second-line">
-                  {{ data.role?.title ?? ('users.noRole' | translate) }}
-                </div>
-              </div>
-            </div>
-          </td>
-          <td>{{ data.userName }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+              </td>
+              <td>{{ data.userName }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

@@ -16,38 +16,45 @@
   </nz-dropdown-menu>
 </div>
 
-<ng-container *ngIf="(query | async)?.data as data">
+@if ((query | async)?.data; as data) {
   <!-- Carte transactions -->
   <div class="kasi-card mb-4">
     <div class="kasi-card__body kasi-card__body--flush">
-      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-        *ngIf="data.providerTransactions as wallets" [nzData]="wallets.nodes"
-        [nzTotal]="wallets.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-        <thead>
-          <tr>
-            <th nzShowSort nzColumnKey="createdAt">{{ 'profile.dateTime' | translate }}</th>
-            <th nzShowSort nzColumnKey="action">{{ 'profile.transactionType' | translate }}</th>
-            <th>{{ 'profile.amount' | translate }}</th>
-            <th>{{ 'profile.details' | translate }}</th>
-            <th>{{ 'profile.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of table.data">
-            <td [nz-tooltip]="data.createdAt | date:'short'">{{ data.createdAt | timeago }}</td>
-            <td>{{ data.action === 'Deduct' ? ('enum.transactionType.' + data.deductType | translate) : ('enum.transactionType.' + data.rechargeType | translate) }}</td>
-            <td>{{ data.amount | currency: data.currency }}</td>
-            <td>{{ data.description }}</td>
-            <td>
-              <a *ngIf="data.operatorId !== null" [routerLink]="'/management/users/view/' + data.operatorId">{{ 'table.viewOperator' | translate }}</a>
-              <a *ngIf="data.requestId !== null" [routerLink]="'/requests/view/' + data.requestId">{{ 'table.viewRequest' | translate }}</a>
-            </td>
-          </tr>
-        </tbody>
-      </nz-table>
+      @if (data.providerTransactions; as wallets) {
+        <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+          [nzData]="wallets.nodes"
+          [nzTotal]="wallets.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+          <thead>
+            <tr>
+              <th nzShowSort nzColumnKey="createdAt">{{ 'profile.dateTime' | translate }}</th>
+              <th nzShowSort nzColumnKey="action">{{ 'profile.transactionType' | translate }}</th>
+              <th>{{ 'profile.amount' | translate }}</th>
+              <th>{{ 'profile.details' | translate }}</th>
+              <th>{{ 'profile.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (data of table.data; track data) {
+              <tr>
+                <td [nz-tooltip]="data.createdAt | date:'short'">{{ data.createdAt | timeago }}</td>
+                <td>{{ data.action === 'Deduct' ? ('enum.transactionType.' + data.deductType | translate) : ('enum.transactionType.' + data.rechargeType | translate) }}</td>
+                <td>{{ data.amount | currency: data.currency }}</td>
+                <td>{{ data.description }}</td>
+                <td>
+                  @if (data.operatorId !== null) {
+                    <a [routerLink]="'/management/users/view/' + data.operatorId">{{ 'table.viewOperator' | translate }}</a>
+                  }
+                  @if (data.requestId !== null) {
+                    <a [routerLink]="'/requests/view/' + data.requestId">{{ 'table.viewRequest' | translate }}</a>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      }
     </div>
   </div>
-
   <!-- Carte solde total -->
   <div class="kasi-card">
     <div class="kasi-card__head">
@@ -61,14 +68,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of summaryTable.data">
-            <td>{{ data.balance | currency: data.currency }}</td>
-          </tr>
+          @for (data of summaryTable.data; track data) {
+            <tr>
+              <td>{{ data.balance | currency: data.currency }}</td>
+            </tr>
+          }
         </tbody>
       </nz-table>
     </div>
   </div>
-</ng-container>
+}
 
 <nz-dropdown-menu #filteramount="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
@@ -76,7 +85,7 @@
       <input nz-input type="number" placeholder="{{ 'table.min' | translate }}" [(ngModel)]="amountRange[0]">
       <input nz-input type="number" placeholder="{{ 'table.max' | translate }}" [(ngModel)]="amountRange[1]">
       <button nz-button nzSize="small" nzType="primary" (click)="tableService.filterRange('balance', amountRange)"
-        class="search-button">{{ 'profile.search' | translate }}</button>
+      class="search-button">{{ 'profile.search' | translate }}</button>
       <button nz-button nzSize="small" (click)="tableService.filterRange('balance', undefined)">{{ 'profile.reset' | translate }}</button>
     </div>
   </div>

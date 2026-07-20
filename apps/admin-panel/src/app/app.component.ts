@@ -6,7 +6,7 @@ import { ThemeService } from "./@services/theme.service";
 
 @Component({
   selector: "app-root",
-  template: '<router-outlet *ngIf="isLoaded"></router-outlet>',
+  template: '@if (isLoaded) {<router-outlet></router-outlet>}',
   standalone: false,
 })
 export class AppComponent implements OnInit {

@@ -3,22 +3,26 @@
 </div>
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-<nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-  *ngIf="(query | async)?.data?.fleet?.zonePrices as zonePrices" [nzData]="zonePrices.nodes"
-  [nzTotal]="zonePrices.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange">
-  <thead>
-    <tr>
-      <th>
-        {{ 'profile.name' | translate }}
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of table.data" [routerLink]="'/management/zone-prices/view/' + data.id"
-      class="group cursor-pointer">
-      <td>{{ data.name }}</td>
-    </tr>
-  </tbody>
-</nz-table>
+    @if ((query | async)?.data?.fleet?.zonePrices; as zonePrices) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="zonePrices.nodes"
+        [nzTotal]="zonePrices.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange">
+        <thead>
+          <tr>
+            <th>
+              {{ 'profile.name' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'/management/zone-prices/view/' + data.id"
+              class="group cursor-pointer">
+              <td>{{ data.name }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

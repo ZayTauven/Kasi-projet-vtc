@@ -12,46 +12,52 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.riders as riders"
-      [nzData]="riders.nodes" [nzTotal]="riders.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
-            {{ 'profile.name' | translate }}
-            <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('lastName|like|')"
-              [nzDropdownMenu]="filtername">
-              <i nz-icon nzType="search"></i>
-            </nz-filter-trigger>
-          </th>
-          <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
-            {{ 'profile.mobileNumber' | translate }}
-            <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('mobileNumber|like|')"
-              [nzDropdownMenu]="filtermobile">
-              <i nz-icon nzType="search"></i>
-            </nz-filter-trigger>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <div>
-              <div class="table-first-line">
-                {{ data.firstName }} {{ data.lastName }}
-                <nz-tag *ngIf="data.status == riderStatus.Disabled" nzColor="red">{{
-                  'enum.rider.status.blocked'
-                  | translate }}</nz-tag>
-              </div>
-              <div class="table-second-line">
-                Registered on {{ data.registrationTimestamp | timeago }}
-              </div>
-            </div>
-          </td>
-          <td><a [href]="'tel:+' + data.mobileNumber">{{ data.mobileNumber | phone }}</a></td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.riders; as riders) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="riders.nodes" [nzTotal]="riders.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
+              {{ 'profile.name' | translate }}
+              <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('lastName|like|')"
+                [nzDropdownMenu]="filtername">
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+            </th>
+            <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
+              {{ 'profile.mobileNumber' | translate }}
+              <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('mobileNumber|like|')"
+                [nzDropdownMenu]="filtermobile">
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <div>
+                  <div class="table-first-line">
+                    {{ data.firstName }} {{ data.lastName }}
+                    @if (data.status == riderStatus.Disabled) {
+                      <nz-tag nzColor="red">{{
+                        'enum.rider.status.blocked'
+                      | translate }}</nz-tag>
+                    }
+                  </div>
+                  <div class="table-second-line">
+                    Registered on {{ data.registrationTimestamp | timeago }}
+                  </div>
+                </div>
+              </td>
+              <td><a [href]="'tel:+' + data.mobileNumber">{{ data.mobileNumber | phone }}</a></td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>
 
@@ -64,7 +70,7 @@
         {{ 'profile.search' | translate }}
       </button>
       <button nz-button nzSize="small" (click)="tableService.resetFilter('lastName', lastNameInput)">{{
-        'profile.reset' | translate }}</button>
+      'profile.reset' | translate }}</button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -77,7 +83,7 @@
         {{ 'profile.search' | translate }}
       </button>
       <button nz-button nzSize="small" (click)="tableService.resetFilter('mobileNumber', mobileNumberInput)">{{
-        'profile.reset' | translate }}</button>
+      'profile.reset' | translate }}</button>
     </div>
   </div>
 </nz-dropdown-menu>

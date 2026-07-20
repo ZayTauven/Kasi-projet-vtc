@@ -13,34 +13,38 @@
   (mapClick)="mapClicked($event)">
 
   <!-- Driver markers -->
-  <mgl-marker
-    *ngFor="let driver of drivers"
-    [lngLat]="[driver.location.lng, driver.location.lat]">
-    <img src="assets/marker_taxi.png"
-         style="width: 32px; height: 32px;"
-         [attr.title]="driver.driverId">
-  </mgl-marker>
+  @for (driver of drivers; track driver) {
+    <mgl-marker
+      [lngLat]="[driver.location.lng, driver.location.lat]">
+      <img src="assets/marker_taxi.png"
+        style="width: 32px; height: 32px;"
+        [attr.title]="driver.driverId">
+      </mgl-marker>
+    }
 
-  <!-- Trip-point markers — order matches points[] array -->
-  <mgl-marker
-    *ngFor="let point of points"
-    [lngLat]="[point.location.lng, point.location.lat]">
-    <img src="assets/marker_pickup.png"
-         style="width: 32px; height: 32px;"
-         [attr.title]="point.address">
-  </mgl-marker>
-</mgl-map>
+    <!-- Trip-point markers — order matches points[] array -->
+    @for (point of points; track point) {
+      <mgl-marker
+        [lngLat]="[point.location.lng, point.location.lat]">
+        <img src="assets/marker_pickup.png"
+          style="width: 32px; height: 32px;"
+          [attr.title]="point.address">
+        </mgl-marker>
+      }
+    </mgl-map>
 
-<nz-card>
-  <nz-timeline class="pt-16">
-    <nz-timeline-item *ngFor="let point of points">{{ point.address }}</nz-timeline-item>
-  </nz-timeline>
-</nz-card>
+    <nz-card>
+      <nz-timeline class="pt-16">
+        @for (point of points; track point) {
+          <nz-timeline-item>{{ point.address }}</nz-timeline-item>
+        }
+      </nz-timeline>
+    </nz-card>
 
-<button nz-button nzDanger (click)="removeLastPoint()" style="margin-top: 8px; margin-right: 4px;">
-  <span>{{ 'dispatcher.removeLastPoint' | translate }}</span>
-</button>
-<button nz-button nzType="default" (click)="goToServiceSelection()"
-  [disabled]="points.length === 0" style="margin-top: 8px;">
-  <span>{{ 'profile.next' | translate }}</span>
-</button>
+    <button nz-button nzDanger (click)="removeLastPoint()" style="margin-top: 8px; margin-right: 4px;">
+      <span>{{ 'dispatcher.removeLastPoint' | translate }}</span>
+    </button>
+    <button nz-button nzType="default" (click)="goToServiceSelection()"
+      [disabled]="points.length === 0" style="margin-top: 8px;">
+      <span>{{ 'profile.next' | translate }}</span>
+    </button>

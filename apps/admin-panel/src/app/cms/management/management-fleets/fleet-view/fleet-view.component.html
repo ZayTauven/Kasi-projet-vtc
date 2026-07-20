@@ -1,4 +1,4 @@
-<ng-container *ngIf="(query | async)?.data?.fleet as fleet">
+@if ((query | async)?.data?.fleet; as fleet) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar"><i nz-icon nzType="team"></i></div>
     <div class="kasi-profile-head__main">
@@ -23,4 +23,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

@@ -49,14 +49,14 @@
             <nz-form-label nzFor="maxHoursPerPeriod">{{ 'shiftRules.maxHoursPerPeriod' | translate }}</nz-form-label>
             <nz-form-control [nzExtra]="'shiftRules.maxHoursPerPeriodHint' | translate">
               <nz-input-number formControlName="maxHoursPerPeriod" id="maxHoursPerPeriod" [nzMin]="1" [nzMax]="168"
-                [nzStep]="1" style="width: 100%;"></nz-input-number>
+              [nzStep]="1" style="width: 100%;"></nz-input-number>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label nzFor="mandatoryBreakMinutes">{{ 'shiftRules.mandatoryBreakMinutes' | translate }}</nz-form-label>
             <nz-form-control [nzExtra]="'shiftRules.mandatoryBreakMinutesHint' | translate">
               <nz-input-number formControlName="mandatoryBreakMinutes" id="mandatoryBreakMinutes" [nzMin]="0" [nzMax]="1440"
-                [nzStep]="5" style="width: 100%;"></nz-input-number>
+              [nzStep]="5" style="width: 100%;"></nz-input-number>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
@@ -71,8 +71,10 @@
   </div>
   <div class="kasi-form-page-actions">
     <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" nzDanger type="button" nz-popconfirm
+    @if (isEdit) {
+      <button nz-button nzType="default" nzDanger type="button" nz-popconfirm
       [nzPopconfirmTitle]="'message.areYouSure' | translate" (nzOnConfirm)="onDelete()">{{ 'profile.delete' | translate }}</button>
+    }
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
   </div>
 </form>

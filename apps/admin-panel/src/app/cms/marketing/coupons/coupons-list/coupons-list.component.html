@@ -12,37 +12,41 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.coupons as coupons"
-      [nzData]="coupons.nodes" [nzTotal]="coupons.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.title' | translate }}</th>
-          <th>{{ 'profile.code' | translate }}</th>
-          <th>{{ 'profile.dateTime' | translate }}</th>
-          <th class="hidden lg:table-cell" nzShowSort nzColumnKey="isEnabled">{{ 'profile.status' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <div>
-              <div class="table-first-line">
-                {{ data.title }}
-              </div>
-              <div class="table-second-line">
-                {{ data.description }}
-              </div>
-            </div>
-          </td>
-          <td>{{ data.code }}</td>
-          <td>{{ data.startAt | date: 'mediumDate'}} - {{data.expireAt | date: 'mediumDate'}}</td>
-          <td class="hidden lg:table-cell">
-            <nz-tag [nzColor]="tagColor.boolean(data.isEnabled)">{{data.isEnabled ? ('profile.enabled' | translate) :
-              ('profile.disabled' | translate)}}</nz-tag>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.coupons; as coupons) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="coupons.nodes" [nzTotal]="coupons.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.title' | translate }}</th>
+            <th>{{ 'profile.code' | translate }}</th>
+            <th>{{ 'profile.dateTime' | translate }}</th>
+            <th class="hidden lg:table-cell" nzShowSort nzColumnKey="isEnabled">{{ 'profile.status' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <div>
+                  <div class="table-first-line">
+                    {{ data.title }}
+                  </div>
+                  <div class="table-second-line">
+                    {{ data.description }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ data.code }}</td>
+              <td>{{ data.startAt | date: 'mediumDate'}} - {{data.expireAt | date: 'mediumDate'}}</td>
+              <td class="hidden lg:table-cell">
+                <nz-tag [nzColor]="tagColor.boolean(data.isEnabled)">{{data.isEnabled ? ('profile.enabled' | translate) :
+                ('profile.disabled' | translate)}}</nz-tag>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

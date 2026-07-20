@@ -12,21 +12,25 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.operatorRoles as roles" [nzData]="roles ?? []"
-      [nzTotal]="roles.length" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>
-            {{ 'profile.title' | translate }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>{{ data.title }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.operatorRoles; as roles) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="roles ?? []"
+        [nzTotal]="roles.length" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>
+              {{ 'profile.title' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>{{ data.title }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

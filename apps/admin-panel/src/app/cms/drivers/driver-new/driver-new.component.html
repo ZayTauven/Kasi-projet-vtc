@@ -31,8 +31,10 @@
               <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
                 <ng-template #addOnBeforeTemplate>
                   <nz-select formControlName="prefix" class="phone-select">
-                    <nz-option *ngFor="let code of countryCodes" [nzLabel]="code.name + ' (' + code.dial_code + ')'"
+                    @for (code of countryCodes; track code) {
+                      <nz-option [nzLabel]="code.name + ' (' + code.dial_code + ')'"
                       [nzValue]="code.dial_code"></nz-option>
+                    }
                   </nz-select>
                 </ng-template>
                 <input formControlName="number" id="phoneNumber" type="tel" nz-input required />

@@ -12,27 +12,33 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.orderCancelReasons?.nodes as orderCancelReasons" [nzData]="orderCancelReasons"
-      [nzTotal]="orderCancelReasons.length">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{'profile.userType' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <span class="mr-2">{{ data.title }}</span>
-            <nz-tag *ngIf="data.isEnabled == false" nzColor="error">{{'profile.disabled' |
-              translate}}</nz-tag>
-          </td>
-          <td>
-            {{ data.userType === 'Driver' ? ('profile.driver' | translate) : ('profile.rider' | translate) }}
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.orderCancelReasons?.nodes; as orderCancelReasons) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="orderCancelReasons"
+        [nzTotal]="orderCancelReasons.length">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{'profile.userType' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <span class="mr-2">{{ data.title }}</span>
+                @if (data.isEnabled == false) {
+                  <nz-tag nzColor="error">{{'profile.disabled' |
+                  translate}}</nz-tag>
+                }
+              </td>
+              <td>
+                {{ data.userType === 'Driver' ? ('profile.driver' | translate) : ('profile.rider' | translate) }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

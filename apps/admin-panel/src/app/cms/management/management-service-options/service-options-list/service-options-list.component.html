@@ -12,23 +12,27 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #ajaxTable nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.serviceOptions as serviceOptions" [nzData]="serviceOptions"
-      [nzTotal]="serviceOptions.length">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'profile.type' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of ajaxTable.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>{{ data.name }}</td>
-          <td>
-            {{ data.type }} • {{ data.icon }}
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.serviceOptions; as serviceOptions) {
+      <nz-table #ajaxTable nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="serviceOptions"
+        [nzTotal]="serviceOptions.length">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'profile.type' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of ajaxTable.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>{{ data.name }}</td>
+              <td>
+                {{ data.type }} • {{ data.icon }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

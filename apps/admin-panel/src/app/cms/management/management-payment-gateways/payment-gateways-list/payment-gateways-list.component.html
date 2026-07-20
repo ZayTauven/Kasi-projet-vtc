@@ -12,26 +12,32 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.paymentGateways as paymentGateways" [nzData]="paymentGateways.nodes"
-      [nzTotal]="paymentGateways.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>
-            {{ 'profile.title' | translate }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" class="group cursor-pointer" [routerLink]="'view/' + data.id">
-          <td>
-          <div class="flex flex-row items-center">
-            <img *ngIf="data.media != null" [src]="serverUrl + data.media.address" width="32" height="32">
-            <span class="ml-2">{{ data.title }} ({{ data.type }})</span>
-          </div>
-        </td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.paymentGateways; as paymentGateways) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="paymentGateways.nodes"
+        [nzTotal]="paymentGateways.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>
+              {{ 'profile.title' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr class="group cursor-pointer" [routerLink]="'view/' + data.id">
+              <td>
+                <div class="flex flex-row items-center">
+                  @if (data.media != null) {
+                    <img [src]="serverUrl + data.media.address" width="32" height="32">
+                  }
+                  <span class="ml-2">{{ data.title }} ({{ data.type }})</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

@@ -127,7 +127,9 @@
     </section>
   </div>
   <div class="kasi-form-page-actions">
-    <button *ngIf="form.value.id != null" nz-button nzDanger type="button" (click)="deleteCoupon()">{{ 'profile.delete' | translate }}</button>
+    @if (form.value.id != null) {
+      <button nz-button nzDanger type="button" (click)="deleteCoupon()">{{ 'profile.delete' | translate }}</button>
+    }
     <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
     <button nz-button nzType="primary" [disabled]="form.invalid" type="submit">{{ 'profile.saveChanges' | translate }}</button>
   </div>

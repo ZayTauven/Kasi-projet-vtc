@@ -12,7 +12,7 @@ import { AnnouncementUserType } from '@kasi/database/enums/anouncement-user-type
 @QueryOptions({
   pagingStrategy: PagingStrategies.NONE,
 })
-@Authorize({
+@Authorize<AnnouncementDTO>({
   authorize: () => ({
     userType: { in: [[AnnouncementUserType.Driver]] },
     startAt: { lt: new Date() },

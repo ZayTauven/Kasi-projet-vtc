@@ -29,10 +29,14 @@
         <p class="kasi-form-section__desc">{{ 'role.section.permissions.desc' | translate }}</p>
       </div>
       <div class="kasi-form-section__body">
-        <div *ngFor="let category of getPermissionsCategories()" class="lg:grid lg:grid-cols-3 lg:gap-2 pt-2">
-          <h6>{{category}}</h6>
-          <label nz-checkbox (nzCheckedChange)="onPermissionCheckChanged(category, permission, $event)" [nzChecked]="isPermissionChecked(category, permission)" *ngFor="let permission of getCategoryPermissions(category)">{{permission}}</label>
-        </div>
+        @for (category of getPermissionsCategories(); track category) {
+          <div class="lg:grid lg:grid-cols-3 lg:gap-2 pt-2">
+            <h6>{{category}}</h6>
+            @for (permission of getCategoryPermissions(category); track permission) {
+              <label nz-checkbox (nzCheckedChange)="onPermissionCheckChanged(category, permission, $event)" [nzChecked]="isPermissionChecked(category, permission)">{{permission}}</label>
+            }
+          </div>
+        }
       </div>
     </section>
   </div>

@@ -1,35 +1,39 @@
-<nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.riders as riders"
-  [nzData]="riders.nodes" [nzTotal]="riders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)"
-  nzBordered>
-  <thead>
-    <tr>
-      <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
-        {{ 'profile.name' | translate }}
-        <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('lastName|like|')"
-          [nzDropdownMenu]="filtername">
-          <i nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-      <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
-        {{ 'profile.mobileNumber' | translate }}
-        <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('mobileNumber|like|')"
-          [nzDropdownMenu]="filtermobile">
-          <i nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of table.data" (click)="selectRider(data.id)" class="group cursor-pointer">
-      <td>
-        <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
-          {{ data.firstName }} {{ data.lastName }}
-        </div>
-      </td>
-      <td><a [href]="'tel:+' + data.mobileNumber">{{ data.mobileNumber | phone }}</a></td>
-    </tr>
-  </tbody>
-</nz-table>
+@if ((query | async)?.data?.riders; as riders) {
+  <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+    [nzData]="riders.nodes" [nzTotal]="riders.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)"
+    nzBordered>
+    <thead>
+      <tr>
+        <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
+          {{ 'profile.name' | translate }}
+          <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('lastName|like|')"
+            [nzDropdownMenu]="filtername">
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+        <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
+          {{ 'profile.mobileNumber' | translate }}
+          <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('mobileNumber|like|')"
+            [nzDropdownMenu]="filtermobile">
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of table.data; track data) {
+        <tr (click)="selectRider(data.id)" class="group cursor-pointer">
+          <td>
+            <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
+              {{ data.firstName }} {{ data.lastName }}
+            </div>
+          </td>
+          <td><a [href]="'tel:+' + data.mobileNumber">{{ data.mobileNumber | phone }}</a></td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+}
 <nz-dropdown-menu #filtername="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
@@ -39,7 +43,7 @@
         {{ 'profile.search' | translate }}
       </button>
       <button nz-button nzSize="small" (click)="tableService.resetFilter('lastName', lastNameInput)">{{
-        'profile.reset' | translate }}</button>
+      'profile.reset' | translate }}</button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -52,7 +56,7 @@
         {{ 'profile.search' | translate }}
       </button>
       <button nz-button nzSize="small" (click)="tableService.resetFilter('mobileNumber', mobileNumberInput)">{{
-        'profile.reset' | translate }}</button>
+      'profile.reset' | translate }}</button>
     </div>
   </div>
 </nz-dropdown-menu>

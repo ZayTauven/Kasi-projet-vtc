@@ -16,21 +16,21 @@
 
     <nav class="kasi-rail__nav">
       <!-- Groupes de tête : Accueil, Chauffeurs -->
-      <ng-container *ngFor="let group of navGroupsTop">
+      @for (group of navGroupsTop; track group) {
         <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group }"></ng-container>
-      </ng-container>
+      }
 
       <!-- Liens plats : Riders, Requests, SOS, Complaints -->
       <div class="kasi-rail__section">
-        <ng-container *ngFor="let link of navTop">
+        @for (link of navTop; track link) {
           <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link }"></ng-container>
-        </ng-container>
+        }
       </div>
 
       <!-- Groupes de configuration : Versements, Marketing, Comptabilité, Gestion -->
-      <ng-container *ngFor="let group of navGroupsBottom">
+      @for (group of navGroupsBottom; track group) {
         <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group }"></ng-container>
-      </ng-container>
+      }
     </nav>
 
     <div class="kasi-rail__footer">
@@ -57,11 +57,13 @@
         <i class="kasi-grouphead__chevron" nz-icon nzType="right"></i>
       </button>
       <div class="kasi-group__items">
-        <a *ngFor="let child of group.children" class="kasi-navlink is-child" [routerLink]="child.route"
-          [queryParams]="child.queryParams || null" routerLinkActive="is-active">
-          <i class="kasi-navlink__icon" nz-icon [nzType]="child.icon"></i>
-          <span class="kasi-navlink__label">{{ child.labelKey | translate }}</span>
-        </a>
+        @for (child of group.children; track child) {
+          <a class="kasi-navlink is-child" [routerLink]="child.route"
+            [queryParams]="child.queryParams || null" routerLinkActive="is-active">
+            <i class="kasi-navlink__icon" nz-icon [nzType]="child.icon"></i>
+            <span class="kasi-navlink__label">{{ child.labelKey | translate }}</span>
+          </a>
+        }
       </div>
     </div>
   </ng-template>
@@ -92,9 +94,11 @@
         </a>
         <nz-dropdown-menu #menu="nzDropdownMenu">
           <ul nz-menu nzSelectable>
-            <li nz-menu-item *ngFor="let lang of languages" (click)="changeLanguage(lang.code)">
-              {{ lang.label }}
-            </li>
+            @for (lang of languages; track lang) {
+              <li nz-menu-item (click)="changeLanguage(lang.code)">
+                {{ lang.label }}
+              </li>
+            }
           </ul>
         </nz-dropdown-menu>
 
@@ -105,63 +109,71 @@
         </button>
 
         <!-- Notifications -->
-        <nz-badge *ngIf="(stats | async)?.data as aggregates"
-          [nzDot]="aggregates.complaintAggregate[0].count?.id !== 0 || aggregates.distressSignalAggregate[0].count?.id !== 0 || aggregates.driverAggregate[0].count?.id !== 0 || newComplaints != 0 || newSos != 0">
-          <button type="button" class="kasi-iconbtn" nz-popover
-            nzPopoverTitle="{{ 'overview.notification.title' | translate }}"
-            [nzPopoverContent]="notificationTemplate" nzPopoverPlacement="bottomRight">
-            <i nz-icon nzType="bell"></i>
-          </button>
-        </nz-badge>
+        @if ((stats | async)?.data; as aggregates) {
+          <nz-badge
+            [nzDot]="aggregates.complaintAggregate[0].count?.id !== 0 || aggregates.distressSignalAggregate[0].count?.id !== 0 || aggregates.driverAggregate[0].count?.id !== 0 || newComplaints != 0 || newSos != 0">
+            <button type="button" class="kasi-iconbtn" nz-popover
+              nzPopoverTitle="{{ 'overview.notification.title' | translate }}"
+              [nzPopoverContent]="notificationTemplate" nzPopoverPlacement="bottomRight">
+              <i nz-icon nzType="bell"></i>
+            </button>
+          </nz-badge>
+        }
         <ng-template #notificationTemplate>
-          <nz-row *ngIf="(stats | async)?.data?.distressSignalAggregate as distressSignals">
-            <div>
-              <nz-avatar class="not-avatar" routerLink="/sos" nzShape="square" nzIcon="alert"
+          @if ((stats | async)?.data?.distressSignalAggregate; as distressSignals) {
+            <nz-row>
+              <div>
+                <nz-avatar class="not-avatar" routerLink="/sos" nzShape="square" nzIcon="alert"
                 [ngStyle]="{'background-color':((distressSignals[0].count?.id ?? 0) + newSos) == 0 ? null : '#d3adf7'}"></nz-avatar><span
                 class="not-desc"><b>{{(distressSignals[0].count?.id ?? 0) + newSos}}</b>
-                {{'notification.distressSignals.suffix' | translate}}</span>
+              {{'notification.distressSignals.suffix' | translate}}</span>
             </div>
           </nz-row>
-          <nz-row>
-            <nz-divider></nz-divider>
-            <div *ngIf="(stats | async)?.data?.complaintAggregate as complaints">
-              <nz-avatar class="not-avatar" nzShape="square" nzIcon="customer-service" routerLink="/complaints"
-                [ngStyle]="{'background-color':((complaints[0].count?.id ?? 0) + newComplaints) == 0 ? null : '#b7eb8f'}"></nz-avatar><span
-                class="not-desc"><b>{{(complaints[0].count?.id ?? 0) + newComplaints}}</b>
-                {{'notification.complaints.suffix' | translate}}</span>
-            </div>
-          </nz-row>
-          <nz-row *ngIf="(stats | async)?.data?.driverAggregate as pendingDrivers">
-            <nz-divider></nz-divider>
+        }
+        <nz-row>
+          <nz-divider></nz-divider>
+          @if ((stats | async)?.data?.complaintAggregate; as complaints) {
             <div>
-              <nz-avatar class="not-avatar" nzShape="square" nzIcon="car" routerLink="/drivers"
-                [queryParams]="{filter: 'status|in|PendingApproval'}"
-                [ngStyle]="{'background-color':pendingDrivers[0].count?.id == 0 ? null : '#87e8de'}"></nz-avatar><span
-                class="not-desc"><b>{{pendingDrivers[0].count?.id}}</b>
-                {{'notification.pendingDrivers.suffix' | translate}}</span>
-            </div>
-          </nz-row>
-        </ng-template>
+              <nz-avatar class="not-avatar" nzShape="square" nzIcon="customer-service" routerLink="/complaints"
+              [ngStyle]="{'background-color':((complaints[0].count?.id ?? 0) + newComplaints) == 0 ? null : '#b7eb8f'}"></nz-avatar><span
+              class="not-desc"><b>{{(complaints[0].count?.id ?? 0) + newComplaints}}</b>
+            {{'notification.complaints.suffix' | translate}}</span>
+          </div>
+        }
+      </nz-row>
+      @if ((stats | async)?.data?.driverAggregate; as pendingDrivers) {
+        <nz-row>
+          <nz-divider></nz-divider>
+          <div>
+            <nz-avatar class="not-avatar" nzShape="square" nzIcon="car" routerLink="/drivers"
+              [queryParams]="{filter: 'status|in|PendingApproval'}"
+            [ngStyle]="{'background-color':pendingDrivers[0].count?.id == 0 ? null : '#87e8de'}"></nz-avatar><span
+            class="not-desc"><b>{{pendingDrivers[0].count?.id}}</b>
+          {{'notification.pendingDrivers.suffix' | translate}}</span>
+        </div>
+      </nz-row>
+    }
+  </ng-template>
 
-        <!-- Déconnexion -->
-        <button type="button" class="kasi-iconbtn kasi-iconbtn--danger" (click)="logout()"
-          nz-tooltip="{{ 'overview.logout' | translate }}">
-          <i nz-icon nzType="logout"></i>
-        </button>
-      </div>
-    </header>
+  <!-- Déconnexion -->
+  <button type="button" class="kasi-iconbtn kasi-iconbtn--danger" (click)="logout()"
+    nz-tooltip="{{ 'overview.logout' | translate }}">
+    <i nz-icon nzType="logout"></i>
+  </button>
+</div>
+</header>
 
-    <!-- Contenu -->
-    <main class="kasi-content">
-      <div class="kasi-content__inner">
-        <router-outlet></router-outlet>
-      </div>
-    </main>
-
-    <footer class="kasi-footer">
-      <span>{{ 'branding.footer.prefix' | translate }}
-        <a href="{{ 'branding.footer.address' | translate }}">{{ 'branding.footer.title' | translate }}</a>
-        {{ 'branding.footer.suffix' | translate }}</span>
-    </footer>
+<!-- Contenu -->
+<main class="kasi-content">
+  <div class="kasi-content__inner">
+    <router-outlet></router-outlet>
   </div>
+</main>
+
+<footer class="kasi-footer">
+  <span>{{ 'branding.footer.prefix' | translate }}
+    <a href="{{ 'branding.footer.address' | translate }}">{{ 'branding.footer.title' | translate }}</a>
+  {{ 'branding.footer.suffix' | translate }}</span>
+</footer>
+</div>
 </div>

@@ -24,7 +24,7 @@
             <nz-form-label nzRequired nzFor="retentionDays">{{ 'retention.retentionDays' | translate }}</nz-form-label>
             <nz-form-control [nzExtra]="'retention.retentionDaysHint' | translate">
               <nz-input-number formControlName="retentionDays" id="retentionDays" [nzMin]="1" [nzMax]="3650" [nzStep]="1"
-                style="width: 100%;"></nz-input-number>
+              style="width: 100%;"></nz-input-number>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -50,19 +50,25 @@
             </nz-form-control>
           </nz-form-item>
           <!-- SÉCURITÉ : avertissement quand le mode simulation est désactivé. -->
-          <nz-alert *ngIf="form.get('dryRun')?.value === false" class="kasi-form__full mb-4" nzType="warning" nzShowIcon
-            [nzMessage]="'profile.warning' | translate"
+          @if (form.get('dryRun')?.value === false) {
+            <nz-alert class="kasi-form__full mb-4" nzType="warning" nzShowIcon
+              [nzMessage]="'profile.warning' | translate"
             [nzDescription]="'retention.realDeletionDisabledWarning' | translate"></nz-alert>
+          }
         </div>
       </div>
     </section>
   </div>
   <div class="kasi-form-page-actions">
     <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" type="button" [nzLoading]="running"
+    @if (isEdit) {
+      <button nz-button nzType="default" type="button" [nzLoading]="running"
       (click)="onRunDryRun()">{{ 'retention.runDryRun' | translate }}</button>
-    <button *ngIf="isEdit" nz-button nzDanger type="button" nz-popconfirm
+    }
+    @if (isEdit) {
+      <button nz-button nzDanger type="button" nz-popconfirm
       [nzPopconfirmTitle]="'message.areYouSure' | translate" (nzOnConfirm)="onDelete()">{{ 'profile.delete' | translate }}</button>
+    }
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
   </div>
 </form>

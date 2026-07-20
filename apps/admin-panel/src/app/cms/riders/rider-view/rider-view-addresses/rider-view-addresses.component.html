@@ -1,28 +1,32 @@
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-<nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-  *ngIf="(query | async)?.data?.riderAddresses as addresses" [nzData]="addresses.nodes"
-  (nzQueryParams)="tableService.onTableQueryParamsChange">
-  <thead>
-    <tr>
-      <th>
-        {{ 'profile.title' | translate }}
-      </th>
-      <th class="hidden md:table-cell">
-        {{ 'profile.address' | translate }}
-      </th>
-      <th>
-        {{ 'profile.location' | translate }}
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of table.data">
-      <td>{{ data.title }}</td>
-      <td class="hidden md:table-cell">{{ data.details }}</td>
-      <td><a (click)="openMap(data.location)">{{ 'table.openInGoogleMaps' | translate }}</a></td>
-    </tr>
-  </tbody>
-</nz-table>
+    @if ((query | async)?.data?.riderAddresses; as addresses) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="addresses.nodes"
+        (nzQueryParams)="tableService.onTableQueryParamsChange">
+        <thead>
+          <tr>
+            <th>
+              {{ 'profile.title' | translate }}
+            </th>
+            <th class="hidden md:table-cell">
+              {{ 'profile.address' | translate }}
+            </th>
+            <th>
+              {{ 'profile.location' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr>
+              <td>{{ data.title }}</td>
+              <td class="hidden md:table-cell">{{ data.details }}</td>
+              <td><a (click)="openMap(data.location)">{{ 'table.openInGoogleMaps' | translate }}</a></td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

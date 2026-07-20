@@ -1,4 +1,4 @@
-<ng-container *ngIf="(query | async)?.data?.order as order">
+@if ((query | async)?.data?.order; as order) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">{{ 'requests.header' | translate }}{{order.id}}</h1>
@@ -8,7 +8,7 @@
         <span>{{ 'requests.service' | translate }}: {{order.service?.name || '-'}}</span>
         <span>{{ 'requests.distance' | translate }}: {{order.distanceBest }}m</span>
         <span>{{ 'requests.duration' | translate }}: {{ (order.durationBest / 60).toFixed() }}:{{order.durationBest %
-          60}}</span>
+        60}}</span>
         <span>{{ 'profile.locations' | translate }}: {{order.addresses.join(' -> ')}}</span>
       </div>
       <div class="kasi-profile-head__tags">
@@ -17,7 +17,7 @@
     </div>
     <div class="kasi-profile-head__actions">
       <nz-statistic nzTitle="{{ 'profile.cost' | translate }}"
-        [nzValue]="(order.costAfterCoupon | currency: order.currency) ?? 0"></nz-statistic>
+      [nzValue]="(order.costAfterCoupon | currency: order.currency) ?? 0"></nz-statistic>
     </div>
   </div>
   <div class="kasi-tabs">
@@ -43,4 +43,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

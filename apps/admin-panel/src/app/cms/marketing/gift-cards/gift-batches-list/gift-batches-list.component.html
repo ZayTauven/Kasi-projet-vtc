@@ -12,31 +12,35 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.giftBatches as batches"
-      [nzData]="batches.nodes" [nzTotal]="batches.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'profile.amount' | translate }}</th>
-          <th>{{ 'giftCards.quantity' | translate }}</th>
-          <th class="hidden lg:table-cell">{{ 'giftCards.availability' | translate }}</th>
-          <th class="hidden lg:table-cell">{{ 'giftCards.createdAt' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>{{ data.name }}</td>
-          <td>{{ data.amount | currency: data.currency }}</td>
-          <td>{{ data.quantity }}</td>
-          <td class="hidden lg:table-cell">
-            {{ data.availableTimestamp ? (data.availableTimestamp | date: 'mediumDate') : '-' }}
-            &rarr;
-            {{ data.expirationTimestamp ? (data.expirationTimestamp | date: 'mediumDate') : '-' }}
-          </td>
-          <td class="hidden lg:table-cell">{{ data.createdAt | date: 'medium' }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.giftBatches; as batches) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="batches.nodes" [nzTotal]="batches.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'profile.amount' | translate }}</th>
+            <th>{{ 'giftCards.quantity' | translate }}</th>
+            <th class="hidden lg:table-cell">{{ 'giftCards.availability' | translate }}</th>
+            <th class="hidden lg:table-cell">{{ 'giftCards.createdAt' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>{{ data.name }}</td>
+              <td>{{ data.amount | currency: data.currency }}</td>
+              <td>{{ data.quantity }}</td>
+              <td class="hidden lg:table-cell">
+                {{ data.availableTimestamp ? (data.availableTimestamp | date: 'mediumDate') : '-' }}
+                &rarr;
+                {{ data.expirationTimestamp ? (data.expirationTimestamp | date: 'mediumDate') : '-' }}
+              </td>
+              <td class="hidden lg:table-cell">{{ data.createdAt | date: 'medium' }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

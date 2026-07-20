@@ -7,53 +7,54 @@
 </div>
 
 <!-- Squelette de chargement -->
-<div *ngIf="(query | async)?.loading == null">
-  <nz-skeleton [nzActive]="true"></nz-skeleton>
-</div>
+@if ((query | async)?.loading == null) {
+  <div>
+    <nz-skeleton [nzActive]="true"></nz-skeleton>
+  </div>
+}
 
 <!-- Cartes de métriques -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
-  *ngIf="(query | async)?.data as data">
-  <div class="kasi-metric">
-    <div class="kasi-metric__label">
-      <i nz-icon nzType="customer-service"></i>{{ 'overview.complaints.title' | translate }}
+@if ((query | async)?.data; as data) {
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
+    >
+    <div class="kasi-metric">
+      <div class="kasi-metric__label">
+        <i nz-icon nzType="customer-service"></i>{{ 'overview.complaints.title' | translate }}
+      </div>
+      <div class="kasi-metric__value">
+        {{ data.complaintAggregate[0].count?.id ?? 0 }}
+        <small>{{ 'overview.complaints.suffix' | translate }}</small>
+      </div>
     </div>
-    <div class="kasi-metric__value">
-      {{ data.complaintAggregate[0].count?.id ?? 0 }}
-      <small>{{ 'overview.complaints.suffix' | translate }}</small>
+    <div class="kasi-metric">
+      <div class="kasi-metric__label">
+        <i nz-icon nzType="field-time"></i>{{ 'overview.activeOrders.title' | translate }}
+      </div>
+      <div class="kasi-metric__value">
+        {{ data.activeOrders[0].count?.id ?? 0 }}
+        <small>{{ 'overview.activeOrders.suffix' | translate }}</small>
+      </div>
+    </div>
+    <div class="kasi-metric">
+      <div class="kasi-metric__label">
+        <i nz-icon nzType="car"></i>{{ 'overview.pendingDrivers.title' | translate }}
+      </div>
+      <div class="kasi-metric__value">
+        {{ data.driverAggregate[0].count?.id ?? 0 }}
+        <small>{{ 'overview.pendingDrivers.suffix' | translate }}</small>
+      </div>
+    </div>
+    <div class="kasi-metric">
+      <div class="kasi-metric__label">
+        <i nz-icon nzType="schedule"></i>{{ 'overview.bookedOrders.title' | translate }}
+      </div>
+      <div class="kasi-metric__value">
+        {{ data.bookedOrders[0].count?.id ?? 0 }}
+        <small>{{ 'overview.bookedOrders.suffix' | translate }}</small>
+      </div>
     </div>
   </div>
-
-  <div class="kasi-metric">
-    <div class="kasi-metric__label">
-      <i nz-icon nzType="field-time"></i>{{ 'overview.activeOrders.title' | translate }}
-    </div>
-    <div class="kasi-metric__value">
-      {{ data.activeOrders[0].count?.id ?? 0 }}
-      <small>{{ 'overview.activeOrders.suffix' | translate }}</small>
-    </div>
-  </div>
-
-  <div class="kasi-metric">
-    <div class="kasi-metric__label">
-      <i nz-icon nzType="car"></i>{{ 'overview.pendingDrivers.title' | translate }}
-    </div>
-    <div class="kasi-metric__value">
-      {{ data.driverAggregate[0].count?.id ?? 0 }}
-      <small>{{ 'overview.pendingDrivers.suffix' | translate }}</small>
-    </div>
-  </div>
-
-  <div class="kasi-metric">
-    <div class="kasi-metric__label">
-      <i nz-icon nzType="schedule"></i>{{ 'overview.bookedOrders.title' | translate }}
-    </div>
-    <div class="kasi-metric__value">
-      {{ data.bookedOrders[0].count?.id ?? 0 }}
-      <small>{{ 'overview.bookedOrders.suffix' | translate }}</small>
-    </div>
-  </div>
-</div>
+}
 
 <!-- Carte des Kasimen en direct -->
 <h2 class="kasi-section-title">{{ 'menu.home.dispatcher' | translate }}</h2>
@@ -66,25 +67,29 @@
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.requestsTitle' | translate" [nzExtra]="requestsExtrasTmpl">
       <div [ngClass]="{ hidden : isChartRequestsEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"
-        (nzChartInitialized)="onChartRequestsInit($event)"></div>
-      <p class="w-full text-center py-16 text-gray-500" *ngIf="isChartRequestsEmpty">{{'chart.emptyState' | translate}}
-      </p>
+      (nzChartInitialized)="onChartRequestsInit($event)"></div>
+      @if (isChartRequestsEmpty) {
+        <p class="w-full text-center py-16 text-gray-500">{{'chart.emptyState' | translate}}
+        </p>
+      }
     </nz-card>
     <ng-template #requestsExtrasTmpl>
       <nz-segmented [nzOptions]="chartTimeOptions" [(ngModel)]="requestMode"
-        (ngModelChange)="refreshRequests()"></nz-segmented>
+      (ngModelChange)="refreshRequests()"></nz-segmented>
     </ng-template>
   </div>
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.revenue' | translate" [nzExtra]="incomeExtrasTmpl">
       <div [ngClass]="{ hidden : isChartIncomeEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"
-        (nzChartInitialized)="onChartIncomeInit($event)"></div>
-      <p class="w-full text-center py-16 text-gray-500" *ngIf="isChartIncomeEmpty">{{'chart.emptyState' | translate}}
-      </p>
+      (nzChartInitialized)="onChartIncomeInit($event)"></div>
+      @if (isChartIncomeEmpty) {
+        <p class="w-full text-center py-16 text-gray-500">{{'chart.emptyState' | translate}}
+        </p>
+      }
     </nz-card>
     <ng-template #incomeExtrasTmpl>
       <nz-segmented [nzOptions]="chartTimeOptions" [(ngModel)]="incomeMode"
-        (ngModelChange)="refreshIncome()"></nz-segmented>
+      (ngModelChange)="refreshIncome()"></nz-segmented>
     </ng-template>
   </div>
 </div>
@@ -92,25 +97,29 @@
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.newDriverRegisters' | translate" [nzExtra]="driverRegistersTempl">
       <div [ngClass]="{ hidden : isChartDriverRegistrationsEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"
-        (nzChartInitialized)="onChartDriverRegistrationsInit($event)"></div>
-      <p class="w-full text-center py-16 text-gray-500" *ngIf="isChartDriverRegistrationsEmpty">{{'chart.emptyState' |
+      (nzChartInitialized)="onChartDriverRegistrationsInit($event)"></div>
+      @if (isChartDriverRegistrationsEmpty) {
+        <p class="w-full text-center py-16 text-gray-500">{{'chart.emptyState' |
         translate}}</p>
+      }
     </nz-card>
     <ng-template #driverRegistersTempl>
       <nz-segmented [nzOptions]="chartTimeOptions" [(ngModel)]="driverRegistrationsMode"
-        (ngModelChange)="refreshDriverRegistrations()"></nz-segmented>
+      (ngModelChange)="refreshDriverRegistrations()"></nz-segmented>
     </ng-template>
   </div>
   <div class="mt-2">
     <nz-card [nzTitle]="'overview.chart.newRiderRegisters' | translate" [nzExtra]="riderRegistersTempl">
       <div [ngClass]="{ hidden : isChartRiderRegistrationsEmpty }" nz-g2 [nzChartOptions]="{ height: 300 }"
-        (nzChartInitialized)="onChartRiderRegistrationsInit($event)"></div>
-      <p class="w-full text-center py-16 text-gray-500" *ngIf="isChartRiderRegistrationsEmpty">{{'chart.emptyState' |
+      (nzChartInitialized)="onChartRiderRegistrationsInit($event)"></div>
+      @if (isChartRiderRegistrationsEmpty) {
+        <p class="w-full text-center py-16 text-gray-500">{{'chart.emptyState' |
         translate}}</p>
+      }
     </nz-card>
     <ng-template #riderRegistersTempl>
       <nz-segmented [nzOptions]="chartTimeOptions" [(ngModel)]="riderRegistrationsMode"
-        (ngModelChange)="refreshRiderRegistrations()"></nz-segmented>
+      (ngModelChange)="refreshRiderRegistrations()"></nz-segmented>
     </ng-template>
   </div>
 </div>

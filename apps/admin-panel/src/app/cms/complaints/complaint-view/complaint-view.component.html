@@ -1,4 +1,4 @@
-<ng-container *ngIf="(query | async)?.data?.complaint as complaint">
+@if ((query | async)?.data?.complaint; as complaint) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">{{complaint.subject}}</h1>
@@ -8,7 +8,7 @@
       </div>
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.complaintStatus(complaint.status)">{{ ('enum.complaintStatus.' +
-          camelCase(complaint.status)) | translate }}</nz-tag>
+        camelCase(complaint.status)) | translate }}</nz-tag>
       </div>
     </div>
     <div class="kasi-profile-head__actions">
@@ -19,9 +19,9 @@
       <nz-dropdown-menu #menu4="nzDropdownMenu">
         <ul nz-menu>
           <li nz-menu-item (click)='updateStatus(complaintStatus.Resolved)'>{{ 'enum.complaintStatus.resolved' |
-            translate }}</li>
+          translate }}</li>
           <li nz-menu-item (click)="updateStatus(complaintStatus.UnderInvestigation)">{{
-            'enum.complaintStatus.underInvestigation' | translate }}</li>
+          'enum.complaintStatus.underInvestigation' | translate }}</li>
         </ul>
       </nz-dropdown-menu>
     </div>
@@ -34,4 +34,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

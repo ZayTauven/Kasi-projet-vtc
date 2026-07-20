@@ -1,39 +1,43 @@
-<div *ngIf="(query | async)?.data?.order?.complaints as complaints">
-      <div class="kasi-card">
-        <div class="kasi-card__body kasi-card__body--flush">
-      <nz-table
-      #ajaxTable
-      nzShowSizeChanger
-      [nzData]="complaints"
-      [nzTotal]="complaints.length"
-    >
-      <thead>
-        <tr>
-          <th>
-            {{ 'profile.dateTime' | translate }}
-          </th>
-          <th>
-            {{ 'profile.subject' | translate }}
-          </th>
-          <th>
-            {{ 'profile.content' | translate }}
-          </th>
-          <th>{{ 'profile.actions' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of ajaxTable.data">
-          <td>{{ data.inscriptionTimestamp | timeago }}</td>
-          <td>{{ data.subject }}</td>
-          <td>{{ data.content }}</td>
-          <td>
-            <a [routerLink]="'/complaints/view/' + data.id"
-              >{{ 'table.viewComplaint' | translate }}</a
-            >
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+@if ((query | async)?.data?.order?.complaints; as complaints) {
+  <div>
+    <div class="kasi-card">
+      <div class="kasi-card__body kasi-card__body--flush">
+        <nz-table
+          #ajaxTable
+          nzShowSizeChanger
+          [nzData]="complaints"
+          [nzTotal]="complaints.length"
+          >
+          <thead>
+            <tr>
+              <th>
+                {{ 'profile.dateTime' | translate }}
+              </th>
+              <th>
+                {{ 'profile.subject' | translate }}
+              </th>
+              <th>
+                {{ 'profile.content' | translate }}
+              </th>
+              <th>{{ 'profile.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (data of ajaxTable.data; track data) {
+              <tr>
+                <td>{{ data.inscriptionTimestamp | timeago }}</td>
+                <td>{{ data.subject }}</td>
+                <td>{{ data.content }}</td>
+                <td>
+                  <a [routerLink]="'/complaints/view/' + data.id"
+                    >{{ 'table.viewComplaint' | translate }}</a
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
         </div>
       </div>
-</div>
+    </div>
+  }

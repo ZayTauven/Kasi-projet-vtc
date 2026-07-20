@@ -11,20 +11,22 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of ajaxTable.data">
-        <td>{{ data.firstName || '' }} {{ data.lastName || '' }}</td>
-        <td>{{ (data.mobileNumber !== null) ? (data.mobileNumber | phone) : '' }}</td>
-        <td>
-          <nz-tag [nzColor]="tagColor.driver(data.status)">
-            {{ 'enum.driver.status.' + toCamelCase(data.status) | translate }}
-          </nz-tag>
-        </td>
-        <td>
-          <a (click)="showDriverOnMap(data.id)">{{ 'overview.showOnMap' | translate }}</a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a [routerLink]="'/drivers/view/' + data.id">{{ 'profile.view' | translate }}</a>
-        </td>
-      </tr>
+      @for (data of ajaxTable.data; track data) {
+        <tr>
+          <td>{{ data.firstName || '' }} {{ data.lastName || '' }}</td>
+          <td>{{ (data.mobileNumber !== null) ? (data.mobileNumber | phone) : '' }}</td>
+          <td>
+            <nz-tag [nzColor]="tagColor.driver(data.status)">
+              {{ 'enum.driver.status.' + toCamelCase(data.status) | translate }}
+            </nz-tag>
+          </td>
+          <td>
+            <a (click)="showDriverOnMap(data.id)">{{ 'overview.showOnMap' | translate }}</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a [routerLink]="'/drivers/view/' + data.id">{{ 'profile.view' | translate }}</a>
+          </td>
+        </tr>
+      }
     </tbody>
   </nz-table>
 </nz-card>
@@ -42,20 +44,22 @@
     [center]="[0, 20]"
     (mapLoad)="onMapLoad($event.target)">
     <!-- Driver markers — [lngLat] uses Mapbox [lng, lat] order, inverted vs Google {lat, lng} -->
-    <mgl-marker
-      *ngFor="let markerPosition of locations"
-      [lngLat]="[markerPosition.location.lng, markerPosition.location.lat]"
-      (markerClick)="openPopup(markerPosition.driverId, markerPosition.location)">
-      <img src="assets/marker_taxi.png"
-           style="width: 32px; height: 32px; cursor: pointer;"
-           alt="driver marker">
-    </mgl-marker>
-    <!-- Single shared popup for selected driver -->
-    <mgl-popup
-      *ngIf="popupOpen && selectedDriverCoords"
-      [lngLat]="selectedDriverCoords"
-      (popupClose)="popupOpen = false">
-      <a [routerLink]="'/drivers/view/' + selectedDriverId">{{ 'overview.viewDriver' | translate }}</a>
-    </mgl-popup>
-  </mgl-map>
-</ng-template>
+    @for (markerPosition of locations; track markerPosition) {
+      <mgl-marker
+        [lngLat]="[markerPosition.location.lng, markerPosition.location.lat]"
+        (markerClick)="openPopup(markerPosition.driverId, markerPosition.location)">
+        <img src="assets/marker_taxi.png"
+          style="width: 32px; height: 32px; cursor: pointer;"
+          alt="driver marker">
+        </mgl-marker>
+      }
+      <!-- Single shared popup for selected driver -->
+      @if (popupOpen && selectedDriverCoords) {
+        <mgl-popup
+          [lngLat]="selectedDriverCoords"
+          (popupClose)="popupOpen = false">
+          <a [routerLink]="'/drivers/view/' + selectedDriverId">{{ 'overview.viewDriver' | translate }}</a>
+        </mgl-popup>
+      }
+    </mgl-map>
+  </ng-template>

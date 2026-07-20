@@ -9,33 +9,37 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.orders as orders"
-      [nzData]="orders.nodes" [nzTotal]="orders.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>
-            {{ 'profile.dateTime' | translate }}
-          </th>
-          <th>
-            {{ 'profile.cost' | translate }}
-          </th>
-          <th nzColumnKey="status" [nzSortFn]="true" [nzFilters]="statuses" [nzFilterFn]="true">{{ 'profile.status' |
+    @if ((query | async)?.data?.orders; as orders) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="orders.nodes" [nzTotal]="orders.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>
+              {{ 'profile.dateTime' | translate }}
+            </th>
+            <th>
+              {{ 'profile.cost' | translate }}
+            </th>
+            <th nzColumnKey="status" [nzSortFn]="true" [nzFilters]="statuses" [nzFilterFn]="true">{{ 'profile.status' |
             translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td [nz-tooltip]="data.expectedTimestamp | date:'short'">{{ data.createdOn | timeago }} {{ data.status ==
-            orderStatus.Booked ? ('requests.bookedFor' | translate: { time: (data.expectedTimestamp | timeago) }) : '' }}</td>
-          <td>{{ data.costAfterCoupon | currency: data.currency }}</td>
-          <td>
-            <nz-tag [nzColor]="tagColor.orderStatus(data.status)">{{('enum.request.' + data.status) | translate }}
-            </nz-tag>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td [nz-tooltip]="data.expectedTimestamp | date:'short'">{{ data.createdOn | timeago }} {{ data.status ==
+              orderStatus.Booked ? ('requests.bookedFor' | translate: { time: (data.expectedTimestamp | timeago) }) : '' }}</td>
+              <td>{{ data.costAfterCoupon | currency: data.currency }}</td>
+              <td>
+                <nz-tag [nzColor]="tagColor.orderStatus(data.status)">{{('enum.request.' + data.status) | translate }}
+                </nz-tag>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>
 
@@ -44,9 +48,9 @@
     <div class="search-box">
       <nz-range-picker [(ngModel)]="dateRanges"></nz-range-picker><br>
       <button nz-button nzSize="small" nzType="primary" (click)="tableService.filterText('createdOn', undefined)"
-        class="search-button">{{ 'profile.search' | translate }}</button>
+      class="search-button">{{ 'profile.search' | translate }}</button>
       <button nz-button nzSize="small" (click)="tableService.filterText('createdOn', undefined)">{{ 'profile.reset'
-        | translate }}</button>
+      | translate }}</button>
     </div>
   </div>
 </nz-dropdown-menu>

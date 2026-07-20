@@ -1,4 +1,4 @@
-<ng-container *ngIf="(query | async)?.data?.distressSignal as sos">
+@if ((query | async)?.data?.distressSignal; as sos) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar"><i nz-icon nzType="alert"></i></div>
     <div class="kasi-profile-head__main">
@@ -6,11 +6,11 @@
       <div class="kasi-profile-head__meta">
         <span>{{ 'complaint.inscriptionTime' | translate }}: {{sos.createdAt | timeago}}</span>
         <span>{{ 'profile.submittedBy' | translate }}: {{sos.submittedByRider ? ('profile.rider' | translate) :
-          ('profile.driver' | translate)}}</span>
+        ('profile.driver' | translate)}}</span>
       </div>
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.sosStatus(sos.status)">{{ ('enum.sosStatus.' + camelCase(sos.status)) | translate
-          }}</nz-tag>
+        }}</nz-tag>
       </div>
     </div>
   </div>
@@ -22,4 +22,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

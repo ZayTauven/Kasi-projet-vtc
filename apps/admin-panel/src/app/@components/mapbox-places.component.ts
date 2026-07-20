@@ -31,16 +31,17 @@ interface MapboxFeature {
       [nzAutocomplete]="autoComplete"
       style="width: 100%; margin-top: 10px; margin-bottom: 10px;"
       placeholder="Search location..."
-    />
+      />
     <nz-autocomplete #autoComplete (selectionChange)="onSelect($event)">
-      <nz-auto-option
-        *ngFor="let feature of suggestions"
-        [nzValue]="feature"
-        [nzLabel]="feature.place_name"
-        >{{ feature.place_name }}</nz-auto-option
-      >
-    </nz-autocomplete>
-  `,
+      @for (feature of suggestions; track feature) {
+        <nz-auto-option
+          [nzValue]="feature"
+          [nzLabel]="feature.place_name"
+          >{{ feature.place_name }}</nz-auto-option
+          >
+        }
+      </nz-autocomplete>
+    `,
   standalone: false,
 })
 export class MapboxPlacesComponent implements OnDestroy {

@@ -1,36 +1,46 @@
-<nz-empty *ngIf="(query | async)?.data?.driver == null" [nzNotFoundContent]="contentTpl"
-  [nzNotFoundFooter]="footerTpl">
-  <ng-template #contentTpl>
-    <span>
-      {{'drivers.notFoundMessage' | translate}}
-    </span>
-  </ng-template>
-  <ng-template #footerTpl>
-    <button nz-button nzType="primary" routerLink="/drivers">{{'profile.goToList' | translate}}</button>
-  </ng-template>
-</nz-empty>
-<ng-container *ngIf="(query | async)?.data?.driver as driver">
+@if ((query | async)?.data?.driver == null) {
+  <nz-empty [nzNotFoundContent]="contentTpl"
+    [nzNotFoundFooter]="footerTpl">
+    <ng-template #contentTpl>
+      <span>
+        {{'drivers.notFoundMessage' | translate}}
+      </span>
+    </ng-template>
+    <ng-template #footerTpl>
+      <button nz-button nzType="primary" routerLink="/drivers">{{'profile.goToList' | translate}}</button>
+    </ng-template>
+  </nz-empty>
+}
+@if ((query | async)?.data?.driver; as driver) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar">
-      <img *ngIf="driver.media?.address" [src]="root + driver.media?.address" />
-      <i *ngIf="!driver.media?.address" nz-icon nzType="user"></i>
+      @if (driver.media?.address) {
+        <img [src]="root + driver.media?.address" />
+      }
+      @if (!driver.media?.address) {
+        <i nz-icon nzType="user"></i>
+      }
     </div>
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">{{driver.firstName}} {{driver.lastName}}</h1>
       <div class="kasi-profile-head__meta">
         <span>{{'profile.registeredOn' | translate}} {{driver.registrationTimestamp | timeago}}</span>
-        <span *ngIf="driver.status !== 'Online'">{{'driver.profile.lastSeenAt' | translate}}: {{driver.lastSeenTimestamp
+        @if (driver.status !== 'Online') {
+          <span>{{'driver.profile.lastSeenAt' | translate}}: {{driver.lastSeenTimestamp
           != null ? (driver.lastSeenTimestamp | timeago) : '-'}}</span>
+        }
         <span>{{'driver.profile.rating' | translate}}: {{(driver.rating !== null ? (('profile.ratingSummary' | translate:
-          { percent: driver.rating, count: driver.reviewCount })) : ('profile.notAvailable' | translate))}}</span>
+        { percent: driver.rating, count: driver.reviewCount })) : ('profile.notAvailable' | translate))}}</span>
       </div>
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.driver(driver.status)">{{('enum.driver.status.' + toCamelCase(driver.status)) |
-          translate}}</nz-tag>
-        <ng-container *ngIf="(query | async)?.data?.driverFeedbackParametersSummary as summary">
-          <nz-tag *ngFor="let parameter of summary" [nzColor]="tagColor.boolean(parameter.isGood)">{{parameter.count}} x
+        translate}}</nz-tag>
+        @if ((query | async)?.data?.driverFeedbackParametersSummary; as summary) {
+          @for (parameter of summary; track parameter) {
+            <nz-tag [nzColor]="tagColor.boolean(parameter.isGood)">{{parameter.count}} x
             {{parameter.title}}</nz-tag>
-        </ng-container>
+          }
+        }
       </div>
     </div>
     <div class="kasi-profile-head__actions">
@@ -44,23 +54,23 @@
       <nz-dropdown-menu #menu4="nzDropdownMenu">
         <ul nz-menu>
           <li nz-menu-item (click)='changeStatus(driverStatus.PendingApproval)'>{{'enum.driver.status.pendingApproval' |
-            translate}}</li>
+          translate}}</li>
           <li nz-menu-item (click)="changeStatus(driverStatus.Offline)">{{'enum.driver.status.approved' | translate}}
           </li>
           <li nz-menu-item (click)="changeStatus(driverStatus.Blocked)">{{'enum.driver.status.blocked' | translate}}
           </li>
           <li nz-menu-item (click)="changeStatus(driverStatus.SoftReject)">{{'enum.driver.status.softReject' |
-            translate}}</li>
+          translate}}</li>
           <li nz-menu-item (click)="changeStatus(driverStatus.HardReject)">{{'enum.driver.status.hardReject' |
-            translate}}</li>
+          translate}}</li>
           <li nz-menu-item (click)="changeStatus(driverStatus.Offline)">{{'enum.driver.status.offline' | translate}}
           </li>
           <li nz-menu-item (click)="changeStatus(driverStatus.WaitingDocuments)">{{'enum.driver.status.waitingDocuments'
-            | translate}}</li>
+          | translate}}</li>
           <li nz-menu-item hidden (click)="changeStatus(driverStatus.InService)">{{'enum.driver.status.inService' |
-            translate}}</li>
+          translate}}</li>
           <li nz-menu-item hidden (click)="changeStatus(driverStatus.Online)">{{'enum.driver.status.online' |
-            translate}}</li>
+          translate}}</li>
         </ul>
       </nz-dropdown-menu>
     </div>
@@ -85,4 +95,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

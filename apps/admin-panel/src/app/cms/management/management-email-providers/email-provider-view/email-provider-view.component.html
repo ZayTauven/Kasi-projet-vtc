@@ -2,7 +2,9 @@
   <div class="kasi-page-head__text">
     <h1 class="kasi-title">{{ 'emailProvider.title' | translate }}</h1>
     <p>{{ 'emailProvider.subtitle' | translate }}</p>
-    <nz-tag *ngIf="isDefault" nzColor="blue">{{'emailProvider.default' | translate}}</nz-tag>
+    @if (isDefault) {
+      <nz-tag nzColor="blue">{{'emailProvider.default' | translate}}</nz-tag>
+    }
   </div>
 </div>
 <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -36,78 +38,86 @@
               <nz-switch required id="enabled" formControlName="enabled"></nz-switch>
             </nz-form-control>
           </nz-form-item>
-          <div *ngIf="showTestEmail" class="kasi-form__full">
-            <nz-input-group nzCompact style="max-width: 420px;">
-              <input nz-input [(ngModel)]="testEmail" [ngModelOptions]="{ standalone: true }" name="testEmail"
-                [placeholder]="'emailProvider.testTo' | translate" style="width: 60%;" />
-              <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testEmail === ''"
-                (click)="onSendTestEmail()">{{ 'emailProvider.testEmail' | translate }}</button>
-            </nz-input-group>
+          @if (showTestEmail) {
+            <div class="kasi-form__full">
+              <nz-input-group nzCompact style="max-width: 420px;">
+                <input nz-input [(ngModel)]="testEmail" [ngModelOptions]="{ standalone: true }" name="testEmail"
+                  [placeholder]="'emailProvider.testTo' | translate" style="width: 60%;" />
+                  <button nz-button nzType="default" type="button" [nzLoading]="sendingTest" [disabled]="testEmail === ''"
+                  (click)="onSendTestEmail()">{{ 'emailProvider.testEmail' | translate }}</button>
+                </nz-input-group>
+              </div>
+            }
           </div>
         </div>
+      </section>
+      @if (form.get('type')?.value === 'Smtp') {
+        <section class="kasi-form-section">
+          <div class="kasi-form-section__aside">
+            <h2 class="kasi-form-section__title">{{ 'emailProvider.section.smtp.title' | translate }}</h2>
+            <p class="kasi-form-section__desc">{{ 'emailProvider.section.smtp.desc' | translate }}</p>
+          </div>
+          <div class="kasi-form-section__body">
+            <div class="kasi-form kasi-form--grid">
+              <nz-form-item>
+                <nz-form-label nzFor="host">{{ 'emailProvider.host' | translate }}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="host" id="host" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="port">{{ 'emailProvider.port' | translate }}</nz-form-label>
+                <nz-form-control>
+                  <nz-input-number formControlName="port" id="port" [nzMin]="1" [nzMax]="65535" [nzStep]="1"
+                  style="width: 100%;"></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="secure">{{ 'emailProvider.secure' | translate }}</nz-form-label>
+                <nz-form-control [nzExtra]="'emailProvider.secureHint' | translate">
+                  <nz-switch id="secure" formControlName="secure"></nz-switch>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="username">{{ 'emailProvider.username' | translate }}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="username" id="username" autocomplete="off" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="password">{{ 'emailProvider.password' | translate }}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input type="password" formControlName="password" id="password" autocomplete="new-password"
+                    [placeholder]="isEdit ? ('emailProvider.passwordHint' | translate) : ''" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzFor="fromAddress">{{ 'emailProvider.fromAddress' | translate }}</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="fromAddress" id="fromAddress" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzFor="fromName">{{ 'emailProvider.fromName' | translate }}</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="fromName" id="fromName" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </section>
+        }
       </div>
-    </section>
-    <section class="kasi-form-section" *ngIf="form.get('type')?.value === 'Smtp'">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ 'emailProvider.section.smtp.title' | translate }}</h2>
-        <p class="kasi-form-section__desc">{{ 'emailProvider.section.smtp.desc' | translate }}</p>
+      <div class="kasi-form-page-actions">
+        <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
+        @if (isEdit) {
+          <button nz-button nzType="default" type="button" [disabled]="isDefault"
+          (click)="onSetDefault()">{{ 'emailProvider.setDefault' | translate }}</button>
+        }
+        @if (isEdit) {
+          <button nz-button nzType="default" type="button"
+          (click)="showTestEmail = !showTestEmail">{{ 'emailProvider.testEmail' | translate }}</button>
+        }
+        <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
       </div>
-      <div class="kasi-form-section__body">
-        <div class="kasi-form kasi-form--grid">
-          <nz-form-item>
-            <nz-form-label nzFor="host">{{ 'emailProvider.host' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input formControlName="host" id="host" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="port">{{ 'emailProvider.port' | translate }}</nz-form-label>
-            <nz-form-control>
-              <nz-input-number formControlName="port" id="port" [nzMin]="1" [nzMax]="65535" [nzStep]="1"
-                style="width: 100%;"></nz-input-number>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="secure">{{ 'emailProvider.secure' | translate }}</nz-form-label>
-            <nz-form-control [nzExtra]="'emailProvider.secureHint' | translate">
-              <nz-switch id="secure" formControlName="secure"></nz-switch>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="username">{{ 'emailProvider.username' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input formControlName="username" id="username" autocomplete="off" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="password">{{ 'emailProvider.password' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input type="password" formControlName="password" id="password" autocomplete="new-password"
-                [placeholder]="isEdit ? ('emailProvider.passwordHint' | translate) : ''" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="fromAddress">{{ 'emailProvider.fromAddress' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input formControlName="fromAddress" id="fromAddress" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzFor="fromName">{{ 'emailProvider.fromName' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input formControlName="fromName" id="fromName" />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </div>
-    </section>
-  </div>
-  <div class="kasi-form-page-actions">
-    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" type="button" [disabled]="isDefault"
-      (click)="onSetDefault()">{{ 'emailProvider.setDefault' | translate }}</button>
-    <button *ngIf="isEdit" nz-button nzType="default" type="button"
-      (click)="showTestEmail = !showTestEmail">{{ 'emailProvider.testEmail' | translate }}</button>
-    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.submit' | translate }}</button>
-  </div>
-</form>
+    </form>

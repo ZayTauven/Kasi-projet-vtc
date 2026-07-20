@@ -10,35 +10,39 @@
 </div>
 
 <nz-alert class="mb-4 block" nzType="warning" [nzMessage]="'profile.warning' | translate"
-  [nzDescription]="'rewards.underDevelopmentNotice' | translate" nzShowIcon></nz-alert>
+[nzDescription]="'rewards.underDevelopmentNotice' | translate" nzShowIcon></nz-alert>
 
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.rewards as rewards"
-      [nzData]="rewards.nodes" [nzTotal]="rewards.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.title' | translate }}</th>
-          <th>{{ 'profile.beneficiary' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <div>
-              <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
-                {{ data.title }}
-              </div>
-              <div class="text-sm text-neutral-400 group-hover:text-neutral-700">
-                {{ data.startDate | date: 'mediumDate' }} - {{ data.endDate | date: 'mediumDate' }}
-              </div>
-            </div>
-          </td>
-          <td>{{ data.beneficiary }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.rewards; as rewards) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="rewards.nodes" [nzTotal]="rewards.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.title' | translate }}</th>
+            <th>{{ 'profile.beneficiary' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <div>
+                  <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
+                    {{ data.title }}
+                  </div>
+                  <div class="text-sm text-neutral-400 group-hover:text-neutral-700">
+                    {{ data.startDate | date: 'mediumDate' }} - {{ data.endDate | date: 'mediumDate' }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ data.beneficiary }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

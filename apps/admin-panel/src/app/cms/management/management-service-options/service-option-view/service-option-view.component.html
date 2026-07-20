@@ -24,8 +24,10 @@
             <nz-form-label nzFor="type" nzRequired>{{ 'profile.type' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="type" id="type">
-                <nz-option *ngFor="let type of types" [nzLabel]="type" [nzValue]="type">
-                </nz-option>
+                @for (type of types; track type) {
+                  <nz-option [nzLabel]="type" [nzValue]="type">
+                  </nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -33,17 +35,21 @@
             <nz-form-label nzFor="icon" nzRequired>{{ 'profile.icon' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="icon" id="icon">
-                <nz-option *ngFor="let icon of icons" [nzLabel]="icon" [nzValue]="icon">
-                </nz-option>
+                @for (icon of icons; track icon) {
+                  <nz-option [nzLabel]="icon" [nzValue]="icon">
+                  </nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item *ngIf="form.value.type == type.Paid">
-            <nz-form-label nzRequired nzFor="additionalFee">{{ 'serviceOption.additionalFee' | translate }}</nz-form-label>
-            <nz-form-control>
-              <input nz-input formControlName="additionalFee" id="additionalFee" />
-            </nz-form-control>
-          </nz-form-item>
+          @if (form.value.type == type.Paid) {
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="additionalFee">{{ 'serviceOption.additionalFee' | translate }}</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="additionalFee" id="additionalFee" />
+              </nz-form-control>
+            </nz-form-item>
+          }
         </div>
       </div>
     </section>

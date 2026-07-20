@@ -28,13 +28,15 @@
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
   </div>
 </form>
-<div class="kasi-card mt-2" *ngIf="this.form.value?.id !== null">
-  <div class="kasi-card__head">
-    <span class="kasi-card__title">{{ 'profile.dangerArea' | translate }}</span>
+@if (this.form.value?.id !== null) {
+  <div class="kasi-card mt-2">
+    <div class="kasi-card__head">
+      <span class="kasi-card__title">{{ 'profile.dangerArea' | translate }}</span>
+    </div>
+    <div class="kasi-card__body">
+      <p class="text-lg leading-6 font-medium text-gray-900">{{ 'profile.delete' | translate }}</p>
+      <p class="mt-2 max-w-xl text-sm text-gray-500">{{ 'profile.deleteNotice' | translate }}</p>
+      <button nz-button nzDanger class="mt-2" (click)="deleteCategory()">{{ 'profile.delete' | translate }}</button>
+    </div>
   </div>
-  <div class="kasi-card__body">
-    <p class="text-lg leading-6 font-medium text-gray-900">{{ 'profile.delete' | translate }}</p>
-    <p class="mt-2 max-w-xl text-sm text-gray-500">{{ 'profile.deleteNotice' | translate }}</p>
-    <button nz-button nzDanger class="mt-2" (click)="deleteCategory()">{{ 'profile.delete' | translate }}</button>
-  </div>
-</div>
+}

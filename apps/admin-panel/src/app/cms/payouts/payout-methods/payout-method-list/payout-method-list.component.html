@@ -12,28 +12,34 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.payoutMethods as payoutMethods" [nzData]="payoutMethods.nodes"
-      [nzTotal]="payoutMethods.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.name' | translate }}</th>
-          <th>{{ 'payouts.type' | translate }}</th>
-          <th>{{ 'profile.currency' | translate }}</th>
-          <th>{{ 'payouts.minimumAmount' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <span class="mr-2">{{ data.name }}</span>
-            <nz-tag *ngIf="data.enabled == false" nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
-          </td>
-          <td>{{ 'enum.payoutMethodType.' + data.type | translate }}</td>
-          <td>{{ data.currency }}</td>
-          <td>{{ data.minimumAmount | currency: data.currency }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.payoutMethods; as payoutMethods) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="payoutMethods.nodes"
+        [nzTotal]="payoutMethods.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.name' | translate }}</th>
+            <th>{{ 'payouts.type' | translate }}</th>
+            <th>{{ 'profile.currency' | translate }}</th>
+            <th>{{ 'payouts.minimumAmount' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <span class="mr-2">{{ data.name }}</span>
+                @if (data.enabled == false) {
+                  <nz-tag nzColor="error">{{'profile.disabled' | translate}}</nz-tag>
+                }
+              </td>
+              <td>{{ 'enum.payoutMethodType.' + data.type | translate }}</td>
+              <td>{{ data.currency }}</td>
+              <td>{{ data.minimumAmount | currency: data.currency }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

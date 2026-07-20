@@ -1,170 +1,180 @@
-<div *ngIf="(query | async)?.data?.distressSignal as sos">
-  <div class="kasi-form-sections">
-    <section class="kasi-form-section">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ 'profile.requestInfo' | translate }}</h2>
-        <p class="kasi-form-section__desc">{{ 'sos.section.request.desc' | translate }}</p>
-      </div>
-      <div class="kasi-form-section__body">
-      <div class="kasi-desc">
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.expectedTime' | translate }}</span><span
-            class="kasi-desc__value">{{ sos.order.expectedTimestamp !== null ? (sos.order.expectedTimestamp | date:
-            "short") : "-" }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.startTime' | translate }}</span><span
-            class="kasi-desc__value">{{ sos.order.startTimestamp !== null ? (sos.order.startTimestamp | date: "short") :
-            "-" }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.finishTime' | translate }}</span><span
-            class="kasi-desc__value">{{ sos.order.finishTimestamp !== null ? (sos.order.finishTimestamp | date: "short")
-            : "-" }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.costAfterCoupon' | translate
-            }}</span><span class="kasi-desc__value">{{ sos.order.costAfterCoupon | currency:sos.order.currency
-            }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.estimatedCost' | translate }}</span><span
-            class="kasi-desc__value">{{ sos.order.costBest | currency:sos.order.currency }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
-            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.orderStatus(sos.order.status)"
-              [nzText]="'enum.request.' + sos.order.status | translate"></nz-badge></span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.locations' | translate }}</span><span
-            class="kasi-desc__value">{{ sos.order.addresses.join(" -> ") }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
-            class="kasi-desc__value"><a [routerLink]="'/../requests/view/' + sos.order.id">{{ 'profile.view' | translate
-            }}</a></span></div>
-      </div>
-      </div>
-    </section>
-
-    <section class="kasi-form-section" *ngIf="sos.order.driver as driver">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ ('profile.driverInfo' | translate) +
-          (sos.submittedByRider ? '' : (' ' + ('profile.sender' | translate))) }}</h2>
-        <p class="kasi-form-section__desc">{{ 'sos.section.driver.desc' | translate }}</p>
-      </div>
-      <div class="kasi-form-section__body">
-      <div class="kasi-desc">
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
-            class="kasi-desc__value">{{driver.firstName }} {{driver.lastName}}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
-            class="kasi-desc__value"><a [href]="'tel:' + driver.mobileNumber">{{driver.mobileNumber | phone
-            }}</a></span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
-            class="kasi-desc__value">{{ driver.registrationTimestamp | date: "short" }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
-            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.driver(driver.status)"
-              [nzText]="'enum.driver.status.' + camelCase(driver.status) | translate"></nz-badge></span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
-            class="kasi-desc__value"><a [routerLink]="'/../drivers/all/view/' + driver.id">{{ 'profile.view' | translate
-            }}</a></span></div>
-      </div>
-      </div>
-    </section>
-
-    <section class="kasi-form-section" *ngIf="sos.order.rider as rider">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ ('profile.riderInfo' | translate) +
-          (!sos.submittedByRider ? (' ' + ('profile.sender' | translate)) : '') }}</h2>
-        <p class="kasi-form-section__desc">{{ 'sos.section.rider.desc' | translate }}</p>
-      </div>
-      <div class="kasi-form-section__body">
-      <div class="kasi-desc">
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
-            class="kasi-desc__value">{{rider.firstName }} {{rider.lastName}}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
-            class="kasi-desc__value"><a [href]="'tel:' + rider.mobileNumber">{{rider.mobileNumber | phone
-            }}</a></span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
-            class="kasi-desc__value">{{ rider.registrationTimestamp !== null ? (rider.registrationTimestamp | date:
-            "short") : "-" }}</span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
-            class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.rider(rider.status)"
-              [nzText]="'enum.rider.status.' + rider.status.toLowerCase() | translate"></nz-badge></span></div>
-        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
-            class="kasi-desc__value"><a [routerLink]="'/../riders/view/' + rider.id">{{ 'profile.view' | translate
-            }}</a></span></div>
-      </div>
-      </div>
-    </section>
-
-    <section class="kasi-form-section" *ngIf="sos.activities as activities">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ 'sos.activities' | translate }}</h2>
-        <p class="kasi-form-section__desc">{{ 'sos.section.activities.desc' | translate }}</p>
-      </div>
-      <div class="kasi-form-section__body">
-  <nz-table #activityTable [nzShowPagination]="false"
-    [nzData]="activities" [nzTotal]="activities.length">
-    <thead>
-      <tr>
-        <th>{{ 'profile.title' | translate }}</th>
-        <th>{{ 'profile.note' | translate }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of activityTable.data">
-        <td>
-          <div class="flex items-center ml-2">
-            <div>
-              <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
-                {{ 'enum.sosActivityAction.' + camelCase(item.action) | translate }}
-              </div>
-              <div class="text-sm text-neutral-400 group-hover:text-neutral-700"
-                [nz-tooltip]="item.createdAt | date: 'short'"
-                [routerLink]="item.operator != null ? ('/operators/view/' + item.operator.id) : null">
-                {{ item.createdAt | timeago }} {{ 'profile.by' | translate }} {{ item.operator == null ? (sos.submittedByRider ? ('profile.rider' | translate) : ('profile.driver' | translate))
-                : item.operator.firstName + ' ' + item.operator.lastName }}
-              </div>
-            </div>
-          </div>
-        </td>
-        <td>{{item.note}}</td>
-      </tr>
-    </tbody>
-  </nz-table>
-      </div>
-    </section>
-  </div>
-
-  <form nz-form [formGroup]="formActivity" (ngSubmit)="onSubmitActivity(sos.id)">
+@if ((query | async)?.data?.distressSignal; as sos) {
+  <div>
     <div class="kasi-form-sections">
       <section class="kasi-form-section">
         <div class="kasi-form-section__aside">
-          <h2 class="kasi-form-section__title">{{ 'sos.insertActivity' | translate }}</h2>
-          <p class="kasi-form-section__desc">{{ 'sos.section.newActivity.desc' | translate }}</p>
+          <h2 class="kasi-form-section__title">{{ 'profile.requestInfo' | translate }}</h2>
+          <p class="kasi-form-section__desc">{{ 'sos.section.request.desc' | translate }}</p>
         </div>
         <div class="kasi-form-section__body">
-          <div class="kasi-form kasi-form--grid">
-        <nz-form-item>
-          <nz-form-label nzRequired>{{ 'profile.action' | translate }}</nz-form-label>
-          <nz-form-control>
-            <nz-select formControlName="action">
-              <nz-option [nzLabel]="('enum.sosActivityAction.submitted') | translate"
-                [nzValue]="activityAction.Submitted" *ngIf="false"></nz-option>
-              <nz-option [nzLabel]="('enum.sosActivityAction.seen') | translate" [nzValue]="activityAction.Seen"
-                *ngIf="false"></nz-option>
-              <nz-option [nzLabel]="('enum.sosActivityAction.contactDriver') | translate"
-                [nzValue]="activityAction.ContactDriver"></nz-option>
-              <nz-option [nzLabel]="('enum.sosActivityAction.contactAuthorities') | translate"
-                [nzValue]="activityAction.ContactAuthorities"></nz-option>
-              <nz-option [nzLabel]="('enum.sosActivityAction.markedAsResolved') | translate"
-                [nzValue]="activityAction.MarkedAsResolved"></nz-option>
-              <nz-option [nzLabel]="('enum.sosActivityAction.markedAsFalseAlarm') | translate"
-                [nzValue]="activityAction.MarkedAsFalseAlarm"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label nzFor="note">{{ 'profile.note' | translate }}</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="note" id="note" class="w-full" required>
-          </nz-form-control>
-        </nz-form-item>
-          </div>
-        </div>
-      </section>
-    </div>
-    <div class="kasi-form-page-actions">
-      <button nz-button nzType="default" type="button" (click)="cancelActivity()">{{ 'form.cancel' | translate }}</button>
-      <button nz-button nzType="primary" type="submit" [disabled]="!formActivity.valid">{{
-      'profile.submit' | translate }}</button>
-    </div>
-  </form>
+          <div class="kasi-desc">
+            <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.expectedTime' | translate }}</span><span
+            class="kasi-desc__value">{{ sos.order.expectedTimestamp !== null ? (sos.order.expectedTimestamp | date:
+          "short") : "-" }}</span></div>
+          <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.startTime' | translate }}</span><span
+          class="kasi-desc__value">{{ sos.order.startTimestamp !== null ? (sos.order.startTimestamp | date: "short") :
+        "-" }}</span></div>
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.finishTime' | translate }}</span><span
+        class="kasi-desc__value">{{ sos.order.finishTimestamp !== null ? (sos.order.finishTimestamp | date: "short")
+      : "-" }}</span></div>
+      <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.costAfterCoupon' | translate
+      }}</span><span class="kasi-desc__value">{{ sos.order.costAfterCoupon | currency:sos.order.currency
+    }}</span></div>
+    <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'requests.estimatedCost' | translate }}</span><span
+  class="kasi-desc__value">{{ sos.order.costBest | currency:sos.order.currency }}</span></div>
+  <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+  class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.orderStatus(sos.order.status)"
+[nzText]="'enum.request.' + sos.order.status | translate"></nz-badge></span></div>
+<div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.locations' | translate }}</span><span
+class="kasi-desc__value">{{ sos.order.addresses.join(" -> ") }}</span></div>
+<div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+class="kasi-desc__value"><a [routerLink]="'/../requests/view/' + sos.order.id">{{ 'profile.view' | translate
+}}</a></span></div>
 </div>
+</div>
+</section>
+@if (sos.order.driver; as driver) {
+  <section class="kasi-form-section">
+    <div class="kasi-form-section__aside">
+      <h2 class="kasi-form-section__title">{{ ('profile.driverInfo' | translate) +
+      (sos.submittedByRider ? '' : (' ' + ('profile.sender' | translate))) }}</h2>
+      <p class="kasi-form-section__desc">{{ 'sos.section.driver.desc' | translate }}</p>
+    </div>
+    <div class="kasi-form-section__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+      class="kasi-desc__value">{{driver.firstName }} {{driver.lastName}}</span></div>
+      <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
+      class="kasi-desc__value"><a [href]="'tel:' + driver.mobileNumber">{{driver.mobileNumber | phone
+    }}</a></span></div>
+    <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
+  class="kasi-desc__value">{{ driver.registrationTimestamp | date: "short" }}</span></div>
+  <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+  class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.driver(driver.status)"
+[nzText]="'enum.driver.status.' + camelCase(driver.status) | translate"></nz-badge></span></div>
+<div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+class="kasi-desc__value"><a [routerLink]="'/../drivers/all/view/' + driver.id">{{ 'profile.view' | translate
+}}</a></span></div>
+</div>
+</div>
+</section>
+}
+@if (sos.order.rider; as rider) {
+  <section class="kasi-form-section">
+    <div class="kasi-form-section__aside">
+      <h2 class="kasi-form-section__title">{{ ('profile.riderInfo' | translate) +
+      (!sos.submittedByRider ? (' ' + ('profile.sender' | translate)) : '') }}</h2>
+      <p class="kasi-form-section__desc">{{ 'sos.section.rider.desc' | translate }}</p>
+    </div>
+    <div class="kasi-form-section__body">
+      <div class="kasi-desc">
+        <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.name' | translate }}</span><span
+      class="kasi-desc__value">{{rider.firstName }} {{rider.lastName}}</span></div>
+      <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.mobileNumber' | translate }}</span><span
+      class="kasi-desc__value"><a [href]="'tel:' + rider.mobileNumber">{{rider.mobileNumber | phone
+    }}</a></span></div>
+    <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.registeredOn' | translate }}</span><span
+    class="kasi-desc__value">{{ rider.registrationTimestamp !== null ? (rider.registrationTimestamp | date:
+  "short") : "-" }}</span></div>
+  <div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.status' | translate }}</span><span
+  class="kasi-desc__value"><nz-badge [nzStatus]="tagColor.rider(rider.status)"
+[nzText]="'enum.rider.status.' + rider.status.toLowerCase() | translate"></nz-badge></span></div>
+<div class="kasi-desc__row"><span class="kasi-desc__label">{{ 'profile.view' | translate }}</span><span
+class="kasi-desc__value"><a [routerLink]="'/../riders/view/' + rider.id">{{ 'profile.view' | translate
+}}</a></span></div>
+</div>
+</div>
+</section>
+}
+@if (sos.activities; as activities) {
+  <section class="kasi-form-section">
+    <div class="kasi-form-section__aside">
+      <h2 class="kasi-form-section__title">{{ 'sos.activities' | translate }}</h2>
+      <p class="kasi-form-section__desc">{{ 'sos.section.activities.desc' | translate }}</p>
+    </div>
+    <div class="kasi-form-section__body">
+      <nz-table #activityTable [nzShowPagination]="false"
+        [nzData]="activities" [nzTotal]="activities.length">
+        <thead>
+          <tr>
+            <th>{{ 'profile.title' | translate }}</th>
+            <th>{{ 'profile.note' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of activityTable.data; track item) {
+            <tr>
+              <td>
+                <div class="flex items-center ml-2">
+                  <div>
+                    <div class="text-sm text-neutral-700 group-hover:text-neutral-900">
+                      {{ 'enum.sosActivityAction.' + camelCase(item.action) | translate }}
+                    </div>
+                    <div class="text-sm text-neutral-400 group-hover:text-neutral-700"
+                      [nz-tooltip]="item.createdAt | date: 'short'"
+                      [routerLink]="item.operator != null ? ('/operators/view/' + item.operator.id) : null">
+                      {{ item.createdAt | timeago }} {{ 'profile.by' | translate }} {{ item.operator == null ? (sos.submittedByRider ? ('profile.rider' | translate) : ('profile.driver' | translate))
+                      : item.operator.firstName + ' ' + item.operator.lastName }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>{{item.note}}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </section>
+}
+</div>
+<form nz-form [formGroup]="formActivity" (ngSubmit)="onSubmitActivity(sos.id)">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'sos.insertActivity' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'sos.section.newActivity.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        <div class="kasi-form kasi-form--grid">
+          <nz-form-item>
+            <nz-form-label nzRequired>{{ 'profile.action' | translate }}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="action">
+                @if (false) {
+                  <nz-option [nzLabel]="('enum.sosActivityAction.submitted') | translate"
+                  [nzValue]="activityAction.Submitted"></nz-option>
+                }
+                @if (false) {
+                  <nz-option [nzLabel]="('enum.sosActivityAction.seen') | translate" [nzValue]="activityAction.Seen"
+                  ></nz-option>
+                }
+                <nz-option [nzLabel]="('enum.sosActivityAction.contactDriver') | translate"
+                [nzValue]="activityAction.ContactDriver"></nz-option>
+                <nz-option [nzLabel]="('enum.sosActivityAction.contactAuthorities') | translate"
+                [nzValue]="activityAction.ContactAuthorities"></nz-option>
+                <nz-option [nzLabel]="('enum.sosActivityAction.markedAsResolved') | translate"
+                [nzValue]="activityAction.MarkedAsResolved"></nz-option>
+                <nz-option [nzLabel]="('enum.sosActivityAction.markedAsFalseAlarm') | translate"
+                [nzValue]="activityAction.MarkedAsFalseAlarm"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="note">{{ 'profile.note' | translate }}</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="note" id="note" class="w-full" required>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="kasi-form-page-actions">
+    <button nz-button nzType="default" type="button" (click)="cancelActivity()">{{ 'form.cancel' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="!formActivity.valid">{{
+    'profile.submit' | translate }}</button>
+  </div>
+</form>
+</div>
+}

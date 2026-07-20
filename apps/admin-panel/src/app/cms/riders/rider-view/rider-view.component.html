@@ -1,19 +1,25 @@
-<nz-empty *ngIf="(query | async)?.data?.rider == null" [nzNotFoundContent]="contentTpl"
-  [nzNotFoundFooter]="footerTpl">
-  <ng-template #contentTpl>
-    <span>
-      {{'riders.notFoundMessage' | translate}}
-    </span>
-  </ng-template>
-  <ng-template #footerTpl>
-    <button nz-button nzType="primary" routerLink="/riders">{{'profile.goToList' | translate}}</button>
-  </ng-template>
-</nz-empty>
-<ng-container *ngIf="(query | async)?.data?.rider as rider">
+@if ((query | async)?.data?.rider == null) {
+  <nz-empty [nzNotFoundContent]="contentTpl"
+    [nzNotFoundFooter]="footerTpl">
+    <ng-template #contentTpl>
+      <span>
+        {{'riders.notFoundMessage' | translate}}
+      </span>
+    </ng-template>
+    <ng-template #footerTpl>
+      <button nz-button nzType="primary" routerLink="/riders">{{'profile.goToList' | translate}}</button>
+    </ng-template>
+  </nz-empty>
+}
+@if ((query | async)?.data?.rider; as rider) {
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar">
-      <img *ngIf="rider.media?.address" [src]="environment.root + rider.media?.address" />
-      <i *ngIf="!rider.media?.address" nz-icon nzType="user"></i>
+      @if (rider.media?.address) {
+        <img [src]="environment.root + rider.media?.address" />
+      }
+      @if (!rider.media?.address) {
+        <i nz-icon nzType="user"></i>
+      }
     </div>
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">{{ rider.firstName }} {{ rider.lastName }}</h1>
@@ -23,8 +29,10 @@
         <nz-badge [nzStatus]="rider.status === 'Enabled' ? 'success' : 'error'" [nzText]="rider.status"></nz-badge>
       </div>
       <div class="kasi-profile-head__tags">
-        <nz-tag *ngIf="rider.status == riderStatus.Disabled" [nzColor]="'red'">{{ 'enum.rider.status.blocked' | translate
+        @if (rider.status == riderStatus.Disabled) {
+          <nz-tag [nzColor]="'red'">{{ 'enum.rider.status.blocked' | translate
           }}</nz-tag>
+        }
       </div>
     </div>
     <div class="kasi-profile-head__actions">
@@ -37,10 +45,14 @@
       </button>
       <nz-dropdown-menu #menu4="nzDropdownMenu">
         <ul nz-menu>
-          <li nz-menu-item *ngIf="rider.status === 'Enabled'" (click)="changeStatus(riderStatus.Disabled)">{{
+          @if (rider.status === 'Enabled') {
+            <li nz-menu-item (click)="changeStatus(riderStatus.Disabled)">{{
             'enum.rider.status.blocked' | translate }}</li>
-          <li nz-menu-item *ngIf="rider.status === 'Disabled'" (click)="changeStatus(riderStatus.Enabled)">{{
+          }
+          @if (rider.status === 'Disabled') {
+            <li nz-menu-item (click)="changeStatus(riderStatus.Enabled)">{{
             'enum.rider.status.enabled' | translate }}</li>
+          }
         </ul>
       </nz-dropdown-menu>
     </div>
@@ -62,4 +74,4 @@
     </nz-tabset>
   </div>
   <router-outlet></router-outlet>
-</ng-container>
+}

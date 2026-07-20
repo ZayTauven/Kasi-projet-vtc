@@ -34,7 +34,7 @@ export class WalletResolver {
       input.amount
     }&currency=${input.currency}&orderNumber=${
       input.orderNumber
-    }&shouldPreauth=${(shouldPreauth ? 1 : 0) ?? 0}&returnUrl=${
+    }&shouldPreauth=${shouldPreauth ? 1 : 0}&returnUrl=${
       process.env.RIDER_SERVER_URL
     }/payment_result`;
     return {

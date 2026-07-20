@@ -1,36 +1,40 @@
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-<nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.driver?.orders?.nodes as orders" [nzData]="orders" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-  <thead>
-    <tr>
-      <th [nzSortFn]="true" nzColumnKey="createdOn">
-        {{ 'profile.dateTime' | translate }}
-      </th>
-      <th class="hidden lg:table-cell">
-        {{ 'profile.locations' | translate }}
-      </th>
-      <th>
-        {{ 'profile.cost' | translate }}
-      </th>
-      <th>
-        {{ 'profile.status' | translate }}
-      </th>
-      <th>{{ 'profile.actions' | translate }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of table.data">
-      <td [nz-tooltip]="data.createdOn | date:'short'">{{ data.createdOn | timeago }}</td>
-      <td class="hidden lg:table-cell">{{ data.addresses[0] }}</td>
-      <td>{{ data.costAfterCoupon | currency: data.currency }}</td>
-      <td>
-        <nz-tag [nzColor]="tagColor.orderStatus(data.status)">{{('enum.request.' + data.status) | translate }}</nz-tag>
-      </td>
-      <td>
-        <a [routerLink]="'/requests/view/' + data.id">{{ 'profile.view' | translate }}</a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+    @if ((query | async)?.data?.driver?.orders?.nodes; as orders) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" [nzData]="orders" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th [nzSortFn]="true" nzColumnKey="createdOn">
+              {{ 'profile.dateTime' | translate }}
+            </th>
+            <th class="hidden lg:table-cell">
+              {{ 'profile.locations' | translate }}
+            </th>
+            <th>
+              {{ 'profile.cost' | translate }}
+            </th>
+            <th>
+              {{ 'profile.status' | translate }}
+            </th>
+            <th>{{ 'profile.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr>
+              <td [nz-tooltip]="data.createdOn | date:'short'">{{ data.createdOn | timeago }}</td>
+              <td class="hidden lg:table-cell">{{ data.addresses[0] }}</td>
+              <td>{{ data.costAfterCoupon | currency: data.currency }}</td>
+              <td>
+                <nz-tag [nzColor]="tagColor.orderStatus(data.status)">{{('enum.request.' + data.status) | translate }}</nz-tag>
+              </td>
+              <td>
+                <a [routerLink]="'/requests/view/' + data.id">{{ 'profile.view' | translate }}</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

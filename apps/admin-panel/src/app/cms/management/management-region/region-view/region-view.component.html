@@ -24,8 +24,10 @@
             <nz-form-label nzRequired nzFor="currency">{{ 'profile.currency' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="currency" id="currency" nzShowSearch>
-                <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value">
-                </nz-option>
+                @for (currency of currencies; track currency) {
+                  <nz-option [nzLabel]="currency.label" [nzValue]="currency.value">
+                  </nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -66,7 +68,9 @@
   </div>
   <div class="kasi-form-page-actions">
     <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-    <button *ngIf="form.value.id != null" nz-button type="button" (click)="clearMap()" [disabled]="polygons.length == 0">{{ 'profile.clearMap' | translate }}</button>
+    @if (form.value.id != null) {
+      <button nz-button type="button" (click)="clearMap()" [disabled]="polygons.length == 0">{{ 'profile.clearMap' | translate }}</button>
+    }
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid || polygons.length == 0">{{ 'profile.saveChanges' | translate }}</button>
   </div>
 </form>

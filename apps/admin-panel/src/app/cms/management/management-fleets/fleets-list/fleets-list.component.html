@@ -12,33 +12,37 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.fleets as fleets"
-      [nzData]="fleets.nodes" [nzTotal]="fleets.totalCount"
-      (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
-            {{ 'profile.name' | translate }}
-            <nz-filter-trigger [nzActive]="(route.params | async)?.filter?.includes('lastName') === true"
-              [nzDropdownMenu]="filtername">
-              <i nz-icon nzType="search"></i>
-            </nz-filter-trigger>
-          </th>
-          <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
-            {{ 'profile.mobileNumber' | translate }}
-            <nz-filter-trigger [nzActive]="(route.params | async)?.filter?.includes('mobileNumber') === true">
-              <i nz-icon nzType="search"></i>
-            </nz-filter-trigger>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>{{ data.name }}</td>
-          <td>{{ data.phoneNumber | phone }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.fleets; as fleets) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="fleets.nodes" [nzTotal]="fleets.totalCount"
+        (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
+              {{ 'profile.name' | translate }}
+              <nz-filter-trigger [nzActive]="(route.params | async)?.filter?.includes('lastName') === true"
+                [nzDropdownMenu]="filtername">
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+            </th>
+            <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
+              {{ 'profile.mobileNumber' | translate }}
+              <nz-filter-trigger [nzActive]="(route.params | async)?.filter?.includes('mobileNumber') === true">
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>{{ data.name }}</td>
+              <td>{{ data.phoneNumber | phone }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>
 

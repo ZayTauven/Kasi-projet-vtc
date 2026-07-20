@@ -70,7 +70,9 @@
             <nz-form-label nzRequired nzFor="creditCurrency">{{ 'profile.creditCurrency' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="creditCurrency" id="creditCurrency" nzShowSearch>
-                <nz-option *ngFor="let currency of currencies" [nzLabel]="currency.label" [nzValue]="currency.value"></nz-option>
+                @for (currency of currencies; track currency) {
+                  <nz-option [nzLabel]="currency.label" [nzValue]="currency.value"></nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>

@@ -7,7 +7,7 @@ import { ID, ObjectType } from '@nestjs/graphql';
 import { AnnouncementUserType } from '@kasi/database/enums/anouncement-user-type.enum';
 
 @ObjectType('Announcement')
-@Authorize({
+@Authorize<AnnouncementDTO>({
   authorize: () => ({
     userType: { in: [[AnnouncementUserType.Rider]] },
     startAt: { lt: new Date() },

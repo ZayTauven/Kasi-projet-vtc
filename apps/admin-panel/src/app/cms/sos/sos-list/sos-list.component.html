@@ -9,23 +9,27 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false" *ngIf="(query | async)?.data?.distressSignals as sos"
-      [nzData]="sos.nodes" [nzTotal]="sos.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.dateTime' | translate }}</th>
-          <th>{{ 'profile.status' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>{{ data.createdAt | timeago }}</td>
-          <td>
-            <nz-tag [nzColor]="tagColor.sosStatus(data.status)">{{ ('enum.sosStatus.' + camelCase(data.status)) |
-              translate }}</nz-tag>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.distressSignals; as sos) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="sos.nodes" [nzTotal]="sos.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.dateTime' | translate }}</th>
+            <th>{{ 'profile.status' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>{{ data.createdAt | timeago }}</td>
+              <td>
+                <nz-tag [nzColor]="tagColor.sosStatus(data.status)">{{ ('enum.sosStatus.' + camelCase(data.status)) |
+                translate }}</nz-tag>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>

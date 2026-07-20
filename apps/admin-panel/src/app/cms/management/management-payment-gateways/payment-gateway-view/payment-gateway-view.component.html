@@ -24,7 +24,9 @@
             <nz-form-label nzRequired nzFor="type">{{ 'profile.type' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="type" id="type">
-                <nz-option *ngFor="let type of gatewayTypes" [nzValue]="type" [nzLabel]="type"></nz-option>
+                @for (type of gatewayTypes; track type) {
+                  <nz-option [nzValue]="type" [nzLabel]="type"></nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -43,33 +45,43 @@
         <p class="kasi-form-section__desc">{{ 'paymentGateway.section.apiKeys.desc' | translate }}</p>
       </div>
       <div class="kasi-form-section__body">
-        <div class="kasi-form kasi-form--grid"
-          *ngIf="getPaymentGatewayAPIRequirements(form.value.type) as apiKeyObject">
-          <nz-form-item *ngIf="apiKeyObject.publicKey != null">
-            <nz-form-label nzRequired nzFor="publicKey">{{apiKeyObject.publicKey}}</nz-form-label>
-            <nz-form-control>
-              <input required nz-input formControlName="publicKey" id="publicKey">
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="apiKeyObject.privateKey != null">
-            <nz-form-label nzRequired nzFor="privateKey">{{apiKeyObject.privateKey}}</nz-form-label>
-            <nz-form-control>
-              <input nz-input required formControlName="privateKey" id="privateKey">
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="apiKeyObject.merchantId != null">
-            <nz-form-label nzRequired nzFor="merchantId">{{apiKeyObject.merchantId}}</nz-form-label>
-            <nz-form-control>
-              <input nz-input required formControlName="merchantId" id="merchantId">
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="apiKeyObject.saltKey != null">
-            <nz-form-label nzRequired nzFor="saltKey">{{apiKeyObject.saltKey}}</nz-form-label>
-            <nz-form-control>
-              <input nz-input required formControlName="saltKey" id="saltKey">
-            </nz-form-control>
-          </nz-form-item>
-        </div>
+        @if (getPaymentGatewayAPIRequirements(form.value.type); as apiKeyObject) {
+          <div class="kasi-form kasi-form--grid"
+            >
+            @if (apiKeyObject.publicKey != null) {
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="publicKey">{{apiKeyObject.publicKey}}</nz-form-label>
+                <nz-form-control>
+                  <input required nz-input formControlName="publicKey" id="publicKey">
+                </nz-form-control>
+              </nz-form-item>
+            }
+            @if (apiKeyObject.privateKey != null) {
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="privateKey">{{apiKeyObject.privateKey}}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input required formControlName="privateKey" id="privateKey">
+                </nz-form-control>
+              </nz-form-item>
+            }
+            @if (apiKeyObject.merchantId != null) {
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="merchantId">{{apiKeyObject.merchantId}}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input required formControlName="merchantId" id="merchantId">
+                </nz-form-control>
+              </nz-form-item>
+            }
+            @if (apiKeyObject.saltKey != null) {
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="saltKey">{{apiKeyObject.saltKey}}</nz-form-label>
+                <nz-form-control>
+                  <input nz-input required formControlName="saltKey" id="saltKey">
+                </nz-form-control>
+              </nz-form-item>
+            }
+          </div>
+        }
       </div>
     </section>
     <section class="kasi-form-section">
@@ -85,11 +97,13 @@
               <nz-upload [nzAction]="root + 'upload'" [nzHeaders]="{Authorization: 'Bearer ' + jwt}"
                 (nzChange)="handleUploadChange($event)" [nzBeforeUpload]="beforeUpload" nzListType="picture-card"
                 [nzShowUploadList]="false">
-                <ng-container *ngIf="!avatarUrl">
+                @if (!avatarUrl) {
                   <i class="upload-icon" nz-icon [nzType]="loadingUpload ? 'loading' : 'plus'"></i>
                   <div class="ant-upload-text">{{ 'profile.upload' | translate }}</div>
-                </ng-container>
-                <img *ngIf="avatarUrl" [src]="root + avatarUrl" style="width: 100%" />
+                }
+                @if (avatarUrl) {
+                  <img [src]="root + avatarUrl" style="width: 100%" />
+                }
               </nz-upload>
             </nz-form-control>
           </nz-form-item>

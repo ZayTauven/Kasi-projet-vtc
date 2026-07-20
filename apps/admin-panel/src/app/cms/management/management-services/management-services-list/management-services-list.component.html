@@ -6,53 +6,65 @@
   </div>
 </div>
 
-<div class="kasi-card" *ngIf="(query | async)?.data?.serviceCategories as categories">
-  <div class="kasi-card__body">
-    <nz-tabset [nzTabBarExtraContent]="extraTemplate" [(nzSelectedIndex)]="selectedCategory" nzType="card">
-      <nz-tab *ngFor="let cat of categories" [nzTitle]="cat.name">
-        <nz-table #ajaxTable [nzFrontPagination]="false" [nzData]="cat.services">
-          <thead>
-            <tr>
-              <th>{{ 'profile.name' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let data of ajaxTable.data">
-              <td>
-                <div class="flex flex-row group cursor-pointer" [routerLink]="'view/' + data.id">
-                  <img [src]="serverUrl + data.media.address" width="75" height="75">
-                  <div class="flex items-center ml-2">
-                    <div>
-                      <div class="table-first-line">
-                        {{ data.name }}
+@if ((query | async)?.data?.serviceCategories; as categories) {
+  <div class="kasi-card">
+    <div class="kasi-card__body">
+      <nz-tabset [nzTabBarExtraContent]="extraTemplate" [(nzSelectedIndex)]="selectedCategory" nzType="card">
+        @for (cat of categories; track cat) {
+          <nz-tab [nzTitle]="cat.name">
+            <nz-table #ajaxTable [nzFrontPagination]="false" [nzData]="cat.services">
+              <thead>
+                <tr>
+                  <th>{{ 'profile.name' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (data of ajaxTable.data; track data) {
+                  <tr>
+                    <td>
+                      <div class="flex flex-row group cursor-pointer" [routerLink]="'view/' + data.id">
+                        <img [src]="serverUrl + data.media.address" width="75" height="75">
+                        <div class="flex items-center ml-2">
+                          <div>
+                            <div class="table-first-line">
+                              {{ data.name }}
+                            </div>
+                            <div class="table-second-line">
+                              {{ data.description }}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div class="table-second-line">
-                        {{ data.description }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </nz-tab>
-    </nz-tabset>
-    <ng-template #extraTemplate>
-      <button nz-button style="margin-left: 8px;" *ngIf="categories.length > 0"
-        [routerLink]="'category/view/' + categories[selectedCategory ?? 0].id">{{ 'services.editCategory' | translate
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </nz-table>
+          </nz-tab>
+        }
+      </nz-tabset>
+      <ng-template #extraTemplate>
+        @if (categories.length > 0) {
+          <button nz-button style="margin-left: 8px;"
+            [routerLink]="'category/view/' + categories[selectedCategory ?? 0].id">{{ 'services.editCategory' | translate
+          }}</button>
+        }
+        <button nz-button style="margin-left: 8px;" routerLink="category/new/">{{ 'services.newCategory' | translate
         }}</button>
-      <button nz-button style="margin-left: 8px;" routerLink="category/new/">{{ 'services.newCategory' | translate
-        }}</button>
-      <button nz-button style="margin-left: 8px;" *ngIf="categories.length > 0" [routerLink]="'new'">{{
-        'services.newService' | translate }}</button>
-    </ng-template>
-    <div *ngIf="categories.length < 1">
-      <nz-result nzStatus="info" nzTitle="{{ 'service.createFirstNotice' | translate }}">
-        <div nz-result-extra>
-          <button nz-button nzType="primary" routerLink="category/new/">{{ 'services.newCategory' | translate }}</button>
+        @if (categories.length > 0) {
+          <button nz-button style="margin-left: 8px;" [routerLink]="'new'">{{
+          'services.newService' | translate }}</button>
+        }
+      </ng-template>
+      @if (categories.length < 1) {
+        <div>
+          <nz-result nzStatus="info" nzTitle="{{ 'service.createFirstNotice' | translate }}">
+            <div nz-result-extra>
+              <button nz-button nzType="primary" routerLink="category/new/">{{ 'services.newCategory' | translate }}</button>
+            </div>
+          </nz-result>
         </div>
-      </nz-result>
+      }
     </div>
   </div>
-</div>
+}

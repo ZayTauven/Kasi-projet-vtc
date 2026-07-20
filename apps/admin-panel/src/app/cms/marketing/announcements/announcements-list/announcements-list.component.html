@@ -12,30 +12,34 @@
 <!-- Carte tableau -->
 <div class="kasi-card">
   <div class="kasi-card__body kasi-card__body--flush">
-    <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
-      *ngIf="(query | async)?.data?.announcements as announcements" [nzData]="announcements.nodes"
-      [nzTotal]="announcements.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th>{{ 'profile.title' | translate }}</th>
-          <th>{{ 'profile.dateTime' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of table.data" [routerLink]="'view/' + data.id" class="group cursor-pointer">
-          <td>
-            <div>
-              <div class="table-first-line">
-                {{ data.title }}
-              </div>
-              <div class="table-second-line">
-                {{ data.description }}
-              </div>
-            </div>
-          </td>
-          <td>{{ data.startAt | date: 'mediumDate'}} - {{data.expireAt | date: 'mediumDate'}}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    @if ((query | async)?.data?.announcements; as announcements) {
+      <nz-table #table nzShowSizeChanger [nzFrontPagination]="false"
+        [nzData]="announcements.nodes"
+        [nzTotal]="announcements.totalCount" (nzQueryParams)="tableService.onTableQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th>{{ 'profile.title' | translate }}</th>
+            <th>{{ 'profile.dateTime' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of table.data; track data) {
+            <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
+              <td>
+                <div>
+                  <div class="table-first-line">
+                    {{ data.title }}
+                  </div>
+                  <div class="table-second-line">
+                    {{ data.description }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ data.startAt | date: 'mediumDate'}} - {{data.expireAt | date: 'mediumDate'}}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
   </div>
 </div>
