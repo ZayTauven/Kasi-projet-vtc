@@ -1,14 +1,15 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { UsersListQuery } from '@kasi/admin-panel/generated/graphql';
-import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { map, Observable } from 'rxjs';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { UsersListQuery } from "@kasi/admin-panel/generated/graphql";
+import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { map, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html'
+  selector: "app-users-list",
+  templateUrl: "./users-list.component.html",
+  standalone: false,
 })
 export class UsersListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<UsersListQuery>>;
@@ -17,10 +18,10 @@ export class UsersListComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public tagColor: TagColorService,
-    public tableService: TableService) {
-  }
+    public tableService: TableService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.operators));
+    this.query = this.route.data.pipe(map((data) => data.operators));
   }
 }

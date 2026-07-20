@@ -1,29 +1,24 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { Map as MapboxMap, LngLatBounds } from 'mapbox-gl';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { TranslateService } from '@ngx-translate/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormControl } from "@angular/forms";
+import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { TranslateService } from "@ngx-translate/core";
 import {
   AssignDriverToOrderGQL,
   AvailableDriversForOrderQuery,
   DriverSearchGQL,
   Point,
   ViewOrderQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { camelCase } from 'camel-case';
+} from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { camelCase } from "camel-case";
 import {
   AutocompleteDataSourceItem,
   NzAutocompleteOptionComponent,
-} from 'ng-zorro-antd/auto-complete';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
+} from "ng-zorro-antd/auto-complete";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzModalService } from "ng-zorro-antd/modal";
 import {
   combineLatestWith,
   debounceTime,
@@ -33,11 +28,12 @@ import {
   Subscription,
   switchMap,
   tap,
-} from 'rxjs';
+} from "rxjs";
 
 @Component({
-  selector: 'app-request-view-assign',
-  templateUrl: './request-view-assign.component.html',
+  selector: "app-request-view-assign",
+  templateUrl: "./request-view-assign.component.html",
+  standalone: false,
 })
 export class RequestViewAssignComponent
   implements OnInit, AfterViewInit, OnDestroy
@@ -50,7 +46,7 @@ export class RequestViewAssignComponent
   >;
 
   subscription?: Subscription;
-  selectedDriver?: AvailableDriversForOrderQuery['getDriversLocationWithData'][number];
+  selectedDriver?: AvailableDriversForOrderQuery["getDriversLocationWithData"][number];
   filteredDrivers: AutocompleteDataSourceItem[] = [];
 
   // Mapbox state
@@ -113,7 +109,7 @@ export class RequestViewAssignComponent
         }),
         switchMap((value) =>
           this.driversSearchQuery.fetch({
-            filter: value.value == null ? value : '',
+            filter: value.value == null ? value : "",
           }),
         ),
       )
@@ -124,7 +120,7 @@ export class RequestViewAssignComponent
             label: `${d.firstName} ${d.lastName} (${d.mobileNumber})`,
           }));
         } else {
-          this.msg.error(data.error?.message ?? 'unknown error');
+          this.msg.error(data.error?.message ?? "unknown error");
         }
       });
   }
@@ -142,7 +138,7 @@ export class RequestViewAssignComponent
   }
 
   openPopup(
-    driver: AvailableDriversForOrderQuery['getDriversLocationWithData'][number],
+    driver: AvailableDriversForOrderQuery["getDriversLocationWithData"][number],
   ): void {
     this.selectedDriver = driver;
     // Mapbox [lng, lat] order
@@ -177,19 +173,21 @@ export class RequestViewAssignComponent
         }),
       );
       this.msg.success(
-        this.translate.instant('message.driverAssignedSuccessfully'),
+        this.translate.instant("message.driverAssignedSuccessfully"),
       );
-      this.router.navigate(['../info'], { relativeTo: this.route });
+      this.router.navigate(["../info"], { relativeTo: this.route });
     } catch (error: any) {
       this.msg.error(error.message);
     }
   }
 
-  async onItemSelected(item: NzAutocompleteOptionComponent | null): Promise<void> {
+  async onItemSelected(
+    item: NzAutocompleteOptionComponent | null,
+  ): Promise<void> {
     if (item == null) return;
     const driverId = item?.nzValue.value;
     this.modalService.confirm({
-      nzTitle: 'Confirmation',
+      nzTitle: "Confirmation",
       nzContent: `Are you sure you want to assign this trip to ${item.nzLabel}?`,
       nzOnOk: () => {
         this.assignToDriver(driverId);

@@ -1,19 +1,20 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+﻿import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import {
   CreateCouponGQL,
   DeleteCouponGQL,
   UpdateCouponGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-coupon-view',
-  templateUrl: './coupon-view.component.html',
-  styles: ['nz-input-number{ @apply w-full }'],
+  selector: "app-coupon-view",
+  templateUrl: "./coupon-view.component.html",
+  styles: ["nz-input-number{ @apply w-full }"],
+  standalone: false,
 })
 export class CouponViewComponent implements OnInit {
   form = this.fb.group({
@@ -40,7 +41,7 @@ export class CouponViewComponent implements OnInit {
     private routerHelper: RouterHelperService,
     private createGQL: CreateCouponGQL,
     private updateGQL: UpdateCouponGQL,
-    private deleteGQL: DeleteCouponGQL
+    private deleteGQL: DeleteCouponGQL,
   ) {}
 
   ngOnInit(): void {

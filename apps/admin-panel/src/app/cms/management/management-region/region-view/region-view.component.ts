@@ -1,20 +1,21 @@
-import { Component, OnDestroy } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateRegionGQL,
   RegionViewQuery,
   UpdateRegionGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Subscription } from 'rxjs';
-import { CURRENCY_LIST } from '../../../../currencies';
-import { Map as MapboxMap, LngLatBounds } from 'mapbox-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Subscription } from "rxjs";
+import { CURRENCY_LIST } from "../../../../currencies";
+import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 @Component({
-  selector: 'app-region-view',
-  templateUrl: './region-view.component.html',
+  selector: "app-region-view",
+  templateUrl: "./region-view.component.html",
+  standalone: false,
 })
 export class RegionViewComponent implements OnDestroy {
   form = this.fb.group({
@@ -57,20 +58,24 @@ export class RegionViewComponent implements OnDestroy {
 
     // Load existing region data from the route resolver
     this.routeSub = this.route.data.subscribe((data) => {
-      if (data['region'] != null) {
-        const val: RegionViewQuery = data['region'].data;
+      if (data["region"] != null) {
+        const val: RegionViewQuery = data["region"].data;
         const region = val.region;
         if (region != null) {
           this.form.patchValue(region);
           if (region.location != null) {
             const bounds = new LngLatBounds();
-            for (const poly of region.location as Array<Array<{ lat: number; lng: number }>>) {
+            for (const poly of region.location as Array<
+              Array<{ lat: number; lng: number }>
+            >) {
               // Convert {lat,lng} array to GeoJSON [lng,lat] for MapboxDraw
-              const geoCoords = poly.map((p) => [p.lng, p.lat] as [number, number]);
+              const geoCoords = poly.map(
+                (p) => [p.lng, p.lat] as [number, number],
+              );
               this.draw!.add({
-                type: 'Feature',
+                type: "Feature",
                 properties: {},
-                geometry: { type: 'Polygon', coordinates: [geoCoords] },
+                geometry: { type: "Polygon", coordinates: [geoCoords] },
               } as any);
               this.polygons.push(poly);
               for (const p of poly) {
@@ -85,7 +90,7 @@ export class RegionViewComponent implements OnDestroy {
     });
 
     // New polygon drawn by the user
-    map.on('draw.create', (e: any) => {
+    map.on("draw.create", (e: any) => {
       for (const feature of e.features) {
         const geoCoords: [number, number][] = feature.geometry.coordinates[0];
         // Convert Mapbox [lng,lat] → backend {lat,lng}
@@ -96,12 +101,12 @@ export class RegionViewComponent implements OnDestroy {
     });
 
     // Polygon vertex edited
-    map.on('draw.update', () => {
+    map.on("draw.update", () => {
       this.rebuildPolygonsFromDraw();
     });
 
     // Polygon deleted via trash button
-    map.on('draw.delete', () => {
+    map.on("draw.delete", () => {
       this.rebuildPolygonsFromDraw();
     });
   }
@@ -122,14 +127,21 @@ export class RegionViewComponent implements OnDestroy {
       const { id, location: _loc, ...update } = this.form.value;
       if (id == null) {
         await firstValueFrom(
-          this.createGQL.mutate({ input: { ...update, location: this.polygons } }),
+          this.createGQL.mutate({
+            input: { ...update, location: this.polygons },
+          }),
         );
       } else {
         await firstValueFrom(
-          this.updateGQL.mutate({ id, update: { ...update, location: this.polygons } }),
+          this.updateGQL.mutate({
+            id,
+            update: { ...update, location: this.polygons },
+          }),
         );
       }
-      this.router.navigate(['management/regions'], { relativeTo: this.route.root });
+      this.router.navigate(["management/regions"], {
+        relativeTo: this.route.root,
+      });
     } catch (error: any) {
       this.msg.error(error.message);
     }
@@ -142,7 +154,9 @@ export class RegionViewComponent implements OnDestroy {
   }
 
   cancel(): void {
-    this.router.navigate(['management/regions'], { relativeTo: this.route.root });
+    this.router.navigate(["management/regions"], {
+      relativeTo: this.route.root,
+    });
   }
 
   ngOnDestroy(): void {

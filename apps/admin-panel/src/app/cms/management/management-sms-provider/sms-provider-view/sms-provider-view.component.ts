@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateSmsProviderGQL,
   SendTestSmsGQL,
   SetDefaultSmsProviderGQL,
   SmsProviderViewQuery,
   UpdateSmsProviderGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-sms-provider-view',
-  templateUrl: './sms-provider-view.component.html',
+  selector: "app-sms-provider-view",
+  templateUrl: "./sms-provider-view.component.html",
+  standalone: false,
 })
 export class SmsProviderViewComponent implements OnInit {
   form = this.fb.group({
@@ -29,7 +30,7 @@ export class SmsProviderViewComponent implements OnInit {
   });
   isDefault = false;
   showTestSms = false;
-  testNumber = '';
+  testNumber = "";
   sendingTest = false;
 
   constructor(
@@ -41,7 +42,7 @@ export class SmsProviderViewComponent implements OnInit {
     private setDefaultGQL: SetDefaultSmsProviderGQL,
     private sendTestSmsGQL: SendTestSmsGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   get isEdit(): boolean {
@@ -64,7 +65,7 @@ export class SmsProviderViewComponent implements OnInit {
     try {
       const { id, apiSecret, ...update } = this.form.value;
       // apiSecret is write-only: only send it when the admin typed a new value.
-      if (apiSecret != null && apiSecret !== '') {
+      if (apiSecret != null && apiSecret !== "") {
         update.apiSecret = apiSecret;
       }
       if (id == null) {
@@ -72,7 +73,7 @@ export class SmsProviderViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/sms-providers'], {
+      this.router.navigate(["management/sms-providers"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -81,7 +82,7 @@ export class SmsProviderViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['management/sms-providers'], {
+    this.router.navigate(["management/sms-providers"], {
       relativeTo: this.route.root,
     });
   }
@@ -94,14 +95,14 @@ export class SmsProviderViewComponent implements OnInit {
     try {
       await firstValueFrom(this.setDefaultGQL.mutate({ id }));
       this.isDefault = true;
-      this.msg.success(this.translate.instant('smsProvider.defaultSet'));
+      this.msg.success(this.translate.instant("smsProvider.defaultSet"));
     } catch (error: any) {
       this.msg.error(error.message);
     }
   }
 
   async onSendTestSms() {
-    if (this.testNumber === '') {
+    if (this.testNumber === "") {
       return;
     }
     this.sendingTest = true;
@@ -110,9 +111,9 @@ export class SmsProviderViewComponent implements OnInit {
         this.sendTestSmsGQL.mutate({
           number: this.testNumber,
           providerId: this.form.value.id,
-        })
+        }),
       );
-      this.msg.success(this.translate.instant('smsProvider.testSent'));
+      this.msg.success(this.translate.instant("smsProvider.testSent"));
     } catch (error: any) {
       this.msg.error(error.message);
     } finally {

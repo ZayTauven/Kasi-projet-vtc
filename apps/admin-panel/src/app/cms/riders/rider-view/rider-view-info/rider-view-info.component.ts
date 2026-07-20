@@ -1,14 +1,15 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UpdateRiderGQL } from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Subscription } from 'rxjs';
+﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { UpdateRiderGQL } from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-rider-view-info',
-  templateUrl: './rider-view-info.component.html'
+  selector: "app-rider-view-info",
+  templateUrl: "./rider-view-info.component.html",
+  standalone: false,
 })
 export class RiderViewInfoComponent implements OnInit, OnDestroy {
   form = this.fb.group({
@@ -19,7 +20,7 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
     gender: [null],
     email: [null],
     isResident: [null],
-    idNumber: [null]
+    idNumber: [null],
   });
   valObserver?: Subscription;
   private originalValue?: any;
@@ -30,14 +31,15 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
     private fb: UntypedFormBuilder,
     private updateRiderGQL: UpdateRiderGQL,
     private routerHelper: RouterHelperService,
-    private msg: NzMessageService) { }
+    private msg: NzMessageService,
+  ) {}
 
   ngOnDestroy(): void {
     this.valObserver?.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.valObserver = this.route.parent?.data.subscribe(data => {
+    this.valObserver = this.route.parent?.data.subscribe((data) => {
       this.form.patchValue(data.rider.data.rider);
       this.originalValue = this.form.getRawValue();
     });
@@ -50,12 +52,14 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
-    const {id, mobileNumber,...update } = this.form.value;
+    const { id, mobileNumber, ...update } = this.form.value;
     try {
-      const result = await firstValueFrom(this.updateRiderGQL.mutate({ id, update }));
-      this.msg.success('Updated!');
+      const result = await firstValueFrom(
+        this.updateRiderGQL.mutate({ id, update }),
+      );
+      this.msg.success("Updated!");
       this.routerHelper.refresh(this.route);
-    } catch(exception) {
+    } catch (exception) {
       console.log(exception);
     }
   }

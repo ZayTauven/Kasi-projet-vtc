@@ -1,6 +1,6 @@
-﻿import { AfterViewInit, Component } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+﻿import { AfterViewInit, Component } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateOrderCancelReasonGQL,
   CreateReviewParameterGQL,
@@ -8,13 +8,14 @@ import {
   ReviewParameterViewQuery,
   UpdateOrderCancelReasonGQL,
   UpdateReviewParameterGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-review-parameter-view',
-  templateUrl: './order-cancel-reason-view.component.html',
+  selector: "app-review-parameter-view",
+  templateUrl: "./order-cancel-reason-view.component.html",
+  standalone: false,
 })
 export class OrderCancelReasonViewComponent implements AfterViewInit {
   form = this.fb.group({
@@ -30,7 +31,7 @@ export class OrderCancelReasonViewComponent implements AfterViewInit {
     private fb: UntypedFormBuilder,
     private createGQL: CreateOrderCancelReasonGQL,
     private updateGQL: UpdateOrderCancelReasonGQL,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -57,7 +58,7 @@ export class OrderCancelReasonViewComponent implements AfterViewInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/order-cancel-reasons'], {
+      this.router.navigate(["management/order-cancel-reasons"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -66,7 +67,7 @@ export class OrderCancelReasonViewComponent implements AfterViewInit {
   }
 
   cancel() {
-    this.router.navigate(['management/order-cancel-reasons'], {
+    this.router.navigate(["management/order-cancel-reasons"], {
       relativeTo: this.route.root,
     });
   }

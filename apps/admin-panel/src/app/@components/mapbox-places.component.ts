@@ -41,6 +41,7 @@ interface MapboxFeature {
       >
     </nz-autocomplete>
   `,
+  standalone: false,
 })
 export class MapboxPlacesComponent implements OnDestroy {
   /** Kept for API compatibility with the former GooglePlacesComponent — not used by Mapbox REST. */

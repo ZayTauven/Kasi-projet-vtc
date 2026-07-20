@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreatePayoutMethodGQL,
   PayoutMethodViewQuery,
   UpdatePayoutMethodGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-payout-method-view',
-  templateUrl: './payout-method-view.component.html',
+  selector: "app-payout-method-view",
+  templateUrl: "./payout-method-view.component.html",
+  standalone: false,
 })
 export class PayoutMethodViewComponent implements OnInit {
   form = this.fb.group({
@@ -30,7 +31,7 @@ export class PayoutMethodViewComponent implements OnInit {
     private fb: UntypedFormBuilder,
     private createGQL: CreatePayoutMethodGQL,
     private updateGQL: UpdatePayoutMethodGQL,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +46,7 @@ export class PayoutMethodViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['payouts/methods'], { relativeTo: this.route.root });
+    this.router.navigate(["payouts/methods"], { relativeTo: this.route.root });
   }
 
   async onSubmit() {
@@ -56,7 +57,9 @@ export class PayoutMethodViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['payouts/methods'], { relativeTo: this.route.root });
+      this.router.navigate(["payouts/methods"], {
+        relativeTo: this.route.root,
+      });
     } catch (error: any) {
       this.msg.error(error.message);
     }

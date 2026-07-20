@@ -1,13 +1,18 @@
-﻿import { AfterViewInit, Component } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CreateReviewParameterGQL, ReviewParameterViewQuery, UpdateReviewParameterGQL } from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+﻿import { AfterViewInit, Component } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import {
+  CreateReviewParameterGQL,
+  ReviewParameterViewQuery,
+  UpdateReviewParameterGQL,
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-review-parameter-view',
-  templateUrl: './review-parameter-view.component.html'
+  selector: "app-review-parameter-view",
+  templateUrl: "./review-parameter-view.component.html",
+  standalone: false,
 })
 export class ReviewParameterViewComponent implements AfterViewInit {
   form = this.fb.group({
@@ -22,14 +27,15 @@ export class ReviewParameterViewComponent implements AfterViewInit {
     private fb: UntypedFormBuilder,
     private createGQL: CreateReviewParameterGQL,
     private updateGQL: UpdateReviewParameterGQL,
-    private msg: NzMessageService) { }
+    private msg: NzMessageService,
+  ) {}
 
   ngAfterViewInit(): void {
     this.initializeDrawingManager();
   }
 
   initializeDrawingManager() {
-    this.route.data.subscribe(data => {
+    this.route.data.subscribe((data) => {
       if (data.reviewParameter != null) {
         const val: ReviewParameterViewQuery = data.reviewParameter.data;
         const reviewParameter = val.feedbackParameter;
@@ -48,14 +54,17 @@ export class ReviewParameterViewComponent implements AfterViewInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/review-parameters'], { relativeTo: this.route.root });
-    } catch(error: any) {
+      this.router.navigate(["management/review-parameters"], {
+        relativeTo: this.route.root,
+      });
+    } catch (error: any) {
       this.msg.error(error.message);
     }
-
   }
 
   cancel() {
-    this.router.navigate(['management/review-parameters'], { relativeTo: this.route.root });
+    this.router.navigate(["management/review-parameters"], {
+      relativeTo: this.route.root,
+    });
   }
 }

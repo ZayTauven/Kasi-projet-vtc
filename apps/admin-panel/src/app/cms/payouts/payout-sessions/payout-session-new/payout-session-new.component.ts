@@ -1,29 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreatePayoutSessionGQL,
   PayoutMethodListGQL,
   PayoutMethodListQuery,
   PayoutSessionPreviewGQL,
   PayoutSessionPreviewQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, map, Observable } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, map, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-payout-session-new',
-  templateUrl: './payout-session-new.component.html',
+  selector: "app-payout-session-new",
+  templateUrl: "./payout-session-new.component.html",
+  standalone: false,
 })
 export class PayoutSessionNewComponent implements OnInit {
   form = this.fb.group({
-    currency: ['XOF', [Validators.required, Validators.maxLength(3)]],
+    currency: ["XOF", [Validators.required, Validators.maxLength(3)]],
     minimumAmount: [0],
     description: [null],
     methodIds: [[]],
   });
-  methods?: Observable<PayoutMethodListQuery['payoutMethods']['nodes']>;
-  preview?: PayoutSessionPreviewQuery['payoutSessionPreview'];
+  methods?: Observable<PayoutMethodListQuery["payoutMethods"]["nodes"]>;
+  preview?: PayoutSessionPreviewQuery["payoutSessionPreview"];
   loading = false;
 
   constructor(
@@ -33,7 +34,7 @@ export class PayoutSessionNewComponent implements OnInit {
     private methodsGQL: PayoutMethodListGQL,
     private previewGQL: PayoutSessionPreviewGQL,
     private createGQL: CreatePayoutSessionGQL,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +54,7 @@ export class PayoutSessionNewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['payouts/sessions'], { relativeTo: this.route.root });
+    this.router.navigate(["payouts/sessions"], { relativeTo: this.route.root });
   }
 
   async onPreview() {
@@ -61,7 +62,7 @@ export class PayoutSessionNewComponent implements OnInit {
     this.loading = true;
     try {
       const result = await firstValueFrom(
-        this.previewGQL.fetch({ input: this.input() })
+        this.previewGQL.fetch({ input: this.input() }),
       );
       this.preview = result.data.payoutSessionPreview;
     } catch (error: any) {
@@ -76,17 +77,17 @@ export class PayoutSessionNewComponent implements OnInit {
     this.loading = true;
     try {
       const result = await firstValueFrom(
-        this.createGQL.mutate({ input: this.input() })
+        this.createGQL.mutate({ input: this.input() }),
       );
       this.router.navigate(
-        ['payouts/sessions/view/' + result.data?.createPayoutSession?.id],
-        { relativeTo: this.route.root }
+        ["payouts/sessions/view/" + result.data?.createPayoutSession?.id],
+        { relativeTo: this.route.root },
       );
     } catch (error: any) {
       this.msg.error(
-        error.message === 'NO_ELIGIBLE_DRIVER'
-          ? 'payouts.noEligible'
-          : error.message
+        error.message === "NO_ELIGIBLE_DRIVER"
+          ? "payouts.noEligible"
+          : error.message,
       );
     } finally {
       this.loading = false;

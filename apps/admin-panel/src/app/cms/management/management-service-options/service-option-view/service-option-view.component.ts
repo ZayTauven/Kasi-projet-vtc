@@ -1,6 +1,6 @@
-﻿import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+﻿import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateReviewParameterGQL,
   CreateServiceOptionGQL,
@@ -10,13 +10,14 @@ import {
   ServiceOptionViewQuery,
   UpdateReviewParameterGQL,
   UpdateServiceOptionGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-service-option-view',
-  templateUrl: './service-option-view.component.html',
+  selector: "app-service-option-view",
+  templateUrl: "./service-option-view.component.html",
+  standalone: false,
 })
 export class ServiceOptionViewComponent implements OnInit, OnDestroy {
   form = this.fb.group({
@@ -37,7 +38,7 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
     private fb: UntypedFormBuilder,
     private createGQL: CreateServiceOptionGQL,
     private updateGQL: UpdateServiceOptionGQL,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -69,7 +70,7 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
               type,
               additionalFee: parseFloat(additionalFee),
             },
-          })
+          }),
         );
       } else {
         await firstValueFrom(
@@ -81,10 +82,10 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
               type,
               additionalFee: parseFloat(additionalFee),
             },
-          })
+          }),
         );
       }
-      this.router.navigate(['management/service-options'], {
+      this.router.navigate(["management/service-options"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -93,7 +94,7 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.router.navigate(['management/service-options'], {
+    this.router.navigate(["management/service-options"], {
       relativeTo: this.route.root,
     });
   }

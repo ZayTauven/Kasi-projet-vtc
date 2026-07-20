@@ -1,26 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateShiftRuleGQL,
   DeleteShiftRuleGQL,
   ShiftRuleViewQuery,
   UpdateShiftRuleGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-shift-rule-view',
-  templateUrl: './shift-rule-view.component.html',
+  selector: "app-shift-rule-view",
+  templateUrl: "./shift-rule-view.component.html",
+  standalone: false,
 })
 export class ShiftRuleViewComponent implements OnInit {
   form = this.fb.group({
     id: [null],
     name: [null, Validators.required],
     enabled: [true, Validators.required],
-    frequency: ['Daily', Validators.required],
+    frequency: ["Daily", Validators.required],
     maxHoursPerPeriod: [null],
     mandatoryBreakMinutes: [null],
     enforced: [false],
@@ -34,7 +35,7 @@ export class ShiftRuleViewComponent implements OnInit {
     private updateGQL: UpdateShiftRuleGQL,
     private deleteGQL: DeleteShiftRuleGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   get isEdit(): boolean {
@@ -60,7 +61,7 @@ export class ShiftRuleViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/shift-rules'], {
+      this.router.navigate(["management/shift-rules"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -69,7 +70,7 @@ export class ShiftRuleViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['management/shift-rules'], {
+    this.router.navigate(["management/shift-rules"], {
       relativeTo: this.route.root,
     });
   }
@@ -81,8 +82,8 @@ export class ShiftRuleViewComponent implements OnInit {
     }
     try {
       await firstValueFrom(this.deleteGQL.mutate({ id }));
-      this.msg.success(this.translate.instant('shiftRules.deleted'));
-      this.router.navigate(['management/shift-rules'], {
+      this.msg.success(this.translate.instant("shiftRules.deleted"));
+      this.router.navigate(["management/shift-rules"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {

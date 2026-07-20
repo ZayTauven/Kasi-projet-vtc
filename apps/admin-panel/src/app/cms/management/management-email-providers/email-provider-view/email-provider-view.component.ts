@@ -1,25 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateEmailProviderGQL,
   SendTestEmailGQL,
   SetDefaultEmailProviderGQL,
   EmailProviderViewQuery,
   UpdateEmailProviderGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-email-provider-view',
-  templateUrl: './email-provider-view.component.html',
+  selector: "app-email-provider-view",
+  templateUrl: "./email-provider-view.component.html",
+  standalone: false,
 })
 export class EmailProviderViewComponent implements OnInit {
   form = this.fb.group({
     id: [null],
-    type: ['Smtp', Validators.required],
+    type: ["Smtp", Validators.required],
     name: [null, Validators.required],
     enabled: [true, Validators.required],
     host: [null],
@@ -32,7 +33,7 @@ export class EmailProviderViewComponent implements OnInit {
   });
   isDefault = false;
   showTestEmail = false;
-  testEmail = '';
+  testEmail = "";
   sendingTest = false;
 
   constructor(
@@ -44,7 +45,7 @@ export class EmailProviderViewComponent implements OnInit {
     private setDefaultGQL: SetDefaultEmailProviderGQL,
     private sendTestEmailGQL: SendTestEmailGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   get isEdit(): boolean {
@@ -69,7 +70,7 @@ export class EmailProviderViewComponent implements OnInit {
       const update: any = { ...rest };
       // password is write-only: only send it when the admin typed a new value,
       // otherwise the stored secret would be overwritten with an empty value.
-      if (password != null && password !== '') {
+      if (password != null && password !== "") {
         update.password = password;
       }
       if (id == null) {
@@ -77,7 +78,7 @@ export class EmailProviderViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/email-providers'], {
+      this.router.navigate(["management/email-providers"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -86,7 +87,7 @@ export class EmailProviderViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['management/email-providers'], {
+    this.router.navigate(["management/email-providers"], {
       relativeTo: this.route.root,
     });
   }
@@ -99,14 +100,14 @@ export class EmailProviderViewComponent implements OnInit {
     try {
       await firstValueFrom(this.setDefaultGQL.mutate({ id }));
       this.isDefault = true;
-      this.msg.success(this.translate.instant('emailProvider.defaultSet'));
+      this.msg.success(this.translate.instant("emailProvider.defaultSet"));
     } catch (error: any) {
       this.msg.error(error.message);
     }
   }
 
   async onSendTestEmail() {
-    if (this.testEmail === '') {
+    if (this.testEmail === "") {
       return;
     }
     this.sendingTest = true;
@@ -115,9 +116,9 @@ export class EmailProviderViewComponent implements OnInit {
         this.sendTestEmailGQL.mutate({
           to: this.testEmail,
           providerId: this.form.value.id,
-        })
+        }),
       );
-      this.msg.success(this.translate.instant('emailProvider.testSent'));
+      this.msg.success(this.translate.instant("emailProvider.testSent"));
     } catch (error: any) {
       this.msg.error(error.message);
     } finally {

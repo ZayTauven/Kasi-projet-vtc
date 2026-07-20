@@ -1,25 +1,21 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { Map as MapboxMap, LngLatBounds } from 'mapbox-gl';
-import { camelCase } from 'camel-case';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
+import { camelCase } from "camel-case";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import {
   DriverLocationFragment,
   DriverOverviewInfoFragment,
   OverviewDriverPagingGQL,
   OverviewQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { firstValueFrom, map, Observable, Subscription } from 'rxjs';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { ActivatedRoute } from '@angular/router';
+} from "@kasi/admin-panel/generated/graphql";
+import { firstValueFrom, map, Observable, Subscription } from "rxjs";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: 'app-overview-drivers-map',
-  templateUrl: './overview-drivers-map.component.html',
+  selector: "app-overview-drivers-map",
+  templateUrl: "./overview-drivers-map.component.html",
+  standalone: false,
 })
 export class OverviewDriversMapComponent
   implements OnInit, AfterViewInit, OnDestroy
@@ -90,9 +86,8 @@ export class OverviewDriversMapComponent
   }
 
   showDriverOnMap(id: string): void {
-    const loc = this.locations.find(
-      (x) => x.driverId === parseInt(id),
-    )?.location;
+    const loc = this.locations.find((x) => x.driverId === parseInt(id))
+      ?.location;
     if (!loc || !this.mapInstance) return;
     // Tight bbox around the driver to zoom in
     const bounds = new LngLatBounds(

@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateCallMaskingProviderGQL,
   TestMaskedCallGQL,
   SetDefaultCallMaskingProviderGQL,
   CallMaskingProviderViewQuery,
   UpdateCallMaskingProviderGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-call-masking-provider-view',
-  templateUrl: './call-masking-provider-view.component.html',
+  selector: "app-call-masking-provider-view",
+  templateUrl: "./call-masking-provider-view.component.html",
+  standalone: false,
 })
 export class CallMaskingProviderViewComponent implements OnInit {
   form = this.fb.group({
@@ -30,7 +31,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
   });
   isDefault = false;
   showTestCall = false;
-  testNumber = '';
+  testNumber = "";
   sendingTest = false;
 
   constructor(
@@ -42,7 +43,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
     private setDefaultGQL: SetDefaultCallMaskingProviderGQL,
     private testMaskedCallGQL: TestMaskedCallGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   get isEdit(): boolean {
@@ -65,10 +66,10 @@ export class CallMaskingProviderViewComponent implements OnInit {
     try {
       const { id, apiSecret, webhookAuthToken, ...update } = this.form.value;
       // apiSecret and webhookAuthToken are write-only: only send them when the admin typed a new value.
-      if (apiSecret != null && apiSecret !== '') {
+      if (apiSecret != null && apiSecret !== "") {
         update.apiSecret = apiSecret;
       }
-      if (webhookAuthToken != null && webhookAuthToken !== '') {
+      if (webhookAuthToken != null && webhookAuthToken !== "") {
         update.webhookAuthToken = webhookAuthToken;
       }
       if (id == null) {
@@ -76,7 +77,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/call-masking-providers'], {
+      this.router.navigate(["management/call-masking-providers"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -85,7 +86,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['management/call-masking-providers'], {
+    this.router.navigate(["management/call-masking-providers"], {
       relativeTo: this.route.root,
     });
   }
@@ -99,7 +100,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
       await firstValueFrom(this.setDefaultGQL.mutate({ id }));
       this.isDefault = true;
       this.msg.success(
-        this.translate.instant('callMaskingProvider.defaultSet')
+        this.translate.instant("callMaskingProvider.defaultSet"),
       );
     } catch (error: any) {
       this.msg.error(error.message);
@@ -107,7 +108,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
   }
 
   async onTestCall() {
-    if (this.testNumber === '') {
+    if (this.testNumber === "") {
       return;
     }
     this.sendingTest = true;
@@ -116,9 +117,9 @@ export class CallMaskingProviderViewComponent implements OnInit {
         this.testMaskedCallGQL.mutate({
           number: this.testNumber,
           providerId: this.form.value.id,
-        })
+        }),
       );
-      this.msg.success(this.translate.instant('callMaskingProvider.testSent'));
+      this.msg.success(this.translate.instant("callMaskingProvider.testSent"));
     } catch (error: any) {
       this.msg.error(error.message);
     } finally {

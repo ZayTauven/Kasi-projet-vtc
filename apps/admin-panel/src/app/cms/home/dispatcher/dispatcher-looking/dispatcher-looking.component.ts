@@ -1,17 +1,18 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CancelOrderGQL,
   OrderUpdatedGQL,
   OrderUpdatedSubscription,
-} from '@kasi/admin-panel/generated/graphql';
-import { SubscriptionResult } from 'apollo-angular';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Observable } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { SubscriptionResult } from "apollo-angular";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-dispatcher-looking',
-  templateUrl: './dispatcher-looking.component.html',
+  selector: "app-dispatcher-looking",
+  templateUrl: "./dispatcher-looking.component.html",
+  standalone: false,
 })
 export class DispatcherLookingComponent implements OnInit {
   query?: Observable<SubscriptionResult<OrderUpdatedSubscription>>;
@@ -35,8 +36,8 @@ export class DispatcherLookingComponent implements OnInit {
     const result = await firstValueFrom(
       this.cancelOrderMutation.mutate({ orderId }),
     );
-    this.msg.success('Order Canceled.');
-    this.router.navigate(['../riders-list'], {
+    this.msg.success("Order Canceled.");
+    this.router.navigate(["../riders-list"], {
       relativeTo: this.route,
     });
   }

@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
-import { CurrentConfigService } from './cms/current-config.service';
-import { ThemeService } from './@services/theme.service';
+import { Component, OnInit } from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
+import { Router } from "@angular/router";
+import { CurrentConfigService } from "./cms/current-config.service";
+import { ThemeService } from "./@services/theme.service";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   template: '<router-outlet *ngIf="isLoaded"></router-outlet>',
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   isDarkMode = false;
@@ -17,9 +18,9 @@ export class AppComponent implements OnInit {
     public translate: TranslateService,
     private currentConfigService: CurrentConfigService,
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
   ) {
-    translate.use(localStorage.getItem('lang') ?? 'fr');
+    translate.use(localStorage.getItem("lang") ?? "fr");
   }
 
   ngOnInit(): void {
@@ -40,7 +41,7 @@ export class AppComponent implements OnInit {
     // this environment actually holds a Mapbox token, not a Google key.
     const currentConfig = await this.currentConfigService.getConfig();
     if (currentConfig.currentConfiguration.firebaseProjectPrivateKey == null) {
-      this.router.navigateByUrl('config');
+      this.router.navigateByUrl("config");
     }
     this.isLoaded = true;
   }

@@ -1,8 +1,8 @@
-﻿import { Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { TranslateService } from '@ngx-translate/core';
+﻿import { Component, OnInit, ViewChild } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { TranslateService } from "@ngx-translate/core";
 import {
   CreateServiceGQL,
   DeleteServiceGQL,
@@ -14,28 +14,29 @@ import {
   UpdateServiceGQL,
   ViewServiceQuery,
   Weekday,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
 import {
   NzDatePickerComponent,
   NzRangePickerComponent,
-} from 'ng-zorro-antd/date-picker';
-import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzSelectComponent } from 'ng-zorro-antd/select';
-import { NzTimePickerComponent } from 'ng-zorro-antd/time-picker';
-import { NzUploadFile } from 'ng-zorro-antd/upload';
-import { firstValueFrom, Observable, Observer } from 'rxjs';
-import { map } from 'rxjs/operators';
+} from "ng-zorro-antd/date-picker";
+import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzSelectComponent } from "ng-zorro-antd/select";
+import { NzTimePickerComponent } from "ng-zorro-antd/time-picker";
+import { NzUploadFile } from "ng-zorro-antd/upload";
+import { firstValueFrom, Observable, Observer } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'app-management-services-view',
-  templateUrl: './management-services-view.component.html',
+  selector: "app-management-services-view",
+  templateUrl: "./management-services-view.component.html",
   styles: [
-    'nz-input-number{ @apply w-full }',
-    'nz-time-picker{@apply w-full }',
+    "nz-input-number{ @apply w-full }",
+    "nz-time-picker{@apply w-full }",
   ],
+  standalone: false,
 })
 export class ManagementServicesViewComponent implements OnInit {
   form = this.fb.group({
@@ -53,8 +54,8 @@ export class ManagementServicesViewComponent implements OnInit {
     searchRadius: [0, Validators.required],
     twoWayAvailable: [false, Validators.required],
     maximumDestinationDistance: [0, Validators.required],
-    paymentMethod: ['CashCredit', Validators.required],
-    orderType: ['Ride', Validators.required],
+    paymentMethod: ["CashCredit", Validators.required],
+    orderType: ["Ride", Validators.required],
     cancellationTotalFee: [0, Validators.required],
     cancellationDriverShare: [0, Validators.required],
     providerSharePercent: [0, Validators.required],
@@ -73,26 +74,26 @@ export class ManagementServicesViewComponent implements OnInit {
   query?:
     | Observable<ApolloQueryResult<ViewServiceQuery>>
     | Observable<ApolloQueryResult<NewServiceQuery>>;
-  @ViewChild('timeStartPicker', { static: false })
+  @ViewChild("timeStartPicker", { static: false })
   timeStartPicker!: NzTimePickerComponent;
-  @ViewChild('timeEndPicker', { static: false })
+  @ViewChild("timeEndPicker", { static: false })
   timeEndPicker!: NzTimePickerComponent;
-  @ViewChild('timeMultiplyInput', { static: false })
+  @ViewChild("timeMultiplyInput", { static: false })
   timeMultiplyInput!: NzInputNumberComponent;
-  @ViewChild('distanceFromInput', { static: false })
+  @ViewChild("distanceFromInput", { static: false })
   distanceFromInput!: NzInputNumberComponent;
-  @ViewChild('distanceToInput', { static: false })
+  @ViewChild("distanceToInput", { static: false })
   distanceToInput!: NzInputNumberComponent;
-  @ViewChild('weekdaySelectInput', { static: false })
+  @ViewChild("weekdaySelectInput", { static: false })
   weekdaySelectInput!: NzSelectComponent;
-  @ViewChild('dateRangePicker', { static: false })
+  @ViewChild("dateRangePicker", { static: false })
   dateRangePicker!: NzDatePickerComponent;
 
-  @ViewChild('distanceMultiplyInput', { static: false })
+  @ViewChild("distanceMultiplyInput", { static: false })
   distanceMultiplyInput!: NzInputNumberComponent;
-  @ViewChild('weekdayMultiplyInput', { static: false })
+  @ViewChild("weekdayMultiplyInput", { static: false })
   weekdayMultiplyInput!: NzInputNumberComponent;
-  @ViewChild('dateRangeMultiplyInput', { static: false })
+  @ViewChild("dateRangeMultiplyInput", { static: false })
   dateRangeMultiplyInput!: NzInputNumberComponent;
 
   Weekdays = Object.values(Weekday).map((key) => ({
@@ -101,36 +102,36 @@ export class ManagementServicesViewComponent implements OnInit {
   }));
 
   WeekdayNames = {
-    [Weekday.Monday]: this.translate.instant('weekday.monday'),
-    [Weekday.Tuesday]: this.translate.instant('weekday.tuesday'),
-    [Weekday.Wednesday]: this.translate.instant('weekday.wednesday'),
-    [Weekday.Thursday]: this.translate.instant('weekday.thursday'),
-    [Weekday.Friday]: this.translate.instant('weekday.friday'),
-    [Weekday.Saturday]: this.translate.instant('weekday.saturday'),
-    [Weekday.Sunday]: this.translate.instant('weekday.sunday'),
+    [Weekday.Monday]: this.translate.instant("weekday.monday"),
+    [Weekday.Tuesday]: this.translate.instant("weekday.tuesday"),
+    [Weekday.Wednesday]: this.translate.instant("weekday.wednesday"),
+    [Weekday.Thursday]: this.translate.instant("weekday.thursday"),
+    [Weekday.Friday]: this.translate.instant("weekday.friday"),
+    [Weekday.Saturday]: this.translate.instant("weekday.saturday"),
+    [Weekday.Sunday]: this.translate.instant("weekday.sunday"),
   };
 
   formatterPercent = (value: number) => `${value} %`;
-  parserPercent = (value: string) => value.replace(' %', '');
+  parserPercent = (value: string) => value.replace(" %", "");
   formatterMeters = (value: number) => `${value} m`;
   formatterPrice = (value: number) => `${value}`;
-  parserMeters = (value: string) => value.replace(' m', '');
-  jwt = localStorage.getItem('kasi_admin_token');
+  parserMeters = (value: string) => value.replace(" m", "");
+  jwt = localStorage.getItem("kasi_admin_token");
   avatarUrl?: string;
   paymentMethods = Object.values(ServicePaymentMethod);
   orderTypes = Object.values(ServiceOrderType);
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =
-        file.type === 'image/jpeg' || file.type === 'image/png';
+        file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        this.msg.error('You can only upload JPG file!');
+        this.msg.error("You can only upload JPG file!");
         observer.complete();
         return;
       }
       const isLt2M = (file.size ?? 0) / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.msg.error('Image must smaller than 2MB!');
+        this.msg.error("Image must smaller than 2MB!");
         observer.complete();
         return;
       }
@@ -148,24 +149,24 @@ export class ManagementServicesViewComponent implements OnInit {
     private deleteGql: DeleteServiceGQL,
     private msg: NzMessageService,
     private routerHelper: RouterHelperService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.query = this.route.data.pipe(map((data) => data.service));
     this.route.data.subscribe((data) => {
-      const service: ViewServiceQuery['service'] = data.service.data.service;
+      const service: ViewServiceQuery["service"] = data.service.data.service;
       if (service == null) return;
       if (service.regions.length > 0) {
         const currency = service.regions[0].currency;
         this.formatterPrice = (value: any) =>
-          value == null ? '' : `${value} ${currency}`;
+          value == null ? "" : `${value} ${currency}`;
       }
       service.regions = service.regions.map(
-        (region: { id: string }) => region.id
+        (region: { id: string }) => region.id,
       ) as unknown as any;
       service.options = service.options.map(
-        (region: { id: string }) => region.id
+        (region: { id: string }) => region.id,
       ) as unknown as any;
       this.form.patchValue(service);
       this.avatarUrl = service.media.address;
@@ -177,28 +178,28 @@ export class ManagementServicesViewComponent implements OnInit {
     console.log(input);
     if (regions.length < 1) {
       this.msg.error(
-        'Select at least one region which this service can be ordered from.'
+        "Select at least one region which this service can be ordered from.",
       );
       return;
     }
     let resId = id;
-    if (input.roundingFactor == '') input.roundingFactor = null;
+    if (input.roundingFactor == "") input.roundingFactor = null;
     try {
       if (id == null) {
         const result = await firstValueFrom(this.createGQL.mutate({ input }));
         resId = result.data?.createOneService.id;
       } else {
         const result = await firstValueFrom(
-          this.updateGQL.mutate({ id, input })
+          this.updateGQL.mutate({ id, input }),
         );
         resId = result.data?.updateOneService.id;
       }
 
       await firstValueFrom(
-        this.setRegionsGQL.mutate({ id: resId, relationIds: regions })
+        this.setRegionsGQL.mutate({ id: resId, relationIds: regions }),
       );
       await firstValueFrom(
-        this.setOptionsGQL.mutate({ id: resId, relationIds: options })
+        this.setOptionsGQL.mutate({ id: resId, relationIds: options }),
       );
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
@@ -219,17 +220,17 @@ export class ManagementServicesViewComponent implements OnInit {
       startTime: this.timeStartPicker.inputRef.nativeElement.value,
       endTime: this.timeEndPicker.inputRef.nativeElement.value,
       multiply: parseFloat(
-        this.timeMultiplyInput.inputElement.nativeElement.value
+        this.timeMultiplyInput.inputElement.nativeElement.value,
       ),
     });
-    this.timeMultiplyInput.inputElement.nativeElement.value = '';
-    this.timeStartPicker.inputRef.nativeElement.value = '';
-    this.timeEndPicker.inputRef.nativeElement.value = '';
+    this.timeMultiplyInput.inputElement.nativeElement.value = "";
+    this.timeStartPicker.inputRef.nativeElement.value = "";
+    this.timeEndPicker.inputRef.nativeElement.value = "";
   }
 
   removeTimeRule(_rule: TimeMultiplier) {
     this.form.value.timeMultipliers = this.form.value.timeMultipliers.filter(
-      (rule: any) => rule != _rule
+      (rule: any) => rule != _rule,
     );
   }
 
@@ -240,10 +241,10 @@ export class ManagementServicesViewComponent implements OnInit {
     this.form.value.weekdayMultipliers.push({
       weekday: this.weekdaySelectInput.listOfValue[0],
       multiply: parseFloat(
-        this.weekdayMultiplyInput.inputElement.nativeElement.value
+        this.weekdayMultiplyInput.inputElement.nativeElement.value,
       ),
     });
-    this.weekdayMultiplyInput.inputElement.nativeElement.value = '';
+    this.weekdayMultiplyInput.inputElement.nativeElement.value = "";
     this.weekdaySelectInput.writeValue([]);
   }
 
@@ -255,10 +256,10 @@ export class ManagementServicesViewComponent implements OnInit {
       startDate: new Date(this.dateRangePicker.inputValue[0]).getTime(),
       endDate: new Date(this.dateRangePicker.inputValue[1]).getTime(),
       multiply: parseFloat(
-        this.dateRangeMultiplyInput.inputElement.nativeElement.value
+        this.dateRangeMultiplyInput.inputElement.nativeElement.value,
       ),
     });
-    this.dateRangeMultiplyInput.inputElement.nativeElement.value = '';
+    this.dateRangeMultiplyInput.inputElement.nativeElement.value = "";
     this.dateRangePicker.writeValue([]);
   }
 
@@ -278,56 +279,56 @@ export class ManagementServicesViewComponent implements OnInit {
     }
     this.form.value.distanceMultipliers.push({
       distanceFrom: parseInt(
-        this.distanceFromInput.inputElement.nativeElement.value
+        this.distanceFromInput.inputElement.nativeElement.value,
       ),
       distanceTo: parseInt(
-        this.distanceToInput.inputElement.nativeElement.value
+        this.distanceToInput.inputElement.nativeElement.value,
       ),
       multiply: parseFloat(
-        this.distanceMultiplyInput.inputElement.nativeElement.value
+        this.distanceMultiplyInput.inputElement.nativeElement.value,
       ),
     });
-    this.distanceMultiplyInput.inputElement.nativeElement.value = '';
-    this.distanceFromInput.inputElement.nativeElement.value = '';
-    this.distanceToInput.inputElement.nativeElement.value = '';
+    this.distanceMultiplyInput.inputElement.nativeElement.value = "";
+    this.distanceFromInput.inputElement.nativeElement.value = "";
+    this.distanceToInput.inputElement.nativeElement.value = "";
   }
 
   removeDistanceRule(_rule: DistanceMultiplier) {
     const distanceMultipliers = this.form.value.distanceMultipliers.filter(
-      (rule: any) => rule != _rule
+      (rule: any) => rule != _rule,
     );
     this.form.patchValue({ distanceMultipliers });
   }
 
   handleRegionCheckChange(
     checked: boolean,
-    region: { id: string; currency: string }
+    region: { id: string; currency: string },
   ) {
     if (checked) {
       this.formatterPrice = (value: any) =>
-        value == null ? '' : `${value} ${region.currency}`;
+        value == null ? "" : `${value} ${region.currency}`;
       if (this.form.value.regions.indexOf(region.id) < 0) {
         this.form.value.regions.push(region.id);
       }
     } else {
       this.form.value.regions = this.form.value.regions.filter(
-        (_region: string) => _region != region.id
+        (_region: string) => _region != region.id,
       );
     }
   }
 
   handleUploadChange(event: { file: NzUploadFile }) {
     switch (event.file.status) {
-      case 'uploading':
+      case "uploading":
         this.loadingUpload = true;
         break;
-      case 'done':
+      case "done":
         this.loadingUpload = false;
         this.form.patchValue({ mediaId: event.file.response.id });
         this.avatarUrl = event.file.response.address;
         break;
-      case 'error':
-        this.msg.error('Network error');
+      case "error":
+        this.msg.error("Network error");
         this.loadingUpload = false;
         break;
     }
@@ -337,7 +338,7 @@ export class ManagementServicesViewComponent implements OnInit {
     const id = this.form.value.id;
     try {
       await firstValueFrom(this.deleteGql.mutate({ id }));
-      this.msg.success('Delete was successful.');
+      this.msg.success("Delete was successful.");
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
       this.msg.error(error.message);
@@ -351,7 +352,7 @@ export class ManagementServicesViewComponent implements OnInit {
       }
     } else {
       this.form.value.options = this.form.value.options.filter(
-        (_region: string) => _region != id
+        (_region: string) => _region != id,
       );
     }
   }

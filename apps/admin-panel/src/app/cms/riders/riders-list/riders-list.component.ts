@@ -1,19 +1,20 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { TranslateService } from '@ngx-translate/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { TranslateService } from "@ngx-translate/core";
 import {
   RiderStatus,
   RidersListQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+} from "@kasi/admin-panel/generated/graphql";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
-import { TableService } from '../../../@services/table-service';
+import { TableService } from "../../../@services/table-service";
 
 @Component({
-  selector: 'app-riders-list',
-  templateUrl: './riders-list.component.html',
+  selector: "app-riders-list",
+  templateUrl: "./riders-list.component.html",
+  standalone: false,
 })
 export class RidersListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<RidersListQuery>>;

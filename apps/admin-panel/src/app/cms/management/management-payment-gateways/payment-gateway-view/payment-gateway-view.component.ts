@@ -1,22 +1,23 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   CreatePaymentGatewayGQL,
   PaymentGatewayType,
   UpdatePaymentGatewayGQL,
   ViewPaymentGatewayQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzUploadFile } from 'ng-zorro-antd/upload';
-import { firstValueFrom, Observable, Observer, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzUploadFile } from "ng-zorro-antd/upload";
+import { firstValueFrom, Observable, Observer, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-payment-gateway-view',
-  templateUrl: './payment-gateway-view.component.html',
+  selector: "app-payment-gateway-view",
+  templateUrl: "./payment-gateway-view.component.html",
+  standalone: false,
 })
 export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
   form = this.fb.group({
@@ -40,19 +41,19 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
     (type) => !this.unavailableGateways.includes(type as PaymentGatewayType),
   );
   root = environment.root;
-  jwt = localStorage.getItem('kasi_admin_token');
+  jwt = localStorage.getItem("kasi_admin_token");
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =
-        file.type === 'image/jpeg' || file.type === 'image/png';
+        file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        this.msg.error('You can only upload JPG file!');
+        this.msg.error("You can only upload JPG file!");
         observer.complete();
         return;
       }
       const isLt2M = (file.size ?? 0) / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.msg.error('Image must smaller than 2MB!');
+        this.msg.error("Image must smaller than 2MB!");
         observer.complete();
         return;
       }
@@ -100,16 +101,16 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
 
   handleUploadChange(event: { file: NzUploadFile }) {
     switch (event.file.status) {
-      case 'uploading':
+      case "uploading":
         this.loadingUpload = true;
         break;
-      case 'done':
+      case "done":
         this.loadingUpload = false;
         this.form.patchValue({ mediaId: event.file.response.id });
         this.avatarUrl = event.file.response.address;
         break;
-      case 'error':
-        this.msg.error('Network error');
+      case "error":
+        this.msg.error("Network error");
         this.loadingUpload = false;
         break;
     }
@@ -122,125 +123,125 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
     switch (type) {
       case PaymentGatewayType.AmazonPaymentServices:
         return {
-          privateKey: 'Access Code',
-          merchantId: 'Merchant Identifier',
+          privateKey: "Access Code",
+          merchantId: "Merchant Identifier",
         };
 
       case PaymentGatewayType.BrainTree: // TODO: Complete the integration
         return {
-          privateKey: 'Private key',
-          publicKey: 'Public key',
-          merchantId: 'Merchant ID',
+          privateKey: "Private key",
+          publicKey: "Public key",
+          merchantId: "Merchant ID",
         };
       case PaymentGatewayType.CustomLink:
         return {
-          privateKey: 'URL',
+          privateKey: "URL",
         };
 
       case PaymentGatewayType.Flutterwave:
         return {
-          privateKey: 'Secret Key',
+          privateKey: "Secret Key",
         };
 
       case PaymentGatewayType.Instamojo:
         return {
-          privateKey: 'Auth Key',
-          publicKey: 'API Key',
+          privateKey: "Auth Key",
+          publicKey: "API Key",
         };
 
       case PaymentGatewayType.Mips:
         console.log(type);
         return {
-          privateKey: 'Cipher key',
-          saltKey: 'Salt key',
-          publicKey: 'Form ID',
-          merchantId: 'Merchant ID',
+          privateKey: "Cipher key",
+          saltKey: "Salt key",
+          publicKey: "Form ID",
+          merchantId: "Merchant ID",
         };
 
       case PaymentGatewayType.MercadoPago:
         return {
-          publicKey: 'Public key',
-          privateKey: 'Access Token',
+          publicKey: "Public key",
+          privateKey: "Access Token",
         };
 
       case PaymentGatewayType.MyFatoorah:
         return {
-          privateKey: 'Private key',
-          merchantId: 'Payment Method code',
+          privateKey: "Private key",
+          merchantId: "Payment Method code",
         };
 
       case PaymentGatewayType.MyTMoney:
         return {
-          publicKey: 'Public key',
-          privateKey: 'Private key',
-          merchantId: 'App Id',
+          publicKey: "Public key",
+          privateKey: "Private key",
+          merchantId: "App Id",
         };
 
       case PaymentGatewayType.PayGate: // TODO: Complete the integration
         return {
-          privateKey: 'Secret Key',
+          privateKey: "Secret Key",
         };
       case PaymentGatewayType.PayPal:
         return {
-          privateKey: 'Client Secret',
-          merchantId: 'Client ID',
+          privateKey: "Client Secret",
+          merchantId: "Client ID",
         };
 
       case PaymentGatewayType.PayU:
         return {
-          privateKey: 'Client secret',
-          merchantId: 'Merchant Pos Id',
+          privateKey: "Client secret",
+          merchantId: "Merchant Pos Id",
         };
       case PaymentGatewayType.Paystack:
         return {
-          privateKey: 'API key',
+          privateKey: "API key",
         };
       case PaymentGatewayType.Paytm:
         return {
-          privateKey: 'Merchant Key',
-          merchantId: 'Merchant Id',
+          privateKey: "Merchant Key",
+          merchantId: "Merchant Id",
         };
       case PaymentGatewayType.Razorpay:
         return {
-          privateKey: 'Key Secret',
-          merchantId: 'Key Id',
+          privateKey: "Key Secret",
+          merchantId: "Key Id",
         };
 
       case PaymentGatewayType.SberBank: // TODO: Complete the integration
         return {
-          publicKey: 'Username',
-          privateKey: 'Password',
+          publicKey: "Username",
+          privateKey: "Password",
         };
 
       case PaymentGatewayType.Stripe:
         return {
-          privateKey: 'API key',
+          privateKey: "API key",
         };
 
       case PaymentGatewayType.WayForPay:
         return {
-          privateKey: 'Merchant secret Key',
-          publicKey: 'Merchant domain name',
-          merchantId: 'Merchant Id',
+          privateKey: "Merchant secret Key",
+          publicKey: "Merchant domain name",
+          merchantId: "Merchant Id",
         };
 
       case PaymentGatewayType.BinancePay:
         return {
-          publicKey: 'API Key',
-          privateKey: 'Secret Key',
+          publicKey: "API Key",
+          privateKey: "Secret Key",
         };
 
       case PaymentGatewayType.OpenPix:
         return {
-          privateKey: 'AppID',
+          privateKey: "AppID",
         };
 
       default:
         return {
-          privateKey: 'Private key',
-          publicKey: 'Public key',
-          merchantId: 'Merchant ID',
-          saltKey: 'Salt key',
+          privateKey: "Private key",
+          publicKey: "Public key",
+          merchantId: "Merchant ID",
+          saltKey: "Salt key",
         };
     }
   }

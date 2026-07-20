@@ -1,17 +1,18 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   CreateOrderGQL,
   DispatcherCalculateFareQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { firstValueFrom, map, Observable } from 'rxjs';
-import { DispatcherService } from '../dispatcher.service';
+} from "@kasi/admin-panel/generated/graphql";
+import { firstValueFrom, map, Observable } from "rxjs";
+import { DispatcherService } from "../dispatcher.service";
 
 @Component({
-  selector: 'app-dispatcher-service-select',
-  templateUrl: './dispatcher-service-select.component.html',
+  selector: "app-dispatcher-service-select",
+  templateUrl: "./dispatcher-service-select.component.html",
   styles: [],
+  standalone: false,
 })
 export class DispatcherServiceSelectComponent implements OnInit {
   query?: Observable<ApolloQueryResult<DispatcherCalculateFareQuery>>;
@@ -45,7 +46,7 @@ export class DispatcherServiceSelectComponent implements OnInit {
       }),
     );
 
-    this.router.navigate(['../looking'], {
+    this.router.navigate(["../looking"], {
       relativeTo: this.route,
       queryParams: {
         requestId: result.data?.createOrder.id,

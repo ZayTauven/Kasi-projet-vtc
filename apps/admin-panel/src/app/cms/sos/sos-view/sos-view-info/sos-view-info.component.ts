@@ -1,28 +1,35 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { CreateSosActivityGQL, SosActivityAction, ViewSosQuery } from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { firstValueFrom, map, Observable } from 'rxjs';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import {
+  CreateSosActivityGQL,
+  SosActivityAction,
+  ViewSosQuery,
+} from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { firstValueFrom, map, Observable } from "rxjs";
 import { camelCase } from "camel-case";
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 
 @Component({
-  selector: 'app-sos-view-info',
-  templateUrl: './sos-view-info.component.html'
+  selector: "app-sos-view-info",
+  templateUrl: "./sos-view-info.component.html",
+  standalone: false,
 })
 export class SOSViewInfoComponent implements OnInit {
   query?: Observable<ApolloQueryResult<ViewSosQuery>>;
   formActivity = this.fb.group({
     action: [null, Validators.required],
-    note: [null]
+    note: [null],
   });
   public camelCase = camelCase;
   activityAction = SosActivityAction;
-  activityActions = Object.values(SosActivityAction).filter(action => (action != SosActivityAction.Seen && action != SosActivityAction.Submitted));
-
+  activityActions = Object.values(SosActivityAction).filter(
+    (action) =>
+      action != SosActivityAction.Seen && action != SosActivityAction.Submitted,
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -30,10 +37,11 @@ export class SOSViewInfoComponent implements OnInit {
     private fb: UntypedFormBuilder,
     private msg: NzMessageService,
     private addActivityGql: CreateSosActivityGQL,
-    private routerHelper: RouterHelperService) {}
+    private routerHelper: RouterHelperService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.parent?.data.pipe(map(data => data.sos));
+    this.query = this.route.parent?.data.pipe(map((data) => data.sos));
   }
 
   cancelActivity() {
@@ -42,13 +50,16 @@ export class SOSViewInfoComponent implements OnInit {
 
   async onSubmitActivity(sosId: string) {
     try {
-      await firstValueFrom(this.addActivityGql.mutate({activity: {...this.formActivity.value, sosId}}));
-      this.msg.success('Activity recorded');
+      await firstValueFrom(
+        this.addActivityGql.mutate({
+          activity: { ...this.formActivity.value, sosId },
+        }),
+      );
+      this.msg.success("Activity recorded");
       this.routerHelper.refresh(this.route);
       this.formActivity.patchValue({});
-    } catch(error: any) {
+    } catch (error: any) {
       this.msg.error(error.message);
     }
   }
-
 }

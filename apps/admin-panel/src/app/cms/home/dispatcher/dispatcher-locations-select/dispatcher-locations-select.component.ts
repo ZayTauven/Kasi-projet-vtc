@@ -1,18 +1,19 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { DispatcherService, PointWithAddress } from '../dispatcher.service';
-import { Map as MapboxMap, LngLatBounds } from 'mapbox-gl';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { firstValueFrom, EMPTY } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Component } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { ActivatedRoute, Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { DispatcherService, PointWithAddress } from "../dispatcher.service";
+import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { firstValueFrom, EMPTY } from "rxjs";
+import { catchError } from "rxjs/operators";
 
 @Component({
-  selector: 'app-dispatcher-locations-select',
-  templateUrl: './dispatcher-locations-select.component.html',
+  selector: "app-dispatcher-locations-select",
+  templateUrl: "./dispatcher-locations-select.component.html",
   styles: [],
+  standalone: false,
 })
 export class DispatcherLocationsSelectComponent {
   points: PointWithAddress[] = [];
@@ -48,7 +49,7 @@ export class DispatcherLocationsSelectComponent {
   async mapClicked(e: any): Promise<void> {
     const { lng, lat } = e.lngLat;
     const id = this.messageService.loading(
-      this.translate.instant('dispatcher.determiningLocation'),
+      this.translate.instant("dispatcher.determiningLocation"),
       { nzDuration: 0 },
     ).messageId;
     try {
@@ -70,12 +71,12 @@ export class DispatcherLocationsSelectComponent {
   }
 
   goToServiceSelection(): void {
-    this.router.navigate(['../service-select'], {
+    this.router.navigate(["../service-select"], {
       relativeTo: this.route,
       queryParams: {
         points: this.dispatcherService.serializePoints(this.points),
       },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 

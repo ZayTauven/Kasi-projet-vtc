@@ -1,14 +1,15 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { PaymentGatewaysQuery } from '@kasi/admin-panel/generated/graphql';
-import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { map, Observable } from 'rxjs';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { PaymentGatewaysQuery } from "@kasi/admin-panel/generated/graphql";
+import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { map, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-payment-gateways-list',
-  templateUrl: './payment-gateways-list.component.html'
+  selector: "app-payment-gateways-list",
+  templateUrl: "./payment-gateways-list.component.html",
+  standalone: false,
 })
 export class PaymentGatewaysListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<PaymentGatewaysQuery>>;
@@ -17,13 +18,13 @@ export class PaymentGatewaysListComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    public tableService: TableService) {
-  }
+    public tableService: TableService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.paymentGateways));
+    this.query = this.route.data.pipe(map((data) => data.paymentGateways));
   }
-  
+
   // ngOnInit(): void {
   //   this.route.data.subscribe(x=>{
   //     this.total = x.items.count;

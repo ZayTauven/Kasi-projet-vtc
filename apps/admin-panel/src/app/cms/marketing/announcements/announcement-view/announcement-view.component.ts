@@ -1,19 +1,20 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   CreateAnnouncementGQL,
   DeleteAnnouncementGQL,
   UpdateAnnouncementGQL,
   ViewAnnouncementQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { firstValueFrom, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { firstValueFrom, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-announcement-view',
-  templateUrl: './announcement-view.component.html',
+  selector: "app-announcement-view",
+  templateUrl: "./announcement-view.component.html",
+  standalone: false,
 })
 export class AnnouncementViewComponent implements OnInit {
   form = this.fb.group({
@@ -32,7 +33,7 @@ export class AnnouncementViewComponent implements OnInit {
     private createGQL: CreateAnnouncementGQL,
     private updateGQL: UpdateAnnouncementGQL,
     private deleteGQL: DeleteAnnouncementGQL,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +72,7 @@ export class AnnouncementViewComponent implements OnInit {
 
   async deleteAnnouncement() {
     const result = await firstValueFrom(
-      this.deleteGQL.mutate({ id: this.form.value.id })
+      this.deleteGQL.mutate({ id: this.form.value.id }),
     );
     this.routerHelper.goToParent(this.route);
   }

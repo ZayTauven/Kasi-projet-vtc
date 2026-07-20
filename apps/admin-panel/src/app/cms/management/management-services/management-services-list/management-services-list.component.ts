@@ -1,15 +1,16 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { ServicesListQuery } from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { ServicesListQuery } from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'app-management-services-list',
-  templateUrl: './management-services-list.component.html'
+  selector: "app-management-services-list",
+  templateUrl: "./management-services-list.component.html",
+  standalone: false,
 })
 export class ManagementServicesListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<ServicesListQuery>>;
@@ -19,10 +20,11 @@ export class ManagementServicesListComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    public tagColor: TagColorService) {}
+    public tagColor: TagColorService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.services));
+    this.query = this.route.data.pipe(map((data) => data.services));
   }
 
   // async searchData(reset: boolean = false, params: Params = this.queryParams): Promise<void> {
@@ -61,5 +63,4 @@ export class ManagementServicesListComponent implements OnInit {
   //   await this.backend.deleteRow('Service', serviceId);
   //   this.router.navigate([], { queryParams: {refresh: new Date().getTime()}})
   // }
-
 }

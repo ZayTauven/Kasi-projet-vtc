@@ -1,24 +1,25 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   Gender,
   PackageSize,
   UpdateDriverProfileGQL,
   ViewDriverQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { camelCase } from 'camel-case';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzUploadFile } from 'ng-zorro-antd/upload';
-import { firstValueFrom, map, Observable, Observer, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { camelCase } from "camel-case";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzUploadFile } from "ng-zorro-antd/upload";
+import { firstValueFrom, map, Observable, Observer, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-driver-profile-details',
-  templateUrl: './driver-profile-details.component.html',
-  styles: ['nz-input-number {@apply w-full}'],
+  selector: "app-driver-profile-details",
+  templateUrl: "./driver-profile-details.component.html",
+  styles: ["nz-input-number {@apply w-full}"],
+  standalone: false,
 })
 export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   form = this.fb.group({
@@ -50,7 +51,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   public gender = Gender;
   packageSizes = Object.values(PackageSize);
   public camelCase = camelCase;
-  jwt = localStorage.getItem('kasi_admin_token');
+  jwt = localStorage.getItem("kasi_admin_token");
   loadingUpload = false;
   avatarUrl?: string;
   private originalValue?: any;
@@ -59,15 +60,15 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =
-        file.type === 'image/jpeg' || file.type === 'image/png';
+        file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        this.msg.error('You can only upload JPG file!');
+        this.msg.error("You can only upload JPG file!");
         observer.complete();
         return;
       }
       const isLt2M = (file.size ?? 0) / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.msg.error('Image must smaller than 2MB!');
+        this.msg.error("Image must smaller than 2MB!");
         observer.complete();
         return;
       }
@@ -117,7 +118,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
         serviceIds: enabledServices,
       }),
     );
-    this.msg.success('Updated!');
+    this.msg.success("Updated!");
     this.routerHelper.refresh(this.route);
   }
 
@@ -140,16 +141,16 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
 
   handleUploadChange(event: { file: NzUploadFile }) {
     switch (event.file.status) {
-      case 'uploading':
+      case "uploading":
         //this.loading = true;
         break;
-      case 'done':
+      case "done":
         // Get this url from response in real world.
         this.form.patchValue({ mediaId: event.file.response.id });
         this.avatarUrl = event.file.response.address;
         break;
-      case 'error':
-        this.msg.error('Network error');
+      case "error":
+        this.msg.error("Network error");
         //this.loading = false;
         break;
     }

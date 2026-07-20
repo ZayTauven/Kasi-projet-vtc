@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   CreateRetentionPolicyGQL,
   DeleteRetentionPolicyGQL,
   RetentionPolicyViewQuery,
   RunRetentionPolicyDryRunGQL,
   UpdateRetentionPolicyGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-retention-view',
-  templateUrl: './retention-view.component.html',
+  selector: "app-retention-view",
+  templateUrl: "./retention-view.component.html",
+  standalone: false,
 })
 export class RetentionViewComponent implements OnInit {
   form = this.fb.group({
@@ -36,7 +37,7 @@ export class RetentionViewComponent implements OnInit {
     private deleteGQL: DeleteRetentionPolicyGQL,
     private runDryRunGQL: RunRetentionPolicyDryRunGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   get isEdit(): boolean {
@@ -62,7 +63,7 @@ export class RetentionViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ id, update }));
       }
-      this.router.navigate(['management/retention'], {
+      this.router.navigate(["management/retention"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -71,7 +72,7 @@ export class RetentionViewComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['management/retention'], {
+    this.router.navigate(["management/retention"], {
       relativeTo: this.route.root,
     });
   }
@@ -83,7 +84,7 @@ export class RetentionViewComponent implements OnInit {
     }
     try {
       await firstValueFrom(this.deleteGQL.mutate({ id }));
-      this.router.navigate(['management/retention'], {
+      this.router.navigate(["management/retention"], {
         relativeTo: this.route.root,
       });
     } catch (error: any) {
@@ -95,7 +96,7 @@ export class RetentionViewComponent implements OnInit {
     this.running = true;
     try {
       await firstValueFrom(this.runDryRunGQL.mutate({}));
-      this.msg.success(this.translate.instant('retention.dryRunTriggered'));
+      this.msg.success(this.translate.instant("retention.dryRunTriggered"));
     } catch (error: any) {
       this.msg.error(error.message);
     } finally {

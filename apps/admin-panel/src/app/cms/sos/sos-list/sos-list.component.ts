@@ -1,15 +1,19 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { ComplaintStatus, SosListQuery } from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { map, Observable } from 'rxjs';
-import { TableService } from '../../../@services/table-service';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import {
+  ComplaintStatus,
+  SosListQuery,
+} from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { map, Observable } from "rxjs";
+import { TableService } from "../../../@services/table-service";
 import { camelCase } from "camel-case";
 
 @Component({
-  selector: 'app-sos-list',
-  templateUrl: './sos-list.component.html'
+  selector: "app-sos-list",
+  templateUrl: "./sos-list.component.html",
+  standalone: false,
 })
 export class SOSListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<SosListQuery>>;
@@ -20,9 +24,10 @@ export class SOSListComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public tagColor: TagColorService,
-    public tableService: TableService) { }
+    public tableService: TableService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.sos));
+    this.query = this.route.data.pipe(map((data) => data.sos));
   }
 }

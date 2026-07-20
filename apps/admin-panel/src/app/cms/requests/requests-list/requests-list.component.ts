@@ -1,19 +1,20 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { TranslateService } from '@ngx-translate/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { TranslateService } from "@ngx-translate/core";
 import {
   OrdersListQuery,
   OrderStatus,
-} from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { NzTableFilterList } from 'ng-zorro-antd/table';
-import { map, Observable } from 'rxjs';
-import { TableService } from '../../../@services/table-service';
+} from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { NzTableFilterList } from "ng-zorro-antd/table";
+import { map, Observable } from "rxjs";
+import { TableService } from "../../../@services/table-service";
 
 @Component({
-  selector: 'app-requests-list',
-  templateUrl: './requests-list.component.html',
+  selector: "app-requests-list",
+  templateUrl: "./requests-list.component.html",
+  standalone: false,
 })
 export class RequestsListComponent implements OnInit {
   statuses: NzTableFilterList = Object.values(OrderStatus).map((key) => ({

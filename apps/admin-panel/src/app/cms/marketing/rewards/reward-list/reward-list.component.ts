@@ -1,14 +1,15 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { RewardListQuery } from '@kasi/admin-panel/generated/graphql';
-import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { map, Observable } from 'rxjs';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
+import { RewardListQuery } from "@kasi/admin-panel/generated/graphql";
+import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { map, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-reward-list',
-  templateUrl: './reward-list.component.html'
+  selector: "app-reward-list",
+  templateUrl: "./reward-list.component.html",
+  standalone: false,
 })
 export class RewardListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<RewardListQuery>>;
@@ -16,10 +17,10 @@ export class RewardListComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public tableService: TableService,
-    public tagColor: TagColorService) {
-  }
+    public tagColor: TagColorService,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.rewards));  
+    this.query = this.route.data.pipe(map((data) => data.rewards));
   }
 }

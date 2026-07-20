@@ -1,23 +1,24 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   DeleteRiderGQL,
   RiderStatus,
   UpdateRiderGQL,
   ViewRiderQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { map } from 'rxjs/operators';
-import { firstValueFrom, Observable } from 'rxjs';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { TranslateService } from '@ngx-translate/core';
+} from "@kasi/admin-panel/generated/graphql";
+import { map } from "rxjs/operators";
+import { firstValueFrom, Observable } from "rxjs";
+import { NzModalService } from "ng-zorro-antd/modal";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-rider-view',
-  templateUrl: './rider-view.component.html',
+  selector: "app-rider-view",
+  templateUrl: "./rider-view.component.html",
+  standalone: false,
 })
 export class RiderViewComponent implements OnInit {
   query?: Observable<ApolloQueryResult<ViewRiderQuery>>;
@@ -48,16 +49,16 @@ export class RiderViewComponent implements OnInit {
           update: { status: status as RiderStatus },
         }),
       );
-      this.message.success(this.translate.instant('Done!'));
+      this.message.success(this.translate.instant("Done!"));
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { refresh: new Date().getTime() },
-        queryParamsHandling: 'merge',
+        queryParamsHandling: "merge",
       });
     } catch (error: any) {
-      if (error.message == 'PERMISSION_NOT_GRANTED') {
+      if (error.message == "PERMISSION_NOT_GRANTED") {
         this.message.error(
-          this.translate.instant('error.PERMISSION_NOT_GRANTED'),
+          this.translate.instant("error.PERMISSION_NOT_GRANTED"),
         );
       } else {
         this.message.error(error.message);
@@ -67,21 +68,21 @@ export class RiderViewComponent implements OnInit {
 
   deleteRider(id: string) {
     this.modal.confirm({
-      nzTitle: this.translate.instant('message.deleteConfirmation.title'),
+      nzTitle: this.translate.instant("message.deleteConfirmation.title"),
       nzContent: this.translate.instant(
-        'message.deleteRiderConfirmation.content',
+        "message.deleteRiderConfirmation.content",
       ),
       nzOnOk: async () => {
         try {
           await firstValueFrom(this.deleteGQL.mutate({ id }));
           this.message.success(
-            this.translate.instant('message.deleteRiderCofirmAlert'),
+            this.translate.instant("message.deleteRiderCofirmAlert"),
           );
-          this.router.navigateByUrl('/riders');
+          this.router.navigateByUrl("/riders");
         } catch (error: any) {
-          if (error.message == 'PERMISSION_NOT_GRANTED') {
+          if (error.message == "PERMISSION_NOT_GRANTED") {
             this.message.error(
-              this.translate.instant('error.PERMISSION_NOT_GRANTED'),
+              this.translate.instant("error.PERMISSION_NOT_GRANTED"),
             );
           } else {
             this.message.error(error.message);

@@ -1,21 +1,28 @@
-﻿import { Component, HostBinding, Inject, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { LoginGQL } from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+﻿import {
+  Component,
+  HostBinding,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { LoginGQL } from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
-import { loginTransition } from './login.animation';
-import { ThemeService } from '../@services/theme.service';
+import { loginTransition } from "./login.animation";
+import { ThemeService } from "../@services/theme.service";
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  selector: "app-login",
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.css"],
   animations: [loginTransition],
+  standalone: false,
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  @HostBinding('@loginTransition') state = 'activated';
+  @HostBinding("@loginTransition") state = "activated";
   validateForm = this.fb.group({
     userName: [null, [Validators.required]],
     password: [null, []],
@@ -25,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   passwordVisible = false;
 
   /** Horloge live du hero (fuseau Dakar). */
-  clock = '';
+  clock = "";
   private clockTimer?: ReturnType<typeof setInterval>;
 
   ngOnInit(): void {
@@ -38,10 +45,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private tick(): void {
-    this.clock = new Intl.DateTimeFormat('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Africa/Dakar',
+    this.clock = new Intl.DateTimeFormat("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Africa/Dakar",
     }).format(new Date());
   }
 
@@ -57,21 +64,21 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     @Inject(NzMessageService) private message: NzMessageService,
     private loginGql: LoginGQL,
-    public themeService: ThemeService
+    public themeService: ThemeService,
   ) {}
 
   async onLogin() {
     try {
-      const username = this.validateForm.get('userName')?.value;
-      const password = this.validateForm.get('password')?.value;
+      const username = this.validateForm.get("userName")?.value;
+      const password = this.validateForm.get("password")?.value;
       const res = await firstValueFrom(
-        this.loginGql.fetch({ username, password })
+        this.loginGql.fetch({ username, password }),
       );
-      localStorage.setItem('kasi_admin_token', res.data.login.token);
-      this.router.navigate([''], {});
+      localStorage.setItem("kasi_admin_token", res.data.login.token);
+      this.router.navigate([""], {});
     } catch (exception: any) {
       this.message.error(exception.message);
-      this.validateForm.controls['password'].setErrors({ incorrect: true });
+      this.validateForm.controls["password"].setErrors({ incorrect: true });
     }
   }
 }

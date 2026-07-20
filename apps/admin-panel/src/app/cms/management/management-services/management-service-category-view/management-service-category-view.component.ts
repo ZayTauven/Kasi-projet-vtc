@@ -1,23 +1,26 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import {
   CreateServiceCategoryGQL,
   DeleteServiceCategoryGQL,
   UpdateServiceCategoryGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-management-service-category-view',
-  templateUrl: './management-service-category-view.component.html'
+  selector: "app-management-service-category-view",
+  templateUrl: "./management-service-category-view.component.html",
+  standalone: false,
 })
-export class ManagementServiceCategoryViewComponent implements OnInit, OnDestroy {
+export class ManagementServiceCategoryViewComponent
+  implements OnInit, OnDestroy
+{
   form = this.fb.group({
     id: [null],
-    name: [null, Validators.required]
+    name: [null, Validators.required],
   });
   subscription!: Subscription;
 
@@ -28,22 +31,27 @@ export class ManagementServiceCategoryViewComponent implements OnInit, OnDestroy
     private deleteGQL: DeleteServiceCategoryGQL,
     private fb: UntypedFormBuilder,
     private routerHelper: RouterHelperService,
-    private msg: NzMessageService) { }
+    private msg: NzMessageService,
+  ) {}
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.subscription = this.route.data.subscribe(data => (data.serviceCategory != null ? this.form.patchValue(data.serviceCategory.data.serviceCategory) : null));
+    this.subscription = this.route.data.subscribe((data) =>
+      data.serviceCategory != null
+        ? this.form.patchValue(data.serviceCategory.data.serviceCategory)
+        : null,
+    );
   }
 
   async onSubmit() {
-    const {id, ...input} = this.form.value;
-    if(id == null) {
-      await firstValueFrom(this.createGQL.mutate({input}));
+    const { id, ...input } = this.form.value;
+    if (id == null) {
+      await firstValueFrom(this.createGQL.mutate({ input }));
     } else {
-      await firstValueFrom(this.updateGQL.mutate({id, input}));
+      await firstValueFrom(this.updateGQL.mutate({ id, input }));
     }
     this.routerHelper.goToParent(this.route);
   }
@@ -55,12 +63,11 @@ export class ManagementServiceCategoryViewComponent implements OnInit, OnDestroy
   async deleteCategory() {
     const id = this.form.value.id;
     try {
-      const res = await firstValueFrom(this.deleteGQL.mutate({id}));
+      const res = await firstValueFrom(this.deleteGQL.mutate({ id }));
       this.routerHelper.goToParent(this.route);
-      this.msg.success('Deleted!');
-    } catch(exception: any) {
+      this.msg.success("Deleted!");
+    } catch (exception: any) {
       this.msg.error(exception.message);
     }
-    
   }
 }

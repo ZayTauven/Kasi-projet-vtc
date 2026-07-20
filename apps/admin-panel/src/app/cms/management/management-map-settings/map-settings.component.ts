@@ -1,23 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
 import {
   MapSettingGQL,
   UpdateMapSettingGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-map-settings',
-  templateUrl: './map-settings.component.html',
+  selector: "app-map-settings",
+  templateUrl: "./map-settings.component.html",
+  standalone: false,
 })
 export class MapSettingsComponent implements OnInit {
   form = this.fb.group({
-    provider: ['Mapbox', Validators.required],
+    provider: ["Mapbox", Validators.required],
     mapboxToken: [null],
-    mapboxStyleUser: ['mapbox', Validators.required],
-    mapboxStyleId: ['streets-v12', Validators.required],
+    mapboxStyleUser: ["mapbox", Validators.required],
+    mapboxStyleId: ["streets-v12", Validators.required],
     googleMapsApiKey: [null],
   });
 
@@ -28,7 +29,7 @@ export class MapSettingsComponent implements OnInit {
     private mapSettingGQL: MapSettingGQL,
     private updateMapSettingGQL: UpdateMapSettingGQL,
     private translate: TranslateService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -63,9 +64,9 @@ export class MapSettingsComponent implements OnInit {
     }
     try {
       await firstValueFrom(
-        this.updateMapSettingGQL.mutate({ input: this.form.value })
+        this.updateMapSettingGQL.mutate({ input: this.form.value }),
       );
-      this.msg.success(this.translate.instant('mapSettings.saved'));
+      this.msg.success(this.translate.instant("mapSettings.saved"));
       this.form.markAsPristine();
     } catch (error: any) {
       this.msg.error(error.message);

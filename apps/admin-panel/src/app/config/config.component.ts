@@ -1,26 +1,23 @@
-﻿import {
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   CurrentConfigurationQuery,
   UpdateConfigStatus,
   UpdateFirebaseGQL,
   UpdateMapsApiKeyGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { environment } from '@kasi/admin-panel/src/environments/environment';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
-import { TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, map, Observable, Subscription } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzUploadChangeParam } from "ng-zorro-antd/upload";
+import { TranslateService } from "@ngx-translate/core";
+import { firstValueFrom, map, Observable, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-config',
-  templateUrl: './config.component.html',
-  styleUrls: ['./config.component.css'],
+  selector: "app-config",
+  templateUrl: "./config.component.html",
+  styleUrls: ["./config.component.css"],
+  standalone: false,
 })
 export class ConfigComponent implements OnInit, OnDestroy {
   currentStep = 0;
@@ -37,13 +34,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
     private updateMapsGql: UpdateMapsApiKeyGQL,
     private updateFirebaseGql: UpdateFirebaseGQL,
     private msg: NzMessageService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.remoteConfig = this.route.data.pipe(map((data) => data.config));
     this.configSubscription = this.remoteConfig.subscribe(
-      (data) => (this.currentConfig = data.data)
+      (data) => (this.currentConfig = data.data),
     );
   }
 
@@ -65,7 +62,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
           this.currentConfig.currentConfiguration.backendMapsAPIKey == null ||
           this.currentConfig.currentConfiguration.backendMapsAPIKey.length < 10
         ) {
-          this.msg.error(this.translate.instant('config.invalidMapsKeys'));
+          this.msg.error(this.translate.instant("config.invalidMapsKeys"));
           return;
         }
         const result = await firstValueFrom(
@@ -73,13 +70,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
             backend: this.currentConfig.currentConfiguration.backendMapsAPIKey,
             adminPanel:
               this.currentConfig.currentConfiguration.adminPanelAPIKey,
-          })
+          }),
         );
         if (result.data?.updateMapsAPIKey.status == UpdateConfigStatus.Ok) {
           this.currentStep += 1;
         } else {
           this.msg.error(
-            result.data?.updateMapsAPIKey.message ?? 'Unknown Error'
+            result.data?.updateMapsAPIKey.message ?? "Unknown Error",
           );
         }
         break;
@@ -91,37 +88,39 @@ export class ConfigComponent implements OnInit, OnDestroy {
     if (
       this.currentConfig.currentConfiguration.firebaseProjectPrivateKey == null
     ) {
-      this.msg.error(this.translate.instant('config.invalidFirebaseKey'));
+      this.msg.error(this.translate.instant("config.invalidFirebaseKey"));
       return;
     }
     const result = await firstValueFrom(
       this.updateFirebaseGql.mutate({
         keyFileName:
           this.currentConfig.currentConfiguration.firebaseProjectPrivateKey,
-      })
+      }),
     );
     if (result.data?.updateFirebase.status == UpdateConfigStatus.Ok) {
       this.configed = true;
     } else {
-      this.msg.error(result.data?.updateFirebase.message ?? 'Unknown error');
+      this.msg.error(result.data?.updateFirebase.message ?? "Unknown error");
     }
   }
 
   handleChange(event: NzUploadChangeParam): void {
     const status = event.file.status;
-    if (status !== 'uploading') {
+    if (status !== "uploading") {
     }
-    if (status === 'done') {
+    if (status === "done") {
       this.msg.success(
-        this.translate.instant('config.uploadSuccess', {
+        this.translate.instant("config.uploadSuccess", {
           file: event.file.name,
-        })
+        }),
       );
       this.currentConfig.currentConfiguration.firebaseProjectPrivateKey =
         event.file.name;
-    } else if (status === 'error') {
+    } else if (status === "error") {
       this.msg.error(
-        this.translate.instant('config.uploadFailed', { file: event.file.name })
+        this.translate.instant("config.uploadFailed", {
+          file: event.file.name,
+        }),
       );
     }
   }

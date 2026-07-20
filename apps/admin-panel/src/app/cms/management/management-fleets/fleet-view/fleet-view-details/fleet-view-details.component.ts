@@ -1,20 +1,21 @@
-import { Component, OnDestroy } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy } from "@angular/core";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   UpdateFleetGQL,
   ViewFleetQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { COUNTRY_CODE_LIST } from '@kasi/admin-panel/src/app/country-codes';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom, Subscription } from 'rxjs';
-import { Map as MapboxMap, LngLatBounds } from 'mapbox-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+} from "@kasi/admin-panel/generated/graphql";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { COUNTRY_CODE_LIST } from "@kasi/admin-panel/src/app/country-codes";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom, Subscription } from "rxjs";
+import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 @Component({
-  selector: 'app-fleet-view-details',
-  templateUrl: './fleet-view-details.component.html',
+  selector: "app-fleet-view-details",
+  templateUrl: "./fleet-view-details.component.html",
+  standalone: false,
 })
 export class FleetViewDetailsComponent implements OnDestroy {
   form = this.fb.group({
@@ -61,20 +62,24 @@ export class FleetViewDetailsComponent implements OnDestroy {
     map.addControl(this.draw as any);
 
     this.routeSub = this.route.parent!.data.subscribe((data) => {
-      if (data['fleet'] != null) {
-        const val: ViewFleetQuery = data['fleet'].data;
+      if (data["fleet"] != null) {
+        const val: ViewFleetQuery = data["fleet"].data;
         const fleet = val.fleet;
         if (fleet != null) {
           this.form.patchValue(fleet);
-          const areas = fleet.exclusivityAreas as Array<Array<{ lat: number; lng: number }>> | null;
+          const areas = fleet.exclusivityAreas as Array<
+            Array<{ lat: number; lng: number }>
+          > | null;
           if (areas != null && areas.length > 0) {
             const bounds = new LngLatBounds();
             for (const poly of areas) {
-              const geoCoords = poly.map((p) => [p.lng, p.lat] as [number, number]);
+              const geoCoords = poly.map(
+                (p) => [p.lng, p.lat] as [number, number],
+              );
               this.draw!.add({
-                type: 'Feature',
+                type: "Feature",
                 properties: {},
-                geometry: { type: 'Polygon', coordinates: [geoCoords] },
+                geometry: { type: "Polygon", coordinates: [geoCoords] },
               } as any);
               this.polygons.push(poly);
               for (const p of poly) {
@@ -87,15 +92,19 @@ export class FleetViewDetailsComponent implements OnDestroy {
       }
     });
 
-    map.on('draw.create', (e: any) => {
+    map.on("draw.create", (e: any) => {
       for (const feature of e.features) {
         const geoCoords: [number, number][] = feature.geometry.coordinates[0];
         this.polygons.push(geoCoords.map((c) => ({ lat: c[1], lng: c[0] })));
       }
     });
 
-    map.on('draw.update', () => { this.rebuildPolygons(); });
-    map.on('draw.delete', () => { this.rebuildPolygons(); });
+    map.on("draw.update", () => {
+      this.rebuildPolygons();
+    });
+    map.on("draw.delete", () => {
+      this.rebuildPolygons();
+    });
   }
 
   private rebuildPolygons(): void {
@@ -116,15 +125,15 @@ export class FleetViewDetailsComponent implements OnDestroy {
           update: { ...rest, exclusivityAreas: this.polygons },
         }),
       );
-      this.msg.success('Success');
-      this.router.navigateByUrl('/management/fleets');
+      this.msg.success("Success");
+      this.router.navigateByUrl("/management/fleets");
     } catch (error: any) {
       this.msg.error(error.message);
     }
   }
 
   cancel(): void {
-    this.router.navigateByUrl('/management/fleets');
+    this.router.navigateByUrl("/management/fleets");
   }
 
   clearMap(): void {

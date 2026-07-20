@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import {
   GiftBatchCodesGQL,
   GiftBatchCodesQuery,
   ViewGiftBatchQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { firstValueFrom, map, Observable } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { firstValueFrom, map, Observable } from "rxjs";
 
-type GiftBatch = NonNullable<ViewGiftBatchQuery['giftBatch']>;
-type GiftCardConnection = NonNullable<GiftBatchCodesQuery['giftBatch']>['giftCards'];
+type GiftBatch = NonNullable<ViewGiftBatchQuery["giftBatch"]>;
+type GiftCardConnection = NonNullable<
+  GiftBatchCodesQuery["giftBatch"]
+>["giftCards"];
 
 @Component({
-  selector: 'app-gift-batch-view',
-  templateUrl: './gift-batch-view.component.html',
+  selector: "app-gift-batch-view",
+  templateUrl: "./gift-batch-view.component.html",
+  standalone: false,
 })
 export class GiftBatchViewComponent implements OnInit {
   batch$?: Observable<GiftBatch | undefined>;
@@ -25,12 +28,12 @@ export class GiftBatchViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private codesGQL: GiftBatchCodesGQL
+    private codesGQL: GiftBatchCodesGQL,
   ) {}
 
   ngOnInit(): void {
     this.batch$ = this.route.data.pipe(
-      map((data) => data.giftBatch?.data?.giftBatch)
+      map((data) => data.giftBatch?.data?.giftBatch),
     );
     this.loadCodes(this.route.snapshot.params.id);
   }
@@ -49,8 +52,8 @@ export class GiftBatchViewComponent implements OnInit {
       const res = await firstValueFrom(
         this.codesGQL.fetch(
           { id, paging: { limit: 500 } },
-          { errorPolicy: 'none', fetchPolicy: 'network-only' }
-        )
+          { errorPolicy: "none", fetchPolicy: "network-only" },
+        ),
       );
       this.codes = res.data?.giftBatch?.giftCards;
       this.canViewCodes = true;

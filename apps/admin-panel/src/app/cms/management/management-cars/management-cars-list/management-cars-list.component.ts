@@ -1,6 +1,6 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   CarsListQuery,
   CreateCarColorGQL,
@@ -9,14 +9,15 @@ import {
   DeleteCarModelGQL,
   UpdateCarColorGQL,
   UpdateCarModelGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { RouterHelperService } from '@kasi/admin-panel/src/app/@services/router-helper.service';
-import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
-import { firstValueFrom, map, Observable } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
+import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
+import { firstValueFrom, map, Observable } from "rxjs";
 
 @Component({
-  selector: 'app-management-cars-list',
-  templateUrl: './management-cars-list.component.html'
+  selector: "app-management-cars-list",
+  templateUrl: "./management-cars-list.component.html",
+  standalone: false,
 })
 export class ManagementCarsListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<CarsListQuery>>;
@@ -32,11 +33,11 @@ export class ManagementCarsListComponent implements OnInit {
     private updateCarModelGQL: UpdateCarModelGQL,
     private updateCarColorGQL: UpdateCarColorGQL,
     private createCarModelGQL: CreateCarModelGQL,
-    private createCarColorGQL: CreateCarColorGQL) {
-  }
+    private createCarColorGQL: CreateCarColorGQL,
+  ) {}
 
   ngOnInit(): void {
-    this.query = this.route.data.pipe(map(data => data.cars));
+    this.query = this.route.data.pipe(map((data) => data.cars));
   }
 
   startEdit(id: string, event: MouseEvent): void {
@@ -46,12 +47,16 @@ export class ManagementCarsListComponent implements OnInit {
   }
 
   async onSubmitEditModel(id: string, name: string) {
-    const res = await firstValueFrom(this.updateCarModelGQL.mutate({ id, input: {name}}));
+    const res = await firstValueFrom(
+      this.updateCarModelGQL.mutate({ id, input: { name } }),
+    );
     this.editId = undefined;
   }
 
   async onAddModel() {
-    const res = await firstValueFrom(this.createCarModelGQL.mutate({ input: { name: '' } }));
+    const res = await firstValueFrom(
+      this.createCarModelGQL.mutate({ input: { name: "" } }),
+    );
     this.routerHelper.refresh(this.route);
   }
 
@@ -67,12 +72,16 @@ export class ManagementCarsListComponent implements OnInit {
   }
 
   async onSubmitEditColor(id: string, title: string) {
-    const res = await firstValueFrom(this.updateCarColorGQL.mutate({ id, input: {name: title}}));
+    const res = await firstValueFrom(
+      this.updateCarColorGQL.mutate({ id, input: { name: title } }),
+    );
     this.editColorId = undefined;
   }
 
   async onAddColor() {
-    const res = await firstValueFrom(this.createCarColorGQL.mutate({ input: { name: '' } }));
+    const res = await firstValueFrom(
+      this.createCarColorGQL.mutate({ input: { name: "" } }),
+    );
     this.routerHelper.refresh(this.route);
   }
 

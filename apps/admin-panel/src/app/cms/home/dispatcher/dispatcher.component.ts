@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { NzModalService } from "ng-zorro-antd/modal";
 
 @Component({
-  selector: 'app-dispatcher',
-  templateUrl: './dispatcher.component.html',
+  selector: "app-dispatcher",
+  templateUrl: "./dispatcher.component.html",
+  standalone: false,
 })
 export class DispatcherComponent implements OnInit {
   current = 0;
@@ -22,17 +23,17 @@ export class DispatcherComponent implements OnInit {
     private route: ActivatedRoute,
     private messageService: NzMessageService,
     private modal: NzModalService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((x) => {
-      if (x['serviceId'] != null) {
+      if (x["serviceId"] != null) {
         this.current = 3;
-      } else if (x['points'] != null) {
+      } else if (x["points"] != null) {
         this.current = 2;
-      } else if (x['riderId'] != null) {
-        this.selectedRiderId = parseInt(x['riderId']);
+      } else if (x["riderId"] != null) {
+        this.selectedRiderId = parseInt(x["riderId"]);
         this.current = 1;
       }
     });
@@ -61,7 +62,7 @@ export class DispatcherComponent implements OnInit {
   }
 
   viewRequest(id: number) {
-    this.router.navigate(['../../../requests/view', id], {
+    this.router.navigate(["../../../requests/view", id], {
       relativeTo: this.route,
     });
   }

@@ -1,18 +1,19 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+﻿import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApolloQueryResult } from "@apollo/client/core";
 import {
   OrderStatus,
   RiderOrdersQuery,
-} from '@kasi/admin-panel/generated/graphql';
-import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
-import { TagColorService } from '@kasi/admin-panel/src/app/@services/tag-color/tag-color.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+} from "@kasi/admin-panel/generated/graphql";
+import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
+import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'app-rider-view-orders',
-  templateUrl: './rider-view-orders.component.html',
+  selector: "app-rider-view-orders",
+  templateUrl: "./rider-view-orders.component.html",
+  standalone: false,
 })
 export class RiderViewOrdersComponent implements OnInit {
   query?: Observable<ApolloQueryResult<RiderOrdersQuery>>;
@@ -21,7 +22,7 @@ export class RiderViewOrdersComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public tagColor: TagColorService,
-    public tableService: TableService
+    public tableService: TableService,
   ) {}
 
   ngOnInit(): void {

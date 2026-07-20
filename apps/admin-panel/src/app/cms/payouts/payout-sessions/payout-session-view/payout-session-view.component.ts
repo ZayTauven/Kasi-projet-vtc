@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import {
   CancelPayoutGQL,
   CancelPayoutSessionGQL,
@@ -7,16 +7,17 @@ import {
   PayoutSessionViewQuery,
   ProcessPayoutGQL,
   ProcessPayoutSessionGQL,
-} from '@kasi/admin-panel/generated/graphql';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { firstValueFrom } from 'rxjs';
+} from "@kasi/admin-panel/generated/graphql";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { firstValueFrom } from "rxjs";
 
 @Component({
-  selector: 'app-payout-session-view',
-  templateUrl: './payout-session-view.component.html',
+  selector: "app-payout-session-view",
+  templateUrl: "./payout-session-view.component.html",
+  standalone: false,
 })
 export class PayoutSessionViewComponent implements OnInit {
-  session?: PayoutSessionViewQuery['payoutSession'];
+  session?: PayoutSessionViewQuery["payoutSession"];
   loading = false;
 
   constructor(
@@ -26,7 +27,7 @@ export class PayoutSessionViewComponent implements OnInit {
     private cancelPayoutGQL: CancelPayoutGQL,
     private processSessionGQL: ProcessPayoutSessionGQL,
     private cancelSessionGQL: CancelPayoutSessionGQL,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -39,7 +40,7 @@ export class PayoutSessionViewComponent implements OnInit {
 
   get pendingCount(): number {
     return (
-      this.session?.payouts.nodes.filter((p) => p.status === 'Pending')
+      this.session?.payouts.nodes.filter((p) => p.status === "Pending")
         .length ?? 0
     );
   }
@@ -49,8 +50,8 @@ export class PayoutSessionViewComponent implements OnInit {
     const result = await firstValueFrom(
       this.viewGQL.fetch(
         { id: this.session.id },
-        { fetchPolicy: 'network-only' }
-      )
+        { fetchPolicy: "network-only" },
+      ),
     );
     this.session = result.data.payoutSession;
   }
@@ -79,26 +80,26 @@ export class PayoutSessionViewComponent implements OnInit {
   processSession() {
     if (this.session == null) return;
     return this.run(
-      firstValueFrom(this.processSessionGQL.mutate({ id: this.session.id }))
+      firstValueFrom(this.processSessionGQL.mutate({ id: this.session.id })),
     );
   }
 
   cancelSession() {
     if (this.session == null) return;
     return this.run(
-      firstValueFrom(this.cancelSessionGQL.mutate({ id: this.session.id }))
+      firstValueFrom(this.cancelSessionGQL.mutate({ id: this.session.id })),
     );
   }
 
   statusColor(status: string): string {
     switch (status) {
-      case 'Paid':
-      case 'Processed':
-        return 'success';
-      case 'Canceled':
-        return 'default';
+      case "Paid":
+      case "Processed":
+        return "success";
+      case "Canceled":
+        return "default";
       default:
-        return 'processing';
+        return "processing";
     }
   }
 }
