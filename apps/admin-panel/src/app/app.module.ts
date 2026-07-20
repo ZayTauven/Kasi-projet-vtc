@@ -1,20 +1,24 @@
-import { BrowserModule, Title } from '@angular/platform-browser';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { BrowserModule, Title } from "@angular/platform-browser";
+import { LOCALE_ID, NgModule } from "@angular/core";
 import {
   TranslateModule,
   TranslateLoader,
   TranslateService,
-} from '@ngx-translate/core';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { registerLocaleData } from '@angular/common';
-import en from '@angular/common/locales/en';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
-import { SharedModule } from './@components/shared.module';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+} from "@ngx-translate/core";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { registerLocaleData } from "@angular/common";
+import en from "@angular/common/locales/en";
+import { ServiceWorkerModule } from "@angular/service-worker";
+import { environment } from "../environments/environment";
+import { SharedModule } from '@kasi/admin-panel/src/app/@components/shared.module';
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import {
+  HttpClient,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 import {
   ar_EG,
   de_DE,
@@ -30,10 +34,10 @@ import {
   ro_RO,
   ru_RU,
   zh_CN,
-} from 'ng-zorro-antd/i18n';
-import { GraphQLModule } from './graphql.module';
-import { TimeagoModule } from 'ngx-timeago';
-import { NzIconModule } from 'ng-zorro-antd/icon';
+} from "ng-zorro-antd/i18n";
+import { GraphQLModule } from "./graphql.module";
+import { TimeagoModule } from "ngx-timeago";
+import { NzIconModule } from "ng-zorro-antd/icon";
 import {
   UserOutline,
   ContainerOutline,
@@ -93,9 +97,9 @@ import {
   // Icônes des pages détail/view/settings (Lot 0)
   DownOutline,
   CheckOutline,
-} from '@ant-design/icons-angular/icons';
-import { IconDefinition } from '@ant-design/icons-angular';
-import { ApolloModule } from 'apollo-angular';
+} from "@ant-design/icons-angular/icons";
+import { IconDefinition } from "@ant-design/icons-angular";
+import { ApolloModule } from "apollo-angular";
 import {
   enUS,
   es,
@@ -109,7 +113,7 @@ import {
   ja,
   pt,
   ro,
-} from 'date-fns/locale';
+} from "date-fns/locale";
 
 const icons: IconDefinition[] = [
   UserOutline,
@@ -173,22 +177,22 @@ registerLocaleData(en);
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, "assets/i18n/", ".json");
 }
 
 @NgModule({
   declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ApolloModule,
     SharedModule,
-    HttpClientModule,
     GraphQLModule,
     NzIconModule.forRoot(icons),
     BrowserAnimationsModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'fr',
+      defaultLanguage: "fr",
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
@@ -200,7 +204,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     // laissant un service worker périmé servir un cache mort -> page blanche après
     // redéploiement. Désactivé. Un `ngsw-worker.js` de secours (auto-désinscription)
     // reste servi pour tuer les anciens SW encore actifs dans les navigateurs.
-    ServiceWorkerModule.register('ngsw-worker.js', {
+    ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: false,
     }),
     TimeagoModule.forRoot(),
@@ -209,44 +213,32 @@ export function HttpLoaderFactory(http: HttpClient) {
     {
       provide: NZ_DATE_LOCALE,
       useFactory: () => {
-        const lang = localStorage.getItem('lang') ?? 'fr';
+        const lang = localStorage.getItem("lang") ?? "fr";
         switch (lang) {
-          case 'en':
+          case "en":
             return enUS;
-
-          case 'es':
+          case "es":
             return es;
-
-          case 'fr':
+          case "fr":
             return fr;
-
-          case 'de':
+          case "de":
             return de;
-
-          case 'ar':
+          case "ar":
             return ar;
-
-          case 'hy':
+          case "hy":
             return hy;
-
-          case 'ko':
+          case "ko":
             return ko;
-
-          case 'ru':
+          case "ru":
             return ru;
-
-          case 'zh':
+          case "zh":
             return zhCN;
-
-          case 'ja':
+          case "ja":
             return ja;
-
-          case 'pt':
+          case "pt":
             return pt;
-
-          case 'ro':
+          case "ro":
             return ro;
-
           default:
             return fr;
         }
@@ -256,56 +248,47 @@ export function HttpLoaderFactory(http: HttpClient) {
       provide: NZ_I18N,
       //useValue: en_US,
       useFactory: (localId: string) => {
-        const lang = localStorage.getItem('lang') ?? 'fr';
+        const lang = localStorage.getItem("lang") ?? "fr";
         switch (lang) {
-          case 'en':
+          case "en":
             return en_US;
-
-          case 'es':
+          case "es":
             return es_ES;
-
-          case 'fr':
+          case "fr":
             return fr_FR;
-
-          case 'de':
+          case "de":
             return de_DE;
-
-          case 'ar':
+          case "ar":
             return ar_EG;
-
-          case 'hy':
+          case "hy":
             return hy_AM;
-
-          case 'ko':
+          case "ko":
             return ko_KR;
-
-          case 'ru':
+          case "ru":
             return ru_RU;
-
-          case 'zh':
+          case "zh":
             return zh_CN;
-
-          case 'ja':
+          case "ja":
             return ja_JP;
-
-          case 'pt':
+          case "pt":
             return pt_PT;
-
-          case 'ro':
+          case "ro":
             return ro_RO;
-
           default:
             return fr_FR;
         }
       },
       deps: [LOCALE_ID],
     },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(private title: Title, private translator: TranslateService) {
-    translator.get('branding.page.title').subscribe((x) => {
+  constructor(
+    private title: Title,
+    private translator: TranslateService,
+  ) {
+    translator.get("branding.page.title").subscribe((x) => {
       title.setTitle(x);
     });
   }

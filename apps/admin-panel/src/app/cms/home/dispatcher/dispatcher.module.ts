@@ -1,4 +1,4 @@
-﻿import { SharedModule } from './../../../@components/shared.module';
+﻿import { SharedModule } from '@kasi/admin-panel/src/app/@components/shared.module';
 import { DispatcherRoutingModule } from './dispatcher-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

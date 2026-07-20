@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ConfigComponent } from './config.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ConfigRoutingModule } from './config-routing.module';
-import { SharedModule } from '../@components/shared.module';
+import { SharedModule } from '@kasi/admin-panel/src/app/@components/shared.module';
 
 
 
