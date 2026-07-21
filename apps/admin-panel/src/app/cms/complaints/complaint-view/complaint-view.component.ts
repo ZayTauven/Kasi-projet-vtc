@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   ComplaintStatus,
   UpdateComplaintStatusGQL,
@@ -19,7 +19,7 @@ import { NzMessageService } from "ng-zorro-antd/message";
   standalone: false,
 })
 export class ComplaintViewComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewComplaintQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewComplaintQuery>>;
   public camelCase = camelCase;
   public complaintStatus = ComplaintStatus;
 
@@ -37,7 +37,7 @@ export class ComplaintViewComponent implements OnInit {
 
   async updateStatus(status: ComplaintStatus) {
     await firstValueFrom(
-      this.updateGql.mutate({ id: this.route.snapshot.params.id, status }),
+      this.updateGql.mutate({ variables: { id: this.route.snapshot.params.id, status } }),
     );
     this.routerHelper.refresh(this.route);
     this.msg.success("Updated!");

@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   RequestActivityType,
@@ -16,7 +16,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class RequestViewActivitiesComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewOrderQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewOrderQuery>>;
 
   constructor(
     private route: ActivatedRoute,

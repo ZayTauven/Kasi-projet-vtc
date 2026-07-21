@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { ViewSosGQL, ViewSosQuery } from '@kasi/admin-panel/generated/graphql';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ export class SOSViewResolver  {
     private gql: ViewSosGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<ViewSosQuery>> {
-    return this.gql.fetch({id: route.params.id});
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<ViewSosQuery>> {
+    return this.gql.fetch({ variables: {id: route.params.id} });
   }
 }

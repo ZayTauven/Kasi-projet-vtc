@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   ComplaintStatus,
   SosListQuery,
@@ -17,7 +17,7 @@ import { camelCase } from "camel-case";
   standalone: false,
 })
 export class SOSListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<SosListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<SosListQuery>>;
   public complaintStatus = ComplaintStatus;
   public camelCase = camelCase;
 

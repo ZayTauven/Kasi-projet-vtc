@@ -100,7 +100,6 @@ import {
   CheckOutline,
 } from "@ant-design/icons-angular/icons";
 import { IconDefinition } from "@ant-design/icons-angular";
-import { ApolloModule } from "apollo-angular";
 import {
   enUS,
   es,
@@ -187,7 +186,6 @@ export function HttpLoaderFactory(http: HttpClient) {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ApolloModule,
     SharedModule,
     GraphQLModule,
     NzIconModule.forRoot(icons),

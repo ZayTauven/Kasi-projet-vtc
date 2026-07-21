@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateRiderTransactionGQL,
   RiderDeductTransactionType,
@@ -31,7 +31,7 @@ export class RiderViewFinancialsComponent implements OnInit {
     description: [null],
     refrenceNumber: [null],
   });
-  query?: Observable<ApolloQueryResult<RiderWalletQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RiderWalletQuery>>;
   deductTypes = Object.keys(RiderDeductTransactionType);
   rechargeTypes = Object.keys(RiderRechargeTransactionType);
 
@@ -67,7 +67,7 @@ export class RiderViewFinancialsComponent implements OnInit {
     }
     try {
       await firstValueFrom(
-        this.createTransactionGQL.mutate({ input: this.formTransaction.value }),
+        this.createTransactionGQL.mutate({ variables: { input: this.formTransaction.value } }),
       );
       this.msg.success("Transaction Submitted.");
       this.routerHelper.refresh(this.route);

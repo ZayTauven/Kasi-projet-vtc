@@ -121,10 +121,10 @@ export class FleetViewDetailsComponent implements OnDestroy {
     const { id, exclusivityAreas: _ignored, ...rest } = this.form.value;
     try {
       await firstValueFrom(
-        this.updateGQL.mutate({
+        this.updateGQL.mutate({ variables: {
           id,
           update: { ...rest, exclusivityAreas: this.polygons },
-        }),
+        } }),
       );
       this.msg.success("Success");
       this.router.navigateByUrl("/management/fleets");

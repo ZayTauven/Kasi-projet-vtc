@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ObservableQuery } from '@apollo/client/core';
 import {
   NotificationsGQL,
   NotificationsQuery,
@@ -16,7 +16,7 @@ export class CMSResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<NotificationsQuery>> {
-    return this.gql.watch({}).valueChanges;
+  ): Observable<ObservableQuery.Result<NotificationsQuery>> {
+    return this.gql.watch({ variables: {} }).valueChanges;
   }
 }

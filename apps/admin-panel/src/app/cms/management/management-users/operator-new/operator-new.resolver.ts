@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { NewOperatorGQL, NewOperatorQuery } from '@kasi/admin-panel/generated/graphql';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ export class OperatorNewResolver  {
     private gql: NewOperatorGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<NewOperatorQuery>> {
-    return this.gql.fetch({});
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<NewOperatorQuery>> {
+    return this.gql.fetch({ variables: {} });
   }
 }

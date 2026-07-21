@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Chart } from "@antv/g2";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   ChartTimeframe,
@@ -28,7 +28,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
   standalone: false,
 })
 export class OverviewComponent implements OnInit, AfterViewInit {
-  query?: Observable<ApolloQueryResult<OverviewQuery>>;
+  query?: Observable<ApolloClient.QueryResult<OverviewQuery>>;
   incomeMode = 2;
   requestMode = 2;
   driverRegistrationsMode = 2;
@@ -73,11 +73,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   async refreshIncome() {
     const result = await firstValueFrom(
-      this.incomeChartGQL.fetch({
+      this.incomeChartGQL.fetch({ variables: {
         timeframe: this.chartTimeOptions[this.incomeMode].value,
-      }),
+      } }),
     );
-    this.isChartIncomeEmpty = result.data.incomeChart.length == 0;
+    this.isChartIncomeEmpty = result.data!.incomeChart.length == 0;
     if (this.isChartIncomeEmpty) {
       this.chartIncome.clear();
       return;
@@ -85,11 +85,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     const timeFormat = this.getTimeFormatForQuery(
       this.chartTimeOptions[this.incomeMode].value,
     );
-    result.data.incomeChart.forEach((result) => {
+    result.data!.incomeChart.forEach((result) => {
       result.time = formatDate(result.time, timeFormat, this.locale);
       result.sum = parseFloat(result.sum.toFixed(2));
     });
-    this.chartIncome.data(result.data.incomeChart);
+    this.chartIncome.data(result.data!.incomeChart);
     this.chartIncome.interval().position("time*sum").color("currency");
     this.chartIncome.render();
     this.chartIncome.interaction("active-region");
@@ -97,11 +97,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   async refreshRequests() {
     const result = await firstValueFrom(
-      this.requestsChartGQL.fetch({
+      this.requestsChartGQL.fetch({ variables: {
         timeframe: this.chartTimeOptions[this.requestMode].value,
-      }),
+      } }),
     );
-    this.isChartRequestsEmpty = result.data.requestChart.length == 0;
+    this.isChartRequestsEmpty = result.data!.requestChart.length == 0;
     if (this.isChartRequestsEmpty) {
       this.chartRequests.clear();
       return;
@@ -109,14 +109,14 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     const timeFormat = this.getTimeFormatForQuery(
       this.chartTimeOptions[this.requestMode].value,
     );
-    result.data.requestChart.forEach((result) => {
+    result.data!.requestChart.forEach((result) => {
       result.time = formatDate(result.time, timeFormat, this.locale);
       result.count = parseFloat(result.count.toString());
       result.status = this.translateService.instant(
         `enum.request.${result.status}`,
       );
     });
-    this.chartRequests.data(result.data.requestChart);
+    this.chartRequests.data(result.data!.requestChart);
     this.chartRequests
       .interval()
       .adjust("stack")
@@ -128,12 +128,12 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   async refreshDriverRegistrations() {
     const result = await firstValueFrom(
-      this.driverRegistrationsChartGQL.fetch({
+      this.driverRegistrationsChartGQL.fetch({ variables: {
         timeframe: this.chartTimeOptions[this.driverRegistrationsMode].value,
-      }),
+      } }),
     );
     this.isChartDriverRegistrationsEmpty =
-      result.data.driverRegistrations.length == 0;
+      result.data!.driverRegistrations.length == 0;
     if (this.isChartDriverRegistrationsEmpty) {
       this.chartDriverRegistrations.clear();
       return;
@@ -141,11 +141,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     const timeFormat = this.getTimeFormatForQuery(
       this.chartTimeOptions[this.driverRegistrationsMode].value,
     );
-    result.data.driverRegistrations.forEach((result) => {
+    result.data!.driverRegistrations.forEach((result) => {
       result.time = formatDate(result.time, timeFormat, this.locale);
       result.count = parseFloat(result.count.toString());
     });
-    this.chartDriverRegistrations.data(result.data.driverRegistrations);
+    this.chartDriverRegistrations.data(result.data!.driverRegistrations);
     this.chartDriverRegistrations
       .interval()
       .position("time*count")
@@ -156,12 +156,12 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   async refreshRiderRegistrations() {
     const result = await firstValueFrom(
-      this.riderRegistrationsChartGQL.fetch({
+      this.riderRegistrationsChartGQL.fetch({ variables: {
         timeframe: this.chartTimeOptions[this.riderRegistrationsMode].value,
-      }),
+      } }),
     );
     this.isChartRiderRegistrationsEmpty =
-      result.data.riderRegistrations.length == 0;
+      result.data!.riderRegistrations.length == 0;
     if (this.isChartRiderRegistrationsEmpty) {
       this.chartRiderRegistrations.clear();
       return;
@@ -169,11 +169,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     const timeFormat = this.getTimeFormatForQuery(
       this.chartTimeOptions[this.riderRegistrationsMode].value,
     );
-    result.data.riderRegistrations.forEach((result) => {
+    result.data!.riderRegistrations.forEach((result) => {
       result.time = formatDate(result.time, timeFormat, this.locale);
       result.count = parseFloat(result.count.toString());
     });
-    this.chartRiderRegistrations.data(result.data.riderRegistrations);
+    this.chartRiderRegistrations.data(result.data!.riderRegistrations);
     this.chartRiderRegistrations
       .interval()
       .position("time*count")

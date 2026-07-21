@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { CouponListQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
@@ -13,7 +13,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class CouponsListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<CouponListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<CouponListQuery>>;
 
   constructor(
     public route: ActivatedRoute,

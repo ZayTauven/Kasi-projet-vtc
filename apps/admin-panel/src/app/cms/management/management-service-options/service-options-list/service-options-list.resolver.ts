@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { ServiceOptionsListGQL, ServiceOptionsListQuery } from '@kasi/admin-panel/generated/graphql';
 import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ export class ServiceOptionsListResolver  {
     private gql: ServiceOptionsListGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<ServiceOptionsListQuery>> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<ServiceOptionsListQuery>> {
     //const params = this.paging.deserializeQueryParams<FeedbackParameterSortFields, FeedbackParameterFilter>(route.queryParams);
     return this.gql.fetch();
   }

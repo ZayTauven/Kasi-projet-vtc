@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
     DriverTransactionFilter,
     DriverTransactionSortFields,
@@ -17,8 +17,8 @@ export class DriverWalletsListResolver  {
     private gql: DriverWalletsListGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<DriverWalletsListQuery>> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<DriverWalletsListQuery>> {
     const params = this.paging.deserializeQueryParams<DriverTransactionSortFields, DriverTransactionFilter>(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

@@ -50,9 +50,9 @@ export class ManagementServiceCategoryViewComponent
   async onSubmit() {
     const { id, ...input } = this.form.value;
     if (id == null) {
-      await firstValueFrom(this.createGQL.mutate({ input }));
+      await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
     } else {
-      await firstValueFrom(this.updateGQL.mutate({ id, input }));
+      await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
     }
     this.routerHelper.goToParent(this.route);
   }
@@ -64,7 +64,7 @@ export class ManagementServiceCategoryViewComponent
   async deleteCategory() {
     const id = this.form.value.id;
     try {
-      const res = await firstValueFrom(this.deleteGQL.mutate({ id }));
+      const res = await firstValueFrom(this.deleteGQL.mutate({ variables: { id } }));
       this.routerHelper.goToParent(this.route);
       this.msg.success("Deleted!");
     } catch (exception: any) {

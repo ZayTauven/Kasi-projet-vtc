@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ViewComplaintQuery } from "@kasi/admin-panel/generated/graphql";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { map, Observable } from "rxjs";
@@ -13,7 +13,7 @@ import { camelCase } from "camel-case";
   standalone: false,
 })
 export class ComplaintViewInfoComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewComplaintQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewComplaintQuery>>;
   public camelCase = camelCase;
 
   constructor(

@@ -2,7 +2,7 @@
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   DeleteRiderGQL,
   RiderStatus,
@@ -22,7 +22,7 @@ import { TranslateService } from "@ngx-translate/core";
   standalone: false,
 })
 export class RiderViewComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewRiderQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewRiderQuery>>;
   environment;
   riderStatus = RiderStatus;
 
@@ -45,10 +45,10 @@ export class RiderViewComponent implements OnInit {
   async changeStatus(status: RiderStatus) {
     try {
       await firstValueFrom(
-        this.updateRiderGQL.mutate({
+        this.updateRiderGQL.mutate({ variables: {
           id: this.route.snapshot.params.id,
           update: { status: status as RiderStatus },
-        }),
+        } }),
       );
       this.message.success(this.translate.instant("Done!"));
       this.router.navigate([], {
@@ -75,7 +75,7 @@ export class RiderViewComponent implements OnInit {
       ),
       nzOnOk: async () => {
         try {
-          await firstValueFrom(this.deleteGQL.mutate({ id }));
+          await firstValueFrom(this.deleteGQL.mutate({ variables: { id } }));
           this.message.success(
             this.translate.instant("message.deleteRiderCofirmAlert"),
           );

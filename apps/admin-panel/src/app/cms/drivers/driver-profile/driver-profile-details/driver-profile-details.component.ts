@@ -1,7 +1,7 @@
 ﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   Gender,
   PackageSize,
@@ -47,7 +47,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   });
   root: string = environment.root;
   subscription?: Subscription;
-  query?: Observable<ApolloQueryResult<ViewDriverQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewDriverQuery>>;
   genders = Object.values(Gender);
   public gender = Gender;
   packageSizes = Object.values(PackageSize);
@@ -113,11 +113,11 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   async onSubmit() {
     const { id, mobileNumber, enabledServices, ...update } = this.form.value;
     await firstValueFrom(
-      this.updateGQL.mutate({
+      this.updateGQL.mutate({ variables: {
         id,
         update,
         serviceIds: enabledServices,
-      }),
+      } }),
     );
     this.msg.success("Updated!");
     this.routerHelper.refresh(this.route);

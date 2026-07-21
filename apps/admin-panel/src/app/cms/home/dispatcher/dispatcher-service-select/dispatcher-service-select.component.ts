@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateOrderGQL,
   DispatcherCalculateFareQuery,
@@ -16,7 +16,7 @@ import { DispatcherService } from "../dispatcher.service";
   standalone: false,
 })
 export class DispatcherServiceSelectComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<DispatcherCalculateFareQuery>>;
+  query?: Observable<ApolloClient.QueryResult<DispatcherCalculateFareQuery>>;
   time: Date = new Date();
 
   constructor(
@@ -38,13 +38,13 @@ export class DispatcherServiceSelectComponent implements OnInit {
     var diff = (new Date().getTime() - this.time.getTime()) / 1000 / 60;
     diff = Math.abs(Math.round(diff));
     const result = await firstValueFrom(
-      this.createOrderMutation.mutate({
+      this.createOrderMutation.mutate({ variables: {
         riderId,
         points: points.map((point) => point.location),
         addresses: points.map((point) => point.address),
         serviceId: service.id,
         intervalMinutes: diff > 0 ? diff : 0,
-      }),
+      } }),
     );
 
     this.router.navigate(["../looking"], {

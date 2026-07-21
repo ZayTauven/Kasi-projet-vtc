@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateAnnouncementGQL,
   DeleteAnnouncementGQL,
@@ -39,15 +39,15 @@ export class AnnouncementViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscription = this.route.data.subscribe((data) => {
-      const announcement: ApolloQueryResult<ViewAnnouncementQuery> =
+      const announcement: ApolloClient.QueryResult<ViewAnnouncementQuery> =
         data.announcement;
-      if (announcement.data.announcement?.startAt == null) return;
-      const startAt = new Date(announcement.data.announcement!.startAt);
-      const expireAt = new Date(announcement.data.announcement!.expireAt);
+      if (announcement.data!.announcement?.startAt == null) return;
+      const startAt = new Date(announcement.data!.announcement!.startAt);
+      const expireAt = new Date(announcement.data!.announcement!.expireAt);
       const dates = [startAt, expireAt];
-      const userType = announcement.data.announcement.userType[0];
+      const userType = announcement.data!.announcement.userType[0];
       this.form.patchValue({
-        ...announcement.data.announcement,
+        ...announcement.data!.announcement,
         dates,
         userType,
       });
@@ -60,9 +60,9 @@ export class AnnouncementViewComponent implements OnInit {
     const expireAt = dates[1].getTime();
     const input = { ..._input, startAt, expireAt };
     if (id == null) {
-      await firstValueFrom(this.createGQL.mutate({ input }));
+      await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
     } else {
-      await firstValueFrom(this.updateGQL.mutate({ id, input }));
+      await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
     }
     this.routerHelper.goToParent(this.route);
   }
@@ -73,7 +73,7 @@ export class AnnouncementViewComponent implements OnInit {
 
   async deleteAnnouncement() {
     const result = await firstValueFrom(
-      this.deleteGQL.mutate({ id: this.form.value.id }),
+      this.deleteGQL.mutate({ variables: { id: this.form.value.id } }),
     );
     this.routerHelper.goToParent(this.route);
   }

@@ -63,9 +63,9 @@ export class RoleViewComponent implements OnInit {
   async onSubmit() {
     const { id, ...input } = this.form.value;
     if (id == null) {
-      const res = await firstValueFrom(this.createGQL.mutate({ input }));
+      const res = await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
     } else {
-      const res = await firstValueFrom(this.updateGQL.mutate({ id, input }));
+      const res = await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
     }
     this.routerHelper.goToParent(this.route);
   }

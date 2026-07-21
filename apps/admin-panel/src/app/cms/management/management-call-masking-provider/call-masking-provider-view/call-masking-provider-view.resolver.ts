@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   CallMaskingProviderViewGQL,
   CallMaskingProviderViewQuery,
@@ -14,7 +14,7 @@ export class CallMaskingProviderViewResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<CallMaskingProviderViewQuery>> {
-    return this.gql.fetch({ id: route.params.id });
+  ): Observable<ApolloClient.QueryResult<CallMaskingProviderViewQuery>> {
+    return this.gql.fetch({ variables: { id: route.params.id } });
   }
 }

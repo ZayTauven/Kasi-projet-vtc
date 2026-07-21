@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { ReviewParameterViewQuery, ReviewParameterViewGQL } from '@kasi/admin-panel/generated/graphql';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ export class ReviewParameterViewResolver  {
         private gql: ReviewParameterViewGQL
     ) { }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<ReviewParameterViewQuery>> {
-        return this.gql.fetch({ id: route.params.id });
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<ReviewParameterViewQuery>> {
+        return this.gql.fetch({ variables: { id: route.params.id } });
     }
 }

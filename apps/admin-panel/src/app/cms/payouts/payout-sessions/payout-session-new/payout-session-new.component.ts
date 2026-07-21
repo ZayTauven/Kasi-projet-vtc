@@ -40,8 +40,8 @@ export class PayoutSessionNewComponent implements OnInit {
 
   ngOnInit(): void {
     this.methods = this.methodsGQL
-      .fetch({ paging: { limit: 100 } })
-      .pipe(map((result) => result.data.payoutMethods.nodes));
+      .fetch({ variables: { paging: { limit: 100 } } })
+      .pipe(map((result) => result.data!.payoutMethods.nodes));
     // L'aperçu devient obsolète dès que les critères changent.
     this.form.valueChanges.subscribe(() => (this.preview = undefined));
   }
@@ -63,9 +63,9 @@ export class PayoutSessionNewComponent implements OnInit {
     this.loading = true;
     try {
       const result = await firstValueFrom(
-        this.previewGQL.fetch({ input: this.input() }),
+        this.previewGQL.fetch({ variables: { input: this.input() } }),
       );
-      this.preview = result.data.payoutSessionPreview;
+      this.preview = result.data!.payoutSessionPreview;
     } catch (error: any) {
       this.msg.error(error.message);
     } finally {
@@ -78,7 +78,7 @@ export class PayoutSessionNewComponent implements OnInit {
     this.loading = true;
     try {
       const result = await firstValueFrom(
-        this.createGQL.mutate({ input: this.input() }),
+        this.createGQL.mutate({ variables: { input: this.input() } }),
       );
       this.router.navigate(
         ["payouts/sessions/view/" + result.data?.createPayoutSession?.id],

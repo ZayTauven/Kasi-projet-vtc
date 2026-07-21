@@ -14,7 +14,7 @@ query ViewRider($id: ID!) {
     registrationTimestamp
     email
     gender
-    wallets(
+    wallet(
       sorting: [{ field: balance, direction: DESC }]
       paging: { limit: 1 }
     ) {
@@ -46,7 +46,7 @@ query RiderWallet(
   $sorting: [RiderTransactionSort!]
 ) {
   rider(id: $riderId) {
-    wallets {
+    wallet {
       nodes {
         balance
         currency

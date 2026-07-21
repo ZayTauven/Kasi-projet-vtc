@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateSosActivityGQL,
   SosActivityAction,
@@ -20,7 +20,7 @@ import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-
   standalone: false,
 })
 export class SOSViewInfoComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewSosQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewSosQuery>>;
   formActivity = this.fb.group({
     action: [null, Validators.required],
     note: [null],
@@ -52,9 +52,9 @@ export class SOSViewInfoComponent implements OnInit {
   async onSubmitActivity(sosId: string) {
     try {
       await firstValueFrom(
-        this.addActivityGql.mutate({
+        this.addActivityGql.mutate({ variables: {
           activity: { ...this.formActivity.value, sosId },
-        }),
+        } }),
       );
       this.msg.success("Activity recorded");
       this.routerHelper.refresh(this.route);

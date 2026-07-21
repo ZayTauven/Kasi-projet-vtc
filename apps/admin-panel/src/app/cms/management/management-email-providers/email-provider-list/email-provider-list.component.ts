@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { EmailProviderListQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { map, Observable } from "rxjs";
@@ -12,7 +12,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class EmailProviderListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<EmailProviderListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<EmailProviderListQuery>>;
 
   constructor(
     private route: ActivatedRoute,

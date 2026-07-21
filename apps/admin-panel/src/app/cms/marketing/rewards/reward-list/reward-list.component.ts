@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { RewardListQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
@@ -13,7 +13,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class RewardListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RewardListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RewardListQuery>>;
 
   constructor(
     public route: ActivatedRoute,

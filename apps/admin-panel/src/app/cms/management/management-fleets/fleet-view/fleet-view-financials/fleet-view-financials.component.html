@@ -57,7 +57,7 @@
 <div class="kasi-card mt-4">
   <div class="kasi-card__head"><span class="kasi-card__title">{{ 'profile.walletSummary' | translate }}</span></div>
   <div class="kasi-card__body kasi-card__body--flush">
-    @if ((query | async)?.data?.fleet?.wallets; as wallets) {
+    @if ((query | async)?.data?.fleet?.wallet; as wallets) {
       <nz-table #walletTable
         [nzFrontPagination] [nzData]="wallets" [nzTotal]="wallets.length">
         <thead>

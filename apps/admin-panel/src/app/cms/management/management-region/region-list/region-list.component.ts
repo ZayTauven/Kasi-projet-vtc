@@ -3,7 +3,7 @@ import { Params, ActivatedRoute, Router } from "@angular/router";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { Observable } from "rxjs";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { RegionListQuery } from "@kasi/admin-panel/generated/graphql";
 import { map } from "rxjs/operators";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
@@ -15,7 +15,7 @@ import { TableService } from "@kasi/admin-panel/src/app/@services/table-service"
   standalone: false,
 })
 export class RegionListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RegionListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RegionListQuery>>;
 
   constructor(
     private route: ActivatedRoute,

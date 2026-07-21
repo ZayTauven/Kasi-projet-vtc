@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { RoleQuery, RolesQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { map, Observable } from "rxjs";
@@ -13,7 +13,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class RolesListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RolesQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RolesQuery>>;
 
   constructor(
     private route: ActivatedRoute,

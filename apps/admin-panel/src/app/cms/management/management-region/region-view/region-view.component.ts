@@ -128,16 +128,16 @@ export class RegionViewComponent implements OnDestroy {
       const { id, location: _loc, ...update } = this.form.value;
       if (id == null) {
         await firstValueFrom(
-          this.createGQL.mutate({
+          this.createGQL.mutate({ variables: {
             input: { ...update, location: this.polygons },
-          }),
+          } }),
         );
       } else {
         await firstValueFrom(
-          this.updateGQL.mutate({
+          this.updateGQL.mutate({ variables: {
             id,
             update: { ...update, location: this.polygons },
-          }),
+          } }),
         );
       }
       this.router.navigate(["management/regions"], {

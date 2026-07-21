@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   UpdateOperatorGQL,
   ViewOperatorQuery,
@@ -17,7 +17,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
   standalone: false,
 })
 export class UserViewDetailsComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewOperatorQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewOperatorQuery>>;
 
   form = this.fb.group({
     id: [null, Validators.required],
@@ -46,7 +46,7 @@ export class UserViewDetailsComponent implements OnInit {
 
   async onSubmit() {
     const { id, ...update } = this.form.value;
-    const result = await firstValueFrom(this.updateGQL.mutate({ id, update }));
+    const result = await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
     this.msg.success("Done!");
     this.router.navigateByUrl("/management/users");
   }

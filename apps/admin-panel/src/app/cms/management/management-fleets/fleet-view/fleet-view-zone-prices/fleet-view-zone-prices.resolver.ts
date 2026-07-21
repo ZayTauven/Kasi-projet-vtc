@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   FleetFilter,
   FleetFinancialsGQL,
@@ -28,11 +28,11 @@ export class FleetViewZonePricesResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<FleetZonePricesQuery>> {
+  ): Observable<ApolloClient.QueryResult<FleetZonePricesQuery>> {
     const paging = this.tableService.deserializeQueryParams<
       ZonePriceSortFields,
       ZonePriceFilter
     >(route.queryParams);
-    return this.gql.fetch({ id: route.parent?.params.id, ...paging });
+    return this.gql.fetch({ variables: { id: route.parent?.params.id, ...paging } });
   }
 }

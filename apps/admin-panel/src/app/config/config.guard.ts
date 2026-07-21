@@ -16,9 +16,9 @@ export class ConfigGuard  {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean | UrlTree> {
-    const result = await firstValueFrom(this.currentConfigGql.fetch({}));
+    const result = await firstValueFrom(this.currentConfigGql.fetch({ variables: {} }));
     if (
-      result.data.currentConfiguration.firebaseProjectPrivateKey == null
+      result.data!.currentConfiguration.firebaseProjectPrivateKey == null
     ) {
       return true;
     } else {

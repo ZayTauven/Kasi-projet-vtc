@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   SmsProviderViewGQL,
   SmsProviderViewQuery,
@@ -14,7 +14,7 @@ export class SmsProviderViewResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<SmsProviderViewQuery>> {
-    return this.gql.fetch({ id: route.params.id });
+  ): Observable<ApolloClient.QueryResult<SmsProviderViewQuery>> {
+    return this.gql.fetch({ variables: { id: route.params.id } });
   }
 }

@@ -56,7 +56,7 @@ export class RiderViewInfoComponent implements OnInit, OnDestroy {
     const { id, mobileNumber, ...update } = this.form.value;
     try {
       const result = await firstValueFrom(
-        this.updateRiderGQL.mutate({ id, update }),
+        this.updateRiderGQL.mutate({ variables: { id, update } }),
       );
       this.msg.success("Updated!");
       this.routerHelper.refresh(this.route);

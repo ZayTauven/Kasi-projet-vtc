@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { RiderAddressesQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { Observable } from "rxjs";
@@ -13,7 +13,7 @@ import { map } from "rxjs/operators";
   standalone: false,
 })
 export class RiderViewAddressesComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RiderAddressesQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RiderAddressesQuery>>;
 
   constructor(
     private route: ActivatedRoute,

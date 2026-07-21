@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { CallMaskingProviderListQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { map, Observable } from "rxjs";
@@ -12,7 +12,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class CallMaskingProviderListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<CallMaskingProviderListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<CallMaskingProviderListQuery>>;
 
   constructor(
     private route: ActivatedRoute,

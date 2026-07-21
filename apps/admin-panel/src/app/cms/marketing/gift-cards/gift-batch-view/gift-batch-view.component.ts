@@ -52,8 +52,7 @@ export class GiftBatchViewComponent implements OnInit {
     try {
       const res = await firstValueFrom(
         this.codesGQL.fetch(
-          { id, paging: { limit: 500 } },
-          { errorPolicy: "none", fetchPolicy: "network-only" },
+          { variables: { id, paging: { limit: 500 } }, errorPolicy: "none", fetchPolicy: "network-only" },
         ),
       );
       this.codes = res.data?.giftBatch?.giftCards;

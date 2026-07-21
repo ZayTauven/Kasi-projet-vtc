@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } 
 import { UntypedFormControl } from "@angular/forms";
 import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   AssignDriverToOrderGQL,
@@ -41,8 +41,8 @@ export class RequestViewAssignComponent
 {
   query?: Observable<
     [
-      ApolloQueryResult<AvailableDriversForOrderQuery>,
-      ApolloQueryResult<ViewOrderQuery>,
+      ApolloClient.QueryResult<AvailableDriversForOrderQuery>,
+      ApolloClient.QueryResult<ViewOrderQuery>,
     ]
   >;
 
@@ -74,12 +74,12 @@ export class RequestViewAssignComponent
 
   ngOnInit(): void {
     this.query = this.route.data
-      .pipe<ApolloQueryResult<AvailableDriversForOrderQuery>>(
+      .pipe<ApolloClient.QueryResult<AvailableDriversForOrderQuery>>(
         map((data) => data.availableDrivers),
       )
       .pipe(
         combineLatestWith(
-          this.route.parent!.data.pipe<ApolloQueryResult<ViewOrderQuery>>(
+          this.route.parent!.data.pipe<ApolloClient.QueryResult<ViewOrderQuery>>(
             map((data) => data.order),
           ),
         ),
@@ -88,10 +88,10 @@ export class RequestViewAssignComponent
 
   ngAfterViewInit(): void {
     this.subscription = this.query?.subscribe((data) => {
-      const locations: Point[] = data[0].data.getDriversLocationWithData.map(
+      const locations: Point[] = data[0].data!.getDriversLocationWithData.map(
         (d) => ({ lat: d.location.lat, lng: d.location.lng }),
       );
-      for (const tripPoint of data[1].data.order!.points) {
+      for (const tripPoint of data[1].data!.order!.points) {
         locations.push({ lat: tripPoint.lat, lng: tripPoint.lng });
       }
       if (this.mapInstance) {
@@ -109,13 +109,13 @@ export class RequestViewAssignComponent
           this.filteredDrivers = [];
         }),
         switchMap((value) =>
-          this.driversSearchQuery.fetch({
+          this.driversSearchQuery.fetch({ variables: {
             filter: value.value == null ? value : "",
-          }),
+          } }),
         ),
       )
       .subscribe((data) => {
-        if (data.data.drivers != null) {
+        if (data.data?.drivers != null) {
           this.filteredDrivers = data.data.drivers.nodes.map((d) => ({
             value: d.id,
             label: `${d.firstName} ${d.lastName} (${d.mobileNumber})`,
@@ -168,10 +168,10 @@ export class RequestViewAssignComponent
   async assignToDriver(driverId: string): Promise<void> {
     try {
       await firstValueFrom(
-        this.assignDriverToOrderMutation.mutate({
+        this.assignDriverToOrderMutation.mutate({ variables: {
           orderId: this.route.parent!.snapshot.params.id,
           driverId,
-        }),
+        } }),
       );
       this.msg.success(
         this.translate.instant("message.driverAssignedSuccessfully"),

@@ -1251,8 +1251,8 @@ export type Driver = {
   status: DriverStatus;
   transactions: DriverTransactionsConnection;
   transactionsAggregate: Array<DriverTransactionsAggregateResponse>;
-  wallets: Array<DriverWallet>;
-  walletsAggregate: Array<DriverWalletsAggregateResponse>;
+  wallet: Array<DriverWallet>;
+  walletAggregate: Array<DriverWalletAggregateResponse>;
 };
 
 
@@ -1314,13 +1314,13 @@ export type DriverTransactionsAggregateArgs = {
 };
 
 
-export type DriverWalletsArgs = {
+export type DriverWalletArgs = {
   filter?: DriverWalletFilter;
   sorting?: Array<DriverWalletSort>;
 };
 
 
-export type DriverWalletsAggregateArgs = {
+export type DriverWalletAggregateArgs = {
   filter?: InputMaybe<DriverWalletAggregateFilter>;
 };
 
@@ -1826,6 +1826,31 @@ export type DriverWalletAggregateFilter = {
   or?: InputMaybe<Array<DriverWalletAggregateFilter>>;
 };
 
+export type DriverWalletAggregateGroupBy = {
+  __typename?: 'DriverWalletAggregateGroupBy';
+  balance?: Maybe<Scalars['Float']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  driverId?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+};
+
+export type DriverWalletAggregateResponse = {
+  __typename?: 'DriverWalletAggregateResponse';
+  avg?: Maybe<DriverWalletAvgAggregate>;
+  count?: Maybe<DriverWalletCountAggregate>;
+  groupBy?: Maybe<DriverWalletAggregateGroupBy>;
+  max?: Maybe<DriverWalletMaxAggregate>;
+  min?: Maybe<DriverWalletMinAggregate>;
+  sum?: Maybe<DriverWalletSumAggregate>;
+};
+
+export type DriverWalletAvgAggregate = {
+  __typename?: 'DriverWalletAvgAggregate';
+  balance?: Maybe<Scalars['Float']['output']>;
+  driverId?: Maybe<Scalars['Float']['output']>;
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
 export type DriverWalletConnection = {
   __typename?: 'DriverWalletConnection';
   /** Array of nodes. */
@@ -1836,6 +1861,14 @@ export type DriverWalletConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type DriverWalletCountAggregate = {
+  __typename?: 'DriverWalletCountAggregate';
+  balance?: Maybe<Scalars['Int']['output']>;
+  currency?: Maybe<Scalars['Int']['output']>;
+  driverId?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+};
+
 export type DriverWalletFilter = {
   and?: InputMaybe<Array<DriverWalletFilter>>;
   balance?: InputMaybe<FloatFieldComparison>;
@@ -1843,6 +1876,22 @@ export type DriverWalletFilter = {
   driverId?: InputMaybe<IdFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<DriverWalletFilter>>;
+};
+
+export type DriverWalletMaxAggregate = {
+  __typename?: 'DriverWalletMaxAggregate';
+  balance?: Maybe<Scalars['Float']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  driverId?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+};
+
+export type DriverWalletMinAggregate = {
+  __typename?: 'DriverWalletMinAggregate';
+  balance?: Maybe<Scalars['Float']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  driverId?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
 };
 
 export type DriverWalletSort = {
@@ -1858,57 +1907,8 @@ export enum DriverWalletSortFields {
   Id = 'id'
 }
 
-export type DriverWalletsAggregateGroupBy = {
-  __typename?: 'DriverWalletsAggregateGroupBy';
-  balance?: Maybe<Scalars['Float']['output']>;
-  currency?: Maybe<Scalars['String']['output']>;
-  driverId?: Maybe<Scalars['ID']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-};
-
-export type DriverWalletsAggregateResponse = {
-  __typename?: 'DriverWalletsAggregateResponse';
-  avg?: Maybe<DriverWalletsAvgAggregate>;
-  count?: Maybe<DriverWalletsCountAggregate>;
-  groupBy?: Maybe<DriverWalletsAggregateGroupBy>;
-  max?: Maybe<DriverWalletsMaxAggregate>;
-  min?: Maybe<DriverWalletsMinAggregate>;
-  sum?: Maybe<DriverWalletsSumAggregate>;
-};
-
-export type DriverWalletsAvgAggregate = {
-  __typename?: 'DriverWalletsAvgAggregate';
-  balance?: Maybe<Scalars['Float']['output']>;
-  driverId?: Maybe<Scalars['Float']['output']>;
-  id?: Maybe<Scalars['Float']['output']>;
-};
-
-export type DriverWalletsCountAggregate = {
-  __typename?: 'DriverWalletsCountAggregate';
-  balance?: Maybe<Scalars['Int']['output']>;
-  currency?: Maybe<Scalars['Int']['output']>;
-  driverId?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-};
-
-export type DriverWalletsMaxAggregate = {
-  __typename?: 'DriverWalletsMaxAggregate';
-  balance?: Maybe<Scalars['Float']['output']>;
-  currency?: Maybe<Scalars['String']['output']>;
-  driverId?: Maybe<Scalars['ID']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-};
-
-export type DriverWalletsMinAggregate = {
-  __typename?: 'DriverWalletsMinAggregate';
-  balance?: Maybe<Scalars['Float']['output']>;
-  currency?: Maybe<Scalars['String']['output']>;
-  driverId?: Maybe<Scalars['ID']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-};
-
-export type DriverWalletsSumAggregate = {
-  __typename?: 'DriverWalletsSumAggregate';
+export type DriverWalletSumAggregate = {
+  __typename?: 'DriverWalletSumAggregate';
   balance?: Maybe<Scalars['Float']['output']>;
   driverId?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['Float']['output']>;
@@ -2075,7 +2075,16 @@ export type FeedbackAggregateFilter = {
   driverId?: InputMaybe<IdFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<FeedbackAggregateFilter>>;
+  parameters?: InputMaybe<FeedbackAggregateFilterFeedbackParameterAggregateFilter>;
   requestId?: InputMaybe<IdFilterComparison>;
+};
+
+export type FeedbackAggregateFilterFeedbackParameterAggregateFilter = {
+  and?: InputMaybe<Array<FeedbackAggregateFilterFeedbackParameterAggregateFilter>>;
+  id?: InputMaybe<IdFilterComparison>;
+  isGood?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<FeedbackAggregateFilterFeedbackParameterAggregateFilter>>;
+  title?: InputMaybe<StringFieldComparison>;
 };
 
 export type FeedbackConnection = {
@@ -2230,7 +2239,7 @@ export type Fleet = {
   name: Scalars['String']['output'];
   phoneNumber: Scalars['String']['output'];
   transactions: FleetTransactionsConnection;
-  wallets: Array<FleetWallet>;
+  wallet: Array<FleetWallet>;
   zonePrices: FleetZonePricesConnection;
 };
 
@@ -2242,7 +2251,7 @@ export type FleetTransactionsArgs = {
 };
 
 
-export type FleetWalletsArgs = {
+export type FleetWalletArgs = {
   filter?: FleetWalletFilter;
   sorting?: Array<FleetWalletSort>;
 };
@@ -2299,13 +2308,13 @@ export type FleetTransaction = {
   action: TransactionAction;
   amount: Scalars['Float']['output'];
   currency: Scalars['String']['output'];
-  deductType?: Maybe<Scalars['String']['output']>;
+  deductType?: Maybe<ProviderDeductTransactionType>;
   description?: Maybe<Scalars['String']['output']>;
   fleetId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   operator?: Maybe<Operator>;
   operatorId?: Maybe<Scalars['ID']['output']>;
-  rechargeType?: Maybe<Scalars['String']['output']>;
+  rechargeType?: Maybe<ProviderRechargeTransactionType>;
   refrenceNumber?: Maybe<Scalars['String']['output']>;
   requestId?: Maybe<Scalars['ID']['output']>;
   transactionTimestamp: Scalars['DateTime']['output'];
@@ -2343,10 +2352,10 @@ export type FleetTransactionInput = {
   action: TransactionAction;
   amount: Scalars['Float']['input'];
   currency: Scalars['String']['input'];
-  deductType?: InputMaybe<Scalars['String']['input']>;
+  deductType?: InputMaybe<ProviderDeductTransactionType>;
   description?: InputMaybe<Scalars['String']['input']>;
   fleetId: Scalars['ID']['input'];
-  rechargeType?: InputMaybe<Scalars['String']['input']>;
+  rechargeType?: InputMaybe<ProviderRechargeTransactionType>;
   refrenceNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3512,8 +3521,8 @@ export type Order = {
   addresses: Array<Scalars['String']['output']>;
   complaints: Array<Complaint>;
   complaintsAggregate: Array<OrderComplaintsAggregateResponse>;
-  conversations: Array<OrderMessage>;
-  conversationsAggregate: Array<OrderConversationsAggregateResponse>;
+  conversation: Array<OrderMessage>;
+  conversationAggregate: Array<OrderConversationAggregateResponse>;
   costAfterCoupon: Scalars['Float']['output'];
   costBest: Scalars['Float']['output'];
   coupon?: Maybe<Coupon>;
@@ -3571,13 +3580,13 @@ export type OrderComplaintsAggregateArgs = {
 };
 
 
-export type OrderConversationsArgs = {
+export type OrderConversationArgs = {
   filter?: OrderMessageFilter;
   sorting?: Array<OrderMessageSort>;
 };
 
 
-export type OrderConversationsAggregateArgs = {
+export type OrderConversationAggregateArgs = {
   filter?: InputMaybe<OrderMessageAggregateFilter>;
 };
 
@@ -3812,43 +3821,43 @@ export type OrderConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type OrderConversationsAggregateGroupBy = {
-  __typename?: 'OrderConversationsAggregateGroupBy';
+export type OrderConversationAggregateGroupBy = {
+  __typename?: 'OrderConversationAggregateGroupBy';
   id?: Maybe<Scalars['ID']['output']>;
 };
 
-export type OrderConversationsAggregateResponse = {
-  __typename?: 'OrderConversationsAggregateResponse';
-  avg?: Maybe<OrderConversationsAvgAggregate>;
-  count?: Maybe<OrderConversationsCountAggregate>;
-  groupBy?: Maybe<OrderConversationsAggregateGroupBy>;
-  max?: Maybe<OrderConversationsMaxAggregate>;
-  min?: Maybe<OrderConversationsMinAggregate>;
-  sum?: Maybe<OrderConversationsSumAggregate>;
+export type OrderConversationAggregateResponse = {
+  __typename?: 'OrderConversationAggregateResponse';
+  avg?: Maybe<OrderConversationAvgAggregate>;
+  count?: Maybe<OrderConversationCountAggregate>;
+  groupBy?: Maybe<OrderConversationAggregateGroupBy>;
+  max?: Maybe<OrderConversationMaxAggregate>;
+  min?: Maybe<OrderConversationMinAggregate>;
+  sum?: Maybe<OrderConversationSumAggregate>;
 };
 
-export type OrderConversationsAvgAggregate = {
-  __typename?: 'OrderConversationsAvgAggregate';
+export type OrderConversationAvgAggregate = {
+  __typename?: 'OrderConversationAvgAggregate';
   id?: Maybe<Scalars['Float']['output']>;
 };
 
-export type OrderConversationsCountAggregate = {
-  __typename?: 'OrderConversationsCountAggregate';
+export type OrderConversationCountAggregate = {
+  __typename?: 'OrderConversationCountAggregate';
   id?: Maybe<Scalars['Int']['output']>;
 };
 
-export type OrderConversationsMaxAggregate = {
-  __typename?: 'OrderConversationsMaxAggregate';
+export type OrderConversationMaxAggregate = {
+  __typename?: 'OrderConversationMaxAggregate';
   id?: Maybe<Scalars['ID']['output']>;
 };
 
-export type OrderConversationsMinAggregate = {
-  __typename?: 'OrderConversationsMinAggregate';
+export type OrderConversationMinAggregate = {
+  __typename?: 'OrderConversationMinAggregate';
   id?: Maybe<Scalars['ID']['output']>;
 };
 
-export type OrderConversationsSumAggregate = {
-  __typename?: 'OrderConversationsSumAggregate';
+export type OrderConversationSumAggregate = {
+  __typename?: 'OrderConversationSumAggregate';
   id?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -5665,7 +5674,7 @@ export type Rider = {
   registrationTimestamp: Scalars['DateTime']['output'];
   status: RiderStatus;
   transactions: RiderTransactionsConnection;
-  wallets: RiderWalletsConnection;
+  wallet: RiderWalletConnection;
 };
 
 
@@ -5690,7 +5699,7 @@ export type RiderTransactionsArgs = {
 };
 
 
-export type RiderWalletsArgs = {
+export type RiderWalletArgs = {
   filter?: RiderWalletFilter;
   paging?: OffsetPaging;
   sorting?: Array<RiderWalletSort>;
@@ -5960,16 +5969,6 @@ export enum RiderWalletSortFields {
   Id = 'id',
   RiderId = 'riderId'
 }
-
-export type RiderWalletsConnection = {
-  __typename?: 'RiderWalletsConnection';
-  /** Array of nodes. */
-  nodes: Array<RiderWallet>;
-  /** Paging information */
-  pageInfo: OffsetPageInfo;
-  /** Fetch total count of records */
-  totalCount: Scalars['Int']['output'];
-};
 
 export type SosActivity = {
   __typename?: 'SOSActivity';
@@ -7070,7 +7069,7 @@ export type DriverFinancialsQueryVariables = Exact<{
 }>;
 
 
-export type DriverFinancialsQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', transactions: { __typename?: 'DriverTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'DriverTransaction', status: TransactionStatus, createdAt: any, amount: number, description?: string | null, currency: string, action: TransactionAction, deductType?: DriverDeductTransactionType | null, rechargeType?: DriverRechargeTransactionType | null, refrenceNumber?: string | null, requestId?: number | null, paymentGatewayId?: number | null, operatorId?: string | null }> }, wallets: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
+export type DriverFinancialsQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', transactions: { __typename?: 'DriverTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'DriverTransaction', status: TransactionStatus, createdAt: any, amount: number, description?: string | null, currency: string, action: TransactionAction, deductType?: DriverDeductTransactionType | null, rechargeType?: DriverRechargeTransactionType | null, refrenceNumber?: string | null, requestId?: number | null, paymentGatewayId?: number | null, operatorId?: string | null }> }, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
 
 export type DriverFeedbacksQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -7384,7 +7383,7 @@ export type FleetFinancialsQueryVariables = Exact<{
 }>;
 
 
-export type FleetFinancialsQuery = { __typename?: 'Query', fleet: { __typename?: 'Fleet', transactions: { __typename?: 'FleetTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'FleetTransaction', transactionTimestamp: any, amount: number, currency: string, action: TransactionAction, deductType?: string | null, rechargeType?: string | null, refrenceNumber?: string | null, operatorId?: string | null, requestId?: string | null, description?: string | null }> }, wallets: Array<{ __typename?: 'FleetWallet', currency: string, balance: number }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
+export type FleetFinancialsQuery = { __typename?: 'Query', fleet: { __typename?: 'Fleet', transactions: { __typename?: 'FleetTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'FleetTransaction', transactionTimestamp: any, amount: number, currency: string, action: TransactionAction, deductType?: ProviderDeductTransactionType | null, rechargeType?: ProviderRechargeTransactionType | null, refrenceNumber?: string | null, operatorId?: string | null, requestId?: string | null, description?: string | null }> }, wallet: Array<{ __typename?: 'FleetWallet', currency: string, balance: number }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
 
 export type FleetZonePricesQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -8147,7 +8146,7 @@ export type ViewOrderQueryVariables = Exact<{
 }>;
 
 
-export type ViewOrderQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdOn: any, expectedTimestamp?: any | null, costBest: number, costAfterCoupon: number, status: OrderStatus, currency: string, distanceBest: number, durationBest: number, startTimestamp?: any | null, finishTimestamp?: any | null, addresses: Array<string>, points: Array<{ __typename?: 'Point', lat: number, lng: number }>, service?: { __typename?: 'Service', name: string } | null, driver?: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: DriverStatus, media?: { __typename?: 'Media', address: string } | null } | null, rider?: { __typename?: 'Rider', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: RiderStatus, media?: { __typename?: 'Media', address: string } | null } | null, complaints: Array<{ __typename?: 'Complaint', id: string, subject: string, inscriptionTimestamp: any, content?: string | null, requestedByDriver: boolean }>, conversations: Array<{ __typename?: 'OrderMessage', sentAt: any, sentByDriver: boolean, status: MessageStatus, content: string }>, activities: Array<{ __typename?: 'RequestActivity', createdAt: any, type: RequestActivityType }>, coupon?: { __typename?: 'Coupon', title: string, code: string, expireAt: any } | null, riderTransactions: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, rechargeType?: RiderRechargeTransactionType | null, deductType?: RiderDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null, paymentGateway?: { __typename?: 'PaymentGateway', title: string } | null }>, driverTransactions: Array<{ __typename?: 'DriverTransaction', action: TransactionAction, rechargeType?: DriverRechargeTransactionType | null, deductType?: DriverDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null }>, providerTransactions: Array<{ __typename?: 'ProviderTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }>, fleetTransactions: Array<{ __typename?: 'FleetTransaction', action: TransactionAction, rechargeType?: string | null, deductType?: string | null, amount: number, currency: string, refrenceNumber?: string | null }> } };
+export type ViewOrderQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdOn: any, expectedTimestamp?: any | null, costBest: number, costAfterCoupon: number, status: OrderStatus, currency: string, distanceBest: number, durationBest: number, startTimestamp?: any | null, finishTimestamp?: any | null, addresses: Array<string>, points: Array<{ __typename?: 'Point', lat: number, lng: number }>, service?: { __typename?: 'Service', name: string } | null, driver?: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: DriverStatus, media?: { __typename?: 'Media', address: string } | null } | null, rider?: { __typename?: 'Rider', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: RiderStatus, media?: { __typename?: 'Media', address: string } | null } | null, complaints: Array<{ __typename?: 'Complaint', id: string, subject: string, inscriptionTimestamp: any, content?: string | null, requestedByDriver: boolean }>, conversation: Array<{ __typename?: 'OrderMessage', sentAt: any, sentByDriver: boolean, status: MessageStatus, content: string }>, activities: Array<{ __typename?: 'RequestActivity', createdAt: any, type: RequestActivityType }>, coupon?: { __typename?: 'Coupon', title: string, code: string, expireAt: any } | null, riderTransactions: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, rechargeType?: RiderRechargeTransactionType | null, deductType?: RiderDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null, paymentGateway?: { __typename?: 'PaymentGateway', title: string } | null }>, driverTransactions: Array<{ __typename?: 'DriverTransaction', action: TransactionAction, rechargeType?: DriverRechargeTransactionType | null, deductType?: DriverDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null }>, providerTransactions: Array<{ __typename?: 'ProviderTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }>, fleetTransactions: Array<{ __typename?: 'FleetTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }> } };
 
 export type OrdersListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -8170,7 +8169,7 @@ export type ViewRiderQueryVariables = Exact<{
 }>;
 
 
-export type ViewRiderQuery = { __typename?: 'Query', rider: { __typename?: 'Rider', id: string, status: RiderStatus, firstName?: string | null, lastName?: string | null, mobileNumber: string, isResident?: boolean | null, idNumber?: string | null, registrationTimestamp: any, email?: string | null, gender?: string | null, media?: { __typename?: 'Media', address: string } | null, wallets: { __typename?: 'RiderWalletsConnection', nodes: Array<{ __typename?: 'RiderWallet', balance: number, currency: string }> } } };
+export type ViewRiderQuery = { __typename?: 'Query', rider: { __typename?: 'Rider', id: string, status: RiderStatus, firstName?: string | null, lastName?: string | null, mobileNumber: string, isResident?: boolean | null, idNumber?: string | null, registrationTimestamp: any, email?: string | null, gender?: string | null, media?: { __typename?: 'Media', address: string } | null, wallet: { __typename?: 'RiderWalletConnection', nodes: Array<{ __typename?: 'RiderWallet', balance: number, currency: string }> } } };
 
 export type RiderAddressesQueryVariables = Exact<{
   riderId: Scalars['ID']['input'];
@@ -8188,7 +8187,7 @@ export type RiderWalletQueryVariables = Exact<{
 }>;
 
 
-export type RiderWalletQuery = { __typename?: 'Query', rider: { __typename?: 'Rider', wallets: { __typename?: 'RiderWalletsConnection', nodes: Array<{ __typename?: 'RiderWallet', balance: number, currency: string }> }, transactions: { __typename?: 'RiderTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, deductType?: RiderDeductTransactionType | null, status: TransactionStatus, createdAt: any, rechargeType?: RiderRechargeTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null, description?: string | null, paymentGatewayId?: string | null, operatorId?: string | null, requestId?: string | null }> } }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
+export type RiderWalletQuery = { __typename?: 'Query', rider: { __typename?: 'Rider', wallet: { __typename?: 'RiderWalletConnection', nodes: Array<{ __typename?: 'RiderWallet', balance: number, currency: string }> }, transactions: { __typename?: 'RiderTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, deductType?: RiderDeductTransactionType | null, status: TransactionStatus, createdAt: any, rechargeType?: RiderRechargeTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null, description?: string | null, paymentGatewayId?: string | null, operatorId?: string | null, requestId?: string | null }> } }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
 
 export type RiderOrdersQueryVariables = Exact<{
   riderId: Scalars['ID']['input'];
@@ -8639,7 +8638,7 @@ export const DriverFinancialsDocument = gql`
       }
       totalCount
     }
-    wallets {
+    wallet {
       balance
       currency
     }
@@ -9620,7 +9619,7 @@ export const FleetFinancialsDocument = gql`
       }
       totalCount
     }
-    wallets {
+    wallet {
       currency
       balance
     }
@@ -12068,7 +12067,7 @@ export const ViewOrderDocument = gql`
       content
       requestedByDriver
     }
-    conversations {
+    conversation {
       sentAt
       sentByDriver
       status
@@ -12199,7 +12198,7 @@ export const ViewRiderDocument = gql`
     registrationTimestamp
     email
     gender
-    wallets(sorting: [{field: balance, direction: DESC}], paging: {limit: 1}) {
+    wallet(sorting: [{field: balance, direction: DESC}], paging: {limit: 1}) {
       nodes {
         balance
         currency
@@ -12247,7 +12246,7 @@ export const RiderAddressesDocument = gql`
 export const RiderWalletDocument = gql`
     query RiderWallet($riderId: ID!, $paging: OffsetPaging, $filter: RiderTransactionFilter, $sorting: [RiderTransactionSort!]) {
   rider(id: $riderId) {
-    wallets {
+    wallet {
       nodes {
         balance
         currency

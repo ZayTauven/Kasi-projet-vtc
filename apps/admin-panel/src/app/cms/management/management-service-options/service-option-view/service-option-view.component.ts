@@ -64,18 +64,18 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
       const { id, name, icon, type, additionalFee } = this.form.value;
       if (id == null) {
         await firstValueFrom(
-          this.createGQL.mutate({
+          this.createGQL.mutate({ variables: {
             input: {
               name,
               icon,
               type,
               additionalFee: parseFloat(additionalFee),
             },
-          }),
+          } }),
         );
       } else {
         await firstValueFrom(
-          this.updateGQL.mutate({
+          this.updateGQL.mutate({ variables: {
             id,
             update: {
               name,
@@ -83,7 +83,7 @@ export class ServiceOptionViewComponent implements OnInit, OnDestroy {
               type,
               additionalFee: parseFloat(additionalFee),
             },
-          }),
+          } }),
         );
       }
       this.router.navigate(["management/service-options"], {

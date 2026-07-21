@@ -1,6 +1,6 @@
 ﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CurrentConfigurationQuery,
   UpdateConfigStatus,
@@ -22,7 +22,7 @@ import { firstValueFrom, map, Observable, Subscription } from "rxjs";
 })
 export class ConfigComponent implements OnInit, OnDestroy {
   currentStep = 0;
-  remoteConfig!: Observable<ApolloQueryResult<CurrentConfigurationQuery>>;
+  remoteConfig!: Observable<ApolloClient.QueryResult<CurrentConfigurationQuery>>;
   currentConfig!: CurrentConfigurationQuery;
   email?: string;
   root = environment.root;
@@ -41,7 +41,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.remoteConfig = this.route.data.pipe(map((data) => data.config));
     this.configSubscription = this.remoteConfig.subscribe(
-      (data) => (this.currentConfig = data.data),
+      (data) => (this.currentConfig = data.data!),
     );
   }
 
@@ -67,11 +67,11 @@ export class ConfigComponent implements OnInit, OnDestroy {
           return;
         }
         const result = await firstValueFrom(
-          this.updateMapsGql.mutate({
+          this.updateMapsGql.mutate({ variables: {
             backend: this.currentConfig.currentConfiguration.backendMapsAPIKey,
             adminPanel:
               this.currentConfig.currentConfiguration.adminPanelAPIKey,
-          }),
+          } }),
         );
         if (result.data?.updateMapsAPIKey.status == UpdateConfigStatus.Ok) {
           this.currentStep += 1;
@@ -93,10 +93,10 @@ export class ConfigComponent implements OnInit, OnDestroy {
       return;
     }
     const result = await firstValueFrom(
-      this.updateFirebaseGql.mutate({
+      this.updateFirebaseGql.mutate({ variables: {
         keyFileName:
           this.currentConfig.currentConfiguration.firebaseProjectPrivateKey,
-      }),
+      } }),
     );
     if (result.data?.updateFirebase.status == UpdateConfigStatus.Ok) {
       this.configed = true;

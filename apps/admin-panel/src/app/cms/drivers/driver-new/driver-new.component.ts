@@ -50,12 +50,12 @@ export class DriverNewComponent {
   async submitForm() {
     const { phoneNumber, ..._formValue } = this.form.value;
     await firstValueFrom(
-      this.createGQL.mutate({
+      this.createGQL.mutate({ variables: {
         input: {
           mobileNumber: `${phoneNumber.prefix}${phoneNumber.number}`,
           ..._formValue,
         },
-      }),
+      } }),
     );
     this.routerHelper.goToParent(this.route);
   }

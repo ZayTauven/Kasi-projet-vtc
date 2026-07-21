@@ -22,12 +22,12 @@ export class CurrentConfigService {
     if (this.currentConfig != null) {
       return this.currentConfig;
     }
-    const queryResult = await firstValueFrom(this.currentConfigGql.fetch({}));
+    const queryResult = await firstValueFrom(this.currentConfigGql.fetch({ variables: {} }));
     if (queryResult.error != null) {
       this.logout();
     }
     this.currentConfig = queryResult.data;
-    return this.currentConfig;
+    return this.currentConfig!;
   }
 
   logout() {

@@ -61,18 +61,16 @@ export class FleetNewComponent {
       ..._formValue
     } = this.form.value;
     const result = await firstValueFrom(
-      this.createRiderGQL.mutate({
+      this.createRiderGQL.mutate({ variables: {
         input: {
           phoneNumber: `${phoneNumberPrefix.substring(1)}${phoneNumber}`,
           mobileNumber: `${mobileNumberPrefix.substring(1)}${mobileNumber}`,
           ..._formValue,
         },
-      }),
+      } }),
     );
-    if ((result.errors?.length ?? 0) > 0) {
-      this.messageService.error(
-        (result.errors ?? []).map((error) => error.message).join(","),
-      );
+    if (result.error != null) {
+      this.messageService.error(result.error.message);
     } else {
       this.messageService.success("Success");
     }

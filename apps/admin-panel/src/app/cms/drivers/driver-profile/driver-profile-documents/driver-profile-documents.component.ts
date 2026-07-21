@@ -1,6 +1,6 @@
 ﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ViewDriverQuery } from "@kasi/admin-panel/generated/graphql";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
 import { NzUploadFile } from "ng-zorro-antd/upload";
@@ -13,7 +13,7 @@ import { map, Observable, Subscription } from "rxjs";
   standalone: false,
 })
 export class DriverProfileDocumentsComponent implements OnInit, OnDestroy {
-  query?: Observable<ApolloQueryResult<ViewDriverQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewDriverQuery>>;
   root = environment.root;
   previewImage: string | undefined = "";
   previewVisible = false;

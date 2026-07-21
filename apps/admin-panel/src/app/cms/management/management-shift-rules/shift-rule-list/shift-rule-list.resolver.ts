@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   ShiftRuleListGQL,
   ShiftRuleListQuery,
@@ -18,8 +18,8 @@ export class ShiftRuleListResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<ShiftRuleListQuery>> {
+  ): Observable<ApolloClient.QueryResult<ShiftRuleListQuery>> {
     const params = this.tableService.deserializeQueryParams(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

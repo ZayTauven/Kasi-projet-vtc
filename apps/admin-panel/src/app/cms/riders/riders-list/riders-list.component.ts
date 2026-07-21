@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   RiderStatus,
@@ -18,7 +18,7 @@ import { TableService } from "../../../@services/table-service";
   standalone: false,
 })
 export class RidersListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RidersListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RidersListQuery>>;
   riderStatus = RiderStatus;
 
   constructor(

@@ -41,7 +41,7 @@ export class MapSettingsComponent implements OnInit {
     this.loading = true;
     try {
       const result = await firstValueFrom(this.mapSettingGQL.fetch());
-      const setting = result.data.mapSetting;
+      const setting = result.data!.mapSetting;
       if (setting != null) {
         this.form.patchValue({
           provider: setting.provider,
@@ -65,7 +65,7 @@ export class MapSettingsComponent implements OnInit {
     }
     try {
       await firstValueFrom(
-        this.updateMapSettingGQL.mutate({ input: this.form.value }),
+        this.updateMapSettingGQL.mutate({ variables: { input: this.form.value } }),
       );
       this.msg.success(this.translate.instant("mapSettings.saved"));
       this.form.markAsPristine();

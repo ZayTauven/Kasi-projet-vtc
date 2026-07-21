@@ -60,9 +60,9 @@ export class RetentionViewComponent implements OnInit {
     try {
       const { id, ...update } = this.form.value;
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input: update }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input: update } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, update }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
       this.router.navigate(["management/retention"], {
         relativeTo: this.route.root,
@@ -84,7 +84,7 @@ export class RetentionViewComponent implements OnInit {
       return;
     }
     try {
-      await firstValueFrom(this.deleteGQL.mutate({ id }));
+      await firstValueFrom(this.deleteGQL.mutate({ variables: { id } }));
       this.router.navigate(["management/retention"], {
         relativeTo: this.route.root,
       });
@@ -96,7 +96,7 @@ export class RetentionViewComponent implements OnInit {
   async onRunDryRun() {
     this.running = true;
     try {
-      await firstValueFrom(this.runDryRunGQL.mutate({}));
+      await firstValueFrom(this.runDryRunGQL.mutate({ variables: {} }));
       this.msg.success(this.translate.instant("retention.dryRunTriggered"));
     } catch (error: any) {
       this.msg.error(error.message);

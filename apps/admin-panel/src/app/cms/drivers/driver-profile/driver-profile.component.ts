@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   DeleteDriverGQL,
   DriverStatus,
@@ -24,7 +24,7 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class DriverProfileComponent implements OnInit {
   public driverStatus = DriverStatus;
-  query?: Observable<ApolloQueryResult<ViewDriverQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewDriverQuery>>;
   root = environment.root;
   toCamelCase = camelCase;
 
@@ -46,7 +46,7 @@ export class DriverProfileComponent implements OnInit {
 
   async changeStatus(status: DriverStatus) {
     const id = this.route.snapshot.params.id ?? 0;
-    await firstValueFrom(this.updateGQL.mutate({ id, status }));
+    await firstValueFrom(this.updateGQL.mutate({ variables: { id, status } }));
     this.routerHelper.refresh(this.route);
   }
 
@@ -58,7 +58,7 @@ export class DriverProfileComponent implements OnInit {
       ),
       nzOnOk: async () => {
         try {
-          await firstValueFrom(this.deleteGQL.mutate({ id }));
+          await firstValueFrom(this.deleteGQL.mutate({ variables: { id } }));
           this.message.success(
             this.translate.instant("message.deleteDriverCofirmAlert"),
           );

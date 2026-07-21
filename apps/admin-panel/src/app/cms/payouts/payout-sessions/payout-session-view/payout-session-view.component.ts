@@ -50,11 +50,10 @@ export class PayoutSessionViewComponent implements OnInit {
     if (this.session == null) return;
     const result = await firstValueFrom(
       this.viewGQL.fetch(
-        { id: this.session.id },
-        { fetchPolicy: "network-only" },
+        { variables: { id: this.session.id }, fetchPolicy: "network-only" },
       ),
     );
-    this.session = result.data.payoutSession;
+    this.session = result.data!.payoutSession;
   }
 
   private async run(action: Promise<unknown>) {
@@ -71,24 +70,24 @@ export class PayoutSessionViewComponent implements OnInit {
   }
 
   processPayout(id: string) {
-    return this.run(firstValueFrom(this.processPayoutGQL.mutate({ id })));
+    return this.run(firstValueFrom(this.processPayoutGQL.mutate({ variables: { id } })));
   }
 
   cancelPayout(id: string) {
-    return this.run(firstValueFrom(this.cancelPayoutGQL.mutate({ id })));
+    return this.run(firstValueFrom(this.cancelPayoutGQL.mutate({ variables: { id } })));
   }
 
   processSession() {
     if (this.session == null) return;
     return this.run(
-      firstValueFrom(this.processSessionGQL.mutate({ id: this.session.id })),
+      firstValueFrom(this.processSessionGQL.mutate({ variables: { id: this.session.id } })),
     );
   }
 
   cancelSession() {
     if (this.session == null) return;
     return this.run(
-      firstValueFrom(this.cancelSessionGQL.mutate({ id: this.session.id })),
+      firstValueFrom(this.cancelSessionGQL.mutate({ variables: { id: this.session.id } })),
     );
   }
 

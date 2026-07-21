@@ -5,7 +5,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateOperatorGQL,
   NewOperatorQuery,
@@ -24,7 +24,7 @@ import { phoneNumberFormatValidator } from "../../../../@services/phone-number.v
   standalone: false,
 })
 export class OperatorNewComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<NewOperatorQuery>>;
+  query?: Observable<ApolloClient.QueryResult<NewOperatorQuery>>;
   form: UntypedFormGroup = this.fb.group({
     firstName: [null],
     lastName: [null],
@@ -57,12 +57,12 @@ export class OperatorNewComponent implements OnInit {
   async submitForm() {
     const { phoneNumber, phoneNumberPrefix, ..._formValue } = this.form.value;
     await firstValueFrom(
-      this.createGQL.mutate({
+      this.createGQL.mutate({ variables: {
         input: {
           mobileNumber: `${phoneNumberPrefix.substring(1)}${phoneNumber}`,
           ..._formValue,
         },
-      }),
+      } }),
     );
     this.routerHelper.goToParent(this.route);
   }

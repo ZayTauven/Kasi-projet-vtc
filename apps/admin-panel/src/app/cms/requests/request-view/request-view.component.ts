@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ViewOrderQuery } from "@kasi/admin-panel/generated/graphql";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { map, Observable } from "rxjs";
@@ -12,7 +12,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class RequestViewComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ViewOrderQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ViewOrderQuery>>;
   constructor(
     private route: ActivatedRoute,
     public tagColor: TagColorService,

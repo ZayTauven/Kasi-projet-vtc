@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { PaymentGatewaysQuery } from "@kasi/admin-panel/generated/graphql";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
@@ -13,7 +13,7 @@ import { map, Observable } from "rxjs";
   standalone: false,
 })
 export class PaymentGatewaysListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<PaymentGatewaysQuery>>;
+  query?: Observable<ApolloClient.QueryResult<PaymentGatewaysQuery>>;
   serverUrl = environment.root;
 
   constructor(

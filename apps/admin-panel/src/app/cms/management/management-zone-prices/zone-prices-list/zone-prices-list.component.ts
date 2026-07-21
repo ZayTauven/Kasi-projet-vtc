@@ -2,7 +2,7 @@
 import { ActivatedRoute } from "@angular/router";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { Observable } from "rxjs";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ZonePricesListQuery } from "@kasi/admin-panel/generated/graphql";
 import { map } from "rxjs/operators";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
@@ -14,7 +14,7 @@ import { TableService } from "@kasi/admin-panel/src/app/@services/table-service"
   standalone: false,
 })
 export class ZonePricesListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<ZonePricesListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ZonePricesListQuery>>;
 
   constructor(
     private route: ActivatedRoute,

@@ -74,9 +74,9 @@ export class CallMaskingProviderViewComponent implements OnInit {
         update.webhookAuthToken = webhookAuthToken;
       }
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input: update }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input: update } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, update }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
       this.router.navigate(["management/call-masking-providers"], {
         relativeTo: this.route.root,
@@ -98,7 +98,7 @@ export class CallMaskingProviderViewComponent implements OnInit {
       return;
     }
     try {
-      await firstValueFrom(this.setDefaultGQL.mutate({ id }));
+      await firstValueFrom(this.setDefaultGQL.mutate({ variables: { id } }));
       this.isDefault = true;
       this.msg.success(
         this.translate.instant("callMaskingProvider.defaultSet"),
@@ -115,10 +115,10 @@ export class CallMaskingProviderViewComponent implements OnInit {
     this.sendingTest = true;
     try {
       await firstValueFrom(
-        this.testMaskedCallGQL.mutate({
+        this.testMaskedCallGQL.mutate({ variables: {
           number: this.testNumber,
           providerId: this.form.value.id,
-        }),
+        } }),
       );
       this.msg.success(this.translate.instant("callMaskingProvider.testSent"));
     } catch (error: any) {

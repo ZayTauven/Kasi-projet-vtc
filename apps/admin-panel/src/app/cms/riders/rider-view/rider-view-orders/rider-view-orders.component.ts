@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   OrderStatus,
   RiderOrdersQuery,
@@ -17,7 +17,7 @@ import { map } from "rxjs/operators";
   standalone: false,
 })
 export class RiderViewOrdersComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<RiderOrdersQuery>>;
+  query?: Observable<ApolloClient.QueryResult<RiderOrdersQuery>>;
   statuses = Object.keys(OrderStatus).map((key) => ({ text: key, value: key }));
 
   constructor(

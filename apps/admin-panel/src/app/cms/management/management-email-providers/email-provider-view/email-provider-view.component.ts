@@ -75,9 +75,9 @@ export class EmailProviderViewComponent implements OnInit {
         update.password = password;
       }
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input: update }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input: update } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, update }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
       this.router.navigate(["management/email-providers"], {
         relativeTo: this.route.root,
@@ -99,7 +99,7 @@ export class EmailProviderViewComponent implements OnInit {
       return;
     }
     try {
-      await firstValueFrom(this.setDefaultGQL.mutate({ id }));
+      await firstValueFrom(this.setDefaultGQL.mutate({ variables: { id } }));
       this.isDefault = true;
       this.msg.success(this.translate.instant("emailProvider.defaultSet"));
     } catch (error: any) {
@@ -114,10 +114,10 @@ export class EmailProviderViewComponent implements OnInit {
     this.sendingTest = true;
     try {
       await firstValueFrom(
-        this.sendTestEmailGQL.mutate({
+        this.sendTestEmailGQL.mutate({ variables: {
           to: this.testEmail,
           providerId: this.form.value.id,
-        }),
+        } }),
       );
       this.msg.success(this.translate.instant("emailProvider.testSent"));
     } catch (error: any) {

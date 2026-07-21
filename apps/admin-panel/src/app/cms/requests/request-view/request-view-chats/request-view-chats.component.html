@@ -2,10 +2,10 @@
 @if ((query | async)?.data?.order; as order) {
   <div class="kasi-card">
     <div class="kasi-card__body">
-      @if (order.conversations.length === 0) {
+      @if (order.conversation.length === 0) {
         <nz-empty class="empty-state"></nz-empty>
       }
-      @for (chat of order.conversations; track chat) {
+      @for (chat of order.conversation; track chat) {
         <nz-comment [nzAuthor]="!chat.sentByDriver ? ((order.rider?.firstName ?? '-') + ' ' + (order.rider?.lastName ?? '-')) : ((order.driver?.firstName ?? '-') + ' ' + (order.driver?.lastName ?? ''))" [nzDatetime]="((chat.sentAt | date: 'short') ?? '')">
           <nz-avatar
             nz-comment-avatar

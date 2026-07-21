@@ -1,7 +1,7 @@
 ﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreatePaymentGatewayGQL,
   PaymentGatewayType,
@@ -75,10 +75,10 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.route.data.subscribe((data) => {
-      const gateway: ApolloQueryResult<ViewPaymentGatewayQuery> =
+      const gateway: ApolloClient.QueryResult<ViewPaymentGatewayQuery> =
         data.paymentGateway;
-      this.form.patchValue(gateway.data.paymentGateway as any);
-      this.avatarUrl = gateway.data.paymentGateway?.media?.address;
+      this.form.patchValue(gateway.data!.paymentGateway as any);
+      this.avatarUrl = gateway.data!.paymentGateway?.media?.address;
     });
   }
 
@@ -89,9 +89,9 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
   async onSubmit() {
     const { id, ...input } = this.form.value;
     if (id == null) {
-      await firstValueFrom(this.createGQL.mutate({ input }));
+      await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
     } else {
-      await firstValueFrom(this.updateGQL.mutate({ id, input }));
+      await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
     }
     this.routerHelper.goToParent(this.route);
   }

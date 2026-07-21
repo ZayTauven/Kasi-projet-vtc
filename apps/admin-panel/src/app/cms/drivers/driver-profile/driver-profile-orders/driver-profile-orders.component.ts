@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   DriverOrdersQuery,
   OrderStatus,
@@ -18,7 +18,7 @@ import { map } from "rxjs/operators";
   standalone: false,
 })
 export class DriverProfileOrdersComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<DriverOrdersQuery>>;
+  query?: Observable<ApolloClient.QueryResult<DriverOrdersQuery>>;
   statuses = Object.keys(OrderStatus).map((key) => ({ text: key, value: key }));
 
   constructor(

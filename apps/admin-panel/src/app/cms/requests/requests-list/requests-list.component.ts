@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   OrdersListQuery,
@@ -22,7 +22,7 @@ export class RequestsListComponent implements OnInit {
     value: key,
     text: this.translate.instant(`enum.request.${key}`),
   }));
-  query?: Observable<ApolloQueryResult<OrdersListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<OrdersListQuery>>;
   dateRanges: Date[] = [];
   orderStatus = OrderStatus;
 

@@ -9,7 +9,7 @@ import {
   OverviewQuery,
 } from "@kasi/admin-panel/generated/graphql";
 import { firstValueFrom, map, Observable, Subscription } from "rxjs";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -28,7 +28,7 @@ export class OverviewDriversMapComponent
 
   // Map state
   autoZoom = false;
-  query?: Observable<ApolloQueryResult<OverviewQuery>>;
+  query?: Observable<ApolloClient.QueryResult<OverviewQuery>>;
   subscription?: Subscription;
   mapInstance?: MapboxMap;
   selectedDriverId!: number;
@@ -47,7 +47,7 @@ export class OverviewDriversMapComponent
 
   ngAfterViewInit(): void {
     this.subscription = this.query?.subscribe((data) => {
-      this.locations = data.data.getDriversLocation;
+      this.locations = data.data!.getDriversLocation;
       this.searchData();
       this.centerMap();
     });
@@ -105,13 +105,13 @@ export class OverviewDriversMapComponent
   async searchData(): Promise<void> {
     if (this.locations.length === 0) return;
     const result = await firstValueFrom(
-      this.overviewDriversPaging.fetch({
+      this.overviewDriversPaging.fetch({ variables: {
         ids: this.locations
           .slice((this.page - 1) * 5, this.page * 5 - 1)
           .map((x) => x.driverId.toString()),
-      }),
+      } }),
     );
-    this.listOfData = result.data.drivers.nodes;
+    this.listOfData = result.data!.drivers.nodes;
   }
 
   ngOnDestroy(): void {

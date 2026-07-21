@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   DistressSignalFilter,
   DistressSignalSortFields,
@@ -17,8 +17,8 @@ export class SOSListResolver  {
     private gql: SosListGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<SosListQuery>> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<SosListQuery>> {
     const params = this.paging.deserializeQueryParams<DistressSignalSortFields, DistressSignalFilter>(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

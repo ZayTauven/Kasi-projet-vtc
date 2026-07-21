@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateDriverTransactionGQL,
   DriverDeductTransactionType,
@@ -31,7 +31,7 @@ export class DriverProfileFinancialComponent implements OnInit {
     description: [null],
     refrenceNumber: [null],
   });
-  query?: Observable<ApolloQueryResult<DriverFinancialsQuery>>;
+  query?: Observable<ApolloClient.QueryResult<DriverFinancialsQuery>>;
   deductTypes = Object.values(DriverDeductTransactionType);
   rechargeTypes = Object.values(DriverRechargeTransactionType);
 
@@ -66,7 +66,7 @@ export class DriverProfileFinancialComponent implements OnInit {
     this.formTransaction.value.driverId = this.route.parent?.snapshot.params.id;
     try {
       await firstValueFrom(
-        this.createTransactionGQL.mutate({ input: this.formTransaction.value }),
+        this.createTransactionGQL.mutate({ variables: { input: this.formTransaction.value } }),
       );
       this.msg.success("Transaction Submitted.");
       this.routerHelper.refresh(this.route);

@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   OrderCancelReasonListGQL,
   OrderCancelReasonListQuery,
@@ -18,8 +18,8 @@ export class OrderCancelReasonListResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<OrderCancelReasonListQuery>> {
+  ): Observable<ApolloClient.QueryResult<OrderCancelReasonListQuery>> {
     const params = this.tableService.deserializeQueryParams(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

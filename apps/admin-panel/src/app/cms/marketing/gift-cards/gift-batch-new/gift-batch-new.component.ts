@@ -44,7 +44,7 @@ export class GiftBatchNewComponent {
     if (expirationTimestamp != null)
       input.expirationTimestamp = expirationTimestamp;
     try {
-      await firstValueFrom(this.createGQL.mutate({ input }));
+      await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
       this.message.error(error.message);

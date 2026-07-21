@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   ReviewParametersListGQL,
   ReviewParametersListQuery,
@@ -21,11 +21,11 @@ export class ZonePricesListResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<ZonePricesListQuery>> {
+  ): Observable<ApolloClient.QueryResult<ZonePricesListQuery>> {
     const params = this.paging.deserializeQueryParams<
       ZonePriceSortFields,
       ZonePriceFilter
     >(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

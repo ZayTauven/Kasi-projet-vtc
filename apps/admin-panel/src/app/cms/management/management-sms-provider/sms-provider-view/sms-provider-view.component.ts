@@ -70,9 +70,9 @@ export class SmsProviderViewComponent implements OnInit {
         update.apiSecret = apiSecret;
       }
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input: update }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input: update } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, update }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
       this.router.navigate(["management/sms-providers"], {
         relativeTo: this.route.root,
@@ -94,7 +94,7 @@ export class SmsProviderViewComponent implements OnInit {
       return;
     }
     try {
-      await firstValueFrom(this.setDefaultGQL.mutate({ id }));
+      await firstValueFrom(this.setDefaultGQL.mutate({ variables: { id } }));
       this.isDefault = true;
       this.msg.success(this.translate.instant("smsProvider.defaultSet"));
     } catch (error: any) {
@@ -109,10 +109,10 @@ export class SmsProviderViewComponent implements OnInit {
     this.sendingTest = true;
     try {
       await firstValueFrom(
-        this.sendTestSmsGQL.mutate({
+        this.sendTestSmsGQL.mutate({ variables: {
           number: this.testNumber,
           providerId: this.form.value.id,
-        }),
+        } }),
       );
       this.msg.success(this.translate.instant("smsProvider.testSent"));
     } catch (error: any) {

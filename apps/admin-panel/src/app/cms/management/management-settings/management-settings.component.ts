@@ -39,12 +39,12 @@ export class ManagementSettingsComponent implements OnInit {
     }
     try {
       await firstValueFrom(
-        this.updatePasswordGql.mutate({
+        this.updatePasswordGql.mutate({ variables: {
           input: {
             oldPassword: this.form.value.oldPassword,
             newPasswod: this.form.value.newPassword,
           },
-        }),
+        } }),
       );
       this.message.success("Password Updated Successfully.");
       this.form.reset();

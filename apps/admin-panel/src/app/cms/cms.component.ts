@@ -46,7 +46,7 @@ import {
   SosSubscriptionGQL,
 } from "@kasi/admin-panel/generated/graphql";
 import { filter, map, Observable, Subscription } from "rxjs";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { ThemeService } from "../@services/theme.service";
 
 /** Lien de navigation simple du rail latéral. */
@@ -82,7 +82,7 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
   navGroupsOpen: Record<string, boolean> = {};
 
   isDarkMode = false;
-  stats!: Observable<ApolloQueryResult<NotificationsQuery>>;
+  stats!: Observable<ApolloClient.QueryResult<NotificationsQuery>>;
   newSos = 0;
   newComplaints = 0;
   sosSubription?: Subscription;

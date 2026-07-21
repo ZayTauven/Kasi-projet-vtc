@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   PayoutSessionViewGQL,
   PayoutSessionViewQuery,
@@ -14,10 +14,9 @@ export class PayoutSessionViewResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<PayoutSessionViewQuery>> {
+  ): Observable<ApolloClient.QueryResult<PayoutSessionViewQuery>> {
     return this.gql.fetch(
-      { id: route.params.id },
-      { fetchPolicy: 'network-only' }
+      { variables: { id: route.params.id }, fetchPolicy: 'network-only' }
     );
   }
 }

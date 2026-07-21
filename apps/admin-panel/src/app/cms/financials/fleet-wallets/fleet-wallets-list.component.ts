@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   ExportGQL,
   ExportTable,
@@ -20,7 +20,7 @@ import { TableService } from "../../../@services/table-service";
   standalone: false,
 })
 export class FleetWalletsListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<FleetWalletsListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<FleetWalletsListQuery>>;
   amountRange: number[] = [-1, -1];
   currencies?: Observable<NzTableFilterList>;
 
@@ -34,7 +34,7 @@ export class FleetWalletsListComponent implements OnInit {
     this.query = this.route.data.pipe(map((data) => data.fleetWallet));
     this.currencies = this.query.pipe(
       map((data) =>
-        this.distinctCurrency(data.data.regions.nodes).map((currency) => ({
+        this.distinctCurrency(data.data!.regions.nodes).map((currency) => ({
           text: currency,
           value: currency,
         })),
@@ -44,12 +44,12 @@ export class FleetWalletsListComponent implements OnInit {
 
   async exportTo(type: string) {
     const result = await firstValueFrom(
-      this.exportGql.fetch({
+      this.exportGql.fetch({ variables: {
         input: { table: ExportTable.FleetWallet, type: ExportType.Csv },
-      }),
+      } }),
     );
     this.tableService.downloadURI(
-      environment.root + result.data.export.url,
+      environment.root + result.data!.export.url,
       `export-${new Date().getTime()}.csv`,
     );
   }

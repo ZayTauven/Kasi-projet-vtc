@@ -7,7 +7,7 @@
 </div>
 
 <!-- Squelette de chargement -->
-@if ((query | async)?.loading == null) {
+@if ((query | async) == null) {
   <div>
     <nz-skeleton [nzActive]="true"></nz-skeleton>
   </div>

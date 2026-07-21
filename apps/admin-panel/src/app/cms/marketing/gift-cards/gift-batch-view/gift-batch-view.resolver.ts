@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { ViewGiftBatchGQL, ViewGiftBatchQuery } from '@kasi/admin-panel/generated/graphql';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ export class GiftBatchViewResolver {
     private gql: ViewGiftBatchGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<ViewGiftBatchQuery>> {
-    return this.gql.fetch({ id: route.params.id });
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<ViewGiftBatchQuery>> {
+    return this.gql.fetch({ variables: { id: route.params.id } });
   }
 }

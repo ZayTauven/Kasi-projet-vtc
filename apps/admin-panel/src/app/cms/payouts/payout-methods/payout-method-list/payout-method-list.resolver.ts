@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   PayoutMethodListGQL,
   PayoutMethodListQuery,
@@ -18,8 +18,8 @@ export class PayoutMethodListResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<PayoutMethodListQuery>> {
+  ): Observable<ApolloClient.QueryResult<PayoutMethodListQuery>> {
     const params = this.tableService.deserializeQueryParams(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

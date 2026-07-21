@@ -63,9 +63,9 @@ export class CouponViewComponent implements OnInit {
     const input = { ..._input, startAt, expireAt };
     try {
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, input }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
       }
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
@@ -78,7 +78,7 @@ export class CouponViewComponent implements OnInit {
   }
 
   async deleteCoupon() {
-    await firstValueFrom(this.deleteGQL.mutate({ id: this.form.value.id }));
+    await firstValueFrom(this.deleteGQL.mutate({ variables: { id: this.form.value.id } }));
     this.routerHelper.goToParent(this.route);
   }
 }

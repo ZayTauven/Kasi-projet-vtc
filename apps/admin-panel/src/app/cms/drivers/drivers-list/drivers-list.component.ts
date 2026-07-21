@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   DriversListQuery,
@@ -25,7 +25,7 @@ export class DriversListComponent implements OnInit {
       text: this.translator.instant(`enum.driver.status.${camelCase(key)}`),
     }),
   );
-  query?: Observable<ApolloQueryResult<DriversListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<DriversListQuery>>;
   toCamelCase = camelCase;
 
   constructor(

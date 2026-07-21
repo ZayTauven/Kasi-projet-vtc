@@ -5,7 +5,7 @@ import {
   OrderUpdatedGQL,
   OrderUpdatedSubscription,
 } from "@kasi/admin-panel/generated/graphql";
-import { SubscriptionResult } from "apollo-angular";
+import { ApolloClient } from "@apollo/client/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { firstValueFrom, Observable } from "rxjs";
 
@@ -16,7 +16,7 @@ import { firstValueFrom, Observable } from "rxjs";
   standalone: false,
 })
 export class DispatcherLookingComponent implements OnInit {
-  query?: Observable<SubscriptionResult<OrderUpdatedSubscription>>;
+  query?: Observable<ApolloClient.SubscribeResult<OrderUpdatedSubscription>>;
   orderId!: string;
 
   constructor(
@@ -29,13 +29,13 @@ export class DispatcherLookingComponent implements OnInit {
 
   ngOnInit(): void {
     this.orderId = this.route.snapshot.queryParams.requestId;
-    this.query = this.orderUpdateSubscription.subscribe({ id: this.orderId });
+    this.query = this.orderUpdateSubscription.subscribe({ variables: { id: this.orderId } });
   }
 
   async cancelRequest() {
     const orderId = this.route.snapshot.queryParams.requestId;
     const result = await firstValueFrom(
-      this.cancelOrderMutation.mutate({ orderId }),
+      this.cancelOrderMutation.mutate({ variables: { orderId } }),
     );
     this.msg.success("Order Canceled.");
     this.router.navigate(["../riders-list"], {

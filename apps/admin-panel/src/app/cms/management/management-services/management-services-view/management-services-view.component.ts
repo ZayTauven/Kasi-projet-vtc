@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
 import {
   CreateServiceGQL,
@@ -72,8 +72,8 @@ export class ManagementServicesViewComponent implements OnInit {
   root = environment.root;
   loadingUpload = false;
   query?:
-    | Observable<ApolloQueryResult<ViewServiceQuery>>
-    | Observable<ApolloQueryResult<NewServiceQuery>>;
+    | Observable<ApolloClient.QueryResult<ViewServiceQuery>>
+    | Observable<ApolloClient.QueryResult<NewServiceQuery>>;
   @ViewChild("timeStartPicker", { static: false })
   timeStartPicker!: NzTimePickerComponent;
   @ViewChild("timeEndPicker", { static: false })
@@ -183,20 +183,20 @@ export class ManagementServicesViewComponent implements OnInit {
     if (input.roundingFactor == "") input.roundingFactor = null;
     try {
       if (id == null) {
-        const result = await firstValueFrom(this.createGQL.mutate({ input }));
+        const result = await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
         resId = result.data?.createOneService.id;
       } else {
         const result = await firstValueFrom(
-          this.updateGQL.mutate({ id, input }),
+          this.updateGQL.mutate({ variables: { id, input } }),
         );
         resId = result.data?.updateOneService.id;
       }
 
       await firstValueFrom(
-        this.setRegionsGQL.mutate({ id: resId, relationIds: regions }),
+        this.setRegionsGQL.mutate({ variables: { id: resId, relationIds: regions } }),
       );
       await firstValueFrom(
-        this.setOptionsGQL.mutate({ id: resId, relationIds: options }),
+        this.setOptionsGQL.mutate({ variables: { id: resId, relationIds: options } }),
       );
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
@@ -322,7 +322,7 @@ export class ManagementServicesViewComponent implements OnInit {
   async deleteService() {
     const id = this.form.value.id;
     try {
-      await firstValueFrom(this.deleteGql.mutate({ id }));
+      await firstValueFrom(this.deleteGql.mutate({ variables: { id } }));
       this.msg.success("Delete was successful.");
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {

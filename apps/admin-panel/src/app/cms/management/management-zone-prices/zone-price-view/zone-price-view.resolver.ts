@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   ZonePriceViewGQL,
   ZonePriceViewQuery,
@@ -16,7 +16,7 @@ export class ZonePriceViewResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<ZonePriceViewQuery>> {
-    return this.gql.fetch({ id: route.params.id });
+  ): Observable<ApolloClient.QueryResult<ZonePriceViewQuery>> {
+    return this.gql.fetch({ variables: { id: route.params.id } });
   }
 }

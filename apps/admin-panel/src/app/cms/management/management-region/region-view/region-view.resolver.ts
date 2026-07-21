@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   RegionViewGQL,
   RegionViewQuery,
@@ -17,7 +17,7 @@ export class RegionViewResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
-  ): Observable<ApolloQueryResult<RegionViewQuery>> {
-    return this.gql.fetch({ id: route.params.id });
+  ): Observable<ApolloClient.QueryResult<RegionViewQuery>> {
+    return this.gql.fetch({ variables: { id: route.params.id } });
   }
 }

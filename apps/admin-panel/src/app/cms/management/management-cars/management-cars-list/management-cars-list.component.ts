@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CarsListQuery,
   CreateCarColorGQL,
@@ -21,7 +21,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
   standalone: false,
 })
 export class ManagementCarsListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<CarsListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<CarsListQuery>>;
   editId?: string;
   editColorId?: string;
 
@@ -49,20 +49,20 @@ export class ManagementCarsListComponent implements OnInit {
 
   async onSubmitEditModel(id: string, name: string) {
     const res = await firstValueFrom(
-      this.updateCarModelGQL.mutate({ id, input: { name } }),
+      this.updateCarModelGQL.mutate({ variables: { id, input: { name } } }),
     );
     this.editId = undefined;
   }
 
   async onAddModel() {
     const res = await firstValueFrom(
-      this.createCarModelGQL.mutate({ input: { name: "" } }),
+      this.createCarModelGQL.mutate({ variables: { input: { name: "" } } }),
     );
     this.routerHelper.refresh(this.route);
   }
 
   async onDeleteModel(id: string) {
-    const result = await firstValueFrom(this.deleteCarModelGQL.mutate({ id }));
+    const result = await firstValueFrom(this.deleteCarModelGQL.mutate({ variables: { id } }));
     this.routerHelper.refresh(this.route);
   }
 
@@ -74,20 +74,20 @@ export class ManagementCarsListComponent implements OnInit {
 
   async onSubmitEditColor(id: string, title: string) {
     const res = await firstValueFrom(
-      this.updateCarColorGQL.mutate({ id, input: { name: title } }),
+      this.updateCarColorGQL.mutate({ variables: { id, input: { name: title } } }),
     );
     this.editColorId = undefined;
   }
 
   async onAddColor() {
     const res = await firstValueFrom(
-      this.createCarColorGQL.mutate({ input: { name: "" } }),
+      this.createCarColorGQL.mutate({ variables: { input: { name: "" } } }),
     );
     this.routerHelper.refresh(this.route);
   }
 
   async onDeleteColor(id: string) {
-    const result = await firstValueFrom(this.deleteCarColorGQL.mutate({ id }));
+    const result = await firstValueFrom(this.deleteCarColorGQL.mutate({ variables: { id } }));
     this.routerHelper.refresh(this.route);
   }
 }

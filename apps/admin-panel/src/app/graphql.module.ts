@@ -1,11 +1,9 @@
 ﻿import { NgModule } from '@angular/core';
-import { APOLLO_OPTIONS } from 'apollo-angular';
+import { Apollo, APOLLO_OPTIONS } from 'apollo-angular';
 import {
-  ApolloCache,
   ApolloClientOptions,
   ApolloLink,
   InMemoryCache,
-  NormalizedCacheObject,
   split,
 } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
@@ -20,7 +18,7 @@ import { createClient } from 'graphql-ws';
 
 export function createApollo(
   httpLink: HttpLink
-): ApolloClientOptions<NormalizedCacheObject> {
+): ApolloClientOptions {
   const http = httpLink.create({
     uri: `${environment.root}graphql`,
   });
@@ -77,9 +75,14 @@ export function createApollo(
   );
 
   return {
-    cache: new InMemoryCache({
-      addTypename: false,
-    }),
+    // NOTE(kasi): l'option `addTypename: false` d'InMemoryCache a ete
+    // supprimee dans Apollo Client 4 (migration Apollo Client 3->4 /
+    // apollo-angular 6->14, admin-panel). Impact juge negligeable ici
+    // car tous les fetchPolicy par defaut sont deja en 'no-cache' (voir
+    // defaultOptions ci-dessous) : le cache normalise n'est jamais lu ni
+    // ecrit, seule l'ecriture d'un champ __typename supplementaire dans
+    // les requetes envoyees au serveur change.
+    cache: new InMemoryCache(),
     link: splitLink,
     defaultOptions,
   };
@@ -87,6 +90,16 @@ export function createApollo(
 
 @NgModule({
   providers: [
+    // NOTE(kasi): apollo-angular v14 a retire `ApolloModule` (qui fournissait
+    // implicitement le service `Apollo` via son propre NgModule). `Apollo` est
+    // toujours un `@Injectable()` SANS `providedIn: 'root'` (verifie dans
+    // node_modules/apollo-angular/fesm2022/apollo-angular.mjs) -> sans cette
+    // ligne, aucune classe generee (XxxGQL extends Apollo.Query/Mutation/
+    // Subscription, dont le constructeur exige `Apollo` de facon non
+    // optionnelle) ne peut etre instanciee -> NG0201 (No provider for Apollo)
+    // des le premier GQL injecte, qui bloque tout le bootstrap de l'app
+    // (ecran noir permanent, meme en navigation privee).
+    Apollo,
     {
       provide: APOLLO_OPTIONS,
       useFactory: createApollo,

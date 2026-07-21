@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   PayoutSessionFilter,
   PayoutSessionListGQL,
@@ -21,7 +21,7 @@ export class PayoutSessionListResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<PayoutSessionListQuery>> {
+  ): Observable<ApolloClient.QueryResult<PayoutSessionListQuery>> {
     const params = this.tableService.deserializeQueryParams<
       PayoutSessionSortFields,
       PayoutSessionFilter
@@ -29,6 +29,6 @@ export class PayoutSessionListResolver {
     params.sorting = params.sorting ?? [
       { field: PayoutSessionSortFields.Id, direction: SortDirection.Desc },
     ];
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateFleetTransactionGQL,
   FleetFinancialsQuery,
@@ -21,7 +21,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
   standalone: false,
 })
 export class FleetViewFinancialsComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<FleetFinancialsQuery>>;
+  query?: Observable<ApolloClient.QueryResult<FleetFinancialsQuery>>;
   formTransaction = this.fb.group({
     action: [null, Validators.required],
     rechargeType: [null],
@@ -75,7 +75,7 @@ export class FleetViewFinancialsComponent implements OnInit {
     }
     try {
       await firstValueFrom(
-        this.createTransactionGQL.mutate({ input: this.formTransaction.value }),
+        this.createTransactionGQL.mutate({ variables: { input: this.formTransaction.value } }),
       );
       this.msg.success("Transaction Submitted.");
       this.routerHelper.refresh(this.route);

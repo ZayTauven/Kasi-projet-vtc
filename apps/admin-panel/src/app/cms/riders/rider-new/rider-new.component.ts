@@ -46,12 +46,12 @@ export class RiderNewComponent {
   async submitForm() {
     const { phoneNumber, phoneNumberPrefix, ..._formValue } = this.form.value;
     await firstValueFrom(
-      this.createRiderGQL.mutate({
+      this.createRiderGQL.mutate({ variables: {
         input: {
           mobileNumber: `${phoneNumberPrefix}${phoneNumber}`,
           ..._formValue,
         },
-      }),
+      } }),
     );
     this.messageService.success("Saved Successfully.");
     this.routerHelper.goToParent(this.route);

@@ -2,7 +2,7 @@
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { CurrentConfigurationGQL, CurrentConfigurationQuery } from '@kasi/admin-panel/generated/graphql';
 import { Observable } from 'rxjs';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 
 @Injectable()
 export class ConfigResolver  {
@@ -10,7 +10,7 @@ export class ConfigResolver  {
     private currentConfigGql: CurrentConfigurationGQL
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<CurrentConfigurationQuery>> {
-    return this.currentConfigGql.fetch({});
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<CurrentConfigurationQuery>> {
+    return this.currentConfigGql.fetch({ variables: {} });
   }
 }

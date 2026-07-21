@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   CallMaskingProviderListGQL,
   CallMaskingProviderListQuery,
@@ -18,8 +18,8 @@ export class CallMaskingProviderListResolver {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ApolloQueryResult<CallMaskingProviderListQuery>> {
+  ): Observable<ApolloClient.QueryResult<CallMaskingProviderListQuery>> {
     const params = this.tableService.deserializeQueryParams(route.queryParams);
-    return this.gql.fetch(params);
+    return this.gql.fetch({ variables: params });
   }
 }

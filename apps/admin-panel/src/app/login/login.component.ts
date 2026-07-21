@@ -74,9 +74,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       const username = this.validateForm.get("userName")?.value;
       const password = this.validateForm.get("password")?.value;
       const res = await firstValueFrom(
-        this.loginGql.fetch({ username, password }),
+        this.loginGql.fetch({ variables: { username, password } }),
       );
-      localStorage.setItem("kasi_admin_token", res.data.login.token);
+      localStorage.setItem("kasi_admin_token", res.data!.login.token);
       this.router.navigate([""], {});
     } catch (exception: any) {
       this.message.error(exception.message);

@@ -16,7 +16,7 @@ import { RiderWalletDTO } from './rider-wallet.dto';
 
 @ObjectType('Rider')
 @OffsetConnection('addresses', () => RiderAddressDTO)
-@OffsetConnection('wallet', () => RiderWalletDTO)
+@OffsetConnection('wallet', () => RiderWalletDTO, { relationName: 'wallets' })
 @OffsetConnection('transactions', () => RiderTransactionDTO)
 @OffsetConnection('orders', () => OrderDTO)
 @Relation('media', () => MediaDTO, { nullable: true })

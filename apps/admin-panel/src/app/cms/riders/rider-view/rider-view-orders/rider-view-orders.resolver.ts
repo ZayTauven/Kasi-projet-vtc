@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import { OrderFilter, OrderSortFields, RiderOrdersGQL, RiderOrdersQuery } from '@kasi/admin-panel/generated/graphql';
 import { TableService } from '@kasi/admin-panel/src/app/@services/table-service';
 import { Observable } from 'rxjs';
@@ -12,8 +12,8 @@ export class RiderViewOrdersResolver  {
     private tableService: TableService
   ) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloQueryResult<RiderOrdersQuery>> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ApolloClient.QueryResult<RiderOrdersQuery>> {
     const paging = this.tableService.deserializeQueryParams<OrderSortFields, OrderFilter>(route.queryParams);
-    return this.gql.fetch({ riderId: route.parent?.params.id, ...paging });
+    return this.gql.fetch({ variables: { riderId: route.parent?.params.id, ...paging } });
   }
 }

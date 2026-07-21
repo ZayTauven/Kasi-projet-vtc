@@ -38,7 +38,7 @@ query FleetFinancials(
       }
       totalCount
     }
-    wallets {
+    wallet {
       currency
       balance
     }

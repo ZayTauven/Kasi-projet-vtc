@@ -51,9 +51,9 @@ export class ReviewParameterViewComponent implements AfterViewInit {
     try {
       const { id, ...update } = this.form.value;
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input: update }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input: update } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, update }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
       this.router.navigate(["management/review-parameters"], {
         relativeTo: this.route.root,

@@ -1,7 +1,7 @@
 ﻿import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateZonePriceGQL,
   DeleteZonePriceGQL,
@@ -110,7 +110,7 @@ const DESTINATION_DRAW_STYLES: object[] = [
   standalone: false,
 })
 export class ZonePriceViewComponent implements OnInit, OnDestroy {
-  query?: Observable<ApolloQueryResult<ZonePriceViewQuery | ZonePriceNewQuery>>;
+  query?: Observable<ApolloClient.QueryResult<ZonePriceViewQuery | ZonePriceNewQuery>>;
   form = this.fb.group({
     id: [null],
     name: [null, Validators.required],
@@ -296,16 +296,16 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
       };
       if (id == null) {
         const res = await firstValueFrom(
-          this.createGQL.mutate({ input: submitData }),
+          this.createGQL.mutate({ variables: { input: submitData } }),
         );
         id = res.data?.createOneZonePrice.id;
       } else {
         const res = await firstValueFrom(
-          this.updateGQL.mutate({ id, update: submitData }),
+          this.updateGQL.mutate({ variables: { id, update: submitData } }),
         );
         id = res.data?.updateOneZonePrice.id;
       }
-      await firstValueFrom(this.relationsGQL.mutate({ id, services, fleets }));
+      await firstValueFrom(this.relationsGQL.mutate({ variables: { id, services, fleets } }));
       this.router.navigate(["management/zone-prices"], {
         relativeTo: this.route.root,
       });
@@ -341,7 +341,7 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
   async onDelete(): Promise<void> {
     try {
       const { id } = this.form.value;
-      await firstValueFrom(this.deleteGQL.mutate({ id }));
+      await firstValueFrom(this.deleteGQL.mutate({ variables: { id } }));
       this.router.navigate(["management/zone-prices"], {
         relativeTo: this.route.root,
       });

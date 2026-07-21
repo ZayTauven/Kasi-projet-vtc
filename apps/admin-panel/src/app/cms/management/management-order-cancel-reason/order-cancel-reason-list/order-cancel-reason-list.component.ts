@@ -3,7 +3,7 @@ import { Params, ActivatedRoute, Router } from "@angular/router";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { Observable } from "rxjs";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   OrderCancelReasonListQuery,
   ReviewParametersListQuery,
@@ -18,7 +18,7 @@ import { TableService } from "@kasi/admin-panel/src/app/@services/table-service"
   standalone: false,
 })
 export class OrderCancelReasonListComponent implements OnInit {
-  query?: Observable<ApolloQueryResult<OrderCancelReasonListQuery>>;
+  query?: Observable<ApolloClient.QueryResult<OrderCancelReasonListQuery>>;
 
   constructor(
     private route: ActivatedRoute,

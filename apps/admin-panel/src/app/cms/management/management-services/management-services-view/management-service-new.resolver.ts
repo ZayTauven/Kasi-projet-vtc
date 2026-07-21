@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloClient } from '@apollo/client/core';
 import {
   NewServiceGQL,
   NewServiceQuery,
@@ -17,7 +17,7 @@ export class ManagementServiceNewResolver
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
-  ): Observable<ApolloQueryResult<NewServiceQuery>> {
+  ): Observable<ApolloClient.QueryResult<NewServiceQuery>> {
     return this.gql.fetch();
   }
 }

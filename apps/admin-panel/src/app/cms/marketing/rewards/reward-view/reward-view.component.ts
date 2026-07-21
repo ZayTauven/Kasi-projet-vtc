@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ApolloQueryResult } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core";
 import {
   CreateRewardGQL,
   UpdateRewardGQL,
@@ -75,9 +75,9 @@ export class RewardViewComponent implements OnInit {
     };
     try {
       if (id == null) {
-        await firstValueFrom(this.createGQL.mutate({ input }));
+        await firstValueFrom(this.createGQL.mutate({ variables: { input } }));
       } else {
-        await firstValueFrom(this.updateGQL.mutate({ id, input }));
+        await firstValueFrom(this.updateGQL.mutate({ variables: { id, input } }));
       }
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
