@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -33,6 +33,7 @@ import {
 @Component({
   selector: "app-request-view-assign",
   templateUrl: "./request-view-assign.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RequestViewAssignComponent

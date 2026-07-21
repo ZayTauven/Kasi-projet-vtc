@@ -3,7 +3,15 @@
   // (Windows) n'étend pas les globs, seul un tsconfig est portable.
   "compilerOptions": {
     "outDir": "../../../../../../dist/apps/admin-api/migration",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": false,
+    "noUncheckedSideEffectImports": false,
+    "types": [
+      "*"
+    ],
+    "esModuleInterop": false,
+    "ignoreDeprecations": "6.0",
+    "rootDir": "."
   },
   "include": ["*.ts"]
 }

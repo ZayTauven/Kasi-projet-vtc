@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { ViewDriverQuery } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { map, Observable, Subscription } from "rxjs";
 @Component({
   selector: "app-driver-profile-documents",
   templateUrl: "./driver-profile-documents.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DriverProfileDocumentsComponent implements OnInit, OnDestroy {

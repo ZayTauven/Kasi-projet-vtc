@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UpdateRiderGQL } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { firstValueFrom, Subscription } from "rxjs";
 @Component({
   selector: "app-rider-view-info",
   templateUrl: "./rider-view-info.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RiderViewInfoComponent implements OnInit, OnDestroy {

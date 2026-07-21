@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -14,6 +14,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
 @Component({
   selector: "app-payout-session-new",
   templateUrl: "./payout-session-new.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class PayoutSessionNewComponent implements OnInit {

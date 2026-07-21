@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { CreateGiftBatchGQL } from "@kasi/admin-panel/generated/graphql";
@@ -10,6 +10,7 @@ import { firstValueFrom } from "rxjs";
   selector: "app-gift-batch-new",
   templateUrl: "./gift-batch-new.component.html",
   styles: ["nz-input-number{ @apply w-full } nz-date-picker{ @apply w-full }"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class GiftBatchNewComponent {

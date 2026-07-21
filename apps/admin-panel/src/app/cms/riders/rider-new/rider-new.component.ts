@@ -1,4 +1,4 @@
-﻿import { Component } from "@angular/core";
+﻿import { Component, ChangeDetectionStrategy } from "@angular/core";
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -15,6 +15,7 @@ import { phoneNumberFormatValidator } from "../../../@services/phone-number.vali
 @Component({
   selector: "app-rider-new",
   templateUrl: "./rider-new.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RiderNewComponent {

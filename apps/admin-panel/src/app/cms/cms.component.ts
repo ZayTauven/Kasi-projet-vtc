@@ -4,6 +4,7 @@ import {
   HostBinding,
   OnDestroy,
   AfterViewInit,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { NzNotificationService } from "ng-zorro-antd/notification";
@@ -69,6 +70,7 @@ interface NavGroup {
   templateUrl: "./cms.component.html",
   styleUrls: ["./cms.component.css"],
   animations: [mainPageSwitchTransition],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {

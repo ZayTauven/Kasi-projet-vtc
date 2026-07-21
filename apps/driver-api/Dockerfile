@@ -2,6 +2,8 @@
 FROM node:20.20.2-alpine AS build
 WORKDIR /app
 COPY ./package.json ./package-lock.json ./nx.json ./tsconfig.base.json ./
+COPY ./patches ./patches
+COPY ./tools ./tools
 RUN --mount=type=cache,target=/root/.npm npm ci --legacy-peer-deps
 COPY ./apps/driver-api ./apps/driver-api
 COPY ./libs/database ./libs/database

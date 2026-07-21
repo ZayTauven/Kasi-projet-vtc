@@ -1,4 +1,4 @@
-﻿import { Component } from "@angular/core";
+﻿import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CreateFleetGQL } from "@kasi/admin-panel/generated/graphql";
@@ -10,6 +10,7 @@ import { phoneNumberFormatValidator } from "../../../../@services/phone-number.v
 @Component({
   selector: "app-fleet-new",
   templateUrl: "./fleet-new.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetNewComponent {

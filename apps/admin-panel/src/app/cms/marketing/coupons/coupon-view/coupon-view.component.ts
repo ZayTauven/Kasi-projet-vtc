@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import {
@@ -14,6 +14,7 @@ import { firstValueFrom } from "rxjs";
   selector: "app-coupon-view",
   templateUrl: "./coupon-view.component.html",
   styles: ["nz-input-number{ @apply w-full }"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class CouponViewComponent implements OnInit {

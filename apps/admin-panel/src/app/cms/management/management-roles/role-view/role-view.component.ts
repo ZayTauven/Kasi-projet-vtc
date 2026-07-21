@@ -1,4 +1,4 @@
-﻿import { Component, EventEmitter, OnInit } from "@angular/core";
+﻿import { Component, EventEmitter, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Validators, UntypedFormBuilder } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import {
@@ -16,6 +16,7 @@ import { firstValueFrom, Subscription } from "rxjs";
   selector: "app-role-view",
   templateUrl: "./role-view.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RoleViewComponent implements OnInit {

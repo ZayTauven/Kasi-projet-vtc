@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -15,6 +15,7 @@ import { firstValueFrom } from "rxjs";
 @Component({
   selector: "app-email-provider-view",
   templateUrl: "./email-provider-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class EmailProviderViewComponent implements OnInit {

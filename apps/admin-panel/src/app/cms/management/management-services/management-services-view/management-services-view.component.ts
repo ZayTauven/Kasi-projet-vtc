@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ViewChild } from "@angular/core";
+﻿import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -35,6 +35,7 @@ import { map } from "rxjs/operators";
     "nz-input-number{ @apply w-full }",
     "nz-time-picker{@apply w-full }",
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ManagementServicesViewComponent implements OnInit {

@@ -5,8 +5,14 @@ import { IconsProviderModule } from "../icons-provider.module";
 import {
   provideHttpClient,
   withInterceptorsFromDi,
+  withXhr
 } from "@angular/common/http";
-import { NgxMapboxGLModule } from "ngx-mapbox-gl";
+import {
+  MapComponent,
+  MarkerComponent,
+  PopupComponent,
+  provideMapboxGL,
+} from "ngx-mapbox-gl";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
 import { TagColorService } from "../@services/tag-color/tag-color.service";
 import { PhonePipe } from "../@pipes/phone.pipe";
@@ -99,7 +105,9 @@ import { TimeagoModule } from "ngx-timeago";
     IconsProviderModule,
     NzLayoutModule,
     NzGridModule,
-    NgxMapboxGLModule,
+    MapComponent,
+    MarkerComponent,
+    PopupComponent,
     NzSwitchModule,
     PhonePipe,
     NzPaginationModule,
@@ -156,7 +164,9 @@ import { TimeagoModule } from "ngx-timeago";
     IconsProviderModule,
     NzLayoutModule,
     NzGridModule,
-    NgxMapboxGLModule.withConfig({ accessToken: environment.mapboxToken }),
+    MapComponent,
+    MarkerComponent,
+    PopupComponent,
     NzSwitchModule,
     NzPaginationModule,
     NzRateModule,
@@ -174,7 +184,8 @@ import { TimeagoModule } from "ngx-timeago";
     NzMessageService,
     NzModalService,
     TagColorService,
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+    provideMapboxGL({ accessToken: environment.mapboxToken }),
   ],
 })
 export class SharedModule {}

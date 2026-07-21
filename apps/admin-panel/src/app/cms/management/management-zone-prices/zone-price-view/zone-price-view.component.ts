@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -106,6 +106,7 @@ const DESTINATION_DRAW_STYLES: object[] = [
 @Component({
   selector: "app-zone-price-view",
   templateUrl: "./zone-price-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ZonePriceViewComponent implements OnInit, OnDestroy {

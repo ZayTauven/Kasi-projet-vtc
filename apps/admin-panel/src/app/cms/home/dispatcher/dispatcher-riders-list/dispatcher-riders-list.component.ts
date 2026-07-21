@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
@@ -10,6 +10,7 @@ import { map, Observable } from "rxjs";
   selector: "app-dispatcher-riders-list",
   templateUrl: "./dispatcher-riders-list.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DispatcherRidersListComponent implements OnInit {

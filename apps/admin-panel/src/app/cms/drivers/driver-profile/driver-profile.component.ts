@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -19,6 +19,7 @@ import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: "app-driver-profile",
   templateUrl: "./driver-profile.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DriverProfileComponent implements OnInit {

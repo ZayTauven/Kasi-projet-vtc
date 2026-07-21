@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -17,6 +17,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
 @Component({
   selector: "app-fleet-view-financials",
   templateUrl: "./fleet-view-financials.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetViewFinancialsComponent implements OnInit {

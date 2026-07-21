@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -14,6 +14,7 @@ import { firstValueFrom, Subscription } from "rxjs";
 @Component({
   selector: "app-announcement-view",
   templateUrl: "./announcement-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AnnouncementViewComponent implements OnInit {

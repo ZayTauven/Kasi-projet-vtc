@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import {
   CancelPayoutGQL,
@@ -14,6 +14,7 @@ import { firstValueFrom } from "rxjs";
 @Component({
   selector: "app-payout-session-view",
   templateUrl: "./payout-session-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class PayoutSessionViewComponent implements OnInit {

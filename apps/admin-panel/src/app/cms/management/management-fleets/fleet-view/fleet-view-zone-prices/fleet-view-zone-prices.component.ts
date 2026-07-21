@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { FleetZonePricesQuery } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { map, Observable } from "rxjs";
 @Component({
   selector: "app-fleet-view-zone-prices",
   templateUrl: "./fleet-view-zone-prices.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetViewZonePricesComponent implements OnInit {

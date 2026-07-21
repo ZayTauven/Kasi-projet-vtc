@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Params, ActivatedRoute, Router } from "@angular/router";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
@@ -14,6 +14,7 @@ import { TableService } from "@kasi/admin-panel/src/app/@services/table-service"
 @Component({
   selector: "app-review-parameters-list",
   templateUrl: "./order-cancel-reason-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OrderCancelReasonListComponent implements OnInit {

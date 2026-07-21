@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { ViewOrderQuery } from "@kasi/admin-panel/generated/graphql";
@@ -10,6 +10,7 @@ import { CurrentConfigService } from "../../../current-config.service";
 @Component({
   selector: "app-request-view-info",
   templateUrl: "./request-view-info.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RequestViewInfoComponent implements OnInit {

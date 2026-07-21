@@ -3,6 +3,8 @@ FROM node:20.20.2-alpine AS build
 WORKDIR /app
 ARG MAPBOX_TOKEN=""
 COPY ./package.json ./package-lock.json ./nx.json ./tsconfig.base.json ./
+COPY ./patches ./patches
+COPY ./tools ./tools
 RUN npm ci --legacy-peer-deps
 COPY ./apps/admin-panel ./apps/admin-panel
 # Injecte le token Mapbox au build depuis un ARG (jamais versionne dans environment.prod.ts,

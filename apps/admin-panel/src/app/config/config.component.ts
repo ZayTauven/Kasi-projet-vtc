@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -17,6 +17,7 @@ import { firstValueFrom, map, Observable, Subscription } from "rxjs";
   selector: "app-config",
   templateUrl: "./config.component.html",
   styleUrls: ["./config.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ConfigComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { Observable } from "rxjs";
@@ -10,6 +10,7 @@ import { TableService } from "@kasi/admin-panel/src/app/@services/table-service"
 @Component({
   selector: "app-zone-prices-list",
   templateUrl: "./zone-prices-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ZonePricesListComponent implements OnInit {

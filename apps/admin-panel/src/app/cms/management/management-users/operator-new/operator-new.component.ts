@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -20,6 +20,7 @@ import { phoneNumberFormatValidator } from "../../../../@services/phone-number.v
   selector: "app-operator-new",
   templateUrl: "./operator-new.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OperatorNewComponent implements OnInit {

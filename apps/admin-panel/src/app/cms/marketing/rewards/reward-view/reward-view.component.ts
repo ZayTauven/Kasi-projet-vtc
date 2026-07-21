@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -16,6 +16,7 @@ import { firstValueFrom } from "rxjs";
   selector: "app-reward-view",
   templateUrl: "./reward-view.component.html",
   styles: ["nz-input-number{ @apply w-full }"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RewardViewComponent implements OnInit {

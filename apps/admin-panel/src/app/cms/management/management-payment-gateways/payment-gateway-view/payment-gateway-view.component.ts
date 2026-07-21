@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -17,6 +17,7 @@ import { firstValueFrom, Observable, Observer, Subscription } from "rxjs";
 @Component({
   selector: "app-payment-gateway-view",
   templateUrl: "./payment-gateway-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class PaymentGatewayViewComponent implements OnInit, OnDestroy {

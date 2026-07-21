@@ -25,7 +25,8 @@
       "dom",
       "es2018.asynciterable",
       "es2022"
-    ]
+    ],
+    "ignoreDeprecations": "6.0"
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

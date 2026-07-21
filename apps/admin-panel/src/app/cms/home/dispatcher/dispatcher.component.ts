@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
@@ -7,6 +7,7 @@ import { NzModalService } from "ng-zorro-antd/modal";
 @Component({
   selector: "app-dispatcher",
   templateUrl: "./dispatcher.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DispatcherComponent implements OnInit {

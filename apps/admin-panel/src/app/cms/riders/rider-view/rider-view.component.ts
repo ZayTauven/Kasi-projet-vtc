@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
@@ -18,6 +18,7 @@ import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: "app-rider-view",
   templateUrl: "./rider-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RiderViewComponent implements OnInit {

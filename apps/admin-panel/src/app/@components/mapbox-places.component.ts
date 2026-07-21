@@ -4,6 +4,7 @@ import {
   Input,
   OnDestroy,
   Output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Subject, Subscription, EMPTY } from "rxjs";
@@ -42,6 +43,7 @@ interface MapboxFeature {
         }
       </nz-autocomplete>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class MapboxPlacesComponent implements OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import {
   MapSettingGQL,
@@ -11,6 +11,7 @@ import { firstValueFrom } from "rxjs";
 @Component({
   selector: "app-map-settings",
   templateUrl: "./map-settings.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class MapSettingsComponent implements OnInit {

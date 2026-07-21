@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -13,6 +13,7 @@ import { map } from "rxjs/operators";
 @Component({
   selector: "app-rider-view-orders",
   templateUrl: "./rider-view-orders.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RiderViewOrdersComponent implements OnInit {

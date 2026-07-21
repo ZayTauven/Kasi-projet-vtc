@@ -2,7 +2,7 @@
 
 > La vitesse sénégalaise, portée par ceux qui la font déjà.
 
-![Kasi](https://img.shields.io/badge/Status-Production%20Ready-0A84FF?style=for-the-badge) ![Node](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&style=for-the-badge) ![Angular](https://img.shields.io/badge/Angular-16-DD0031?logo=angular&style=for-the-badge) ![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs&style=for-the-badge) ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&style=for-the-badge)
+![Kasi](https://img.shields.io/badge/Status-Production%20Ready-0A84FF?style=for-the-badge) ![Node](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&style=for-the-badge) ![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&style=for-the-badge) ![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs&style=for-the-badge) ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&style=for-the-badge)
 
 Kasi est une plateforme de mobilité et de logistique pensée pour Dakar : courses, livraisons, gestion de flotte, paiements et administration, réunies dans un écosystème fluide et puissant. Ce projet transforme le dernier kilomètre en une expérience rapide, fiable et intelligemment connectée.
 

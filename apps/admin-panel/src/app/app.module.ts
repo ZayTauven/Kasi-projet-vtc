@@ -18,6 +18,7 @@ import {
   HttpClient,
   provideHttpClient,
   withInterceptorsFromDi,
+  withXhr
 } from "@angular/common/http";
 import {
   ar_EG,
@@ -280,7 +281,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
       deps: [LOCALE_ID],
     },
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
   ],
 })
 export class AppModule {

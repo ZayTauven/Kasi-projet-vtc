@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -19,6 +19,7 @@ import { firstValueFrom, map, Observable, Observer, Subscription } from "rxjs";
   selector: "app-driver-profile-details",
   templateUrl: "./driver-profile-details.component.html",
   styles: ["nz-input-number {@apply w-full}"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DriverProfileDetailsComponent implements OnInit, OnDestroy {

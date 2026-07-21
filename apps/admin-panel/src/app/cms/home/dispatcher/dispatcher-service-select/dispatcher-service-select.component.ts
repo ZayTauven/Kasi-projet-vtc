@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -12,6 +12,7 @@ import { DispatcherService } from "../dispatcher.service";
   selector: "app-dispatcher-service-select",
   templateUrl: "./dispatcher-service-select.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DispatcherServiceSelectComponent implements OnInit {

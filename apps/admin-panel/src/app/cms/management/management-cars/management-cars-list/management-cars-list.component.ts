@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -17,6 +17,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
 @Component({
   selector: "app-management-cars-list",
   templateUrl: "./management-cars-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ManagementCarsListComponent implements OnInit {

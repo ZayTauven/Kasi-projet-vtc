@@ -4,6 +4,7 @@
   Inject,
   OnDestroy,
   OnInit,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -19,6 +20,7 @@ import { ThemeService } from "../@services/theme.service";
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
   animations: [loginTransition],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class LoginComponent implements OnInit, OnDestroy {

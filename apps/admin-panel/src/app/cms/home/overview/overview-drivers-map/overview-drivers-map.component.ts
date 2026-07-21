@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Map as MapboxMap, LngLatBounds } from "mapbox-gl";
 import { camelCase } from "camel-case";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
@@ -15,6 +15,7 @@ import { ActivatedRoute } from "@angular/router";
 @Component({
   selector: "app-overview-drivers-map",
   templateUrl: "./overview-drivers-map.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OverviewDriversMapComponent

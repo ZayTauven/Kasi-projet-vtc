@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
@@ -13,6 +13,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
 @Component({
   selector: "app-user-view-details",
   templateUrl: "./user-view-details.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class UserViewDetailsComponent implements OnInit {

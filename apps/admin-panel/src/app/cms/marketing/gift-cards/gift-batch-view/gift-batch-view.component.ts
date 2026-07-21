@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import {
   GiftBatchCodesGQL,
@@ -15,6 +15,7 @@ type GiftCardConnection = NonNullable<
 @Component({
   selector: "app-gift-batch-view",
   templateUrl: "./gift-batch-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class GiftBatchViewComponent implements OnInit {

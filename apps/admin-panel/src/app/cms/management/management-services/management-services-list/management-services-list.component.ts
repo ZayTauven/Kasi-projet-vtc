@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { ServicesListQuery } from "@kasi/admin-panel/generated/graphql";
@@ -10,6 +10,7 @@ import { map } from "rxjs/operators";
 @Component({
   selector: "app-management-services-list",
   templateUrl: "./management-services-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ManagementServicesListComponent implements OnInit {

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { DriverFeedbacksQuery } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { map, Observable } from "rxjs";
 @Component({
   selector: "app-driver-profile-feedbacks",
   templateUrl: "./driver-profile-feedbacks.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DriverProfileFeedbacksComponent implements OnInit {

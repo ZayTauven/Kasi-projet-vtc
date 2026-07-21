@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { TranslateService } from "@ngx-translate/core";
@@ -12,6 +12,7 @@ import { map, Observable } from "rxjs";
 @Component({
   selector: "app-request-view-activities",
   templateUrl: "./request-view-activities.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RequestViewActivitiesComponent implements OnInit {

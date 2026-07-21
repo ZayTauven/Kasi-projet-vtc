@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { UsersListQuery } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { map, Observable } from "rxjs";
 @Component({
   selector: "app-users-list",
   templateUrl: "./users-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class UsersListComponent implements OnInit {

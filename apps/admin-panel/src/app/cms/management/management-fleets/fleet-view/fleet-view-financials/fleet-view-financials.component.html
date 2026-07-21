@@ -131,7 +131,7 @@
             <nz-form-label nzRequired>{{ 'profile.currency' | translate }}</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="currency" id="currency" required>
-                @for (currency of getUniquieCurrencies((query | async)?.data?.regions?.nodes); track currency) {
+                @for (currency of getUniquieCurrencies($safeNavigationMigration((query | async)?.data?.regions?.nodes)); track currency) {
                   <nz-option [nzLabel]="currency.currency" [nzValue]="currency.currency"></nz-option>
                 }
               </nz-select>

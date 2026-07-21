@@ -28,7 +28,7 @@
     <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
   </div>
 </form>
-@if (this.form.value?.id !== null) {
+@if ($safeNavigationMigration(this.form.value?.id) !== null) {
   <div class="kasi-card mt-2">
     <div class="kasi-card__head">
       <span class="kasi-card__title">{{ 'profile.dangerArea' | translate }}</span>

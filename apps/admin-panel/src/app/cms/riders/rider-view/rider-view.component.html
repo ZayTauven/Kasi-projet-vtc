@@ -15,7 +15,7 @@
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar">
       @if (rider.media?.address) {
-        <img [src]="environment.root + rider.media?.address" />
+        <img [src]="environment.root + $safeNavigationMigration(rider.media?.address)" />
       }
       @if (!rider.media?.address) {
         <i nz-icon nzType="user"></i>

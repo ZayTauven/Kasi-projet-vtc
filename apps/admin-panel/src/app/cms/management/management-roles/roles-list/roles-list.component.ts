@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import { RoleQuery, RolesQuery } from "@kasi/admin-panel/generated/graphql";
@@ -9,6 +9,7 @@ import { map, Observable } from "rxjs";
   selector: "app-roles-list",
   templateUrl: "./roles-list.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class RolesListComponent implements OnInit {

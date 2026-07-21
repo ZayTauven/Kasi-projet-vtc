@@ -16,5 +16,8 @@
   "include": [
     "**/*.ts",
     "../../libs/database/src/lib/crypto.service.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": false
+  }
 }

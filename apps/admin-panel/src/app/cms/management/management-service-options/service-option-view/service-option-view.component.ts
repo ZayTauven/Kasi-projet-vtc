@@ -1,4 +1,4 @@
-﻿import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { AfterViewInit, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -17,6 +17,7 @@ import { firstValueFrom, Subscription } from "rxjs";
 @Component({
   selector: "app-service-option-view",
   templateUrl: "./service-option-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ServiceOptionViewComponent implements OnInit, OnDestroy {

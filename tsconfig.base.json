@@ -28,7 +28,13 @@
         "libs/database/src/lib/order/google-services/*"
       ],
       "@kasi/redis/*": ["libs/database/src/lib/redis/*"]
-    }
+    },
+    "strict": false,
+    "noUncheckedSideEffectImports": false,
+    "types": [
+      "*"
+    ],
+    "ignoreDeprecations": "6.0"
   },
   "exclude": ["node_modules", "tmp"]
 }

@@ -1,4 +1,4 @@
-﻿import { AfterViewInit, Component } from "@angular/core";
+﻿import { AfterViewInit, Component, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -15,6 +15,7 @@ import { firstValueFrom } from "rxjs";
 @Component({
   selector: "app-review-parameter-view",
   templateUrl: "./order-cancel-reason-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OrderCancelReasonViewComponent implements AfterViewInit {

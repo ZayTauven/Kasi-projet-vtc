@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
@@ -13,6 +13,7 @@ import { catchError } from "rxjs/operators";
   selector: "app-dispatcher-locations-select",
   templateUrl: "./dispatcher-locations-select.component.html",
   styles: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DispatcherLocationsSelectComponent {

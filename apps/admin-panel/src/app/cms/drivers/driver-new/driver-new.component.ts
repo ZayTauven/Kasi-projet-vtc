@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   UntypedFormGroup,
   Validators,
@@ -16,6 +16,7 @@ import { phoneNumberFormatValidator } from "../../../@services/phone-number.vali
 @Component({
   selector: "app-driver-new",
   templateUrl: "./driver-new.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DriverNewComponent {

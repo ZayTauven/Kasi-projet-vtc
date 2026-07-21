@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -15,6 +15,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 @Component({
   selector: "app-fleet-view-details",
   templateUrl: "./fleet-view-details.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetViewDetailsComponent implements OnDestroy {

@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from "@angular/core";
+﻿import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import {
@@ -13,6 +13,7 @@ import { firstValueFrom, Subscription } from "rxjs";
 @Component({
   selector: "app-management-service-category-view",
   templateUrl: "./management-service-category-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ManagementServiceCategoryViewComponent

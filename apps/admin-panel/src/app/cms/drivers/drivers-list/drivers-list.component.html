@@ -26,14 +26,14 @@
             <tr>
               <th nzCustomFilter nzColumnKey="lastName" [nzSortFn]="true">
                 {{ 'profile.name' | translate }}
-                <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('lastName|like|')"
+                <nz-filter-trigger [nzActive]="$safeNavigationMigration((route.queryParams | async)?.filter?.includes('lastName|like|'))"
                   [nzDropdownMenu]="filtername">
                   <i nz-icon nzType="search"></i>
                 </nz-filter-trigger>
               </th>
               <th nzCustomFilter nzColumnKey="mobileNumber" [nzSortFn]="true">
                 {{ 'profile.mobileNumber' | translate }}
-                <nz-filter-trigger [nzActive]="(route.queryParams | async)?.filter?.includes('mobileNumber|like|')"
+                <nz-filter-trigger [nzActive]="$safeNavigationMigration((route.queryParams | async)?.filter?.includes('mobileNumber|like|'))"
                   [nzDropdownMenu]="filtermobile">
                   <i nz-icon nzType="search"></i>
                 </nz-filter-trigger>

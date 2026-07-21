@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Params, ActivatedRoute, Router } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -13,6 +13,7 @@ import { camelCase } from "camel-case";
 @Component({
   selector: "app-complaints-list",
   templateUrl: "./complaints-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ComplaintsListComponent implements OnInit {

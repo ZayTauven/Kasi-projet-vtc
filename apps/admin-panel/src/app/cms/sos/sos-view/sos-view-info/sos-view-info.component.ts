@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -16,6 +16,7 @@ import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-
 @Component({
   selector: "app-sos-view-info",
   templateUrl: "./sos-view-info.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class SOSViewInfoComponent implements OnInit {

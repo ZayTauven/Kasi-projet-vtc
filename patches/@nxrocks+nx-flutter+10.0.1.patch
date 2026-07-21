@@ -1,0 +1,52 @@
+diff --git a/node_modules/@nxrocks/nx-flutter/src/generators/project/lib/normalize-options.js b/node_modules/@nxrocks/nx-flutter/src/generators/project/lib/normalize-options.js
+index f144aee..7784aa7 100644
+--- a/node_modules/@nxrocks/nx-flutter/src/generators/project/lib/normalize-options.js
++++ b/node_modules/@nxrocks/nx-flutter/src/generators/project/lib/normalize-options.js
+@@ -1,7 +1,7 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.normalizeOptions = normalizeOptions;
+-const project_name_and_root_utils_1 = require("@nx/devkit/src/generators/project-name-and-root-utils");
++const project_name_and_root_utils_1 = require("@nx/devkit/internal");
+ async function normalizeOptions(tree, options) {
+     const projectType = options.template === 'app' ? 'application' : 'library';
+     await (0, project_name_and_root_utils_1.ensureRootProjectName)(options, projectType);
+diff --git a/node_modules/@nxrocks/nx-flutter/src/utils/deps-utils.js b/node_modules/@nxrocks/nx-flutter/src/utils/deps-utils.js
+index b58a6d4..3b8e075 100644
+--- a/node_modules/@nxrocks/nx-flutter/src/utils/deps-utils.js
++++ b/node_modules/@nxrocks/nx-flutter/src/utils/deps-utils.js
+@@ -2,10 +2,10 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.getPackageInfo = getPackageInfo;
+ const js_yaml_1 = require("js-yaml");
+-const fileutils_1 = require("@nx/workspace/src/utilities/fileutils");
++const fs_1 = require("fs");
+ const common_1 = require("@nxrocks/common");
+ function getPackageInfo(project) {
+-    if ((0, fileutils_1.fileExists)((0, common_1.getProjectFilePath)(project, 'pubspec.yaml'))) {
++    if ((0, fs_1.existsSync)((0, common_1.getProjectFilePath)(project, 'pubspec.yaml'))) {
+         //
+         const pubspec = (0, js_yaml_1.load)((0, common_1.getProjectFileContent)(project, 'pubspec.yaml'));
+         const dependencies = [];
+diff --git a/node_modules/@nxrocks/nx-flutter/src/utils/flutter-utils.js b/node_modules/@nxrocks/nx-flutter/src/utils/flutter-utils.js
+index d1121d1..67f99ca 100644
+--- a/node_modules/@nxrocks/nx-flutter/src/utils/flutter-utils.js
++++ b/node_modules/@nxrocks/nx-flutter/src/utils/flutter-utils.js
+@@ -4,7 +4,7 @@ exports.isFlutterInstalled = isFlutterInstalled;
+ exports.isFlutterProject = isFlutterProject;
+ exports.quote = quote;
+ exports.buildFlutterCreateOptions = buildFlutterCreateOptions;
+-const fileutils_1 = require("@nx/workspace/src/utilities/fileutils");
++const fs_1 = require("fs");
+ const common_1 = require("@nxrocks/common");
+ const child_process_1 = require("child_process");
+ function isFlutterInstalled(useFvm = false) {
+@@ -19,7 +19,7 @@ function isFlutterInstalled(useFvm = false) {
+     }
+ }
+ function isFlutterProject(project) {
+-    return (0, fileutils_1.fileExists)((0, common_1.getProjectFilePath)(project, 'pubspec.yaml'));
++    return (0, fs_1.existsSync)((0, common_1.getProjectFilePath)(project, 'pubspec.yaml'));
+ }
+ function quote(text) {
+     if (!text || (text.startsWith('"') && text.endsWith('"'))) {

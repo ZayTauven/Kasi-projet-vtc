@@ -15,7 +15,7 @@
   <div class="kasi-profile-head">
     <div class="kasi-profile-head__avatar">
       @if (driver.media?.address) {
-        <img [src]="root + driver.media?.address" />
+        <img [src]="root + $safeNavigationMigration(driver.media?.address)" />
       }
       @if (!driver.media?.address) {
         <i nz-icon nzType="user"></i>

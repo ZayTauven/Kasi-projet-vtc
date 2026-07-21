@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ApolloQueryResult } from "@apollo/client/core";
 import {
@@ -16,6 +16,7 @@ import { TableService } from "../../../@services/table-service";
 @Component({
   selector: "app-fleet-wallets-list",
   templateUrl: "./fleet-wallets-list.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetWalletsListComponent implements OnInit {

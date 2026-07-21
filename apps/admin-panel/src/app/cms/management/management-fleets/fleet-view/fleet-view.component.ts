@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { map, Observable } from "rxjs";
@@ -8,6 +8,7 @@ import { ViewFleetQuery } from "@kasi/admin-panel/generated/graphql";
 @Component({
   selector: "app-fleet-view",
   templateUrl: "./fleet-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FleetViewComponent implements OnInit {

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   CancelOrderGQL,
@@ -12,6 +12,7 @@ import { firstValueFrom, Observable } from "rxjs";
 @Component({
   selector: "app-dispatcher-looking",
   templateUrl: "./dispatcher-looking.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class DispatcherLookingComponent implements OnInit {

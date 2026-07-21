@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { Router } from "@angular/router";
 import { CurrentConfigService } from "./cms/current-config.service";
@@ -7,6 +7,7 @@ import { ThemeService } from "./@services/theme.service";
 @Component({
   selector: "app-root",
   template: '@if (isLoaded) {<router-outlet></router-outlet>}',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AppComponent implements OnInit {
