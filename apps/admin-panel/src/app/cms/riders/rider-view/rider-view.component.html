@@ -58,7 +58,7 @@
     </div>
   </div>
   <div class="kasi-tabs">
-    <nz-tabset nzLinkRouter [nzLinkExact]="false">
+    <nz-tabs nzLinkRouter [nzLinkExact]="false">
       <nz-tab>
         <a *nzTabLink nz-tab-link routerLink="details">{{ 'riders.tab.details' | translate }}</a>
       </nz-tab>
@@ -71,7 +71,7 @@
       <nz-tab>
         <a *nzTabLink nz-tab-link routerLink="addresses">{{ 'riders.tab.addresses' | translate }}</a>
       </nz-tab>
-    </nz-tabset>
+    </nz-tabs>
   </div>
   <router-outlet></router-outlet>
 }

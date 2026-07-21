@@ -134,13 +134,13 @@
       <nz-form-item>
         <nz-form-label>{{ 'service.timeMultiplierTable.multiplyBy' | translate }}</nz-form-label>
         <nz-form-control>
-          <nz-input-number #timeMultiplyInput nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}">
+          <nz-input-number [(ngModel)]="timeMultiplyValue" nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}">
           </nz-input-number>
         </nz-form-control>
       </nz-form-item>
     </div>
     <button nz-button nzType="primary" (click)="insertTimeRule()"
-      [disabled]="timeStartPicker.value == null || timeEndPicker.value == null || timeMultiplyInput.inputElement.nativeElement.value == ''"
+      [disabled]="timeStartPicker.value == null || timeEndPicker.value == null || timeMultiplyValue == null"
       class="float-right">{{
       'service.insertRule' |
     translate }}</button>

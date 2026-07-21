@@ -76,7 +76,7 @@
     </div>
   </div>
   <div class="kasi-tabs">
-    <nz-tabset [nzLinkExact]="false" nzLinkRouter>
+    <nz-tabs [nzLinkExact]="false" nzLinkRouter>
       <nz-tab>
         <a *nzTabLink nz-tab-link routerLink="details">{{'driver.profile.details' | translate}}</a>
       </nz-tab>
@@ -92,7 +92,7 @@
       <nz-tab>
         <a *nzTabLink nz-tab-link routerLink="documents">{{'driver.profile.documents' | translate}}</a>
       </nz-tab>
-    </nz-tabset>
+    </nz-tabs>
   </div>
   <router-outlet></router-outlet>
 }

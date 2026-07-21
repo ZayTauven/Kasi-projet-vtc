@@ -21,7 +21,6 @@ import {
   NzDatePickerComponent,
   NzRangePickerComponent,
 } from "ng-zorro-antd/date-picker";
-import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzSelectComponent } from "ng-zorro-antd/select";
 import { NzTimePickerComponent } from "ng-zorro-antd/time-picker";
@@ -78,23 +77,20 @@ export class ManagementServicesViewComponent implements OnInit {
   timeStartPicker!: NzTimePickerComponent;
   @ViewChild("timeEndPicker", { static: false })
   timeEndPicker!: NzTimePickerComponent;
-  @ViewChild("timeMultiplyInput", { static: false })
-  timeMultiplyInput!: NzInputNumberComponent;
-  @ViewChild("distanceFromInput", { static: false })
-  distanceFromInput!: NzInputNumberComponent;
-  @ViewChild("distanceToInput", { static: false })
-  distanceToInput!: NzInputNumberComponent;
   @ViewChild("weekdaySelectInput", { static: false })
   weekdaySelectInput!: NzSelectComponent;
   @ViewChild("dateRangePicker", { static: false })
   dateRangePicker!: NzDatePickerComponent;
 
-  @ViewChild("distanceMultiplyInput", { static: false })
-  distanceMultiplyInput!: NzInputNumberComponent;
-  @ViewChild("weekdayMultiplyInput", { static: false })
-  weekdayMultiplyInput!: NzInputNumberComponent;
-  @ViewChild("dateRangeMultiplyInput", { static: false })
-  dateRangeMultiplyInput!: NzInputNumberComponent;
+  // ng-zorro-antd 21 a retiré l'accès public à l'élément natif de nz-input-number
+  // (NzInputNumberComponent.inputElement/value sont maintenant privés) : on lit/reset
+  // désormais ces champs via [(ngModel)] plutôt que par accès DOM direct.
+  timeMultiplyValue: number | null = null;
+  distanceFromValue: number | null = null;
+  distanceToValue: number | null = null;
+  distanceMultiplyValue: number | null = null;
+  weekdayMultiplyValue: number | null = null;
+  dateRangeMultiplyValue: number | null = null;
 
   Weekdays = Object.values(Weekday).map((key) => ({
     label: this.translate.instant(`weekday.${key.toLowerCase()}`),
@@ -112,10 +108,10 @@ export class ManagementServicesViewComponent implements OnInit {
   };
 
   formatterPercent = (value: number) => `${value} %`;
-  parserPercent = (value: string) => value.replace(" %", "");
+  parserPercent = (value: string) => Number(value.replace(" %", ""));
   formatterMeters = (value: number) => `${value} m`;
   formatterPrice = (value: number) => `${value}`;
-  parserMeters = (value: string) => value.replace(" m", "");
+  parserMeters = (value: string) => Number(value.replace(" m", ""));
   jwt = localStorage.getItem("kasi_admin_token");
   avatarUrl?: string;
   paymentMethods = Object.values(ServicePaymentMethod);
@@ -219,11 +215,9 @@ export class ManagementServicesViewComponent implements OnInit {
     this.form.value.timeMultipliers.push({
       startTime: this.timeStartPicker.inputRef.nativeElement.value,
       endTime: this.timeEndPicker.inputRef.nativeElement.value,
-      multiply: parseFloat(
-        this.timeMultiplyInput.inputElement.nativeElement.value,
-      ),
+      multiply: this.timeMultiplyValue ?? NaN,
     });
-    this.timeMultiplyInput.inputElement.nativeElement.value = "";
+    this.timeMultiplyValue = null;
     this.timeStartPicker.inputRef.nativeElement.value = "";
     this.timeEndPicker.inputRef.nativeElement.value = "";
   }
@@ -240,11 +234,9 @@ export class ManagementServicesViewComponent implements OnInit {
     }
     this.form.value.weekdayMultipliers.push({
       weekday: this.weekdaySelectInput.listOfValue[0],
-      multiply: parseFloat(
-        this.weekdayMultiplyInput.inputElement.nativeElement.value,
-      ),
+      multiply: this.weekdayMultiplyValue ?? NaN,
     });
-    this.weekdayMultiplyInput.inputElement.nativeElement.value = "";
+    this.weekdayMultiplyValue = null;
     this.weekdaySelectInput.writeValue([]);
   }
 
@@ -255,11 +247,9 @@ export class ManagementServicesViewComponent implements OnInit {
     this.form.value.dateRangeMultipliers.push({
       startDate: new Date(this.dateRangePicker.inputValue[0]).getTime(),
       endDate: new Date(this.dateRangePicker.inputValue[1]).getTime(),
-      multiply: parseFloat(
-        this.dateRangeMultiplyInput.inputElement.nativeElement.value,
-      ),
+      multiply: this.dateRangeMultiplyValue ?? NaN,
     });
-    this.dateRangeMultiplyInput.inputElement.nativeElement.value = "";
+    this.dateRangeMultiplyValue = null;
     this.dateRangePicker.writeValue([]);
   }
 
@@ -278,19 +268,13 @@ export class ManagementServicesViewComponent implements OnInit {
       this.form.value.distanceMultipliers = [];
     }
     this.form.value.distanceMultipliers.push({
-      distanceFrom: parseInt(
-        this.distanceFromInput.inputElement.nativeElement.value,
-      ),
-      distanceTo: parseInt(
-        this.distanceToInput.inputElement.nativeElement.value,
-      ),
-      multiply: parseFloat(
-        this.distanceMultiplyInput.inputElement.nativeElement.value,
-      ),
+      distanceFrom: Math.trunc(this.distanceFromValue ?? NaN),
+      distanceTo: Math.trunc(this.distanceToValue ?? NaN),
+      multiply: this.distanceMultiplyValue ?? NaN,
     });
-    this.distanceMultiplyInput.inputElement.nativeElement.value = "";
-    this.distanceFromInput.inputElement.nativeElement.value = "";
-    this.distanceToInput.inputElement.nativeElement.value = "";
+    this.distanceMultiplyValue = null;
+    this.distanceFromValue = null;
+    this.distanceToValue = null;
   }
 
   removeDistanceRule(_rule: DistanceMultiplier) {

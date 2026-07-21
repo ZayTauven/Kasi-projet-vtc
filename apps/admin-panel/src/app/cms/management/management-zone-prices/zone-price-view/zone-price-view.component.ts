@@ -11,7 +11,6 @@ import {
   ZonePriceNewQuery,
   ZonePriceViewQuery,
 } from "@kasi/admin-panel/generated/graphql";
-import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzTimePickerComponent } from "ng-zorro-antd/time-picker";
 import { firstValueFrom, map, Observable, Subscription } from "rxjs";
@@ -127,8 +126,10 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
   timeStartPicker!: NzTimePickerComponent;
   @ViewChild("timeEndPicker", { static: false })
   timeEndPicker!: NzTimePickerComponent;
-  @ViewChild("timeMultiplyInput", { static: false })
-  timeMultiplyInput!: NzInputNumberComponent;
+  // ng-zorro-antd 21 a retiré l'accès public à l'élément natif de nz-input-number
+  // (NzInputNumberComponent.inputElement/value sont maintenant privés) : on lit
+  // désormais ce champ via [(ngModel)] plutôt que par accès DOM direct.
+  timeMultiplyValue: number | null = null;
   /** Pickup area coordinate rings in backend format {lat,lng}[]. */
   polygonsFrom: Array<Array<{ lat: number; lng: number }>> = [];
   /** Destination area coordinate rings in backend format {lat,lng}[]. */
@@ -320,9 +321,7 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
     this.form.value.timeMultipliers.push({
       startTime: this.timeStartPicker.inputRef.nativeElement.value,
       endTime: this.timeEndPicker.inputRef.nativeElement.value,
-      multiply: parseFloat(
-        this.timeMultiplyInput.inputElement.nativeElement.value,
-      ),
+      multiply: this.timeMultiplyValue ?? NaN,
     });
   }
 

@@ -269,14 +269,14 @@
         <nz-form-item>
           <nz-form-label>{{ 'service.timeMultiplierTable.multiplyBy' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #timeMultiplyInput
+            <nz-input-number [(ngModel)]="timeMultiplyValue"
             nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div class="kasi-form-actions">
         <button nz-button nzType="primary" (click)="insertTimeRule()"
-          [disabled]="timeStartPicker.value == null || timeEndPicker.value == null || timeMultiplyInput.inputElement.nativeElement.value == ''">{{
+          [disabled]="timeStartPicker.value == null || timeEndPicker.value == null || timeMultiplyValue == null">{{
         'service.insertRule' | translate }}</button>
       </div>
     </div>
@@ -301,28 +301,28 @@
         <nz-form-item>
           <nz-form-label>{{ 'service.distanceMultiplierTable.distanceFrom' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #distanceFromInput
+            <nz-input-number [(ngModel)]="distanceFromValue"
             nzPlaceHolder="{{ 'service.distanceMultiplierTable.distanceFrom' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label>{{ 'service.distanceMultiplierTable.distanceTo' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #distanceToInput
+            <nz-input-number [(ngModel)]="distanceToValue"
             nzPlaceHolder="{{ 'service.distanceMultiplierTable.distanceTo' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label>{{ 'service.timeMultiplierTable.multiplyBy' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #distanceMultiplyInput
+            <nz-input-number [(ngModel)]="distanceMultiplyValue"
             nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div class="kasi-form-actions">
         <button nz-button nzType="primary" (click)="insertDistanceRule()"
-          [disabled]="distanceFromInput.inputElement.nativeElement.value == '' || distanceToInput.inputElement.nativeElement.value == '' || distanceMultiplyInput.inputElement.nativeElement.value == ''">{{
+          [disabled]="distanceFromValue == null || distanceToValue == null || distanceMultiplyValue == null">{{
         'service.insertRule' | translate }}</button>
       </div>
     </div>
@@ -358,14 +358,14 @@
         <nz-form-item>
           <nz-form-label>{{ 'service.timeMultiplierTable.multiplyBy' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #weekdayMultiplyInput
+            <nz-input-number [(ngModel)]="weekdayMultiplyValue"
             nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div class="kasi-form-actions">
         <button nz-button nzType="primary" (click)="insertWeekdayRule()"
-          [disabled]="weekdaySelectInput.activatedValue == null || weekdaySelectInput.activatedValue == [] || weekdayMultiplyInput.inputElement.nativeElement.value == ''">{{
+          [disabled]="weekdaySelectInput.activatedValue == null || weekdaySelectInput.activatedValue == [] || weekdayMultiplyValue == null">{{
         'service.insertRule' | translate }}</button>
       </div>
     </div>
@@ -396,14 +396,14 @@
         <nz-form-item>
           <nz-form-label>{{ 'service.timeMultiplierTable.multiplyBy' | translate }}</nz-form-label>
           <nz-form-control>
-            <nz-input-number #dateRangeMultiplyInput
+            <nz-input-number [(ngModel)]="dateRangeMultiplyValue"
             nzPlaceHolder="{{ 'service.timeMultiplierTable.multiplyBy' | translate }}"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div class="kasi-form-actions">
         <button nz-button nzType="primary" (click)="insertDateRangeRule()"
-          [disabled]="dateRangePicker.inputValue == null || dateRangeMultiplyInput.inputElement.nativeElement.value == ''">{{
+          [disabled]="dateRangePicker.inputValue == null || dateRangeMultiplyValue == null">{{
         'service.insertRule' | translate }}</button>
       </div>
     </div>

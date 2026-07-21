@@ -9,7 +9,7 @@
 @if ((query | async)?.data?.serviceCategories; as categories) {
   <div class="kasi-card">
     <div class="kasi-card__body">
-      <nz-tabset [nzTabBarExtraContent]="extraTemplate" [(nzSelectedIndex)]="selectedCategory" nzType="card">
+      <nz-tabs [nzTabBarExtraContent]="extraTemplate" [(nzSelectedIndex)]="selectedCategory" nzType="card">
         @for (cat of categories; track cat) {
           <nz-tab [nzTitle]="cat.name">
             <nz-table #ajaxTable [nzFrontPagination]="false" [nzData]="cat.services">
@@ -42,7 +42,7 @@
             </nz-table>
           </nz-tab>
         }
-      </nz-tabset>
+      </nz-tabs>
       <ng-template #extraTemplate>
         @if (categories.length > 0) {
           <button nz-button style="margin-left: 8px;"

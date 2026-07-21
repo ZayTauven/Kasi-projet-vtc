@@ -53,7 +53,7 @@ import { NzSwitchModule } from "ng-zorro-antd/switch";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
 import { NzRateModule } from "ng-zorro-antd/rate";
 import { NzResultModule } from "ng-zorro-antd/result";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 import { NzAutocompleteModule } from "ng-zorro-antd/auto-complete";
 import { NzSegmentedModule } from "ng-zorro-antd/segmented";
 import { NzG2Module } from "./g2";
@@ -103,7 +103,7 @@ import { TimeagoModule } from "ngx-timeago";
     NzSwitchModule,
     PhonePipe,
     NzPaginationModule,
-    NzToolTipModule,
+    NzTooltipModule,
     NzRateModule,
     NzResultModule,
     TranslateModule,
@@ -146,7 +146,7 @@ import { TimeagoModule } from "ngx-timeago";
     NzTimelineModule,
     NzCardModule,
     NzListModule,
-    NzToolTipModule,
+    NzTooltipModule,
     NzSkeletonModule,
     NzPopconfirmModule,
     NzPopoverModule,

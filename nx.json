@@ -139,7 +139,9 @@
     "@nx/eslint:lint": {
       "inputs": [
         "default",
-        "{workspaceRoot}/.eslintrc.json"
+        "^default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/tools/eslint-rules/**/*"
       ],
       "cache": true
     }

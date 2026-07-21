@@ -15,7 +15,7 @@ import { map } from "rxjs/operators";
 export class ManagementServicesListComponent implements OnInit {
   query?: Observable<ApolloQueryResult<ServicesListQuery>>;
   lastNameSearchValue = "";
-  selectedCategory?: number;
+  selectedCategory: number | null = null;
   serverUrl = environment.root;
 
   constructor(
