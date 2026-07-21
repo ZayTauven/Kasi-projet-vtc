@@ -35,7 +35,7 @@ dependencies:
   flutter_map_location_marker: ^7.0.2
   flutter_svg: ^2.0.7
   flutter_vector_icons: ^2.0.0
-  geolocator: ^9.0.2
+  geolocator: ^14.0.3
   google_fonts: ^6.3.3
   google_maps_flutter: ^2.4.0
   graphql_flutter: ^5.1.3
@@ -49,7 +49,7 @@ dependencies:
   map_launcher: ^3.5.0
   meta: ^1.3.0
   modal_bottom_sheet: 3.0.0-pre
-  package_info_plus: ^4.0.2
+  package_info_plus: ^9.0.0 # bumped from ^4.0.2, forced by geolocator ^14.0.3 -> geolocator_linux (pinned 0.2.4, see override below) -> package_info_plus ^9.0.0
   pinput: ^2.3.0
   share_plus: ^7.0.2
   shimmer: ^3.0.0
@@ -76,10 +76,36 @@ dependency_overrides:
   win32: 5.5.4 # via file_picker ^5.3.3 (constraint: win32 ^5.0.2)
   flutter_hooks: 0.18.6 # via graphql_flutter ^5.1.3 (constraint: flutter_hooks ^0.18.2)
   flutter_plugin_android_lifecycle: 2.0.34 # via file_picker ^5.3.3 (constraint: ^2.0.9), old v1 embedding removed
-  geolocator_android: 4.6.1 # via geolocator ^9.0.2 (constraint: ^4.1.3), old v1 embedding removed
   google_maps_flutter_android: 2.14.11 # via google_maps_flutter ^2.4.0 (constraint: ^2.1.10), old v1 embedding removed
   url_launcher_android: 6.3.10 # via url_launcher ^6.1.12 (constraint: ^6.0.13), old v1 embedding removed
   path_provider_android: 2.2.10 # via path_provider (transitive, constraint: ^2.0.6), old v1 embedding removed
+  geolocator: 14.0.3 # via flutter_map_location_marker ^7.0.2 (constraint: ^9.0.2 or ^10.0.1);
+  # flutter_map_location_marker only supports geolocator ^14.0.0 starting at v10.1.0, which
+  # requires flutter_map ^8.1.0 (currently ^5.0.0, out of scope for this palier). Verified
+  # flutter_map_location_marker 7.0.2 only calls stable Geolocator APIs unchanged since v9
+  # (checkPermission/requestPermission/isLocationServiceEnabled/getServiceStatusStream/
+  # getLastKnownPosition/getCurrentPosition/getPositionStream) — safe to force. Remove this
+  # override once flutter_map/flutter_map_location_marker are bumped in a future palier.
+  geolocator_linux: 0.2.4 # via geolocator ^14.0.3 (constraint: ^0.2.6);
+  # geolocator_linux >=0.2.5 requires package_info_plus ^10.0.0, which itself
+  # requires win32 ^6.0.1 -- a breaking rewrite that shatters file_picker's and
+  # share_plus's win32-5.x-based Windows implementations (both get compiled
+  # even for Android builds: geolocator_linux/package_info_plus/file_picker's
+  # "Windows" Dart sources are NOT excluded from non-Windows targets -- Dart
+  # can only gate conditional exports on dart.library.js_interop (web) vs
+  # native, not on OS, and dart:ffi/dart:io are available on Android too).
+  # Confirmed by trial: pinning geolocator_linux to 0.1.3 (package_info_plus
+  # >=1.4.2 <5.0.0, matches the untouched-at-the-time package_info_plus
+  # ^4.0.2) still failed the Android debug build with a DIFFERENT error --
+  # 0.1.3's geoclue_x.dart omits the `altitudeAccuracy` param required by the
+  # `Position` constructor in the newer geolocator_platform_interface ^4.2.3
+  # pulled in by geolocator ^14.0.3. 0.2.4 is the oldest geolocator_linux
+  # version that both (a) provides `altitudeAccuracy` and (b) keeps
+  # package_info_plus in the ^9.0.0 range (win32 ^5.5.3, still compatible
+  # with the existing win32 5.5.4 override below -- no win32 bump needed).
+  # package_info_plus itself bumped ^4.0.2 -> ^9.0.0 above to match. Remove
+  # this override once flutter_map_location_marker (and thus win32 5.x
+  # consumers) are bumped in a future palier and this override becomes moot.
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

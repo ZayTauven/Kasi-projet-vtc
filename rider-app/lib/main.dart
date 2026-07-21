@@ -39,8 +39,25 @@ import 'package:geolocator/geolocator.dart';
 
 // ignore: avoid_void_async
 void main() async {
-  await initHiveForFlutter();
+  // DOIT etre le tout premier appel : toute initialisation ci-dessous utilise
+  // un platform channel (path_provider, firebase, geolocator...), qui exige
+  // le binding deja pret.
   WidgetsFlutterBinding.ensureInitialized();
+  // `initHiveForFlutter()` (importee de `graphql_flutter`, PAS de
+  // `hive_flutter`) n'initialise QUE le `Hive` prive de `graphql_flutter`
+  // (paquet `hive_ce`, dependance transitive de `graphql`/`graphql_flutter` —
+  // voir pubspec.lock) pour son propre cache normalise. Ce n'est PAS le meme
+  // singleton `Hive` que celui du paquet `hive`/`hive_flutter` utilise par le
+  // reste de l'app ci-dessous (`Hive.openBox(...)`) : ce sont deux paquets
+  // pub.dev distincts (`hive` vs `hive_ce`), chacun avec son propre etat
+  // global. Sans l'appel explicite `Hive.initFlutter()` (extension de
+  // `hive_flutter`), le `Hive` de l'app n'est JAMAIS initialise -> `HiveError:
+  // You need to initialize Hive or provide a path to store the box` de facon
+  // systematique sur `Hive.openBox`. Bug preexistant (aucun rapport avec les
+  // paliers de bump de ce chantier), jamais detecte avant faute de test reel
+  // sur device/emulateur.
+  await Hive.initFlutter();
+  await initHiveForFlutter();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

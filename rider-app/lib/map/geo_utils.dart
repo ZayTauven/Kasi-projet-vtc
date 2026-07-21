@@ -58,7 +58,8 @@ Future<Position?> acquireCurrentPosition(
       return null;
     }
     try {
-      return await Geolocator.getCurrentPosition(timeLimit: timeout);
+      return await Geolocator.getCurrentPosition(
+          locationSettings: LocationSettings(timeLimit: timeout));
     } catch (_) {
       // Timeout ou erreur plateforme : dernière position connue, si disponible.
       if (kIsWeb) return null; // getLastKnownPosition non supporté sur web
