@@ -61,7 +61,7 @@ export class SharedDriverService {
           status: DriverStatus.Online,
           fleetId: In(fleetIds),
         },
-        relations: ['enabledServices'],
+        relations: { enabledServices: true },
       });
     } else {
       driversWithService = await this.driverRepo.find({
@@ -69,7 +69,7 @@ export class SharedDriverService {
           id: In(driverIds),
           status: DriverStatus.Online,
         },
-        relations: ['enabledServices'],
+        relations: { enabledServices: true },
       });
     }
     driversWithService = driversWithService.filter((x) =>

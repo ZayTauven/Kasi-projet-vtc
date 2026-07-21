@@ -6,6 +6,7 @@ import { writeFile } from 'fs/promises';
 import { json2csv } from 'json-2-csv';
 import { join } from 'path';
 import { Between, DataSource, FindManyOptions, In, Like } from 'typeorm';
+import { relationsArrayToTree } from '@kasi/database';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import { AccountingService } from './accounting.service';
@@ -84,7 +85,7 @@ export class AccountingResolver {
       options.order = _sort;
     }
     if (input.relations != null) {
-      options.relations = input.relations;
+      options.relations = relationsArrayToTree(input.relations);
     }
     const result = (await this.dataSource
       .getRepository(`${input.table}Entity`)

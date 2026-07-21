@@ -82,7 +82,7 @@ export class CronJobService {
         const expectedTimestampTo = ts - (10 * 60000);
         const expectedTimestampFromDate = new Date().setTime(expectedTimestampFrom);
         const expectedTimestampToDate = new Date().setTime(expectedTimestampTo);
-        const drivers = (await this.orderService.orderRepository.find({where: {expectedTimestamp: Between(expectedTimestampFromDate, expectedTimestampToDate) as any, driverId: Not(IsNull()) }, relations: ['driver']})).map(order => order.driver);
+        const drivers = (await this.orderService.orderRepository.find({where: {expectedTimestamp: Between(expectedTimestampFromDate, expectedTimestampToDate) as any, driverId: Not(IsNull()) }, relations: { driver: true }})).map(order => order.driver);
         for(const driver of drivers) {
             //this.driverNotificationService.upcomingBooking(driver);
         }
@@ -145,7 +145,7 @@ export class CronJobService {
                         status: OrderStatus.Finished,
                         finishTimestamp: MoreThanOrEqual(periodStart) as any,
                     },
-                    relations: ['driver'],
+                    relations: { driver: true },
                 });
 
                 const workedMsByDriver = new Map<number, number>();

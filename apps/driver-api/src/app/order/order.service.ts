@@ -68,7 +68,7 @@ export class OrderService {
   ): Promise<MaskedCallResult> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: ['rider', 'driver'],
+      relations: { rider: true, driver: true },
     });
     if (
       order == null ||
@@ -175,7 +175,7 @@ export class OrderService {
           OrderStatus.Requested,
         ]),
       },
-      relations: ['service', 'options'],
+      relations: { service: true, options: true },
     });
     Logger.log(`got orders ${JSON.stringify(orders)}`);
     orders = orders.filter(

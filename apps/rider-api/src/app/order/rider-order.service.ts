@@ -27,6 +27,7 @@ import {
   MaskedCallResult,
 } from '@kasi/order/call-masking.service';
 import { OrderRedisService } from '@kasi/redis/order-redis.service';
+import { relationsArrayToTree } from '@kasi/database';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
@@ -81,7 +82,7 @@ export class RiderOrderService {
   ): Promise<MaskedCallResult> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: ['rider', 'driver'],
+      relations: { rider: true, driver: true },
     });
     if (
       order == null ||
@@ -125,7 +126,7 @@ export class RiderOrderService {
         ]),
       },
       order: { id: 'DESC' },
-      relations,
+      relations: relationsArrayToTree(relations),
     });
   }
 
@@ -133,7 +134,7 @@ export class RiderOrderService {
     return this.orderRepository.findOne({
       where: { riderId },
       order: { id: 'DESC' },
-      relations,
+      relations: relationsArrayToTree(relations),
     });
   }
 
@@ -150,7 +151,7 @@ export class RiderOrderService {
     });
     const order = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
-      relations: ['service', 'driver', 'rider'],
+      relations: { service: true, driver: true, rider: true },
     });
     const payments = await this.paymentRepo.find({
       where: {

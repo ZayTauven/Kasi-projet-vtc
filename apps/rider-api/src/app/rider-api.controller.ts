@@ -105,12 +105,13 @@ export class RiderAPIController {
         }
         if (req.query.redirect == null || req.query.redirect == '1')
           res
-            .code(301)
+            // Fastify 5 a inversé la signature de reply.redirect() :
+            // (statusCode, url) -> (url, statusCode?). Voir fastify/types/reply.d.ts.
             .redirect(
-              301,
               `${
                 process.env.RIDER_APPLICATION_ID ?? 'default.rider.redirection'
               }://`,
+              301,
             );
         res.send(
           'Transaction successful. Close this page and go back to the app.',
@@ -125,24 +126,26 @@ export class RiderAPIController {
         );
         this.pubSub.publish('orderUpdated', { orderUpdated: order });
         res
-          .code(301)
+          // Fastify 5 a inversé la signature de reply.redirect() :
+          // (statusCode, url) -> (url, statusCode?). Voir fastify/types/reply.d.ts.
           .redirect(
-            301,
             `${
               process.env.RIDER_APPLICATION_ID ?? 'default.rider.redirection'
             }://`,
+            301,
           );
         res.send(
           'Transaction successful. Close this page and go back to the app.',
         );
       } else {
         res
-          .code(301)
+          // Fastify 5 a inversé la signature de reply.redirect() :
+          // (statusCode, url) -> (url, statusCode?). Voir fastify/types/reply.d.ts.
           .redirect(
-            301,
             `${
               process.env.RIDER_APPLICATION_ID ?? 'default.rider.redirection'
             }://`,
+            301,
           );
         res.send(
           "Transaction wasn't successful. You can go back to the app and redo this.",

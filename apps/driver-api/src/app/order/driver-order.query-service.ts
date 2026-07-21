@@ -109,15 +109,13 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
         });
         order = await this.orderRepository.findOne({
           where: { id },
-          relations: [
-            'rider',
-            'service',
-            'options',
-            'conversation',
-            'driver',
-            'driver.car',
-            'driver.carColor',
-          ],
+          relations: {
+            rider: true,
+            service: true,
+            options: true,
+            conversation: true,
+            driver: { car: true, carColor: true },
+          },
         });
         this.riderNotificationService.accepted(order.rider);
 
@@ -152,15 +150,13 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
         });
         order = await this.orderRepository.findOne({
           where: { id },
-          relations: [
-            'rider',
-            'service',
-            'options',
-            'conversation',
-            'driver',
-            'driver.car',
-            'driver.carColor',
-          ],
+          relations: {
+            rider: true,
+            service: true,
+            options: true,
+            conversation: true,
+            driver: { car: true, carColor: true },
+          },
         });
         if (order.paidAmount + update.paidAmount < order.costAfterCoupon) {
           this.riderNotificationService.waitingForPostPay(order.rider);
@@ -179,15 +175,13 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     if (publishChanges) {
       order = await this.orderRepository.findOne({
         where: { id },
-        relations: [
-          'rider',
-          'service',
-          'options',
-          'conversation',
-          'driver',
-          'driver.car',
-          'driver.carColor',
-        ],
+        relations: {
+          rider: true,
+          service: true,
+          options: true,
+          conversation: true,
+          driver: { car: true, carColor: true },
+        },
       });
       this.pubSub.publish('orderUpdated', { orderUpdated: order });
     }

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from '@kasi/database';
 import { DriverEntity } from '@kasi/database/driver.entity';
 import { DriverRedisService } from '@kasi/redis/driver-redis.service';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { OnlineDriver, OnlineDriverWithData } from './dto/driver-location.dto';
 import { FeedbackParameterAggregateDto } from './dto/feedback-parameter-aggregate.dto';
 
@@ -24,9 +24,9 @@ export class DriverService {
     count: number
   ): Promise<OnlineDriverWithData[]> {
     const drivers = await this.getDriversLocation(center, count);
-    const driverData = await this.driverRepository.findByIds(
-      drivers.map((driver) => driver.driverId)
-    );
+    const driverData = await this.driverRepository.findBy({
+      id: In(drivers.map((driver) => driver.driverId)),
+    });
     const result: OnlineDriverWithData[] = driverData.map((_driver) => {
       const redisDriver = drivers.filter(
         (driver) => driver.driverId == _driver.id

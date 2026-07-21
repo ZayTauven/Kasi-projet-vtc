@@ -25,9 +25,18 @@ export class ComplaintQueryService extends TypeOrmQueryService<ComplaintDTO> {
     record: DeepPartial<ComplaintDTO>,
   ): Promise<ComplaintDTO> {
     let dto = await super.createOne(record);
-    let savedRecord = await this.repo.findOneOrFail({
+    // `TypeOrmQueryService<ComplaintDTO>` type le `repo` hérité en
+    // `Repository<ComplaintDTO>` (le DTO GraphQL, qui n'expose pas les
+    // relations `request`/`activities`), alors qu'à l'exécution c'est bien
+    // le repo de `ComplaintEntity` injecté au constructeur. Avec l'ancienne
+    // syntaxe `relations: string[]`, TypeORM n'imposait pas ce contrôle ;
+    // la syntaxe objet de TypeORM 1.0 le révèle. On recaste vers le vrai
+    // type Entity pour cet appel précis, sans changer le comportement.
+    let savedRecord = await (
+      this.repo as unknown as Repository<ComplaintEntity>
+    ).findOneOrFail({
       where: { id: dto.id },
-      relations: ['request', 'activities'],
+      relations: { request: true, activities: true },
     });
     const admins = await this.operatorRepo.find({
       where: { enabledNotifications: EnabledNotification.Complaint },

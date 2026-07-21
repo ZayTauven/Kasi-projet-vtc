@@ -135,7 +135,7 @@ export class SharedOrderService {
         ? await this.routingService.getSumDistanceAndDuration(input.points)
         : { distance: 0, duration: 0, directions: [] };
     const cats = await this.serviceCategoryRepository.find({
-      relations: ['services', 'services.media', 'services.options'],
+      relations: { services: { media: true, options: true } },
     });
     let isResident = process.env.MOTAXI == null;
     if (input.riderId != null) {
@@ -259,7 +259,9 @@ export class SharedOrderService {
     let optionFee = 0;
     let options: ServiceOptionEntity[] = [];
     if (input.optionIds != null) {
-      options = await this.serviceOptionRepository.findByIds(input.optionIds);
+      options = await this.serviceOptionRepository.findBy({
+        id: In(input.optionIds),
+      });
       if (
         options.filter((option) => option.type == ServiceOptionType.TwoWay)
           .length > 0
@@ -425,7 +427,7 @@ export class SharedOrderService {
   async processPrePay(orderId: number, authorizedAmount: number = 0) {
     let order: RequestEntity = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
-      relations: ['service', 'driver', 'driver.fleet', 'rider'],
+      relations: { service: true, driver: { fleet: true }, rider: true },
     });
     const riderCredit = await this.riderService.getRiderCreditInCurrency(
       order.riderId,
@@ -475,14 +477,14 @@ export class SharedOrderService {
     this.driverNotificationService.requests(driversWithService);
     return this.orderRepository.findOneOrFail({
       where: { id: orderId },
-      relations: ['service', 'driver', 'driver.fleet', 'rider'],
+      relations: { service: true, driver: { fleet: true }, rider: true },
     });
   }
 
   async finish(orderId: number, cashAmount = 0.0) {
     const order: RequestEntity = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
-      relations: ['service', 'driver', 'driver.fleet', 'rider'],
+      relations: { service: true, driver: { fleet: true }, rider: true },
     });
     if (
       order.service.paymentMethod == ServicePaymentMethod.OnlyCredit &&
@@ -623,7 +625,7 @@ export class SharedOrderService {
     const [travel, driverLocation] = await Promise.all([
       this.orderRepository.findOneOrFail({
         where: { id: orderId },
-        relations: ['driver', 'driver.car', 'driver.carColor', 'service'],
+        relations: { driver: { car: true, carColor: true }, service: true },
       }),
       this.driverRedisService.getDriverCoordinate(driverId),
     ]);
@@ -663,13 +665,11 @@ export class SharedOrderService {
     });
     const result = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
-      relations: [
-        'driver',
-        'driver.car',
-        'driver.carColor',
-        'service',
-        'rider',
-      ],
+      relations: {
+        driver: { car: true, carColor: true },
+        service: true,
+        rider: true,
+      },
     });
     this.pubSub.publish('orderUpdated', { orderUpdated: result });
     this.pubSub.publish('orderRemoved', { orderRemoved: result }); // This one has a filter to let know all except the one accepted.

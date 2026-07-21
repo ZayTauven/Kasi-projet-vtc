@@ -97,6 +97,14 @@ import { MapSettingEntity } from './entities/map-setting.entity';
           synchronize: shouldSync,
           migrationsRun: false,
           logging: true,
+          // TypeORM 1.0 rejette par defaut les valeurs `undefined` dans un where
+          // (auparavant tolerees silencieusement en 0.3). Plusieurs services du
+          // code (ex. SharedFleetService.getFleetById appele avec un fleetId
+          // absent quand aucune zone de flotte ne couvre le point) reposent
+          // volontairement sur ce comportement permissif pour un "lookup optionnel".
+          // On restaure le comportement 0.3 globalement plutot que de patcher
+          // chaque site d'appel, pour ne pas changer le comportement fonctionnel.
+          invalidWhereValuesBehavior: { undefined: 'ignore' },
         };
       },
     }),

@@ -19,7 +19,7 @@ export class FleetAuthorizer implements CustomAuthorizer<any> {
   ): Promise<Filter<any>> {
     const operator = await this.datasource
       .getRepository(OperatorEntity)
-      .findOne({ where: { id: context.req.user.id }, relations: ['role'] });
+      .findOne({ where: { id: context.req.user.id }, relations: { role: true } });
     if (
       authorizerContext.readonly &&
       !operator.role?.permissions.includes(OperatorPermission.Fleets_View)

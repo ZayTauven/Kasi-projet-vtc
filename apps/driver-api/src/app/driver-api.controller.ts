@@ -68,14 +68,14 @@ export class DriverAPIController {
         });
       }
     }
-    res
-      .code(301)
-      .redirect(
-        301,
-        `${
-          process.env.DRIVER_APPLICATION_ID ?? 'default.driver.redirection'
-        }://`
-      );
+    // Fastify 5 a inversé la signature de reply.redirect() :
+    // (statusCode, url) -> (url, statusCode?). Voir fastify/types/reply.d.ts.
+    res.redirect(
+      `${
+        process.env.DRIVER_APPLICATION_ID ?? 'default.driver.redirection'
+      }://`,
+      301
+    );
   }
 
   @Get('success_message')

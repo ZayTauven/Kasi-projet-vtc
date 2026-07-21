@@ -26,7 +26,7 @@ export class RegionService {
       (
         await this.regionRepository.findOne({
           where: { id: regionId },
-          relations: ['services'],
+          relations: { services: true },
         })
       )?.services ?? []
     );
