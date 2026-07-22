@@ -427,7 +427,7 @@ class SFr extends S {
 
   @override
   String share_trip_text_locations(Object destination, Object pickup) {
-    return 'Je suis en route pour $destination depuis $pickup.';
+    return 'Je suis en route vers $destination depuis $pickup.';
   }
 
   @override

@@ -88,8 +88,15 @@ class _LoginVerifyCodePageState extends State<LoginVerifyCodePage> {
               options: WidgetOptions$Mutation$SkipVerification(
                   onCompleted: (result, parsedData) {
                 context.read<LoginLoadingCubit>().hideLoading();
+                // `onCompleted` est invoque par le paquet `graphql` meme quand
+                // la mutation echoue (reponse GraphQL avec des erreurs, timeout
+                // reseau...) : `parsedData` est alors `null`. Un `!` ici levait
+                // une exception synchrone qui interrompait la boucle interne
+                // de callbacks du paquet AVANT que `onError` (ci-dessous) ne
+                // soit invoque, empechant tout message d'erreur de s'afficher.
+                if (parsedData == null) return;
                 context.read<LoginBloc>().add(LoginVerificationCompletedEvent(
-                    jwtToken: parsedData!.skipVerification.jwtToken));
+                    jwtToken: parsedData.skipVerification.jwtToken));
               }, onError: (error) {
                 context.read<LoginLoadingCubit>().hideLoading();
                 showOperationErrorMessage(context, error);
@@ -107,8 +114,15 @@ class _LoginVerifyCodePageState extends State<LoginVerifyCodePage> {
             options:
                 WidgetOptions$Mutation$Login(onCompleted: (data, parsedData) {
               context.read<LoginLoadingCubit>().hideLoading();
+              // Voir commentaire equivalent sur Mutation$SkipVerification$Widget
+              // plus haut : `onCompleted` peut etre appele avec `parsedData ==
+              // null` (mutation en erreur cote serveur ou reseau) ; sans cette
+              // garde, le `!` plantait AVANT que `onError` ne s'execute, donc
+              // aucune erreur n'etait jamais visible pour l'utilisateur (l'ecran
+              // de saisie du code restait bloque/se reinitialisait en silence).
+              if (parsedData == null) return;
               context.read<LoginBloc>().add(LoginVerificationCompletedEvent(
-                  jwtToken: parsedData!.login.jwtToken));
+                  jwtToken: parsedData.login.jwtToken));
             }, onError: (error) {
               context.read<LoginLoadingCubit>().hideLoading();
               showOperationErrorMessage(context, error);

@@ -126,30 +126,33 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
     return FlutterMap(
         mapController: controller.mapController,
         options: MapOptions(
-            // Sans `center` explicite, flutter_map retombe sur SA valeur par
-            // défaut codée en dur — LatLng(50.5, 30.51), soit Kiev. On ancre
-            // donc la carte sur `fallbackLocation` (Dakar) le temps que la
-            // position réelle arrive.
-            center: fallbackLocation,
+            // Sans `initialCenter` explicite, flutter_map retombe sur SA
+            // valeur par défaut codée en dur — LatLng(50.5, 30.51), soit Kiev.
+            // On ancre donc la carte sur `fallbackLocation` (Dakar) le temps
+            // que la position réelle arrive. `center:`/`zoom:` (init only)
+            // renommés `initialCenter:`/`initialZoom:`.
+            initialCenter: fallbackLocation,
             keepAlive: true,
-            boundsOptions: FitBoundsOptions(
-                padding: EdgeInsets.only(
-                    top: 100,
-                    left: 130,
-                    right: 130,
-                    bottom: widget.bottomSheetHeight + 100)),
+            // L'ancien `boundsOptions: FitBoundsOptions(...)` n'avait ICI
+            // AUCUN effet : dans flutter_map 5, `boundsOptions` ne s'appliquait
+            // que combiné à `bounds:` (jamais défini dans ce widget) — c'était
+            // du code mort déjà avant cette migration. Pas d'équivalent
+            // `initialCameraFit` ajouté ici pour ne pas changer le
+            // comportement observable.
             maxZoom: 20,
-            zoom: 16,
+            initialZoom: 16,
             // La carte d'accueil était totalement figée (`InteractiveFlag.none`),
             // ce qu'un utilisateur d'app de VTC ne comprend pas : il s'attend au
             // minimum à déplacer et zoomer pour se repérer. La ROTATION reste
             // désactivée — elle désoriente et casse la lecture des libellés.
             // Le recadrage automatique sur les états métier (SelectingPoints,
             // OrderPreview…) continue de fonctionner par-dessus.
-            interactiveFlags: InteractiveFlag.drag |
-                InteractiveFlag.pinchMove |
-                InteractiveFlag.pinchZoom |
-                InteractiveFlag.doubleTapZoom),
+            // `interactiveFlags` (champ direct) → `interactionOptions.flags`.
+            interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.drag |
+                    InteractiveFlag.pinchMove |
+                    InteractiveFlag.pinchZoom |
+                    InteractiveFlag.doubleTapZoom)),
         children: [
           ValueListenableBuilder<Box>(
               valueListenable:
@@ -166,8 +169,11 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
           BlocBuilder<CurrentLocationCubit, FullLocation?>(
               builder: (context, state) => state == null
                   ? const SizedBox()
+                  // `followOnLocationUpdate` renommé `alignPositionOnUpdate`,
+                  // valeurs d'énumération inchangées (`AlignOnUpdate`
+                  // remplace `FollowOnLocationUpdate`).
                   : CurrentLocationLayer(
-                      followOnLocationUpdate: FollowOnLocationUpdate.once)),
+                      alignPositionOnUpdate: AlignOnUpdate.once)),
           BlocConsumer<MainBloc, MainBlocState>(listener: (context, state) {
             if (state is SelectingPoints) {
               final currentLocationCubit = context.read<CurrentLocationCubit>();
@@ -176,23 +182,26 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
                   currentLocationCubit.state!.latlng, 16,
                   offset: Offset(0, widget.bottomSheetHeight / -2));
             }
+            // `animatedFitBounds(bounds, options: FitBoundsOptions(...))` →
+            // `animatedFitCamera(cameraFit: CameraFit.bounds(...))`.
             if (state is OrderPreview && state.points.isNotEmpty) {
-              controller.animatedFitBounds(
-                  LatLngBounds.fromPoints(
-                      state.points.map((e) => e.latlng).toList()),
-                  options: FitBoundsOptions(
+              controller.animatedFitCamera(
+                  cameraFit: CameraFit.bounds(
+                      bounds: LatLngBounds.fromPoints(
+                          state.points.map((e) => e.latlng).toList()),
                       padding: EdgeInsets.only(
                           top: 100,
                           left: 130,
                           right: 130,
                           bottom: widget.bottomSheetHeight + 100)));
             }
-            if (state is StateWithActiveOrder) {
-              controller.animatedFitBounds(
-                  LatLngBounds.fromPoints(state.currentOrder.points
-                      .map((e) => e.toLatLng())
-                      .toList()),
-                  options: FitBoundsOptions(
+            if (state is StateWithActiveOrder &&
+                state.currentOrder.points.isNotEmpty) {
+              controller.animatedFitCamera(
+                  cameraFit: CameraFit.bounds(
+                      bounds: LatLngBounds.fromPoints(state.currentOrder.points
+                          .map((e) => e.toLatLng())
+                          .toList()),
                       padding: EdgeInsets.only(
                           top: 80,
                           left: 130,
@@ -205,7 +214,9 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
                 if (state is OrderPreview &&
                     state.directions != null &&
                     state.directions!.isNotEmpty)
-                  PolylineLayer(polylineCulling: true, polylines: [
+                  // `polylineCulling: true` (bool) → `cullingMargin` (double),
+                  // qui vaut déjà 10 par défaut : culling actif nativement.
+                  PolylineLayer(polylines: [
                     Polyline(
                         points: state.directions!,
                         strokeWidth: 5,
@@ -213,7 +224,9 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
                   ]),
                 if (state is StateWithActiveOrder &&
                     (state.currentOrder.directions?.isNotEmpty ?? false))
-                  PolylineLayer(polylineCulling: true, polylines: [
+                  // `polylineCulling: true` (bool) → `cullingMargin` (double),
+                  // qui vaut déjà 10 par défaut : culling actif nativement.
+                  PolylineLayer(polylines: [
                     Polyline(
                         points: state.currentOrder.directions!
                             .map((e) => LatLng(e.lat, e.lng))

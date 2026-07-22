@@ -136,7 +136,13 @@ class _RegisterViewState extends State<RegisterView> {
                                 activePageId = 2;
                               });
                             }
-                            if (pageController.initialPage != activePageId) {
+                            // NB: `pageController.initialPage` est une constante figée
+                            // (0), donc cette comparaison ne reflète jamais la page
+                            // réellement affichée — la resynchronisation fiable est
+                            // maintenant assurée par le correcteur post-frame dans
+                            // build() ci-dessus, réévalué à chaque rebuild.
+                            if (pageController.hasClients &&
+                                pageController.page?.round() != activePageId) {
                               WidgetsBinding.instance.addPostFrameCallback(
                                   (timeStamp) =>
                                       pageController.jumpToPage(activePageId));
@@ -147,6 +153,28 @@ class _RegisterViewState extends State<RegisterView> {
                           return Expanded(
                               child: QueryResultView(result, refetch: refetch));
                         }
+                        // Auto-correction : ce PageView.builder est un widget
+                        // fraîchement (re)monté à chaque transition loading -> prêt
+                        // de Query$GetDriver$Widget (cf. le `if (result.isLoading)`
+                        // juste au-dessus qui affichait un widget totalement
+                        // différent l'instant d'avant). Le PageController se
+                        // rattache donc à sa page 0 figée (`initialPage`), même si
+                        // `activePageId` vaut déjà 2+ suite au flux OTP. Le
+                        // jumpToPage programmé depuis onComplete peut alors
+                        // s'exécuter trop tôt (avant que ce PageView ne soit prêt)
+                        // et être perdu silencieusement, laissant l'écran affiché
+                        // désynchronisé de l'indicateur d'étapes (WizardSteps).
+                        // Ce correcteur, réévalué à chaque (re)construction de CE
+                        // builder (contrairement à un correcteur placé dans le
+                        // build() englobant, qui ne serait pas ré-appelé ici),
+                        // resynchronise la page réellement affichée.
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          if (pageController.hasClients &&
+                              pageController.page?.round() != activePageId) {
+                            pageController.jumpToPage(activePageId);
+                          }
+                        });
                         final driver = result.parsedData?.driver;
                         return Expanded(
                           child: PageView.builder(

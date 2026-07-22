@@ -30,9 +30,9 @@ dependencies:
   flutter_bloc: ^8.1.3
   flutter_chat_types: ^3.6.2
   flutter_chat_ui: ^1.6.9
-  flutter_map: ^5.0.0
-  flutter_map_animations: ^0.4.1
-  flutter_map_location_marker: ^7.0.2
+  flutter_map: ^8.3.1
+  flutter_map_animations: ^0.10.0
+  flutter_map_location_marker: ^10.2.0
   flutter_rating_bar: ^4.0.1
   flutter_svg: ^2.0.7
   geolocator: ^14.0.3
@@ -45,7 +45,7 @@ dependencies:
   intl: 0.20.2
   flutter_vector_icons: ^2.0.0
   json_annotation: ^4.8.0
-  latlong2: ^0.9.0
+  latlong2: ^0.10.1
   lifecycle: ^0.7.0
   meta: ^1.3.0
   modal_bottom_sheet: 3.0.0-pre
@@ -71,6 +71,14 @@ dependency_overrides:
   modal_bottom_sheet: 3.0.0-pre
   intl: 0.20.2
   watcher: ^1.1.1
+  latlong2: 0.10.1 # flutter_map_animations 0.10.0 still pins latlong2 ^0.9.1 (has not
+  # bumped its constraint yet), which blocks resolving latlong2 ^0.10.1 declared above.
+  # Verified via latlong2's CHANGELOG (0.10.0/0.10.1): purely additive/internal changes
+  # (LatLng.hashCode improvement, safer fromJson via num cast, new LatLng.isValid getter)
+  # -- no removed/renamed public API, so flutter_map_animations' actual usage (LatLng
+  # construction/fields only) remains valid. flutter_map 8.3.1 itself already accepts
+  # latlong2 >=0.9.1 <0.11.0. Remove this override once flutter_map_animations bumps its
+  # latlong2 constraint upstream.
   # Transitive deps incompatible with Dart 3.11.4/Flutter 3.41.6, bumped to the
   # closest patch version that fixes the incompatibility (see KASI_DECISIONS.md).
   win32: 5.5.4 # via file_picker ^5.3.3 (constraint: win32 ^5.0.2)
@@ -79,13 +87,6 @@ dependency_overrides:
   google_maps_flutter_android: 2.14.11 # via google_maps_flutter ^2.4.0 (constraint: ^2.1.10), old v1 embedding removed
   url_launcher_android: 6.3.10 # via url_launcher ^6.1.12 (constraint: ^6.0.13), old v1 embedding removed
   path_provider_android: 2.2.10 # via path_provider (transitive, constraint: ^2.0.6), old v1 embedding removed
-  geolocator: 14.0.3 # via flutter_map_location_marker ^7.0.2 (constraint: ^9.0.2 or ^10.0.1);
-  # flutter_map_location_marker only supports geolocator ^14.0.0 starting at v10.1.0, which
-  # requires flutter_map ^8.1.0 (currently ^5.0.0, out of scope for this palier). Verified
-  # flutter_map_location_marker 7.0.2 only calls stable Geolocator APIs unchanged since v9
-  # (checkPermission/requestPermission/isLocationServiceEnabled/getServiceStatusStream/
-  # getLastKnownPosition/getCurrentPosition/getPositionStream) — safe to force. Remove this
-  # override once flutter_map/flutter_map_location_marker are bumped in a future palier.
   geolocator_linux: 0.2.4 # via geolocator ^14.0.3 (constraint: ^0.2.6);
   # geolocator_linux >=0.2.5 requires package_info_plus ^10.0.0, which itself
   # requires win32 ^6.0.1 -- a breaking rewrite that shatters file_picker's and

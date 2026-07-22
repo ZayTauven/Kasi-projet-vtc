@@ -10,7 +10,15 @@ class FlutterMapController implements MapViewController {
 
   @override
   void fitBounds(List<LatLng> points) {
-    mapController.animatedFitBounds(LatLngBounds.fromPoints(points));
+    // `LatLngBounds.fromPoints` leve une assertion sur une liste vide
+    // ("points.isNotEmpty") -> plantage si appele avant que les points de
+    // la course (pickup/destination) ne soient tous resolus. Pas la peine
+    // de recadrer sur rien : on ignore silencieusement l'appel.
+    if (points.isEmpty) return;
+    // `animatedFitBounds(bounds)` a été remplacé par
+    // `animatedFitCamera(cameraFit: CameraFit.bounds(bounds: ...))`.
+    mapController.animatedFitCamera(
+        cameraFit: CameraFit.bounds(bounds: LatLngBounds.fromPoints(points)));
   }
 
   @override
@@ -20,7 +28,9 @@ class FlutterMapController implements MapViewController {
 
   @override
   Future<LatLng> getCenter() async {
-    return mapController.mapController.center;
+    // Le getter `.center` direct sur `MapController` a migré vers l'objet
+    // `MapCamera` exposé par `MapController.camera`.
+    return mapController.mapController.camera.center;
   }
 
   @override

@@ -1,7 +1,10 @@
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/plugin_api.dart';
+// `plugin_api.dart` (API de plugin dédiée) a été supprimé en flutter_map 8 ;
+// tout ce dont ce fichier a besoin (MapController) est exporté par le point
+// d'entrée public du paquet.
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:client_shared/components/back_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';

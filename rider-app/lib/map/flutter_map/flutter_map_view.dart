@@ -65,11 +65,18 @@ class _FlutterMapViewState extends State<FlutterMapView>
     final bounds = widget.markerKey.globalPaintBounds;
     final LatLng latLng;
     if (bounds != null) {
-      latLng = controller.mapController.mapController.pointToLatLng(
-        CustomPoint(bounds.bottomCenter.dx, bounds.bottomCenter.dy - 80),
+      // `CustomPoint` a été supprimé en flutter_map 8 (remplacé par des
+      // extensions sur `Point<T>`) ; ce site utilisait en réalité un point
+      // écran (pixels), pas une coordonnée de tuile — l'équivalent direct est
+      // `Offset`. `MapController.pointToLatLng(CustomPoint)` a lui-même été
+      // remplacé par `MapCamera.screenOffsetToLatLng(Offset)`, même formule.
+      latLng = controller.mapController.mapController.camera.screenOffsetToLatLng(
+        Offset(bounds.bottomCenter.dx, bounds.bottomCenter.dy - 80),
       );
     } else {
-      latLng = controller.mapController.mapController.center;
+      // Le getter `.center` direct sur `MapController` a migré vers l'objet
+      // `MapCamera` exposé par `MapController.camera`.
+      latLng = controller.mapController.mapController.camera.center;
     }
     final place = await getReverseGeocode(
       location: latLng,
@@ -102,18 +109,21 @@ class _FlutterMapViewState extends State<FlutterMapView>
           // `place_confirm_sheet_view` (et de l'ancien
           // `address_location_selection_view`, depuis supprimé).
           // L'invariant est encodé ici, une fois, plutôt que dans chaque appelant.
-          interactiveFlags: (widget.interactive ||
-                  widget.mode == MapViewMode.picker)
-              ? (InteractiveFlag.drag |
-                  InteractiveFlag.pinchZoom |
-                  InteractiveFlag.doubleTapZoom |
-                  InteractiveFlag.pinchMove)
-              : InteractiveFlag.none,
+          // `interactiveFlags` (champ direct de MapOptions) a migré dans
+          // `interactionOptions.flags`.
+          interactionOptions: InteractionOptions(
+              flags: (widget.interactive || widget.mode == MapViewMode.picker)
+                  ? (InteractiveFlag.drag |
+                      InteractiveFlag.pinchZoom |
+                      InteractiveFlag.doubleTapZoom |
+                      InteractiveFlag.pinchMove)
+                  : InteractiveFlag.none),
           // `initialLocation` peut être null (position pas encore résolue) ;
           // sans repli, flutter_map centrerait sur sa valeur par défaut codée
-          // en dur, LatLng(50.5, 30.51) = Kiev.
-          center: widget.initialLocation?.latlng ?? fallbackLocation,
-          zoom: 18,
+          // en dur, LatLng(50.5, 30.51) = Kiev. `center:`/`zoom:` (init only)
+          // renommés `initialCenter:`/`initialZoom:`.
+          initialCenter: widget.initialLocation?.latlng ?? fallbackLocation,
+          initialZoom: 18,
           onMapEvent: widget.mode != MapViewMode.picker
               ? null
               : (event) async {
@@ -143,31 +153,56 @@ class _FlutterMapViewState extends State<FlutterMapView>
       children: [
         if (widget.provider == MapProvider.openStreetMap) openStreetTileLayer,
         if (widget.provider == MapProvider.mapBox) mapBoxTileLayer,
-        CurrentLocationLayer(
-            followOnLocationUpdate: FollowOnLocationUpdate.never),
+        // `followOnLocationUpdate` renommé `alignPositionOnUpdate`, valeurs
+        // d'énumération inchangées (`AlignOnUpdate` remplace
+        // `FollowOnLocationUpdate`).
+        CurrentLocationLayer(alignPositionOnUpdate: AlignOnUpdate.never),
         MarkerLayer(
             markers: widget.driverMarkers
                 .map((e) => Marker(
-                    builder: (context) => Image.asset('images/marker_taxi.png'),
+                    // `builder:` (callback) → `child:` (widget direct) ;
+                    // `context` n'était pas utilisé dans ce callback.
+                    child: Image.asset('images/marker_taxi.png'),
                     point: e))
                 .toList()),
         MarkerLayer(
-          anchorPos: AnchorPos.align(AnchorAlign.bottom),
+          // `anchorPos: AnchorPos.align(AnchorAlign.bottom)` (niveau couche) →
+          // `alignment: Alignment.bottomCenter` (mapping direct : ancrage
+          // bas-centre).
+          alignment: Alignment.bottomCenter,
           markers: widget.positionMarkers
               .map((e) => Marker(
                   width: 240,
                   height: 63,
-                  builder: (context) => MarkerNew(address: e.address),
+                  child: MarkerNew(address: e.address),
                   point: e.latlng))
               .toList(),
         ),
-        PolylineLayer(
-          polylines: [
-            Polyline(
-                points: widget.polylinePoints.map((e) => e.toLatLng()).toList(),
-                strokeWidth: 5,
-                color: CustomTheme.primaryColors)
-          ],
+        PolylineLayer<Object>(
+          // Un `Polyline` sans points (ecran picker/confirmation, ou avant
+          // resolution du trajet) declenche desormais un crash : le culling
+          // de `PolylineLayer` est actif par defaut en v8 (`cullingMargin`,
+          // ex-booleen `polylineCulling` opt-in et desactive par defaut en
+          // v5), ce qui force le calcul paresseux de `Polyline.boundingBox`
+          // -> `LatLngBounds.fromPoints([])` -> assertion `points.isNotEmpty`.
+          // Ne construire le `Polyline` que si des points existent reellement.
+          //
+          // Type explicite `<Object>` : `PolylineLayer<R extends Object>`
+          // (générique en v8, pour le hit-testing). Sans annotation, la
+          // branche vide `const []` du ternaire fait inférer `R` en
+          // `Object?` (nullable) pour la branche `[Polyline(...)]`, ce qui
+          // viole la borne `R extends Object` et empêche la compilation
+          // (`type_argument_not_matching_bounds`).
+          polylines: widget.polylinePoints.isEmpty
+              ? const []
+              : [
+                  Polyline(
+                      points: widget.polylinePoints
+                          .map((e) => e.toLatLng())
+                          .toList(),
+                      strokeWidth: 5,
+                      color: CustomTheme.primaryColors)
+                ],
         ),
       ],
     );

@@ -4,7 +4,10 @@ import 'package:client_shared/components/marker_new.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/plugin_api.dart';
+// `plugin_api.dart` (API de plugin dédiée) a été supprimé en flutter_map 8 ;
+// tout ce dont ce fichier a besoin (Marker) est exporté par le point d'entrée
+// public du paquet.
+import 'package:flutter_map/flutter_map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 import 'package:latlong2/latlong.dart';
 import 'package:kasi_rider/graphql/fragments/active-order.fragment.graphql.dart';
@@ -453,8 +456,19 @@ class MarkerDataPosition extends MarkerDataInterface {
         width: 240,
         height: 63,
         point: position,
-        anchorPos: AnchorPos.exactly(Anchor(120, 1)),
-        builder: (context) => MarkerNew(address: address));
+        // `anchorPos: AnchorPos.exactly(Anchor(120, 1))` (largeur 240, hauteur
+        // 63) → `alignment: Alignment(x, y)`. Formule de conversion (flutter_map
+        // 8, marker_layer.dart) : left = 0.5*width*(x+1), top = 0.5*height*(y+1)
+        // — l'inverse de la formule anchor.left/top de flutter_map 5. Avec
+        // anchor.left=120, width=240 → x = 2*120/240 - 1 = 0. Avec anchor.top=1,
+        // height=63 → y = 2*1/63 - 1 = -61/63 ≈ Alignment.topCenter (à 1px
+        // près sur 63) : le point de la carte touche quasiment le bord
+        // supérieur du widget, qui s'étend donc presque entièrement EN
+        // DESSOUS du point (bulle d'adresse avec pointe vers le haut).
+        alignment: const Alignment(0, -61 / 63),
+        // `builder:` (callback) → `child:` (widget direct) ; `context`
+        // n'était pas utilisé dans ce callback.
+        child: MarkerNew(address: address));
   }
 }
 
@@ -479,7 +493,9 @@ class MarkerDataDriver extends MarkerDataInterface {
         width: 48,
         height: 48,
         point: position,
-        builder: (context) => Image.asset(assetAddress));
+        // `builder:` (callback) → `child:` (widget direct) ; `context`
+        // n'était pas utilisé dans ce callback.
+        child: Image.asset(assetAddress));
   }
 }
 

@@ -138,7 +138,7 @@
   "sos_body": "Les signaux de détresse sont destinés aux urgences et les appels aux autorités telles que la police peuvent être effectués en votre nom. Veuillez n'utiliser cette fonction qu'en cas d'urgence où vous pourriez être en danger.",
   "sos_sent_alert": "SOS est envoyé",
   "sos_ok_action": "C'est une urgence",
-  "share_trip_text_locations": "Je suis en route pour {destination} depuis {pickup}.",
+  "share_trip_text_locations": "Je suis en route vers {destination} depuis {pickup}.",
   "@share_trip_text_locations": {
     "placeholders": {
       "destination": {},

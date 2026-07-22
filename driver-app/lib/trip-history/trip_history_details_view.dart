@@ -3,7 +3,11 @@ import 'package:client_shared/map_providers.dart';
 import 'package:collection/collection.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/plugin_api.dart';
+// `plugin_api.dart` (API de plugin dédiée) a été supprimé en flutter_map 8 ;
+// tout ce dont ce fichier a besoin (MapController, MapOptions, FlutterMap,
+// InteractiveFlag, LatLngBounds, Marker, MarkerLayer) est exporté par le
+// point d'entrée public du paquet.
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:client_shared/components/back_button.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
@@ -100,22 +104,38 @@ class TripHistoryDetailsView extends StatelessWidget {
                                       return FlutterMap(
                                         mapController: mapController,
                                         options: MapOptions(
-                                            interactiveFlags:
-                                                InteractiveFlag.none,
+                                            // `interactiveFlags` (champ direct)
+                                            // → `interactionOptions.flags`.
+                                            interactionOptions:
+                                                const InteractionOptions(
+                                                    flags:
+                                                        InteractiveFlag.none),
                                             onMapReady: () {
-                                              mapController.fitBounds(
-                                                  LatLngBounds.fromPoints(order
-                                                      .points
-                                                      .map((e) => e.toLatLng())
-                                                      .toList()),
-                                                  options:
-                                                      const FitBoundsOptions(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      130,
-                                                                  vertical:
-                                                                      65)));
+                                              // `mapController.fitBounds(bounds,
+                                              // options: FitBoundsOptions(...))`
+                                              // → `mapController.fitCamera(
+                                              // CameraFit.bounds(...))`.
+                                              // `LatLngBounds.fromPoints` leve une
+                                              // assertion sur une liste vide
+                                              // ("points.isNotEmpty") : garde par
+                                              // coherence avec le meme correctif
+                                              // applique cote rider-app, au cas ou
+                                              // une course sans point enregistre
+                                              // (ex. annulee tres tot) soit un jour
+                                              // affichee dans l'historique.
+                                              if (order.points.isEmpty) return;
+                                              mapController.fitCamera(
+                                                  CameraFit.bounds(
+                                                      bounds:
+                                                          LatLngBounds.fromPoints(
+                                                              order.points
+                                                                  .map((e) => e
+                                                                      .toLatLng())
+                                                                  .toList()),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                              horizontal: 130,
+                                                              vertical: 65)));
                                             }),
                                         children: [
                                           if (currentProvider ==
@@ -132,11 +152,12 @@ class TripHistoryDetailsView extends StatelessWidget {
                                                       width: 240,
                                                       height: 63,
                                                       point: e.value.toLatLng(),
-                                                      builder: (context) =>
-                                                          MarkerNew(
-                                                              address: order
-                                                                      .addresses[
-                                                                  e.key])))
+                                                      // `builder:` (callback) →
+                                                      // `child:` (widget direct).
+                                                      child: MarkerNew(
+                                                          address: order
+                                                                  .addresses[
+                                                              e.key])))
                                                   .toList())
                                         ],
                                       );

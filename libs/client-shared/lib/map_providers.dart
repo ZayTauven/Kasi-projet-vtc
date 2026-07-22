@@ -121,7 +121,7 @@ TileLayer get mapBoxTileLayer => TileLayer(
       tileDisplay: _tileDisplay,
       evictErrorTileStrategy: _evictErrorTiles,
       additionalOptions: {"access_token": mapBoxAccessToken},
-      tileSize: 512,
+      tileDimension: 512,
       zoomOffset: -1,
       maxNativeZoom: 18,
     );

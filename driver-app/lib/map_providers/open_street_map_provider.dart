@@ -97,23 +97,27 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
     return FlutterMap(
         mapController: controller.mapController,
         options: MapOptions(
-            // Sans `center` explicite, flutter_map retombe sur SA valeur par
-            // défaut codée en dur — LatLng(50.5, 30.51), soit Kiev. On ancre
+            // Sans `initialCenter` explicite, flutter_map retombe sur SA valeur
+            // par défaut codée en dur — LatLng(50.5, 30.51), soit Kiev. On ancre
             // donc la carte sur `fallbackLocation` (Dakar) le temps que la
             // position réelle arrive.
-            center: fallbackLocation,
+            initialCenter: fallbackLocation,
             maxZoom: 20,
-            zoom: 12,
+            initialZoom: 12,
             // Diagnostic caméra (debug) : le rider affiche les tuiles avec la
             // MÊME couche partagée, pas le driver, et aucun errorTileCallback ne
             // se déclenche — donc les tuiles ne sont jamais DEMANDÉES. Reste à
             // savoir si la caméra est dans un état exploitable (centre/zoom).
+            // `.center`/`.zoom`/`.bounds` étaient des getters directs sur
+            // `MapController` en flutter_map 5 ; en 8.x ils vivent sur l'objet
+            // `MapCamera` exposé par `MapController.camera`, et `bounds` a été
+            // renommé `visibleBounds`.
             onMapReady: () {
               if (kDebugMode) {
                 debugPrint('[CARTE DRIVER] prete — '
-                    'centre=${controller.mapController.center} '
-                    'zoom=${controller.mapController.zoom} '
-                    'bounds=${controller.mapController.bounds}');
+                    'centre=${controller.mapController.camera.center} '
+                    'zoom=${controller.mapController.camera.zoom} '
+                    'bounds=${controller.mapController.camera.visibleBounds}');
               }
             },
             onPositionChanged: (pos, hasGesture) {
@@ -122,10 +126,11 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                     'centre=${pos.center} zoom=${pos.zoom}');
               }
             },
-            interactiveFlags: InteractiveFlag.drag |
-                InteractiveFlag.pinchMove |
-                InteractiveFlag.pinchZoom |
-                InteractiveFlag.doubleTapZoom),
+            interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.drag |
+                    InteractiveFlag.pinchMove |
+                    InteractiveFlag.pinchZoom |
+                    InteractiveFlag.doubleTapZoom)),
         children: [
           ValueListenableBuilder(
               valueListenable:
@@ -148,7 +153,10 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                 }
               }),
           CurrentLocationLayer(
-            followOnLocationUpdate: FollowOnLocationUpdate.once,
+            // `followOnLocationUpdate` (flutter_map_location_marker <10) a été
+            // renommé `alignPositionOnUpdate`, valeurs d'énumération inchangées
+            // (`AlignOnUpdate` remplace `FollowOnLocationUpdate`).
+            alignPositionOnUpdate: AlignOnUpdate.once,
           ),
           BlocBuilder<MainBloc, MainState>(
               builder: (context, mainBlocState) => mainBlocState
@@ -204,9 +212,12 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                         }
                         _lastFitCenter = loc;
                         _lastFitRadius = radius;
-                        controller.animatedFitBounds(bounds,
-                            options: const FitBoundsOptions(
-                                padding: EdgeInsets.all(100)));
+                        // `animatedFitBounds(bounds, options: FitBoundsOptions(...))`
+                        // → `animatedFitCamera(cameraFit: CameraFit.bounds(...))`.
+                        controller.animatedFitCamera(
+                            cameraFit: CameraFit.bounds(
+                                bounds: bounds,
+                                padding: const EdgeInsets.all(100)));
                       },
                       builder: (context, state) {
                         if (state.location != null && state.radius != null) {
@@ -231,7 +242,10 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
               if (state is StatusOnline &&
                   state.orders.isNotEmpty &&
                   (state.selectedOrder?.directions?.isNotEmpty ?? false)) {
-                return PolylineLayer(polylineCulling: true, polylines: [
+                // `polylineCulling: true` (bool) a été remplacé par
+                // `cullingMargin` (double), qui vaut déjà 10 par défaut — la
+                // culling est donc active nativement, ce paramètre est retiré.
+                return PolylineLayer(polylines: [
                   Polyline(
                       points: state.selectedOrder?.directions
                               ?.map((e) => LatLng(e.lat, e.lng))
@@ -251,7 +265,10 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                           point: e.position,
                           width: 240,
                           height: 63,
-                          builder: (context) => MarkerNew(address: e.address)))
+                          // `Marker.builder: (context) => Widget` (callback) a
+                          // été remplacé par `Marker.child: Widget` (direct) ;
+                          // `context` n'était pas utilisé dans ce callback.
+                          child: MarkerNew(address: e.address)))
                       .toList())),
           BlocConsumer<MainBloc, MainState>(
             listenWhen: (previous, next) {
@@ -275,9 +292,10 @@ class _OpenStreetMapProviderState extends State<OpenStreetMapProvider>
                     .followedBy(
                         currentLocation != null ? [currentLocation] : [])
                     .toList();
-                controller.animatedFitBounds(LatLngBounds.fromPoints(points),
-                    options: const FitBoundsOptions(
-                        padding: EdgeInsets.only(
+                controller.animatedFitCamera(
+                    cameraFit: CameraFit.bounds(
+                        bounds: LatLngBounds.fromPoints(points),
+                        padding: const EdgeInsets.only(
                             top: 130, left: 130, right: 130, bottom: 500)));
               }
               if (currentLocation == null &&
