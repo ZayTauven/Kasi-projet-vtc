@@ -21,7 +21,7 @@ query GetMessages {
         address
       }
     }
-    conversations(sorting: { field: id, direction: DESC }) {
+    conversation(sorting: { field: id, direction: DESC }) {
       ...ChatMessage
       id
       content

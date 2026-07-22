@@ -559,7 +559,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
       }, builder: (data) {
         return RoundedButton(
             count: newMessages +
-                widget.order.conversations
+                widget.order.conversation
                     .where((element) => element.sentAt
                         .isAfter(widget.order.driverLastSeenMessagesAt))
                     .length,

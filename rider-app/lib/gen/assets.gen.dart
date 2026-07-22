@@ -49,12 +49,36 @@ class $GoogleFontsGen {
 class $ImagesGen {
   const $ImagesGen();
 
+  /// File path: images/Messenger-cuate.png
+  AssetGenImage get messengerCuate =>
+      const AssetGenImage('images/Messenger-cuate.png');
+
+  /// File path: images/My password-cuate.png
+  AssetGenImage get myPasswordCuate =>
+      const AssetGenImage('images/My password-cuate.png');
+
+  /// File path: images/blue motobike aerial view.png
+  AssetGenImage get blueMotobikeAerialView =>
+      const AssetGenImage('images/blue motobike aerial view.png');
+
+  /// File path: images/booking_confirmed-old.png
+  AssetGenImage get bookingConfirmedOld =>
+      const AssetGenImage('images/booking_confirmed-old.png');
+
   /// File path: images/booking_confirmed.png
   AssetGenImage get bookingConfirmed =>
       const AssetGenImage('images/booking_confirmed.png');
 
   /// File path: images/car.json
   String get car => 'images/car.json';
+
+  /// File path: images/cool-motorbike-top-view-vector-png-image.png
+  AssetGenImage get coolMotorbikeTopViewVectorPngImage => const AssetGenImage(
+      'images/cool-motorbike-top-view-vector-png-image.png');
+
+  /// File path: images/default-user-image-old.png
+  AssetGenImage get defaultUserImageOld =>
+      const AssetGenImage('images/default-user-image-old.png');
 
   /// File path: images/default-user-image.png
   AssetGenImage get defaultUserImage =>
@@ -67,11 +91,18 @@ class $ImagesGen {
   AssetGenImage get googlemapPreview =>
       const AssetGenImage('images/googlemap-preview.png');
 
+  /// File path: images/irregular bubble shape 1.png
+  AssetGenImage get irregularBubbleShape1 =>
+      const AssetGenImage('images/irregular bubble shape 1.png');
+
   /// File path: images/login-1.png
   AssetGenImage get login1 => const AssetGenImage('images/login-1.png');
 
   /// File path: images/login-2.png
   AssetGenImage get login2 => const AssetGenImage('images/login-2.png');
+
+  /// File path: images/login-3-old.png
+  AssetGenImage get login3Old => const AssetGenImage('images/login-3-old.png');
 
   /// File path: images/login-3.png
   AssetGenImage get login3 => const AssetGenImage('images/login-3.png');
@@ -97,6 +128,14 @@ class $ImagesGen {
   /// File path: images/marker_taxi.png
   AssetGenImage get markerTaxi => const AssetGenImage('images/marker_taxi.png');
 
+  /// File path: images/marker_taxi_old.png
+  AssetGenImage get markerTaxiOld =>
+      const AssetGenImage('images/marker_taxi_old.png');
+
+  /// File path: images/moto isometric 2.png
+  AssetGenImage get motoIsometric2 =>
+      const AssetGenImage('images/moto isometric 2.png');
+
   /// File path: images/notification.mp3
   String get notification => 'images/notification.mp3';
 
@@ -108,9 +147,9 @@ class $ImagesGen {
   AssetGenImage get onboarding2 =>
       const AssetGenImage('images/onboarding-2.png');
 
-  /// File path: images/onboarding-3.png
-  AssetGenImage get onboarding3 =>
-      const AssetGenImage('images/onboarding-3.png');
+  /// File path: images/onboarding-4-old.png
+  AssetGenImage get onboarding4Old =>
+      const AssetGenImage('images/onboarding-4-old.png');
 
   /// File path: images/onboarding-4.png
   AssetGenImage get onboarding4 =>
@@ -120,18 +159,34 @@ class $ImagesGen {
   AssetGenImage get openstreetPreview =>
       const AssetGenImage('images/openstreet-preview.png');
 
+  /// File path: images/searching-old.png
+  AssetGenImage get searchingOld =>
+      const AssetGenImage('images/searching-old.png');
+
   /// File path: images/searching.png
   AssetGenImage get searching => const AssetGenImage('images/searching.png');
 
+  /// File path: images/yellow motobike aerial view.png
+  AssetGenImage get yellowMotobikeAerialView =>
+      const AssetGenImage('images/yellow motobike aerial view.png');
+
   /// List of all assets
   List<dynamic> get values => [
+        messengerCuate,
+        myPasswordCuate,
+        blueMotobikeAerialView,
+        bookingConfirmedOld,
         bookingConfirmed,
         car,
+        coolMotorbikeTopViewVectorPngImage,
+        defaultUserImageOld,
         defaultUserImage,
         expandingMarker,
         googlemapPreview,
+        irregularBubbleShape1,
         login1,
         login2,
+        login3Old,
         login3,
         logo,
         mapboxPreview,
@@ -139,13 +194,17 @@ class $ImagesGen {
         markerDestination,
         markerPickup,
         markerTaxi,
+        markerTaxiOld,
+        motoIsometric2,
         notification,
         onboarding1,
         onboarding2,
-        onboarding3,
+        onboarding4Old,
         onboarding4,
         openstreetPreview,
-        searching
+        searchingOld,
+        searching,
+        yellowMotobikeAerialView
       ];
 }
 
@@ -6232,9 +6291,7 @@ class $IoniconsGen {
       ];
 }
 
-class Assets {
-  const Assets._();
-
+abstract final class Assets {
   static const AssetGenImage logoKasi = AssetGenImage('assets/logo-kasi.png');
   static const $GoogleFontsGen googleFonts = $GoogleFontsGen();
   static const $ImagesGen images = $ImagesGen();
@@ -6390,7 +6447,7 @@ class SvgGenImage {
         _assetName,
         assetBundle: bundle,
         packageName: package,
-        theme: theme ?? const _svg.SvgTheme(),
+        theme: theme,
         colorMapper: colorMapper,
       );
     }

@@ -54,7 +54,7 @@ fragment CurrentOrder on Order {
   recipientMobileNumber
   deliveryInstructions
   riderLastSeenMessagesAt
-  conversations {
+  conversation {
     sentAt
   }
 }

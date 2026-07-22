@@ -55,11 +55,11 @@ query Me($versionCode: Int!) {
         }
       }
       driverLastSeenMessagesAt
-      conversations {
+      conversation {
         sentAt
       }
     }
-    wallets {
+    wallet {
       balance
       currency
     }

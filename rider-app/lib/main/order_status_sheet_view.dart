@@ -475,7 +475,7 @@ class _ChatIconButtonState extends State<ChatIconButton> {
                         .where((element) => element.sentAt
                             .isAfter(widget.order.riderLastSeenMessagesAt))
                         .length +
-                    widget.order.conversations
+                    widget.order.conversation
                         .where((element) => element.sentAt
                             .isAfter(widget.order.riderLastSeenMessagesAt))
                         .length,

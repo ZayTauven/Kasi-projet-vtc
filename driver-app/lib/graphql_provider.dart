@@ -57,6 +57,16 @@ ValueNotifier<GraphQLClient> clientFor(
     GraphQLClient(
         cache: cache,
         link: link,
+        // Le paquet `graphql` 5.2.4 applique par defaut un
+        // `queryRequestTimeout` de 5 secondes a TOUTE query/mutation HTTP
+        // (pas seulement les subscriptions, voir `query_manager.dart` /
+        // `graphql_client.dart` du paquet). Sur un reseau mobile ou lors
+        // d'un cold-start backend, ce delai est frequemment depasse et
+        // declenche un `TimeoutException`, indiscernable cote appelant
+        // d'une vraie absence de donnee ("Driver information not found").
+        // On l'aligne sur une valeur realiste plutot que de garder le
+        // defaut trop agressif de la librairie.
+        queryRequestTimeout: const Duration(seconds: 20),
         defaultPolicies: DefaultPolicies(
             query: Policies(fetch: FetchPolicy.noCache),
             mutate: Policies(fetch: FetchPolicy.noCache),

@@ -76,7 +76,7 @@ fragment CurrentOrder on Order {
     }
   }
   driverLastSeenMessagesAt
-  conversations {
+  conversation {
     sentAt
   }
 }
@@ -140,7 +140,7 @@ fragment BasicProfile on Driver {
   currentOrders {
     ...CurrentOrder
   }
-  wallets {
+  wallet {
     balance
     currency
   }

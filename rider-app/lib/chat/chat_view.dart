@@ -34,7 +34,7 @@ class ChatView extends StatelessWidget {
           }
           var cubit = context.read<ChatCubit>();
           var order = result.parsedData!.currentOrder;
-          var messages = order.conversations
+          var messages = order.conversation
               .map((e) => e.toTextMessage(order.rider, order.driver!))
               .toList();
           cubit.setMessages(messages);

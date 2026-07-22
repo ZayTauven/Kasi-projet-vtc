@@ -165,6 +165,11 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Refetch? refetch;
   final _pushTokenProvider = FcmPushTokenProvider();
+  // Garde-fou pour n'afficher le dialogue "Driver information not found"
+  // qu'une seule fois par occurrence reelle (cf. `builder` de
+  // `Query$Me$Widget` ci-dessous), et non a chaque rebuild tant que l'etat
+  // persiste.
+  bool _driverNotFoundDialogShown = false;
 
   MyHomePage({Key? key}) : super(key: key) {
     WidgetsBinding.instance.addObserver(this);
@@ -216,39 +221,30 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
                                         snapshot.data?.buildNumber ??
                                             "999999")),
                                 onComplete: (result, parsedData) {
+                                  // NOTE : `onComplete` (graphql_flutter /
+                                  // paquet `graphql`) est invoque des que la
+                                  // requete n'est plus "loading", QU'IL Y AIT
+                                  // OU NON une exception (voir
+                                  // `QueryCallbackHandler.onCompleted` dans
+                                  // `graphql-5.2.4/lib/src/core/query_options.dart` :
+                                  // seul `!result.isLoading` est verifie, pas
+                                  // `!result.hasException`). Un simple timeout
+                                  // reseau declenche donc cet appel avec
+                                  // `parsedData == null`, exactement comme un
+                                  // vrai driver absent. La decision d'afficher
+                                  // le dialogue "Driver information not found"
+                                  // est donc deplacee dans le `builder`
+                                  // ci-dessous, seul endroit qui a acces de
+                                  // maniere fiable a `result.hasException`.
                                   if (parsedData?.requireUpdate ==
                                       Enum$VersionStatus.MandatoryUpdate) {
                                     mainBloc.add(VersionStatusEvent(
                                         parsedData!.requireUpdate));
-                                  } else {
-                                    if (parsedData?.driver != null) {
-                                      mainBloc.add(
-                                          DriverUpdated(parsedData!.driver));
-                                      locationCubit.setRadius(
-                                          parsedData.driver.searchDistance);
-                                    } else {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                                title: const Text("Driver"),
-                                                content: const Text(
-                                                    "Driver information not found, Do you want to logout and login again?"),
-                                                actions: [
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        box.delete('jwt');
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: const Text("Yes")),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: const Text("No"))
-                                                ]);
-                                          });
-                                    }
+                                  } else if (parsedData?.driver != null) {
+                                    mainBloc
+                                        .add(DriverUpdated(parsedData!.driver));
+                                    locationCubit.setRadius(
+                                        parsedData.driver.searchDistance);
                                   }
                                 }),
                             builder: (result, {refetch, fetchMore}) {
@@ -257,6 +253,47 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
                                     refetch: refetch);
                               }
                               this.refetch = refetch;
+                              // Ici, `result.hasException` est faux et
+                              // `result.isLoading` est faux : la requete a
+                              // reellement reussi. Si le driver est malgre
+                              // tout absent, il s'agit cette fois d'une
+                              // vraie anomalie (pas d'un timeout) -> on
+                              // affiche le dialogue, une seule fois par
+                              // occurrence (reinitialise des que le driver
+                              // redevient present).
+                              if (result.parsedData?.driver == null &&
+                                  result.parsedData?.requireUpdate !=
+                                      Enum$VersionStatus.MandatoryUpdate) {
+                                if (!_driverNotFoundDialogShown) {
+                                  _driverNotFoundDialogShown = true;
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                              title: const Text("Driver"),
+                                              content: const Text(
+                                                  "Driver information not found, Do you want to logout and login again?"),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      box.delete('jwt');
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Yes")),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("No"))
+                                              ]);
+                                        });
+                                  });
+                                }
+                              } else {
+                                _driverNotFoundDialogShown = false;
+                              }
                               return BlocConsumer<MainBloc, MainState>(
                                   listenWhen:
                                       (MainState previous, MainState next) {
@@ -487,10 +524,10 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
           icon: const Icon(Ionicons.wallet),
           elevation: 0,
           label: Text(
-              (state.driver?.wallets.length ?? 0) > 0
+              (state.driver?.wallet.length ?? 0) > 0
                   ? NumberFormat.simpleCurrency(
-                          name: state.driver!.wallets.first.currency)
-                      .format(state.driver!.wallets.first.balance)
+                          name: state.driver!.wallet.first.currency)
+                      .format(state.driver!.wallet.first.balance)
                   : "-",
               style: Theme.of(context)
                   .textTheme

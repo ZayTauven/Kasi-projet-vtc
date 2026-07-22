@@ -45,6 +45,10 @@ class _LocationSelectionParentViewState
   late GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Refetch? refetch;
   double bottomSheetHeight = 0;
+  // Garde-fou : evite de retenter/reafficher une erreur en boucle tant que
+  // `GetCurrentOrder` continue d'echouer (timeout/erreur reseau). Remis a
+  // zero des que la requete reussit a nouveau.
+  bool _currentOrderRetried = false;
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +126,15 @@ class _LocationSelectionParentViewState
                                   snapshot.data?.buildNumber ?? "99999")),
                           fetchPolicy: FetchPolicy.noCache,
                           onComplete: (result, parsedData) {
+                            // NOTE : `onComplete` est invoque des que la
+                            // requete n'est plus "loading", QU'IL Y AIT OU NON
+                            // une exception (le paquet `graphql` ne distingue
+                            // pas les deux ici). Le garde `if (parsedData !=
+                            // null)` protege deja correctement contre un
+                            // ecrasement du `RiderProfileCubit` par `null` en
+                            // cas de timeout/erreur reseau : on ne touche
+                            // volontairement pas au profil dans ce cas plutot
+                            // que de le mettre a jour vers un etat "invite".
                             if (parsedData != null) {
                               context
                                   .read<RiderProfileCubit>()
@@ -146,6 +159,31 @@ class _LocationSelectionParentViewState
                           return const SizedBox();
                         }
                         this.refetch = refetch;
+                        final hasJwt = jwtState != null && jwtState.isNotEmpty;
+                        // Si un JWT valide est present et que la requete a
+                        // pourtant echoue (timeout/erreur reseau), le profil
+                        // reste tel quel dans `RiderProfileCubit` (voir
+                        // `onComplete` ci-dessus) : sans ce garde-fou,
+                        // l'utilisateur restait affiche "Invite"
+                        // indefiniment, sans jamais voir d'erreur ni de
+                        // nouvelle tentative. Si `jwt` est absent (vrai
+                        // invite), on ne montre rien : c'est le comportement
+                        // normal attendu.
+                        if (result.hasException && hasJwt) {
+                          if (!_currentOrderRetried) {
+                            _currentOrderRetried = true;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) return;
+                              showOperationErrorMessage(
+                                  context, result.exception);
+                              Future.delayed(const Duration(seconds: 2), () {
+                                if (mounted) refetch?.call();
+                              });
+                            });
+                          }
+                        } else if (!result.hasException) {
+                          _currentOrderRetried = false;
+                        }
                         return const SizedBox();
                       });
                 });

@@ -75,7 +75,7 @@ query GetCurrentOrder($versionCode: Int!) {
       startTimestamp
       durationBest
       riderLastSeenMessagesAt
-      conversations {
+      conversation {
         sentAt
       }
     }
@@ -148,7 +148,7 @@ subscription UpdatedOrder {
     addresses
     waitMinutes
     riderLastSeenMessagesAt
-    conversations {
+    conversation {
       sentAt
     }
     points {

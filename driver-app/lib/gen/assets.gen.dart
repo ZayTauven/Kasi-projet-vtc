@@ -49,6 +49,18 @@ class $GoogleFontsGen {
 class $ImagesGen {
   const $ImagesGen();
 
+  /// File path: images/Shape modern background for profile page.jpg
+  AssetGenImage get shapeModernBackgroundForProfilePage => const AssetGenImage(
+      'images/Shape modern background for profile page.jpg');
+
+  /// File path: images/abstact orange figures.jpg
+  AssetGenImage get abstactOrangeFigures =>
+      const AssetGenImage('images/abstact orange figures.jpg');
+
+  /// File path: images/blue motobike aerial view.png
+  AssetGenImage get blueMotobikeAerialView =>
+      const AssetGenImage('images/blue motobike aerial view.png');
+
   /// File path: images/dotted-lines-1.png
   AssetGenImage get dottedLines1 =>
       const AssetGenImage('images/dotted-lines-1.png');
@@ -56,6 +68,10 @@ class $ImagesGen {
   /// File path: images/googlemap-preview.png
   AssetGenImage get googlemapPreview =>
       const AssetGenImage('images/googlemap-preview.png');
+
+  /// File path: images/irregular bubble shape 2.png
+  AssetGenImage get irregularBubbleShape2 =>
+      const AssetGenImage('images/irregular bubble shape 2.png');
 
   /// File path: images/logo.png
   AssetGenImage get logo => const AssetGenImage('images/logo.png');
@@ -86,10 +102,18 @@ class $ImagesGen {
   AssetGenImage get registrationIllustration =>
       const AssetGenImage('images/registration-illustration.png');
 
+  /// File path: images/yellow motobike aerial view.png
+  AssetGenImage get yellowMotobikeAerialView =>
+      const AssetGenImage('images/yellow motobike aerial view.png');
+
   /// List of all assets
   List<dynamic> get values => [
+        shapeModernBackgroundForProfilePage,
+        abstactOrangeFigures,
+        blueMotobikeAerialView,
         dottedLines1,
         googlemapPreview,
+        irregularBubbleShape2,
         logo,
         mapboxPreview,
         marker,
@@ -97,7 +121,8 @@ class $ImagesGen {
         markerPickup,
         notification,
         openstreetPreview,
-        registrationIllustration
+        registrationIllustration,
+        yellowMotobikeAerialView
       ];
 }
 
@@ -6184,9 +6209,7 @@ class $IoniconsGen {
       ];
 }
 
-class Assets {
-  const Assets._();
-
+abstract final class Assets {
   static const AssetGenImage logoKasi = AssetGenImage('assets/logo-kasi.png');
   static const $GoogleFontsGen googleFonts = $GoogleFontsGen();
   static const $ImagesGen images = $ImagesGen();
@@ -6342,7 +6365,7 @@ class SvgGenImage {
         _assetName,
         assetBundle: bundle,
         packageName: package,
-        theme: theme ?? const _svg.SvgTheme(),
+        theme: theme,
         colorMapper: colorMapper,
       );
     }
