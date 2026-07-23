@@ -23,6 +23,11 @@
             "glob": "*.min.css",
             "input": "node_modules/ng-zorro-antd",
             "output": "assets/themes/"
+          },
+          {
+            "glob": "mapbox-gl-csp-worker.js",
+            "input": "node_modules/mapbox-gl/dist",
+            "output": "assets/"
           }
         ],
         "styles": [

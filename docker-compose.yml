@@ -86,7 +86,7 @@ services:
 
   # ===========================================================================
   # APIs NestJS
-  # Contexte de build = racine du monorepo (app-ridy/) car les Dockerfiles
+  # Contexte de build = racine du monorepo (app-kasi/) car les Dockerfiles
   # copient package.json, nx.json, tsconfig.base.json depuis cette racine.
   # ===========================================================================
 
@@ -129,6 +129,14 @@ services:
       # toute recreation du conteneur perd la config et l API redemarre en
       # mode "non configure" (schema GraphQL reduit a currentConfiguration).
       - ./config:/app/config
+      # Repertoire uploads PARTAGE entre admin-api/driver-api/rider-api (meme
+      # mount sur les 3 services, voir KASI_DECISIONS.md triage 2026-07-23,
+      # sujet 3). admin-panel construit toujours ses URLs via /admin-api/uploads/
+      # quel que soit le service qui a ecrit le fichier a l'origine (ex. avatar
+      # chauffeur uploade via driver-api) : sans repertoire physique partage,
+      # admin-api renvoie 404 pour un fichier existant ailleurs. Resout aussi
+      # la perte des fichiers a chaque rebuild (couche writable ephemere sinon).
+      - ./data/uploads:/app/uploads
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -168,6 +176,9 @@ services:
       # Meme config partagee que admin-api (FirebaseNotificationModule lit
       # /app/config/config.production.json + la cle de service).
       - ./config:/app/config
+      # Meme repertoire uploads PARTAGE que admin-api/rider-api — voir
+      # commentaire sur le service admin-api ci-dessus.
+      - ./data/uploads:/app/uploads
     ports:
       - "127.0.0.1:3002:3002"
     depends_on:
@@ -206,6 +217,9 @@ services:
       # Meme config partagee que admin-api (FirebaseNotificationModule lit
       # /app/config/config.production.json + la cle de service).
       - ./config:/app/config
+      # Meme repertoire uploads PARTAGE que admin-api/driver-api — voir
+      # commentaire sur le service admin-api ci-dessus.
+      - ./data/uploads:/app/uploads
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:

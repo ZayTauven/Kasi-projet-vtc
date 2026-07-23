@@ -143,6 +143,11 @@ docker-compose.override.yml
 # Configuration runtime des APIs (montee dans les conteneurs via docker-compose,
 # voir volumes ./config:/app/config). Contient des tokens/cles — jamais versionnee.
 /config/
+
+# Fichiers uploades par les utilisateurs (avatars, documents), montes en partage
+# entre admin-api/driver-api/rider-api via ./data/uploads:/app/uploads — donnees
+# utilisateur, jamais versionnees (voir KASI_DECISIONS.md triage 2026-07-23).
+/data/
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 

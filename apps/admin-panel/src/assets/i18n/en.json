@@ -1272,7 +1272,7 @@
       },
       "mapbox": {
         "title": "Mapbox",
-        "desc": "Settings used when the provider is Mapbox (token and style)."
+        "desc": "Settings used when the provider is Mapbox (token and style). This token drives backend geocoding (rider-api) and the map bootstrap in the Kasiman/Client mobile apps — it is independent from this admin panel's own Mapbox token, which is configured separately at build time."
       },
       "google": {
         "title": "Google",

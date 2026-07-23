@@ -26,8 +26,23 @@
     </div>
   </div>
 }
-<a target="_blank" [href]="getMapAddress(order.points)"><img class="w-full h-auto hover:ring-2 hover:cursor-pointer"
-[src]="getMapAddress(order.points)"></a>
+<!-- Mini-carte trajet interactive (pickup = index 0, destination = points suivants).
+[lngLat] utilise l'ordre Mapbox [lng, lat] — inversé vs Google {lat, lng} -->
+<mgl-map
+  class="h-300"
+  [style]="'mapbox://styles/mapbox/streets-v12'"
+  [zoom]="[4]"
+  [center]="[0, 20]"
+  (mapLoad)="onMapLoad($event.target)">
+  @for (point of order.points; track point; let i = $index) {
+    <mgl-marker [lngLat]="[point.lng, point.lat]">
+      <img
+        [src]="i === 0 ? 'assets/marker_pickup.png' : 'assets/marker_destination.png'"
+        style="width: 32px; height: 32px;"
+        alt="trip point">
+    </mgl-marker>
+  }
+</mgl-map>
 <div class="col-span-3">
   @if (order.driver; as driver) {
     <div class="kasi-card mt-2">

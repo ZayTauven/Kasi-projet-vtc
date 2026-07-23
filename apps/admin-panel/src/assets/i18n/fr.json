@@ -1279,7 +1279,7 @@
       },
       "mapbox": {
         "title": "Mapbox",
-        "desc": "Paramètres utilisés lorsque le fournisseur est Mapbox (jeton et style)."
+        "desc": "Paramètres utilisés lorsque le fournisseur est Mapbox (jeton et style). Ce jeton pilote le géocodage backend (rider-api) et les cartes des applications mobiles Kasiman/Client — il est indépendant du jeton Mapbox de ce panel d'administration, configuré séparément au build."
       },
       "google": {
         "title": "Google",
