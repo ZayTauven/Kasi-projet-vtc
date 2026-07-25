@@ -2,7 +2,6 @@ import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:hive/hive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:client_shared/config.dart';
 import 'package:kasi_driver/config.dart';
@@ -10,6 +9,7 @@ import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/query_result_view.dart';
 import 'package:kasi_driver/register/register.graphql.dart';
+import 'package:kasi_driver/session_token.dart';
 
 class DrawerView extends StatelessWidget {
   final Fragment$BasicProfile? driver;
@@ -199,7 +199,7 @@ class DrawerView extends StatelessWidget {
                             TextButton(
                                 onPressed: () async {
                                   Navigator.pop(context, 1);
-                                  await Hive.box('user').delete('jwt');
+                                  await clearSession();
                                 },
                                 child: Text(S.of(context).action_ok))
                           ],
@@ -221,9 +221,11 @@ class DrawerView extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8),
                             child: Mutation$DeleteUser$Widget(
                                 options: WidgetOptions$Mutation$DeleteUser(
-                                  onCompleted: (p0, p1) {
-                                    Hive.box('user').delete('jwt');
-                                    Navigator.pop(context);
+                                  onCompleted: (p0, p1) async {
+                                    await clearSession();
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
                                   },
                                   onError: (error) =>
                                       showOperationErrorMessage(context, error),

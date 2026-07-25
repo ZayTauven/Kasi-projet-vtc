@@ -489,6 +489,12 @@ abstract class S {
   /// **'Can not be empty'**
   String get error_field_cant_be_empty;
 
+  /// No description provided for @error_upload_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed. Please try again.'**
+  String get error_upload_failed;
+
   /// No description provided for @issue_description_placeholder.
   ///
   /// In en, this message translates to:

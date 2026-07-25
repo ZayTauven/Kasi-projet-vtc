@@ -334,6 +334,7 @@ input IDFilterComparison {
 }
 
 type Login {
+  isNewUser: Boolean!
   jwtToken: String!
 }
 

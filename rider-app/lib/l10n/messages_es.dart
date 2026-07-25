@@ -197,6 +197,9 @@ class SEs extends S {
   String get error_field_cant_be_empty => 'No puede estar vacío';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder =>
       'Escribe una descripción de tu problema...';
 

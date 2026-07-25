@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:kasi_rider/config.dart';
 import 'package:kasi_rider/location_selection/welcome_card/place_search_sheet_view.dart';
 import 'package:kasi_rider/main/bloc/current_location_cubit.dart';
@@ -18,6 +17,7 @@ import 'package:kasi_rider/schema.gql.dart';
 import '../bloc/main_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kasi_rider/session_token.dart';
 
 class GoogleMapProvider extends StatefulWidget {
   final double bottomSheetHeight;
@@ -142,7 +142,7 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
       "${serverUrl}graphql",
     );
     final authLink = AuthLink(
-      getToken: () async => 'Bearer ${Hive.box('user').get('jwt')}',
+      getToken: () async => readStoredAuthorizationHeader(),
     );
     Link link = authLink.concat(httpLink);
     final GraphQLClient client = GraphQLClient(

@@ -63,6 +63,7 @@
   "action_add_photo": "Ajouter une photo",
   "complaint_submit_success_message": "La plainte est déposée. Veuillez attendre un contact de notre représentant du support au sujet de votre demande.",
   "error_field_cant_be_empty": "Ne peux pas être vide",
+  "error_upload_failed": "L'envoi du fichier a échoué. Veuillez réessayer.",
   "issue_description_placeholder": "Rédigez une description de votre problème...",
   "issue_subject_placeholder": "Matière",
   "issue_submit_description": "Vous pouvez signaler tout problème rencontré avec votre trajet. Nous vous aiderons à résoudre le problème dans le cadre d'un appel.",

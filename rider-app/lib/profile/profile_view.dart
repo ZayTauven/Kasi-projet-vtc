@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:hive/hive.dart';
 import 'package:client_shared/components/back_button.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:kasi_rider/l10n/messages.dart';
@@ -16,6 +15,7 @@ import '../main/bloc/rider_profile_cubit.dart';
 import '../query_result_view.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'package:kasi_rider/session_token.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -109,8 +109,11 @@ class _ProfileViewState extends State<ProfileView> {
                                                                 RiderProfileCubit>()
                                                             .updateProfile(
                                                                 null);
-                                                        await Hive.box('user')
-                                                            .delete('jwt');
+                                                        // Deconnecte aussi
+                                                        // Firebase, qui restait
+                                                        // connecte apres une
+                                                        // suppression de compte.
+                                                        await clearSession();
                                                       },
                                                       child: Text(
                                                         S
@@ -186,7 +189,17 @@ class _ProfileViewState extends State<ProfileView> {
                         .pickFiles(type: FileType.image);
 
                     if (result != null && result.files.single.path != null) {
-                      await uploadFile(result.files.single.path!);
+                      final uploaded =
+                          await uploadFile(result.files.single.path!);
+                      if (!context.mounted) return;
+                      if (!uploaded) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: KasiBanner(
+                          S.of(context).error_upload_failed,
+                          type: BannerType.error,
+                        )));
+                        return;
+                      }
                       refetch!();
                     }
                   }),
@@ -281,16 +294,23 @@ class _ProfileViewState extends State<ProfileView> {
     )));
   }
 
-  uploadFile(String path) async {
+  /// Envoie la photo de profil.
+  ///
+  /// Renvoie `true` en cas de succes. La version precedente ignorait
+  /// COMPLETEMENT la reponse (`await request.send();` seul, le reste commente) :
+  /// un 401, un 413 ou un 500 passaient totalement inapercus, puis le `refetch`
+  /// reaffichait l'ancien avatar comme si de rien n'etait.
+  Future<bool> uploadFile(String path) async {
     var postUri = Uri.parse("${serverUrl}upload_profile");
     var request = http.MultipartRequest("POST", postUri);
-    request.headers['Authorization'] =
-        'Bearer ${Hive.box('user').get('jwt').toString()}';
+    final authorization = readStoredAuthorizationHeader();
+    if (authorization == null) {
+      return false;
+    }
+    request.headers['Authorization'] = authorization;
     request.files.add(await http.MultipartFile.fromPath('file', path));
-    await request.send();
-    // var response = await http.Response.fromStream(streamedResponse);
-    // var json = jsonDecode(response.body);
-    // setState(() {});
-    // json['address'];
+    final streamedResponse = await request.send();
+    return streamedResponse.statusCode >= 200 &&
+        streamedResponse.statusCode < 300;
   }
 }

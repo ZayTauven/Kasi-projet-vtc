@@ -199,6 +199,10 @@ class SFr extends S {
   String get error_field_cant_be_empty => 'Ne peux pas être vide';
 
   @override
+  String get error_upload_failed =>
+      'L\'envoi du fichier a échoué. Veuillez réessayer.';
+
+  @override
   String get issue_description_placeholder =>
       'Rédigez une description de votre problème...';
 

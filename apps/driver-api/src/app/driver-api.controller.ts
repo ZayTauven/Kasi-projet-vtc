@@ -9,16 +9,11 @@
 } from '@nestjs/common';
 import * as fastify from 'fastify';
 import { RestJwtAuthGuard } from './auth/rest-jwt-auth.guard';
-import { promisify } from 'util';
-import { pipeline } from 'stream';
-import { createWriteStream, promises } from 'fs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DriverEntity } from '@kasi/database/driver.entity';
 import { MediaEntity } from '@kasi/database/media.entity';
 import { Repository } from 'typeorm';
-import { join } from 'path';
-const pump = promisify(pipeline);
-import { CryptoService } from '@kasi/database';
+import { CryptoService, storeUploadedFile } from '@kasi/database';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { DriverRechargeTransactionType } from '@kasi/database/enums/driver-recharge-transaction-type.enum';
@@ -93,15 +88,16 @@ export class DriverAPIController {
   @Post('upload_profile')
   @UseGuards(RestJwtAuthGuard)
   async upload(@Request() req: any, @Res() res: fastify.FastifyReply) {
-    const data = await req.file();
-    const dir = 'uploads';
-    await promises.mkdir(dir, { recursive: true });
-    const _fileName = join(dir, `${new Date().getTime()}-${data.filename}`);
-    await pump(data.file, createWriteStream(_fileName));
-    const insert = await this.mediaRepository.save({ address: _fileName });
+    const stored = await storeUploadedFile(req, {
+      dir: 'uploads',
+      fileNamePrefix: new Date().getTime().toString(),
+    });
+    const insert = await this.mediaRepository.save({ address: stored.address });
     await this.driverRepository.update((req as unknown as any).user.id, {
       mediaId: insert.id,
     });
+    // `Fragment$DriverMedia.fromJson` cote Flutter caste `id` en String
+    // (`(l$id as String)`) : renvoyer un nombre ferait lever le parsing.
     insert.id = insert.id.toString() as unknown as any;
     res.code(200).send(insert);
   }
@@ -109,13 +105,12 @@ export class DriverAPIController {
   @Post('upload_document')
   @UseGuards(RestJwtAuthGuard)
   async uploadDocuement(@Request() req: any, @Res() res: fastify.FastifyReply) {
-    const data = await req.file();
-    const dir = 'uploads';
-    await promises.mkdir(dir, { recursive: true });
-    const _fileName = join(dir, `${new Date().getTime()}-${data.filename}`);
-    await pump(data.file, createWriteStream(_fileName));
+    const stored = await storeUploadedFile(req, {
+      dir: 'uploads',
+      fileNamePrefix: new Date().getTime().toString(),
+    });
     const insert = await this.mediaRepository.save({
-      address: _fileName,
+      address: stored.address,
       driverDocumentId: (req as unknown as any).user.id,
     });
     insert.id = insert.id.toString() as unknown as any;

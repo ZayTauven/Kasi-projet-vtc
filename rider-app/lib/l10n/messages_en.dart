@@ -194,6 +194,9 @@ class SEn extends S {
   String get error_field_cant_be_empty => 'Can not be empty';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder =>
       'Write a description of your issue...';
 

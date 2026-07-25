@@ -10,11 +10,18 @@ class LoginPhoneNumberBloc
       : super(const LoginPhoneNumberInitialState()) {
     on<LoginPhoneNumberRequestedEvent>((event, emit) {
       emit(const LoginPhoneNumberLoadingState());
-      authRepository
-          .verifyPhoneNumber(event.countryCode + event.phoneNumber, null,
-              (String verificationId, int? resendToken) {
+      // Numero au format international, reutilise tel quel en aval.
+      final fullPhoneNumber = event.countryCode + event.phoneNumber;
+      authRepository.verifyPhoneNumber(fullPhoneNumber, null,
+          (String verificationId, int? resendToken) {
         add(LoginPhoneNumberCodeSentEvent(
-          phoneNumber: event.phoneNumber,
+          // On propage le numero COMPLET (avec indicatif), pas le numero local.
+          // L'ancien code transmettait `event.phoneNumber` : ce numero tronque
+          // finissait dans `LoginVerifyCodeBloc`, qui rappelait Firebase avec un
+          // numero invalide au renvoi de code, et l'envoyait tel quel a
+          // `SkipVerification` — creant un compte distinct de celui du premier
+          // ecran, qui envoie bien l'indicatif.
+          phoneNumber: fullPhoneNumber,
           verificationId: verificationId,
           resendToken: resendToken,
         ));

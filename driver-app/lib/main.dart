@@ -38,6 +38,7 @@ import 'map_providers/open_street_map_provider.dart';
 import 'order_status_card_view.dart';
 import 'orders_carousel_view.dart';
 import 'query_result_view.dart';
+import 'session_token.dart';
 import 'trip-history/trip_history_list_view.dart';
 import 'wallet/wallet_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -115,7 +116,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Box>(
-      valueListenable: Hive.box('user').listenable(),
+      // Restreint a la cle `jwt` : en ecoutant TOUTES les cles de la box `user`,
+      // chaque ecriture (quelle qu'elle soit) reconstruisait `MyGraphqlProvider`,
+      // qui recree son `GraphQLClient` dans son constructeur — donc un nouveau
+      // `WebSocketLink` et un nouveau `HiveStore` a chaque fois, sans jamais
+      // fermer les precedents (`MyGraphqlProvider` est un StatelessWidget, il n'a
+      // pas de `dispose`). Seul un changement de session doit reconstruire le
+      // client.
+      valueListenable: Hive.box('user').listenable(keys: ['jwt']),
       builder: (context, Box box, widget) {
         return MultiBlocProvider(
           providers: [
@@ -127,7 +135,11 @@ class MyApp extends StatelessWidget {
           child: MyGraphqlProvider(
             uri: "${serverUrl}graphql",
             subscriptionUri: "${wsUrl}graphql",
-            jwt: box.get('jwt').toString(),
+            // `box.get('jwt').toString()` renvoyait la chaine `"null"` pour une
+            // cle absente : `clientFor` testant `jwtToken != null`, l'app
+            // envoyait `Authorization: Bearer null` des le premier ecran et la
+            // branche sans entete etait du code mort.
+            jwt: readStoredJwt(),
             child: ValueListenableBuilder<Box>(
                 valueListenable:
                     Hive.box('settings').listenable(keys: ['language']),
@@ -151,7 +163,7 @@ class MyApp extends StatelessWidget {
                         'settings': (context) => const SettingsPage()
                       },
                       theme: CustomTheme.theme1,
-                      home: MyHomePage());
+                      home: const MyHomePage());
                 }),
           ),
         );
@@ -160,19 +172,44 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
-class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
+/// Ecran principal du chauffeur.
+///
+/// Converti en `StatefulWidget` : c'etait un `StatelessWidget` portant des champs
+/// MUTABLES (`refetch`, `_driverNotFoundDialogShown`) et s'enregistrant comme
+/// `WidgetsBindingObserver` dans son constructeur, sans jamais se desenregistrer.
+/// Comme `MyApp` reconstruit `home: MyHomePage()` a chaque changement de session,
+/// chaque login/logout creait une instance neuve : `refetch` repartait a `null`
+/// — donc le rafraichissement du profil juste apres l'authentification portait
+/// sur une reference nulle ou perimee, et `UnregisteredDriverMessagesView`
+/// recevait systematiquement un `refetch` inutilisable — le garde-fou du dialogue
+/// etait remis a `false`, et un observer inutile etait empile a chaque fois.
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Refetch? refetch;
   final _pushTokenProvider = FcmPushTokenProvider();
   // Garde-fou pour n'afficher le dialogue "Driver information not found"
   // qu'une seule fois par occurrence reelle (cf. `builder` de
   // `Query$Me$Widget` ci-dessous), et non a chaque rebuild tant que l'etat
-  // persiste.
+  // persiste. Survit desormais aux rebuilds de `MyApp`.
   bool _driverNotFoundDialogShown = false;
 
-  MyHomePage({Key? key}) : super(key: key) {
+  @override
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -196,9 +233,9 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
           ),
         ),
         body: ValueListenableBuilder(
-            valueListenable: Hive.box('user').listenable(),
+            valueListenable: Hive.box('user').listenable(keys: ['jwt']),
             builder: (context, Box box, widget) {
-              if (box.get('jwt') == null) {
+              if (readStoredJwt() == null) {
                 return UnregisteredDriverMessagesView(
                   driver: null,
                   refetch: refetch,
@@ -579,7 +616,7 @@ class MyHomePage extends StatelessWidget with WidgetsBindingObserver {
       "${serverUrl}graphql",
     );
     final authLink = AuthLink(
-      getToken: () async => 'Bearer ${Hive.box('user').get('jwt')}',
+      getToken: () async => readStoredAuthorizationHeader(),
     );
     Link link = authLink.concat(httpLink);
     final GraphQLClient client = GraphQLClient(

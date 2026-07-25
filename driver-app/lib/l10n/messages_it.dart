@@ -436,6 +436,16 @@ class SIt extends S {
       'La tua presentazione è in fase di revisione, \n Grazie per la pazienza.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration =>
       'La tua presentazione è stata completamente rifiutata!';
 

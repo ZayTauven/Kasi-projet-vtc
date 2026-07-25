@@ -1,11 +1,13 @@
 mutation Login($firebaseToken: String!) {
   login(input: { firebaseToken: $firebaseToken }) {
     jwtToken
+    isNewUser
   }
 }
 
 mutation SkipVerification($mobileNumber: String!) {
   skipVerification(mobileNumber: $mobileNumber) {
     jwtToken
+    isNewUser
   }
 }

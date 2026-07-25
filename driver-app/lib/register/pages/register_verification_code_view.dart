@@ -56,9 +56,14 @@ class _RegisterVerificationCodeViewState
         Mutation$Login$Widget(
             options:
                 WidgetOptions$Mutation$Login(onCompleted: (result, parsedData) {
-              widget.onLoadingStateUpdated(true);
               final jwt = parsedData?.login.jwtToken;
-              if (jwt == null) return;
+              if (jwt == null) {
+                // `onLoadingStateUpdated(false)` etait place APRES ce `return` :
+                // une reponse sans jeton laissait l'overlay de chargement plein
+                // ecran affiche indefiniment, sans message.
+                widget.onLoadingStateUpdated(false);
+                return;
+              }
               Hive.box('user').put('jwt', jwt);
               widget.onLoadingStateUpdated(false);
               widget.onLoggedIn();
@@ -97,9 +102,11 @@ class _RegisterVerificationCodeViewState
           Mutation$SkipVerification$Widget(
               options: WidgetOptions$Mutation$SkipVerification(
                   onCompleted: (result, parsedData) {
-                widget.onLoadingStateUpdated(true);
                 final jwt = parsedData?.skipVerification.jwtToken;
-                if (jwt == null) return;
+                if (jwt == null) {
+                  widget.onLoadingStateUpdated(false);
+                  return;
+                }
                 Hive.box('user').put('jwt', jwt);
                 widget.onLoadingStateUpdated(false);
                 widget.onLoggedIn();

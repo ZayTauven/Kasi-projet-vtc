@@ -197,6 +197,9 @@ class SHy extends S {
   String get error_field_cant_be_empty => 'Չի կարող դատարկ լինել';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder =>
       'Գրեք ձեր խնդրի նկարագրությունը...';
 

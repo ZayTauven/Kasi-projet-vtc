@@ -27,6 +27,20 @@ class LoginView extends StatefulWidget {
   State<LoginView> createState() => _LoginViewState();
 }
 
+/// Ouvre la session applicative : persiste le JWT et alimente `JWTCubit`, ce qui
+/// declenche la reconstruction du client GraphQL avec l'entete `Authorization`,
+/// donc le rechargement du profil et le basculement du drawer en mode connecte.
+///
+/// Extrait en fonction parce que ce couple d'operations doit maintenant etre
+/// declenche depuis DEUX etats (`LoginInputNameState` pour un nouvel inscrit,
+/// `LoginSessionReadyState` pour un utilisateur existant) : le laisser inline
+/// dans la seule branche du formulaire de nom etait precisement ce qui empechait
+/// un utilisateur deja inscrit de rejoindre sa session.
+void _openSession(BuildContext context, String jwtToken) {
+  Hive.box('user').put('jwt', jwtToken);
+  context.read<JWTCubit>().login(jwtToken);
+}
+
 class _LoginViewState extends State<LoginView> {
   PageController pageController = PageController(initialPage: 0);
 
@@ -66,11 +80,10 @@ class _LoginViewState extends State<LoginView> {
                                 if (state is LoginInputNumberState) {
                                   Navigator.pop(context);
                                 }
+                                // `LoginInputNameState` etait teste deux fois et
+                                // dispatchait donc l'evenement en double.
                                 if (state is LoginInputCodeState ||
                                     state is LoginInputNameState) {
-                                  bloc.add(const LoginChangePhoneNumberEvent());
-                                }
-                                if (state is LoginInputNameState) {
                                   bloc.add(const LoginChangePhoneNumberEvent());
                                 }
                               },
@@ -103,14 +116,27 @@ class _LoginViewState extends State<LoginView> {
                             pageIndex = 1;
                           }
                           if (state is LoginInputNameState) {
-                            final Box box = Hive.box('user');
-                            box.put("jwt", state.jwtToken);
-                            context.read<JWTCubit>().login(state.jwtToken);
+                            _openSession(context, state.jwtToken);
                             pageIndex = 2;
+                          }
+                          // Utilisateur deja inscrit : on ouvre la session et on
+                          // rend la main immediatement. L'ouverture de session
+                          // etait auparavant faite UNIQUEMENT dans la branche
+                          // `LoginInputNameState` ci-dessus, ce qui rendait tout
+                          // raccourci impossible : sauter le formulaire de nom
+                          // signifiait ne jamais persister le JWT.
+                          if (state is LoginSessionReadyState) {
+                            _openSession(context, state.jwtToken);
+                            Navigator.pop(context);
+                            return;
                           }
                           if (state is LoginSuccessState) {
                             Future.delayed(const Duration(seconds: 3))
-                                .then((value) => Navigator.pop(context));
+                                .then((value) {
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            });
                             pageIndex = 3;
                           }
                           pageController.animateToPage(pageIndex,

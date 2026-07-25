@@ -418,6 +418,16 @@ class SZh extends S {
       '您提交的内容正在审核中，\n 谢谢你的耐心。';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => '您的提交被完全拒绝！';
 
   @override

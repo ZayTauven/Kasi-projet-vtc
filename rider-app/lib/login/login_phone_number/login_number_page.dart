@@ -140,10 +140,14 @@ class _LoginNumberPageState extends State<LoginNumberPage> {
                       options: WidgetOptions$Mutation$SkipVerification(
                           onCompleted: (result, parsedData) {
                         context.read<LoginLoadingCubit>().hideLoading();
+                        if (parsedData == null) {
+                          return;
+                        }
                         context.read<LoginBloc>().add(
                             LoginVerificationCompletedEvent(
-                                jwtToken:
-                                    parsedData!.skipVerification.jwtToken));
+                                jwtToken: parsedData.skipVerification.jwtToken,
+                                isNewUser:
+                                    parsedData.skipVerification.isNewUser));
                       }, onError: (error) {
                         context.read<LoginLoadingCubit>().hideLoading();
                         showOperationErrorMessage(context, error);
@@ -183,16 +187,33 @@ class _LoginNumberPageState extends State<LoginNumberPage> {
                                       phoneNumber: phoneNumber));
                             },
                       child: Text(S.of(context).action_continue))),
+          // Chemin de la verification INSTANTANEE (auto-retrieval Android) :
+          // c'est celui que prennent les numeros de test declares dans la console
+          // Firebase, donc le plus emprunte en recette.
           Mutation$Login$Widget(
               options: WidgetOptions$Mutation$Login(
                   onCompleted: (data, parsedData) {
                     context.read<LoginLoadingCubit>().hideLoading();
+                    // `parsedData` peut etre null : le paquet `graphql` invoque
+                    // `onCompleted` meme en cas d'erreur. Le `!` faisait alors
+                    // lever ici, apres avoir masque l'erreur reelle. Le meme
+                    // correctif etait deja en place dans
+                    // `login_verify_code_page.dart` mais n'avait pas ete reporte.
+                    if (parsedData == null) {
+                      return;
+                    }
                     context.read<LoginBloc>().add(
                         LoginVerificationCompletedEvent(
-                            jwtToken: parsedData!.login.jwtToken));
+                            jwtToken: parsedData.login.jwtToken,
+                            isNewUser: parsedData.login.isNewUser));
                   },
-                  onError: (error) =>
-                      showOperationErrorMessage(context, error)),
+                  // `hideLoading()` etait absent ici : l'overlay de chargement
+                  // plein ecran restait affiche indefiniment si `Login` echouait
+                  // sur ce chemin.
+                  onError: (error) {
+                    context.read<LoginLoadingCubit>().hideLoading();
+                    showOperationErrorMessage(context, error);
+                  }),
               builder: (runMutation, result) {
                 return BlocListener<LoginPhoneNumberBloc,
                     LoginPhoneNumberState>(

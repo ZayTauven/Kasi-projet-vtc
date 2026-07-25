@@ -191,6 +191,9 @@ class SKo extends S {
   String get error_field_cant_be_empty => '비워둘 수 없습니다.';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder => '문제에 대한 설명을 작성하세요...';
 
   @override

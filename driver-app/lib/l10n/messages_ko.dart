@@ -423,6 +423,16 @@ class SKo extends S {
       '귀하의 제출물이 검토 중입니다.\n 기다려 주셔서 감사합니다.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => '제출이 완전히 거부되었습니다!';
 
   @override

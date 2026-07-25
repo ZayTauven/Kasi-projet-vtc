@@ -21,6 +21,7 @@ import '../bloc/current_location_cubit.dart';
 import '../bloc/main_bloc.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:kasi_rider/session_token.dart';
 
 class OpenStreetMapProvider extends StatefulWidget {
   final double bottomSheetHeight;
@@ -261,7 +262,7 @@ class OpenStreetMapState extends State<OpenStreetMapProvider>
       "${serverUrl}graphql",
     );
     final authLink = AuthLink(
-      getToken: () async => 'Bearer ${Hive.box('user').get('jwt')}',
+      getToken: () async => readStoredAuthorizationHeader(),
     );
     Link link = authLink.concat(httpLink);
     final GraphQLClient client = GraphQLClient(

@@ -435,6 +435,16 @@ class SId extends S {
       'Kiriman Anda sedang ditinjau,\n Terima kasih atas kesabaran.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => 'Kiriman Anda ditolak sepenuhnya!';
 
   @override

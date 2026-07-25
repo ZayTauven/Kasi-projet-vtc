@@ -7,12 +7,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/query_result_view.dart';
 import 'package:kasi_driver/register/register.graphql.dart';
+import 'package:kasi_driver/session_token.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kasi_driver/main_bloc.dart';
 
 import '../../config.dart';
 
@@ -187,6 +189,14 @@ class _RegisterUploadDocumentsViewState
             options: WidgetOptions$Mutation$SetDocumentsOnDriver(
               onCompleted: (result, parsedData) {
                 widget.onLoadingStateUpdated(false);
+                // Le resultat etait ignore alors que la mutation renvoie deux
+                // `...BasicProfile` : l'ecran d'accueil ne se mettait a jour que
+                // par l'effet de bord du `navigatorObservers` lifecycle. On
+                // pousse maintenant explicitement le profil dans `MainBloc`.
+                final updatedDriver = parsedData?.setDocumentsOnDriver;
+                if (updatedDriver != null) {
+                  context.read<MainBloc>().add(DriverUpdated(updatedDriver));
+                }
                 showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -203,10 +213,14 @@ class _RegisterUploadDocumentsViewState
                           actions: [
                             TextButton(
                               onPressed: () {
-                                int count = 0;
-                                Navigator.popUntil(context, (route) {
-                                  return count++ == 2;
-                                });
+                                // `popUntil` avec un compteur fixe a 2 depilait
+                                // un NOMBRE de routes, pas jusqu'a une
+                                // destination : toute route supplementaire
+                                // (autre dialogue, bottom sheet, sous-page)
+                                // cassait le retour. On depile jusqu'a la
+                                // premiere route, l'accueil.
+                                Navigator.popUntil(
+                                    context, (route) => route.isFirst);
                               },
                               child: Text(S.of(context).action_ok),
                             )
@@ -238,11 +252,21 @@ class _RegisterUploadDocumentsViewState
     var postUri = Uri.parse(
         "$serverUrl${media == UploadMedia.profile ? "upload_profile" : "upload_document"}");
     var request = http.MultipartRequest("POST", postUri);
-    request.headers['Authorization'] =
-        'Bearer ${Hive.box('user').get('jwt').toString()}';
+    final authorization = readStoredAuthorizationHeader();
+    if (authorization == null) {
+      throw Exception('Session expiree : reconnectez-vous pour envoyer un fichier.');
+    }
+    request.headers['Authorization'] = authorization;
     request.files.add(await http.MultipartFile.fromPath('file', path));
     final streamedResponse = await request.send();
     var response = await http.Response.fromStream(streamedResponse);
+    // Le statut n'etait pas verifie : sur 401/413/415/500 le `jsonDecode` puis
+    // `Fragment$DriverMedia.fromJson` levaient sur une reponse d'erreur, en
+    // masquant la cause reelle.
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+          'Echec de l\'envoi du fichier (HTTP ${response.statusCode}).');
+    }
     var json = jsonDecode(response.body);
     widget.onUploaded();
     return Fragment$DriverMedia.fromJson(json);

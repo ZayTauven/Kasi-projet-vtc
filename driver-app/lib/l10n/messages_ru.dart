@@ -435,6 +435,16 @@ class SRu extends S {
       'Ваша заявка находится на рассмотрении,\n Спасибо за терпение.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => 'Ваша заявка полностью отклонена!';
 
   @override

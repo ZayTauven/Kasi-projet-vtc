@@ -436,6 +436,16 @@ class SDe extends S {
       'Ihr Beitrag wird geprüft,\n Danke für die Geduld.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration =>
       'Ihre Einreichung wird vollständig abgelehnt!';
 

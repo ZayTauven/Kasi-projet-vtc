@@ -34,18 +34,39 @@ export class SharedRiderService {
     return addResult;
   }
 
+  /**
+   * Variante de `findOrCreateUserWithMobileNumber` qui indique EN PLUS si le
+   * compte vient d'etre cree.
+   *
+   * L'ancienne signature masquait cette information, donc `login` ne pouvait pas
+   * la remonter et le rider-app envoyait TOUT le monde sur l'ecran « saisir
+   * votre nom » — un utilisateur deja inscrit ne rejoignait jamais sa session
+   * directement apres l'OTP.
+   *
+   * Un compte soft-supprime puis restaure n'est PAS considere comme nouveau : il
+   * a deja un profil, il doit retrouver sa session sans repasser par
+   * l'onboarding.
+   */
+  async findOrCreateUserWithMobileNumberEx(
+    mobileNumber: string,
+  ): Promise<{ user: RiderEntity; isNewUser: boolean }> {
+    const findResult = await this.findUserByMobileNumber(mobileNumber);
+    if (findResult?.deletedAt != null) {
+      await this.repo.restore(findResult.id);
+    }
+    if (findResult == null) {
+      return {
+        user: await this.createUserWithMobileNumber(mobileNumber),
+        isNewUser: true,
+      };
+    }
+    return { user: findResult, isNewUser: false };
+  }
+
   async findOrCreateUserWithMobileNumber(
     mobileNumber: string,
   ): Promise<RiderEntity> {
-    const findResult = await this.findUserByMobileNumber(mobileNumber);
-    if (findResult?.deletedAt != null) {
-      await this.repo.restore(findResult?.id);
-    }
-    if (findResult == null) {
-      return await this.createUserWithMobileNumber(mobileNumber);
-    } else {
-      return findResult;
-    }
+    return (await this.findOrCreateUserWithMobileNumberEx(mobileNumber)).user;
   }
 
   async deleteById(id: number): Promise<RiderEntity> {

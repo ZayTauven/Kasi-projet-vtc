@@ -49,6 +49,7 @@ query GetDriver {
 mutation Login($firebaseToken: String!) {
   login(input: { firebaseToken: $firebaseToken }) {
     jwtToken
+    isNewUser
   }
 }
 
@@ -72,5 +73,6 @@ mutation DeleteUser {
 mutation SkipVerification($mobileNumber: String!) {
   skipVerification(mobileNumber: $mobileNumber) {
     jwtToken
+    isNewUser
   }
 }

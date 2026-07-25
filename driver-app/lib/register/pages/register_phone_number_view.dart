@@ -106,9 +106,11 @@ class _RegisterPhoneNumberViewState extends State<RegisterPhoneNumberView> {
             Mutation$SkipVerification$Widget(
                 options: WidgetOptions$Mutation$SkipVerification(
                     onCompleted: (result, parsedData) {
-                  widget.onLoadingStateUpdated(true);
                   final jwt = parsedData?.skipVerification.jwtToken;
-                  if (jwt == null) return;
+                  if (jwt == null) {
+                    widget.onLoadingStateUpdated(false);
+                    return;
+                  }
                   Hive.box('user').put('jwt', jwt);
                   widget.onLoadingStateUpdated(false);
                   widget.onLoggedIn();
@@ -142,7 +144,15 @@ class _RegisterPhoneNumberViewState extends State<RegisterPhoneNumberView> {
                   options: WidgetOptions$Mutation$Login(
                     onCompleted: (result, parsedData) {
                       final jwt = parsedData?.login.jwtToken;
-                      if (jwt == null) return;
+                      if (jwt == null) {
+                        // `onLoadingStateUpdated(false)` etait place APRES ce
+                        // `return` : sur le chemin de verification instantanee
+                        // (auto-retrieval, emprunte par les numeros de test
+                        // Firebase), une reponse sans jeton laissait l'overlay
+                        // plein ecran affiche indefiniment.
+                        widget.onLoadingStateUpdated(false);
+                        return;
+                      }
                       Hive.box('user').put('jwt', jwt);
                       widget.onLoadingStateUpdated(false);
                       widget.onLoggedIn();

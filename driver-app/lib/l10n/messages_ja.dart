@@ -421,6 +421,16 @@ class SJa extends S {
       'あなたの提出物は審査中です。\n お待ちいただきありがとうございます。';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => 'あなたの提出物は完全に拒否されました!';
 
   @override

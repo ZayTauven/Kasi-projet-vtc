@@ -14,19 +14,13 @@ import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum'
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import * as fastify from 'fastify';
-import { join } from 'path';
-import { pipeline } from 'stream';
-import { promisify } from 'util';
-import { createWriteStream, promises } from 'fs';
-
-const pump = promisify(pipeline);
 
 import { RestJwtAuthGuard } from './auth/rest-jwt-auth.guard';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RiderEntity } from '@kasi/database/rider-entity';
 import { Repository } from 'typeorm';
 import { MediaEntity } from '@kasi/database/media.entity';
-import { CryptoService } from '@kasi/database';
+import { CryptoService, storeUploadedFile } from '@kasi/database';
 import { RiderOrderService } from './order/rider-order.service';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
 import { InjectPubSub } from '@ptc-org/nestjs-query-graphql';
@@ -157,16 +151,22 @@ export class RiderAPIController {
   @Post('upload_profile')
   @UseGuards(RestJwtAuthGuard)
   async upload(@Request() req: any, @Res() res: fastify.FastifyReply) {
-    const data = await req.file();
-    const dir = 'uploads';
-    await promises.mkdir(dir, { recursive: true });
-    const _fileName = join(dir, `${new Date().getTime()}-${data.filename}`);
-    await pump(data.file, createWriteStream(_fileName));
-    const insert = await this.mediaRepository.insert({ address: _fileName });
-    await this.riderRepository.update((req as unknown as any).user.id, {
-      mediaId: insert.raw.insertId,
+    const stored = await storeUploadedFile(req, {
+      dir: 'uploads',
+      fileNamePrefix: new Date().getTime().toString(),
     });
-    res.code(200).send({ id: insert.raw.insertId, address: _fileName });
+    // `insert()` + `insert.raw.insertId` etait du MySQL : sur PostgreSQL
+    // (database.module.ts : type 'postgres', image postgis) `raw` est un TABLEAU
+    // de lignes, donc `insertId` valait toujours `undefined`. TypeORM ignorait
+    // alors la colonne dans le `update` : l'avatar etait ecrit sur le disque
+    // mais JAMAIS rattache au rider, et la reponse renvoyait `id: undefined`.
+    // `save()` renvoie l'entite avec son id quel que soit le SGBD (motif deja
+    // utilise par driver-api).
+    const media = await this.mediaRepository.save({ address: stored.address });
+    await this.riderRepository.update((req as unknown as any).user.id, {
+      mediaId: media.id,
+    });
+    res.code(200).send({ id: media.id.toString(), address: stored.address });
   }
 
   // Webhook voix Twilio ENTRANT (public, non-JWT), miroir de payment_result.

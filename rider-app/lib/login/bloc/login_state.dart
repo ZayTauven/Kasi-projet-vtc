@@ -36,6 +36,22 @@ class LoginInputNameState extends LoginState {
   List<Object> get props => [jwtToken];
 }
 
+/// Utilisateur DEJA inscrit : la session est ouverte, il n'y a plus rien a
+/// saisir, on le renvoie directement dans son espace.
+///
+/// Auparavant cet etat n'existait pas : `LoginVerificationCompletedEvent`
+/// emettait `LoginInputNameState` sans condition, donc un utilisateur deja
+/// inscrit devait repasser par le formulaire de nom (pre-rempli) et re-valider
+/// avant de retrouver sa session.
+class LoginSessionReadyState extends LoginState {
+  final String jwtToken;
+
+  const LoginSessionReadyState({required this.jwtToken});
+
+  @override
+  List<Object> get props => [jwtToken];
+}
+
 class LoginSuccessState extends LoginState {
   const LoginSuccessState();
 

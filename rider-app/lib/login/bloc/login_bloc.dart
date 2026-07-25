@@ -12,8 +12,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           lastSendCodeAt: DateTime.now()));
     });
 
+    // Renvoi de code : on conserve le numero mais on adopte le NOUVEAU
+    // `verificationId`, sans quoi la saisie suivante est validee contre l'ancien.
+    // Rafraichit `lastSendCodeAt`, donc rearme le compte a rebours du bouton.
+    on<LoginCodeResentEvent>((event, emit) async {
+      final current = state;
+      if (current is! LoginInputCodeState) {
+        return;
+      }
+      emit(LoginInputCodeState(
+          verificationId: event.verificationId,
+          resendToken: event.resendToken ?? current.resendToken,
+          phoneNumber: current.phoneNumber,
+          lastSendCodeAt: DateTime.now()));
+    });
+
+    // Aiguillage decide par le backend (`Login.isNewUser`) : un utilisateur deja
+    // inscrit rejoint directement sa session au lieu de repasser par le
+    // formulaire de nom, ce qui etait le cas pour TOUT LE MONDE auparavant.
     on<LoginVerificationCompletedEvent>((event, emit) async {
-      emit(LoginInputNameState(jwtToken: event.jwtToken));
+      if (event.isNewUser) {
+        emit(LoginInputNameState(jwtToken: event.jwtToken));
+      } else {
+        emit(LoginSessionReadyState(jwtToken: event.jwtToken));
+      }
     });
 
     on<LoginNameSubmittedEvent>(

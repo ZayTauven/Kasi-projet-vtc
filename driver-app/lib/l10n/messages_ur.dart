@@ -434,6 +434,16 @@ class SUr extends S {
       'آپ کی جمع آوری زیر غور ہے،\n صبر کے لیے شکریہ۔';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration =>
       'آپ کی جمع کرانے کو مکمل طور پر مسترد کر دیا گیا ہے!';
 

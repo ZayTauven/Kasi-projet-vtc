@@ -428,6 +428,16 @@ class SFa extends S {
       'درخواست شما در حال بررسی است.\\nاز صبوری شما متشکریم.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => 'درخواست شما رد شده است!';
 
   @override

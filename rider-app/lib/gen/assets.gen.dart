@@ -147,6 +147,10 @@ class $ImagesGen {
   AssetGenImage get onboarding2 =>
       const AssetGenImage('images/onboarding-2.png');
 
+  /// File path: images/onboarding-3.png
+  AssetGenImage get onboarding3 =>
+      const AssetGenImage('images/onboarding-3.png');
+
   /// File path: images/onboarding-4-old.png
   AssetGenImage get onboarding4Old =>
       const AssetGenImage('images/onboarding-4-old.png');
@@ -199,6 +203,7 @@ class $ImagesGen {
         notification,
         onboarding1,
         onboarding2,
+        onboarding3,
         onboarding4Old,
         onboarding4,
         openstreetPreview,

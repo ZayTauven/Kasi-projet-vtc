@@ -2,7 +2,6 @@ import 'package:client_shared/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:hive/hive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:kasi_rider/address/address_list_view.dart';
@@ -16,6 +15,7 @@ import 'package:kasi_rider/main/order.graphql.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../config.dart';
+import 'package:kasi_rider/session_token.dart';
 
 class DrawerLoggedIn extends StatelessWidget {
   final Query$GetCurrentOrder$rider rider;
@@ -238,14 +238,17 @@ class DrawerLoggedIn extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             onTap: () async {
-              await Hive.box('user').delete('jwt');
-              Future.delayed(const Duration(milliseconds: 200), () {
-                context.read<JWTCubit>().logOut();
-              });
-              Future.delayed(const Duration(milliseconds: 500), () {
-                context.read<RiderProfileCubit>().updateProfile(null);
-              });
-              //scaffoldKey.currentState!.closeDrawer();
+              // Les deux cubits etaient remis a zero via une chaine de
+              // `Future.delayed` (200 ms / 500 ms) sans verification de
+              // `mounted` : un ordre de deconnexion dependant de temporisations
+              // arbitraires. On le fait maintenant de facon synchrone et
+              // deterministe, apres la deconnexion Firebase qui manquait
+              // completement.
+              final jwtCubit = context.read<JWTCubit>();
+              final profileCubit = context.read<RiderProfileCubit>();
+              await clearSession();
+              jwtCubit.logOut();
+              profileCubit.updateProfile(null);
             },
           )
         ]),

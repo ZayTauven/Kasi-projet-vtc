@@ -922,6 +922,24 @@ abstract class S {
   /// **'Your submission is under review, \n Thanks for your patience.'**
   String get pending_review_registration_description;
 
+  /// No description provided for @action_refresh_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh my status'**
+  String get action_refresh_status;
+
+  /// No description provided for @account_blocked_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Account blocked'**
+  String get account_blocked_title;
+
+  /// No description provided for @account_blocked_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is currently blocked. Please contact support to restore access.'**
+  String get account_blocked_description;
+
   /// No description provided for @hard_reject_registration.
   ///
   /// In en, this message translates to:

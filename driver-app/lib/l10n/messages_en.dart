@@ -428,6 +428,16 @@ class SEn extends S {
       'Your submission is under review, \n Thanks for your patience.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration => 'Your Submission is fully rejected!';
 
   @override

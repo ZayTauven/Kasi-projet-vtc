@@ -66,9 +66,13 @@ class _LoginNameFormPageState extends State<LoginNameFormPage> {
                       onPressed: (result?.isLoading ?? false)
                           ? null
                           : () {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
+                              // `runMutation` etait HORS du `if` : un formulaire
+                              // invalide declenchait quand meme
+                              // `UpdateProfile(firstName: "", lastName: "")`.
+                              if (!_formKey.currentState!.validate()) {
+                                return;
                               }
+                              _formKey.currentState!.save();
                               runMutation(Variables$Mutation$UpdateProfile(
                                   firstName: firstName, lastName: lastName));
                             },

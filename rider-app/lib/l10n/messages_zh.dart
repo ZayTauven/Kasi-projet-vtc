@@ -189,6 +189,9 @@ class SZh extends S {
   String get error_field_cant_be_empty => '不能为空';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder => '写下你的问题的描述...';
 
   @override

@@ -441,6 +441,16 @@ class SFr extends S {
       'Votre soumission est en cours d\'examen,\n Merci de votre patience.';
 
   @override
+  String get action_refresh_status => 'Actualiser mon statut';
+
+  @override
+  String get account_blocked_title => 'Compte bloqué';
+
+  @override
+  String get account_blocked_description =>
+      'Votre compte est actuellement bloqué. Contactez le support pour rétablir votre accès.';
+
+  @override
   String get hard_reject_registration =>
       'Votre soumission est entièrement rejetée !';
 

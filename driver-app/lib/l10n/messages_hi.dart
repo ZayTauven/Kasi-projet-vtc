@@ -433,6 +433,16 @@ class SHi extends S {
       'आपके सबमिशन की समीक्षा की जा रही है,\n धैर्य के लिए धन्यवाद।';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration =>
       'आपका सबमिशन पूरी तरह से खारिज कर दिया गया है!';
 

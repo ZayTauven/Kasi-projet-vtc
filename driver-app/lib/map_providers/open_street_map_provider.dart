@@ -25,6 +25,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:maps_toolkit/maps_toolkit.dart' as map_toolkit;
 import 'package:latlong2/latlong.dart';
+import 'package:kasi_driver/session_token.dart';
 
 class OpenStreetMapProvider extends StatefulWidget {
   const OpenStreetMapProvider({Key? key}) : super(key: key);
@@ -364,7 +365,7 @@ void onLocationUpdated(geo.Position position, MainBloc bloc,
     "${serverUrl}graphql",
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer ${Hive.box('user').get('jwt')}',
+    getToken: () async => readStoredAuthorizationHeader(),
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(

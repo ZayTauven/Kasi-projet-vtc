@@ -436,6 +436,16 @@ class SRo extends S {
       'Înregistrarea dvs. este în curs de revizuire, mulțumim pentru răbdare.';
 
   @override
+  String get action_refresh_status => 'Refresh my status';
+
+  @override
+  String get account_blocked_title => 'Account blocked';
+
+  @override
+  String get account_blocked_description =>
+      'Your account is currently blocked. Please contact support to restore access.';
+
+  @override
   String get hard_reject_registration =>
       'Înregistrarea dvs. este respinsă în totalitate!';
 

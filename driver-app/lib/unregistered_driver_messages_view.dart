@@ -97,6 +97,16 @@ class UnregisteredDriverMessagesView extends StatelessWidget {
               if (driver?.status == Enum$DriverStatus.HardReject)
                 const Center(
                   child: HardRejectUnregisteredView(),
+                ),
+              // `Blocked` et `$unknown` sont mappes sur `StatusUnregistered` par
+              // `MainBloc`, mais aucune branche ne les traitait : le chauffeur
+              // obtenait l'illustration et un demi-ecran VIDE, sans explication
+              // ni action possible.
+              if (driver != null &&
+                  (driver?.status == Enum$DriverStatus.Blocked ||
+                      driver?.status == Enum$DriverStatus.$unknown))
+                Center(
+                  child: BlockedDriverView(refetch: refetch),
                 )
             ],
           ))
@@ -224,9 +234,71 @@ class RegistrationSubmittedUnregisteredView extends StatelessWidget {
           child: OutlinedButton(
               onPressed: () async {
                 await Navigator.pushNamed(context, 'register');
+                // Le resultat de la navigation etait ignore : au retour du
+                // wizard, rien ne rechargeait le statut.
+                refetch?.call();
               },
               child: Text(S.of(context).action_edit_submission)),
-        )
+        ),
+        // `refetch` etait transmis a travers tout ce fichier sans etre appele une
+        // seule fois : un chauffeur approuve entre-temps ne voyait le changement
+        // qu'au retour d'un autre ecran ou apres un redemarrage de l'app.
+        if (refetch != null) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: 300,
+            child: TextButton(
+                onPressed: () => refetch!(),
+                child: Text(S.of(context).action_refresh_status)),
+          )
+        ]
+      ],
+    );
+  }
+}
+
+/// Chauffeur bloque (ou statut inconnu renvoye par le backend).
+class BlockedDriverView extends StatelessWidget {
+  final Refetch? refetch;
+
+  const BlockedDriverView({Key? key, required this.refetch}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          decoration: BoxDecoration(
+              color: CustomTheme.neutralColors.shade200,
+              borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            children: [
+              Text(
+                S.of(context).account_blocked_title,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                S.of(context).account_blocked_description,
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: CustomTheme.neutralColors.shade600),
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        if (refetch != null)
+          SizedBox(
+            width: 300,
+            child: OutlinedButton(
+                onPressed: () => refetch!(),
+                child: Text(S.of(context).action_refresh_status)),
+          )
       ],
     );
   }

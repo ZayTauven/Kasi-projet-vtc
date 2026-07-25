@@ -197,6 +197,9 @@ class SOm extends S {
   String get error_field_cant_be_empty => 'Duwwaa ta\'uu hin danda\'u';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder =>
       'Ibsa dhimma keessanii barreessaa...';
 

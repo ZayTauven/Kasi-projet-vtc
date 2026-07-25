@@ -195,6 +195,9 @@ class SBn extends S {
   String get error_field_cant_be_empty => 'খালি হতে পারেনা';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder =>
       'আপনার সমস্যার একটি বিবরণ লিখুন...';
 

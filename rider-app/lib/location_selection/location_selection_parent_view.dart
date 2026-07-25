@@ -31,6 +31,7 @@ import '../main/order_status_sheet_view.dart';
 import '../main/service_selection_card_view.dart';
 import 'welcome_card/welcome_card_view.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:kasi_rider/session_token.dart';
 
 class LocationSelectionParentView extends StatefulWidget {
   const LocationSelectionParentView({Key? key}) : super(key: key);
@@ -54,10 +55,14 @@ class _LocationSelectionParentViewState
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     final mainBloc = context.read<MainBloc>();
-    final jwt = Hive.box('user').get('jwt').toString();
-    if (jwt.isNotEmpty) {
-      context.read<JWTCubit>().login(jwt);
-    }
+    // La rehydratation du JWT a ete retiree d'ici : `Hive.get('jwt').toString()`
+    // produisait la chaine `"null"` pour un invite (jamais vide), donc
+    // `JWTCubit.login("null")` etait appele et le client partait avec
+    // `Authorization: Bearer null`. Combine au garde-fou plus bas, cela affichait
+    // une erreur et relancait la requete en boucle a tout invite, et juste apres
+    // chaque deconnexion. `JWTCubit` s'hydrate maintenant lui-meme a la
+    // construction (cf. `readStoredJwt` dans `session_token.dart`), donc avant
+    // meme la 1re frame.
     return Scaffold(
       key: scaffoldKey,
       drawer: ClipRRect(
@@ -416,7 +421,7 @@ Future<FullLocation?> getReverseGeocode(
     "${serverUrl}graphql",
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer ${Hive.box('user').get('jwt')}',
+    getToken: () async => readStoredAuthorizationHeader(),
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(

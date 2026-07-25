@@ -28,9 +28,11 @@ export class AuthResolver {
   async login(
     @Args('input', { type: () => LoginInput }) input: LoginInput,
   ): Promise<LoginDTO> {
-    const user = await this.authService.validateUser(input.firebaseToken);
+    const { user, isNewUser } = await this.authService.validateUser(
+      input.firebaseToken,
+    );
     const { token } = await this.authService.loginUser(user);
-    return { jwtToken: token };
+    return { jwtToken: token, isNewUser };
   }
 
   @Query(() => VersionStatus)
@@ -66,12 +68,12 @@ export class AuthResolver {
     if (mobileNumber.startsWith('+')) {
       mobileNumber = mobileNumber.substring(1);
     }
-    const user = await this.driverService.findOrCreateUserWithMobileNumber(
-      mobileNumber,
-    );
+    const { user, isNewUser } =
+      await this.driverService.findOrCreateUserWithMobileNumberEx(mobileNumber);
     const payload = { id: user.id };
     return {
       jwtToken: this.jwtService.sign(payload),
+      isNewUser,
     };
   }
 }

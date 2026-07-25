@@ -96,7 +96,8 @@ class _LoginVerifyCodePageState extends State<LoginVerifyCodePage> {
                 // soit invoque, empechant tout message d'erreur de s'afficher.
                 if (parsedData == null) return;
                 context.read<LoginBloc>().add(LoginVerificationCompletedEvent(
-                    jwtToken: parsedData.skipVerification.jwtToken));
+                    jwtToken: parsedData.skipVerification.jwtToken,
+                    isNewUser: parsedData.skipVerification.isNewUser));
               }, onError: (error) {
                 context.read<LoginLoadingCubit>().hideLoading();
                 showOperationErrorMessage(context, error);
@@ -122,7 +123,8 @@ class _LoginVerifyCodePageState extends State<LoginVerifyCodePage> {
               // de saisie du code restait bloque/se reinitialisait en silence).
               if (parsedData == null) return;
               context.read<LoginBloc>().add(LoginVerificationCompletedEvent(
-                  jwtToken: parsedData.login.jwtToken));
+                  jwtToken: parsedData.login.jwtToken,
+                  isNewUser: parsedData.login.isNewUser));
             }, onError: (error) {
               context.read<LoginLoadingCubit>().hideLoading();
               showOperationErrorMessage(context, error);
@@ -133,6 +135,16 @@ class _LoginVerifyCodePageState extends State<LoginVerifyCodePage> {
                   if (state is LoginVerifyCodeVerificationCompletedState) {
                     runMutation(
                         Variables$Mutation$Login(firebaseToken: state.uid));
+                  }
+                  // Nouveau code envoye : on remonte le nouveau
+                  // `verificationId` a `LoginBloc` (qui rearme aussi le compte a
+                  // rebours du bouton via `lastSendCodeAt`) et on sort de
+                  // l'etat de chargement, sinon l'overlay restait affiche.
+                  if (state is LoginVerifyCodeResentState) {
+                    context.read<LoginLoadingCubit>().hideLoading();
+                    context.read<LoginBloc>().add(LoginCodeResentEvent(
+                        verificationId: state.verificationId,
+                        resendToken: state.resendToken));
                   }
                   if (state is LoginVerifyCodeErrorState) {
                     context.read<LoginLoadingCubit>().hideLoading();

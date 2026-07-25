@@ -120,10 +120,16 @@ class _RegisterViewState extends State<RegisterView> {
                       options: Options$Query$GetDriver(
                           fetchPolicy: FetchPolicy.noCache,
                           onComplete: (result, parsedData) {
+                            // Chauffeur deja approuve/actif : on quitte le
+                            // wizard pour le rendre a sa session. `mounted` est
+                            // verifie car `onComplete` peut arriver apres le
+                            // demontage de cette route.
                             if (parsedData?.driver.mobileNumber != null) {
                               if (!RegisterView.allowedStatuses
                                   .contains(parsedData?.driver.status)) {
-                                Navigator.pop(context);
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                }
                                 return;
                               }
                             }
@@ -150,6 +156,19 @@ class _RegisterViewState extends State<RegisterView> {
                           }),
                       builder: (result, {refetch, fetchMore}) {
                         if (result.isLoading) {
+                          return Expanded(
+                              child: QueryResultView(result, refetch: refetch));
+                        }
+                        // `hasException` n'etait pas traite ici. Sur echec de
+                        // `GetDriver` APRES un login reussi, `onComplete` etait
+                        // court-circuite (`parsedData == null`) : ni `pop` ni
+                        // `jumpToPage`, `activePageId` restait a 0, et ce
+                        // `PageView` reaffichait donc l'etape « saisir votre
+                        // numero » a un chauffeur DEJA authentifie, sans aucun
+                        // message. Les `driver!.id` / `verificationId!` plus bas
+                        // levaient aussi sur ce chemin. On montre desormais
+                        // l'erreur avec une action de reessai.
+                        if (result.hasException) {
                           return Expanded(
                               child: QueryResultView(result, refetch: refetch));
                         }
@@ -202,6 +221,14 @@ class _RegisterViewState extends State<RegisterView> {
                                     );
 
                                   case 1:
+                                    // Gardes : `verificationId!` / `phoneNumber!`
+                                    // levaient si cette page etait construite
+                                    // sans qu'un code ait ete envoye (reprise
+                                    // d'inscription, retour arriere).
+                                    if (verificationId == null ||
+                                        phoneNumber == null) {
+                                      return const SizedBox();
+                                    }
                                     return RegisterVerificationCodeView(
                                       verificationCodeId: verificationId!,
                                       phoneNumber: phoneNumber!,
@@ -253,8 +280,13 @@ class _RegisterViewState extends State<RegisterView> {
                                     );
 
                                   case 5:
+                                    // `driver!` levait quand la query aboutissait
+                                    // sans charge utile exploitable.
+                                    if (driver == null) {
+                                      return const SizedBox();
+                                    }
                                     return RegisterUploadDocumentsView(
-                                      driverId: driver!.id,
+                                      driverId: driver.id,
                                       documents: driver.documents ?? [],
                                       profilePicture: driver.media,
                                       onUploaded: () => refetch!(),

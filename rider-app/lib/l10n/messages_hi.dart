@@ -194,6 +194,9 @@ class SHi extends S {
   String get error_field_cant_be_empty => 'खाली नहीं किया जा सकता';
 
   @override
+  String get error_upload_failed => 'Upload failed. Please try again.';
+
+  @override
   String get issue_description_placeholder => 'अपनी समस्या का विवरण लिखें...';
 
   @override

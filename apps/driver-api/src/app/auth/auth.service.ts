@@ -1,4 +1,4 @@
-﻿import { Inject, Injectable } from '@nestjs/common';
+﻿import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DriverEntity } from '@kasi/database/driver.entity';
 
@@ -17,13 +17,22 @@ export class AuthService {
     private readonly phoneAuthVerifier: IPhoneAuthVerifier,
   ) {}
 
-  async validateUser(firebaseToken: string): Promise<DriverEntity> {
-    const { phoneNumber } = await this.phoneAuthVerifier.verifyToken(firebaseToken);
-    const number = phoneNumber.substring(1);
-    const user = await this.driverService.findOrCreateUserWithMobileNumber(
-      number,
+  async validateUser(
+    firebaseToken: string,
+  ): Promise<{ user: DriverEntity; isNewUser: boolean }> {
+    const { phoneNumber } = await this.phoneAuthVerifier.verifyToken(
+      firebaseToken,
     );
-    return user;
+    // `verifyToken` peut renvoyer `undefined` si aucune des identites attendues
+    // n'est presente dans le jeton : sans ce controle, `phoneNumber.substring(1)`
+    // levait un TypeError remonte au client comme une erreur serveur opaque.
+    if (phoneNumber == null || phoneNumber.length < 2) {
+      throw new UnauthorizedException(
+        'No phone number found in the provided Firebase token',
+      );
+    }
+    const number = phoneNumber.substring(1);
+    return this.driverService.findOrCreateUserWithMobileNumberEx(number);
   }
 
   async loginUser(user: DriverEntity): Promise<TokenObject> {
