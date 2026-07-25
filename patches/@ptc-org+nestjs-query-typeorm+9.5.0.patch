@@ -1,0 +1,24 @@
+diff --git a/node_modules/@ptc-org/nestjs-query-typeorm/src/query/relation-query.builder.js b/node_modules/@ptc-org/nestjs-query-typeorm/src/query/relation-query.builder.js
+index 36deb6b..67ebfec 100644
+--- a/node_modules/@ptc-org/nestjs-query-typeorm/src/query/relation-query.builder.js
++++ b/node_modules/@ptc-org/nestjs-query-typeorm/src/query/relation-query.builder.js
+@@ -230,8 +230,17 @@ class RelationQueryBuilder {
+                     return `${aliasName}.${column.propertyPath} IN (:...${paramName})`;
+                 })
+                     .join(' AND ');
+-                // Distinct the query so the joins cannot cause duplicate data
+-                return qb.distinct(true).andWhere(where, params);
++                // Distinct the query so the joins cannot cause duplicate data.
++                // Only do this when joins were actually added by the filter (see
++                // applyRelationJoinsRecursive() above, called before batchSelect()):
++                // DISTINCT is a no-op without joins, and unconditionally applying it
++                // breaks as soon as the SELECT includes a `json`-typed column (e.g.
++                // TypeORM casts PostGIS `geometry` columns to `json` via
++                // ST_AsGeoJSON(...)::json), since Postgres has no equality operator
++                // for `json` ("could not identify an equality operator for type
++                // json"). See KASI_DECISIONS.md (rider-api GetCurrentOrder fix).
++                const hasJoins = qb.expressionMap.joinAttributes.length > 0;
++                return (hasJoins ? qb.distinct(true) : qb).andWhere(where, params);
+             },
+             whereCondition: (entity) => {
+                 const params = {};

@@ -14,6 +14,12 @@ WORKDIR /app
 COPY --from=build /app/dist/apps/rider-api/package.json ./
 RUN --mount=type=cache,target=/root/.npm npm i --legacy-peer-deps
 RUN --mount=type=cache,target=/root/.npm npm i pg
+# Ce npm i final (a partir du package.json genere par Nx, sans patches/ ni
+# postinstall) reinstalle @ptc-org/nestjs-query-typeorm NON patche. On ecrase
+# avec la copie deja patchee du stage de build (meme version, meme lockfile)
+# pour que le patch patches/@ptc-org+nestjs-query-typeorm+9.5.0.patch
+# s'applique reellement au runtime, pas seulement a la compilation.
+COPY --from=build /app/node_modules/@ptc-org/nestjs-query-typeorm ./node_modules/@ptc-org/nestjs-query-typeorm
 COPY --from=build /app/dist/apps/rider-api ./
 EXPOSE 3001
 CMD ["node", "main.js"]
