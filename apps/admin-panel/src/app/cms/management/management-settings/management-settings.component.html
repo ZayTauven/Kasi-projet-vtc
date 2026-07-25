@@ -1,42 +1,22 @@
 <div class="kasi-page-head">
   <div class="kasi-page-head__text">
     <h1 class="kasi-title">{{ 'settings.generalSettings' | translate }}</h1>
-    <p>{{ 'settings.changePasswordSubtitle' | translate }}</p>
   </div>
 </div>
-<form nz-form #frm [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="kasi-form-sections">
-    <section class="kasi-form-section">
-      <div class="kasi-form-section__aside">
-        <h2 class="kasi-form-section__title">{{ 'settings.changePasswordTitle' | translate }}</h2>
-        <p class="kasi-form-section__desc">{{ 'settings.section.changePassword.desc' | translate }}</p>
-      </div>
-      <div class="kasi-form-section__body">
-        <div class="kasi-form kasi-form--grid">
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="oldPassword">{{ 'settings.oldPassword' | translate }}</nz-form-label>
-            <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
-              <input nz-input formControlName="oldPassword" id="oldPassword" type="password" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="newPassword">{{ 'settings.newPassword' | translate }}</nz-form-label>
-            <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
-              <input nz-input formControlName="newPassword" id="newPassword" type="password" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="newPasswordRepeat">{{ 'settings.newPasswordRepeat' | translate }}</nz-form-label>
-            <nz-form-control [nzErrorTip]="'settings.passwordIncorrect' | translate">
-              <input nz-input formControlName="newPasswordRepeat" id="newPasswordRepeat" type="password" />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </div>
-    </section>
-  </div>
-  <div class="kasi-form-page-actions">
-    <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">{{ 'profile.save' | translate }}</button>
-  </div>
-</form>
+<div class="kasi-tabs">
+  <nz-tabs [nzLinkExact]="false" nzLinkRouter>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link routerLink="password">{{ 'settings.changePasswordTitle' | translate }}</a>
+    </nz-tab>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link routerLink="map">{{ 'menu.management.mapSettings' | translate }}</a>
+    </nz-tab>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link routerLink="payment-gateways">{{ 'menu.management.paymentGateways' | translate }}</a>
+    </nz-tab>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link routerLink="email-providers">{{ 'menu.management.emailProviders' | translate }}</a>
+    </nz-tab>
+  </nz-tabs>
+</div>
+<router-outlet></router-outlet>

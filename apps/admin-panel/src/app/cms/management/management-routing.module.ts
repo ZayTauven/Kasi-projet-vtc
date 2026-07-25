@@ -39,13 +39,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'email-providers',
-    loadChildren: () =>
-      import(
-        './management-email-providers/management-email-providers.module'
-      ).then((x) => x.ManagementEmailProvidersModule),
-  },
-  {
     path: 'shift-rules',
     loadChildren: () =>
       import('./management-shift-rules/management-shift-rules.module').then(
@@ -57,13 +50,6 @@ const routes: Routes = [
     loadChildren: () =>
       import('./management-retention/management-retention.module').then(
         (x) => x.ManagementRetentionModule
-      ),
-  },
-  {
-    path: 'map-settings',
-    loadChildren: () =>
-      import('./management-map-settings/management-map-settings.module').then(
-        (x) => x.ManagementMapSettingsModule
       ),
   },
   {
@@ -100,13 +86,6 @@ const routes: Routes = [
       import('./management-cars/management-cars.module').then(
         (x) => x.ManagementCarsModule
       ),
-  },
-  {
-    path: 'payment-gateways',
-    loadChildren: () =>
-      import(
-        './management-payment-gateways/management-payment-gateways.module'
-      ).then((x) => x.ManagementPaymentGatewaysModule),
   },
   {
     path: 'users',

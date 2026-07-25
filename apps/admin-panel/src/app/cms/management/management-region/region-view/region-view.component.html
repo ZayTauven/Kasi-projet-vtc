@@ -71,6 +71,6 @@
     @if (form.value.id != null) {
       <button nz-button type="button" (click)="clearMap()" [disabled]="polygons.length == 0">{{ 'profile.clearMap' | translate }}</button>
     }
-    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid || polygons.length == 0">{{ 'profile.saveChanges' | translate }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid || polygons.length == 0">{{ 'profile.save' | translate }}</button>
   </div>
 </form>

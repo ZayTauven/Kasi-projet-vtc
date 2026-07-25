@@ -1,24 +1,28 @@
-<div class="flex flex-col gap-4">
-  <h5 class="">{{ 'dispatcher.time' | translate }}</h5>
-  <nz-date-picker [(ngModel)]="time" [nzShowTime]="true" nzFormat="MM/dd/yyyy hh:mm"></nz-date-picker>
-  @if ((query | async)?.data?.calculateFare; as fare) {
-    <ul nz-list [nzDataSource]="fare.services" nzBordered
-      nzSize="large">
-      <nz-list-header>{{'profile.services' | translate }}</nz-list-header>
-      @for (category of fare.services; track category) {
-        <div>
-          @for (service of category.services; track service) {
-            <li nz-list-item nzNoFlex>
-              <ul nz-list-item-actions>
-                <nz-list-item-action>
-                  <a (click)="selectService(service)">{{ 'profile.select' | translate }}</a>
-                </nz-list-item-action>
-              </ul>
-              {{service.name}} ({{service.cost | currency: fare.currency}})
-            </li>
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    <div class="flex flex-col gap-4">
+      <h5>{{ 'dispatcher.time' | translate }}</h5>
+      <nz-date-picker [(ngModel)]="time" [nzShowTime]="true" nzFormat="MM/dd/yyyy hh:mm"></nz-date-picker>
+      @if ((query | async)?.data?.calculateFare; as fare) {
+        <ul nz-list [nzDataSource]="fare.services" nzBordered
+          nzSize="large">
+          <nz-list-header>{{'profile.services' | translate }}</nz-list-header>
+          @for (category of fare.services; track category) {
+            <div>
+              @for (service of category.services; track service) {
+                <li nz-list-item nzNoFlex>
+                  <ul nz-list-item-actions>
+                    <nz-list-item-action>
+                      <a (click)="selectService(service)">{{ 'profile.select' | translate }}</a>
+                    </nz-list-item-action>
+                  </ul>
+                  {{service.name}} ({{service.cost | currency: fare.currency}})
+                </li>
+              }
+            </div>
           }
-        </div>
+        </ul>
       }
-    </ul>
-  }
+    </div>
+  </div>
 </div>

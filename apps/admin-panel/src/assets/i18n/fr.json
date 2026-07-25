@@ -303,7 +303,6 @@
     "transactionType": "Type de transaction",
     "amount": "Montant",
     "documentNumber": "numéro de document",
-    "submit": "Soumettre",
     "insertTransaction": "Insérer l'opération",
     "cost": "Coût",
     "goToList": "Aller à la liste",
@@ -326,7 +325,6 @@
     "financialRecords": "Dossiers financiers",
     "disabled": "Désactivé",
     "visibilityStatus": "Statut de visibilité",
-    "saveChanges": "Sauvegarder les modifications",
     "enabled": "Activé",
     "deleteNotice": "Êtes-vous sûr de vouloir supprimer ces données ? Cette action est irréversible",
     "dangerArea": "Zone dangereuse",
@@ -377,7 +375,9 @@
     "title": "Plainte",
     "subtitle": "Détail de la plainte soumise.",
     "inscriptionTime": "Heure d'inscription",
-    "content": "Contenu"
+    "content": "Contenu",
+    "activityBy": "par",
+    "activityAssignedTo": "Attribué à"
   },
   "driver": {
     "profile": {
@@ -412,6 +412,8 @@
     "notFoundMessage": "Kasiman introuvable !"
   },
   "dispatcher": {
+    "title": "Répartiteur",
+    "subtitle": "Créer une demande de course manuelle pour le compte d'un client.",
     "removeLastPoint": "Supprimer le dernier point",
     "rider": {
       "title": "Client",
@@ -1110,6 +1112,11 @@
     "requestedByRider": "Demandé par le client",
     "reviewed": "Examiné et évalué",
     "started": "Commencé"
+  },
+  "complaintActivityType": {
+    "assignToOperator": "Attribuée à un opérateur",
+    "resolved": "Résolue",
+    "update": "Mise à jour"
   },
   "form": {
     "role": "Rôle",

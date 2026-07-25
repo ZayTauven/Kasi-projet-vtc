@@ -25,12 +25,14 @@
             </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="gender">{{'profile.gender' | translate}}</nz-form-label>
-              <nz-select formControlName="gender" id="gender">
-                @for (g of genders; track g) {
-                  <nz-option [nzLabel]="(('enum.gender.' + camelCase(g)) | translate)" [nzValue]="g">
-                  </nz-option>
-                }
-              </nz-select>
+              <nz-form-control>
+                <nz-select formControlName="gender" id="gender">
+                  @for (g of genders; track g) {
+                    <nz-option [nzLabel]="(('enum.gender.' + camelCase(g)) | translate)" [nzValue]="g">
+                    </nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
             </nz-form-item>
             <nz-form-item>
               <nz-form-label nzRequired nzFor="mobileNumber">{{'profile.mobileNumber' | translate}}</nz-form-label>

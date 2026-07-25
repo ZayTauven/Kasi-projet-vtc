@@ -1,1 +1,25 @@
-<p>complaint-view-records works!</p>
+@if ((query | async)?.data?.complaint; as complaint) {
+  <div class="kasi-card">
+    <div class="kasi-card__body">
+      @if (complaint.activities.length === 0) {
+        <nz-empty class="empty-state"></nz-empty>
+      }
+      @if (complaint.activities.length !== 0) {
+        <nz-timeline nzMode="custom" [nzPending]="isPending(complaint.activities)">
+          @for (activity of complaint.activities; track activity) {
+            <nz-timeline-item [nzColor]="getColor(activity.type)">
+              <strong>{{translateType(activity.type) }}</strong>
+              <span> — {{ 'complaint.activityBy' | translate }} {{activity.actor.firstName}} {{activity.actor.lastName}}</span>
+              @if (activity.comment) {
+                <div>{{activity.comment}}</div>
+              }
+              @if (activity.assignedTo; as assignedTo) {
+                <div>{{ 'complaint.activityAssignedTo' | translate }}: {{assignedTo.firstName}} {{assignedTo.lastName}}</div>
+              }
+            </nz-timeline-item>
+          }
+        </nz-timeline>
+      }
+    </div>
+  </div>
+}

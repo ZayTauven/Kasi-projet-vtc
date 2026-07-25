@@ -33,18 +33,22 @@
       }
     </mgl-map>
 
-    <nz-card>
-      <nz-timeline class="pt-16">
-        @for (point of points; track point) {
-          <nz-timeline-item>{{ point.address }}</nz-timeline-item>
-        }
-      </nz-timeline>
-    </nz-card>
+    <div class="kasi-card mt-4">
+      <div class="kasi-card__body">
+        <nz-timeline>
+          @for (point of points; track point) {
+            <nz-timeline-item>{{ point.address }}</nz-timeline-item>
+          }
+        </nz-timeline>
+      </div>
+    </div>
 
-    <button nz-button nzDanger (click)="removeLastPoint()" style="margin-top: 8px; margin-right: 4px;">
-      <span>{{ 'dispatcher.removeLastPoint' | translate }}</span>
-    </button>
-    <button nz-button nzType="default" (click)="goToServiceSelection()"
-      [disabled]="points.length === 0" style="margin-top: 8px;">
-      <span>{{ 'profile.next' | translate }}</span>
-    </button>
+    <div class="kasi-form-page-actions">
+      <button nz-button nzDanger (click)="removeLastPoint()">
+        <span>{{ 'dispatcher.removeLastPoint' | translate }}</span>
+      </button>
+      <button nz-button nzType="default" (click)="goToServiceSelection()"
+        [disabled]="points.length === 0">
+        <span>{{ 'profile.next' | translate }}</span>
+      </button>
+    </div>

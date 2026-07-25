@@ -44,7 +44,7 @@
                   }
                   @if (data.paymentGatewayId !== null) {
                     <a
-                      [routerLink]="'/management/payment-gateways/view/' + data.paymentGatewayId">{{ 'table.viewGateway' |
+                      [routerLink]="'/management/settings/payment-gateways/view/' + data.paymentGatewayId">{{ 'table.viewGateway' |
                     translate }}</a>
                   }
                   @if (data.requestId !== null) {
@@ -160,6 +160,6 @@
     </div>
     <div class="kasi-form-page-actions">
       <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
-      <button nz-button nzType="primary" type="submit" [disabled]="!formTransaction.valid">{{ 'profile.submit' | translate }}</button>
+      <button nz-button nzType="primary" type="submit" [disabled]="!formTransaction.valid">{{ 'profile.save' | translate }}</button>
     </div>
   </form>

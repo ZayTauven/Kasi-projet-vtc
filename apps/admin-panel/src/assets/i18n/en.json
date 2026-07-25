@@ -303,7 +303,6 @@
     "transactionType": "Transaction Type",
     "amount": "Amount",
     "documentNumber": "Document Number",
-    "submit": "Submit",
     "insertTransaction": "Insert Transaction",
     "cost": "Cost",
     "goToList": "Go To List",
@@ -326,7 +325,6 @@
     "financialRecords": "Financial Records",
     "disabled": "Disabled",
     "visibilityStatus": "Visibility Status",
-    "saveChanges": "Save changes",
     "enabled": "Enabled",
     "deleteNotice": "Are you sure you want to delete this data? This action is irreversible",
     "dangerArea": "Dangerous Area",
@@ -375,7 +373,9 @@
   },
   "complaint": {
     "inscriptionTime": "Inscription Time",
-    "content": "Content"
+    "content": "Content",
+    "activityBy": "by",
+    "activityAssignedTo": "Assigned to"
   },
   "driver": {
     "profile": {
@@ -408,6 +408,8 @@
     "notFoundMessage": "Kasiman Not Found!"
   },
   "dispatcher": {
+    "title": "Dispatcher",
+    "subtitle": "Create a manual trip request on behalf of a client.",
     "removeLastPoint": "Remove Last Point",
     "rider": {
       "title": "Client",
@@ -1103,6 +1105,11 @@
     "requestedByRider": "Requested By Client",
     "reviewed": "Reviewed & Rated",
     "started": "Started"
+  },
+  "complaintActivityType": {
+    "assignToOperator": "Assigned to operator",
+    "resolved": "Resolved",
+    "update": "Updated"
   },
   "form": {
     "role": "Role",

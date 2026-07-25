@@ -1,55 +1,15 @@
-﻿import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
-import { UntypedFormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
-import { NzMessageService } from "ng-zorro-antd/message";
-import { TranslateService } from "@ngx-translate/core";
-import { UpdatePasswordGQL } from "@kasi/admin-panel/generated/graphql";
-import { firstValueFrom } from "rxjs";
+﻿import { Component, ChangeDetectionStrategy } from "@angular/core";
 
+/**
+ * Shell d'onglets de la page "Réglages généraux" : héberge le mot de passe
+ * admin ainsi que les modules configurés de façon non récurrente
+ * (cartographie, passerelles de paiement, fournisseurs email), sortis du
+ * menu "Gestion" pour l'alléger. Voir KASI_DECISIONS.md.
+ */
 @Component({
   selector: "app-management-settings",
   templateUrl: "./management-settings.component.html",
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class ManagementSettingsComponent implements OnInit {
-  form = this.fb.group({
-    oldPassword: [null, Validators.required],
-    newPassword: [null, Validators.required],
-    newPasswordRepeat: [null, Validators.required],
-  });
-  constructor(
-    private route: ActivatedRoute,
-    private message: NzMessageService,
-    private updatePasswordGql: UpdatePasswordGQL,
-    private fb: UntypedFormBuilder,
-    private translate: TranslateService,
-  ) {}
-
-  ngOnInit(): void {}
-
-  cancel() {
-    this.form.reset();
-  }
-
-  async onSubmit() {
-    if (this.form.value.newPassword != this.form.value.newPasswordRepeat) {
-      this.message.error("Passwords don't match.");
-      return;
-    }
-    try {
-      await firstValueFrom(
-        this.updatePasswordGql.mutate({ variables: {
-          input: {
-            oldPassword: this.form.value.oldPassword,
-            newPasswod: this.form.value.newPassword,
-          },
-        } }),
-      );
-      this.message.success("Password Updated Successfully.");
-      this.form.reset();
-    } catch (error) {
-      this.message.error("Action is not allowed.");
-    }
-  }
-}
+export class ManagementSettingsComponent {}

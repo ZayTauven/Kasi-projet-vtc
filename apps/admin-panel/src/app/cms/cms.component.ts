@@ -289,11 +289,6 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           icon: "message",
         },
         {
-          labelKey: "menu.management.emailProviders",
-          route: "/management/email-providers",
-          icon: "mail",
-        },
-        {
           labelKey: "menu.management.callMaskingProviders",
           route: "/management/call-masking-providers",
           icon: "phone",
@@ -307,11 +302,6 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           labelKey: "menu.management.retention",
           route: "/management/retention",
           icon: "file-protect",
-        },
-        {
-          labelKey: "menu.management.mapSettings",
-          route: "/management/map-settings",
-          icon: "environment",
         },
         {
           labelKey: "menu.management.reviewParameters",
@@ -332,11 +322,6 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           labelKey: "menu.management.users",
           route: "/management/users",
           icon: "usergroup-add",
-        },
-        {
-          labelKey: "menu.management.paymentGateways",
-          route: "/management/payment-gateways",
-          icon: "credit-card",
         },
         {
           labelKey: "menu.management.settings",

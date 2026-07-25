@@ -18,6 +18,7 @@ import { firstValueFrom, map, Observable } from "rxjs";
 })
 export class UserViewDetailsComponent implements OnInit {
   query?: Observable<ApolloClient.QueryResult<ViewOperatorQuery>>;
+  private originalValue?: any;
 
   form = this.fb.group({
     id: [null, Validators.required],
@@ -38,10 +39,17 @@ export class UserViewDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.parent?.data.subscribe((data) =>
-      this.form.patchValue(data.operator.data.operator),
-    );
+    this.route.parent?.data.subscribe((data) => {
+      this.form.patchValue(data.operator.data.operator);
+      this.originalValue = this.form.getRawValue();
+    });
     this.query = this.route.parent?.data.pipe(map((data) => data.operator));
+  }
+
+  cancel() {
+    if (this.originalValue) {
+      this.form.reset(this.originalValue);
+    }
   }
 
   async onSubmit() {

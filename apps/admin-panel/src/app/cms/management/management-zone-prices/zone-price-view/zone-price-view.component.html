@@ -102,8 +102,8 @@
   <div class="kasi-card__head">
     <span class="kasi-card__title">{{ 'zonePrice.timeMultiplierTitle' | translate }}</span>
   </div>
-  <div class="kasi-card__body">
-    <ul nz-list [nzDataSource]="form.value.timeMultipliers" nzBordered>
+  <div class="kasi-card__body kasi-card__body--flush">
+    <ul nz-list [nzDataSource]="form.value.timeMultipliers">
       @for (item of form.value.timeMultipliers; track item) {
         <li nz-list-item>
           <span nz-typography><mark>{{item.multiply}}x</mark></span>
@@ -116,7 +116,11 @@
         </li>
       }
     </ul>
-    <div class="md:grid md:grid-cols-3 md:gap-2 mt-2">
+  </div>
+</div>
+<div class="kasi-card mt-2">
+  <div class="kasi-card__body">
+    <div class="md:grid md:grid-cols-3 md:gap-2">
       <nz-form-item>
         <nz-form-label>{{ 'service.timeMultiplierTable.startTime' | translate }}</nz-form-label>
         <nz-form-control>
@@ -149,5 +153,5 @@
 <div class="kasi-form-page-actions">
   <button nz-button nzType="default" type="button" (click)="cancel()">{{ 'form.cancel' | translate }}</button>
   <button nz-button nzType="default" nzDanger type="button" (click)="onDelete()">{{ 'profile.delete' | translate }}</button>
-  <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.saveChanges' | translate }}</button>
+  <button nz-button nzType="primary" type="button" [disabled]="form.invalid" (click)="onSubmit()">{{ 'profile.save' | translate }}</button>
 </div>

@@ -1,30 +1,34 @@
-@if ((query | async)?.data?.orderUpdated == null) {
-  <nz-result nzStatus="info"
-    [nzTitle]="'dispatcher.looking.waitMessage' | translate">
-    <div nz-result-extra>
-      <button nz-button [routerLink]="'/requests/view/' + orderId" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
-      <button nz-button (click)="cancelRequest()" nzType="primary" nzDanger>{{ 'dispatcher.cancelRequest' | translate }}</button>
-    </div>
-  </nz-result>
-}
-
-@if ((query | async)?.data?.orderUpdated; as order) {
-  <div>
-    @if (order.status == 'DriverAccepted') {
-      <nz-result nzStatus="success"
-        nzTitle="{{order.driver?.firstName}} {{order.driver?.lastName}} ({{order.driver?.mobileNumber}}) {{ 'dispatcher.driverAcceptedRequestSuffix' | translate }}">
+<div class="kasi-card">
+  <div class="kasi-card__body">
+    @if ((query | async)?.data?.orderUpdated == null) {
+      <nz-result nzStatus="info"
+        [nzTitle]="'dispatcher.looking.waitMessage' | translate">
         <div nz-result-extra>
-          <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+          <button nz-button [routerLink]="'/requests/view/' + orderId" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+          <button nz-button (click)="cancelRequest()" nzType="primary" nzDanger>{{ 'dispatcher.cancelRequest' | translate }}</button>
         </div>
       </nz-result>
     }
-    @if (order.status != 'DriverAccepted') {
-      <nz-result nzStatus="info"
-        nzTitle="{{ 'dispatcher.tripStatusUpdated' | translate: { status: order.status } }}">
-        <div nz-result-extra>
-          <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
-        </div>
-      </nz-result>
+
+    @if ((query | async)?.data?.orderUpdated; as order) {
+      <div>
+        @if (order.status == 'DriverAccepted') {
+          <nz-result nzStatus="success"
+            nzTitle="{{order.driver?.firstName}} {{order.driver?.lastName}} ({{order.driver?.mobileNumber}}) {{ 'dispatcher.driverAcceptedRequestSuffix' | translate }}">
+            <div nz-result-extra>
+              <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+            </div>
+          </nz-result>
+        }
+        @if (order.status != 'DriverAccepted') {
+          <nz-result nzStatus="info"
+            nzTitle="{{ 'dispatcher.tripStatusUpdated' | translate: { status: order.status } }}">
+            <div nz-result-extra>
+              <button nz-button [routerLink]="'/requests/view/' + order.id" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
+            </div>
+          </nz-result>
+        }
+      </div>
     }
   </div>
-}
+</div>

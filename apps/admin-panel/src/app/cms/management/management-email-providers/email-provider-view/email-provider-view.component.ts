@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import {
   CreateEmailProviderGQL,
   SendTestEmailGQL,
@@ -8,6 +8,7 @@ import {
   EmailProviderViewQuery,
   UpdateEmailProviderGQL,
 } from "@kasi/admin-panel/generated/graphql";
+import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { firstValueFrom } from "rxjs";
@@ -39,7 +40,7 @@ export class EmailProviderViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private routerHelper: RouterHelperService,
     private fb: UntypedFormBuilder,
     private createGQL: CreateEmailProviderGQL,
     private updateGQL: UpdateEmailProviderGQL,
@@ -79,18 +80,14 @@ export class EmailProviderViewComponent implements OnInit {
       } else {
         await firstValueFrom(this.updateGQL.mutate({ variables: { id, update } }));
       }
-      this.router.navigate(["management/email-providers"], {
-        relativeTo: this.route.root,
-      });
+      this.routerHelper.goToParent(this.route);
     } catch (error: any) {
       this.msg.error(error.message);
     }
   }
 
   cancel() {
-    this.router.navigate(["management/email-providers"], {
-      relativeTo: this.route.root,
-    });
+    this.routerHelper.goToParent(this.route);
   }
 
   async onSetDefault() {

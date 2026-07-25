@@ -1,3 +1,17 @@
+@if ((query | async)?.data?.operator; as operator) {
+  <div class="kasi-profile-head">
+    <div class="kasi-profile-head__avatar"><i nz-icon nzType="user"></i></div>
+    <div class="kasi-profile-head__main">
+      <h1 class="kasi-profile-head__name">{{ operator.firstName }} {{ operator.lastName }}</h1>
+      <div class="kasi-profile-head__meta">
+        <span>{{ 'profile.userName' | translate }}: {{ operator.userName }}</span>
+        @if (operator.email) {
+          <span>{{ 'profile.email' | translate }}: {{ operator.email }}</span>
+        }
+      </div>
+    </div>
+  </div>
+}
 <div class="kasi-tabs">
   <nz-tabs nzLinkRouter>
     <nz-tab>
