@@ -46,7 +46,19 @@ export class ConfigurationService {
           firebaseProjectPrivateKey: 'RESTRICTED',
         };
       }
-      return config;
+      // Serveur pas encore entierement configure : le wizard d'installation a
+      // besoin de lire cette config, et `currentConfiguration` est une query
+      // publique (cf. ConfigurationResolver). La cle Mapbox de backend ne doit
+      // donc jamais en sortir en clair — c'est exactement la fuite que la garde
+      // posee sur la classe du resolveur etait censee fermer, sauf qu'elle
+      // laissait justement passer tout le monde dans ce cas precis.
+      // `firebaseProjectPrivateKey` n'est PAS masque ici : `AppComponent` et
+      // `ConfigGuard` s'appuient sur sa valeur nulle pour router vers le wizard.
+      return {
+        ...config,
+        backendMapsAPIKey:
+          config.backendMapsAPIKey == null ? null : 'RESTRICTED',
+      };
     } else {
       return new CurrentConfiguration();
     }

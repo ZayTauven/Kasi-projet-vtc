@@ -40,10 +40,29 @@ export class AppComponent implements OnInit {
     // hanging the whole app (the `*ngIf="isLoaded"` router-outlet never
     // renders) if that call fails or is blocked, since `adminPanelAPIKey` in
     // this environment actually holds a Mapbox token, not a Google key.
-    const currentConfig = await this.currentConfigService.getConfig();
-    if (currentConfig.currentConfiguration.firebaseProjectPrivateKey == null) {
-      this.router.navigateByUrl("config");
+    //
+    // `isLoaded` est pose dans un `finally` : c'est la seule chose qui rend le
+    // `<router-outlet>`. Tant que cet appel restait non protege, n'IMPORTE
+    // quel echec de `currentConfiguration` (jeton absent ou expire, backend
+    // indisponible, coupure reseau) laissait la promesse rejeter, `isLoaded` a
+    // `false`, et l'utilisateur devant un ECRAN NOIR sans aucune route rendue
+    // — page de connexion comprise, donc sans aucun moyen de s'en sortir.
+    // C'est precisement le risque decrit dans la note ci-dessus, survenu pour
+    // de bon quand une garde d'authentification a ete posee sur cette query.
+    // La config n'est pas indispensable au rendu : en cas d'echec on rend
+    // l'application et on laisse les gardes de routes faire leur travail.
+    try {
+      const currentConfig = await this.currentConfigService.getConfig();
+      if (currentConfig.currentConfiguration.firebaseProjectPrivateKey == null) {
+        this.router.navigateByUrl("config");
+      }
+    } catch (error) {
+      console.error(
+        "Configuration serveur illisible, rendu de l'application quand meme",
+        error,
+      );
+    } finally {
+      this.isLoaded = true;
     }
-    this.isLoaded = true;
   }
 }
