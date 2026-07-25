@@ -14,3 +14,4 @@ export * from './lib/auth/firebase-phone-auth-verifier.service';
 export * from './lib/auth/noop-phone-auth-verifier.service';
 export * from './lib/auth/auth-verifier.module';
 export * from './lib/utils/relations-array-to-tree';
+export * from './lib/upload/secure-upload';

@@ -10,12 +10,14 @@ import {
   UpdateConfigStatus,
 } from './config.dto';
 import * as fs from 'fs';
-import * as util from 'util';
-import { join } from 'path';
 import * as fastify from 'fastify';
-import { pipeline } from 'stream';
+import { storeUploadedFile } from '@kasi/database';
 
-const pump = util.promisify(pipeline);
+/**
+ * Nom canonique de la cle de service Firebase sur le disque. Impose, jamais
+ * fourni par le client (voir `uploadFirebaseKeyFile`).
+ */
+export const FIREBASE_KEY_FILE_NAME = 'firebase-service-account.json';
 
 @Injectable()
 export class ConfigurationService {
@@ -86,22 +88,28 @@ export class ConfigurationService {
     };
   }
 
-  async uploadFile(
-    req: any,
-    res: fastify.FastifyReply<any>,
-    dir: string,
-    fileNamePrefix?: string,
-  ) {
-    let _fileName = '';
-    const data = await req.file();
-    await fs.promises.mkdir(dir, { recursive: true });
-    _fileName = join(
-      dir,
-      fileNamePrefix != null
-        ? `${fileNamePrefix}-${data.filename}`
-        : data.filename,
-    );
-    await pump(data.file, fs.createWriteStream(_fileName));
-    res.code(200).send({ address: _fileName });
+  /**
+   * Ecrit la cle de service Firebase deposee par le wizard d'installation.
+   *
+   * Le nom de destination est IMPOSE : la version precedente reprenait
+   * `data.filename` tel quel, ce qui permettait d'ecrire n'importe quel nom
+   * dans `config/` (y compris `config.production.json`) et, via des segments
+   * `../`, hors du repertoire. Le client ne choisit donc plus rien ; il lit le
+   * nom retenu dans la reponse (`fileName`) pour le passer ensuite a
+   * `updateFirebase`.
+   */
+  async uploadFirebaseKeyFile(req: any, res: fastify.FastifyReply<any>) {
+    const stored = await storeUploadedFile(req, {
+      dir: 'config',
+      forcedFileName: FIREBASE_KEY_FILE_NAME,
+      // Le nom et le repertoire etant imposes, le mimetype n'est pas la
+      // barriere de securite : il ne sert qu'a ecarter un depot manifestement
+      // errone. `application/octet-stream` est tolere car plusieurs systemes le
+      // rapportent pour un `.json`.
+      allowedMimeTypes: ['application/json', 'application/octet-stream'],
+    });
+    res
+      .code(200)
+      .send({ address: stored.address, fileName: FIREBASE_KEY_FILE_NAME });
   }
 }

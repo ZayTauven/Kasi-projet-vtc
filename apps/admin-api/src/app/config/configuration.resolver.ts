@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   CurrentConfiguration,
@@ -7,8 +8,18 @@ import {
   UpdatePurchaseCodeStatus,
 } from './config.dto';
 import { ConfigurationService } from './configuration.service';
+import { ConfigWriteGqlGuard } from './config-write.guard';
 
+/**
+ * Toutes les operations de ce resolveur etaient exposees sans authentification.
+ * Elles sont desormais ouvertes uniquement pendant l'installation (serveur non
+ * encore configure) et exigent un jeton admin ensuite — cf. ConfigWriteGqlGuard.
+ * `currentConfiguration` est incluse : quand Firebase n'est pas encore
+ * configure, `getConfiguration()` renvoie la config NON masquee, donc la cle
+ * Mapbox de backend en clair.
+ */
 @Resolver()
+@UseGuards(ConfigWriteGqlGuard)
 export class ConfigurationResolver {
   constructor(private configurationService: ConfigurationService) {}
   // @Mutation(() => UploadResult)

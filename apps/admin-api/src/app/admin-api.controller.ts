@@ -32,7 +32,14 @@ export class AppController {
     );
   }
 
+  // Endpoint destructeur (supprime la configuration puis termine le process pour
+  // forcer un redemarrage) qui etait expose SANS garde : un simple GET anonyme
+  // effacait la config Firebase — donc, cote driver-api/rider-api, faisait
+  // disparaitre `login` et `requireUpdate` du schema au redemarrage — et servait
+  // de deni de service repetable. `force: true` evite en plus le rejet non
+  // capture quand le fichier est deja absent.
   @Get('reconfig')
+  @UseGuards(RestJwtAuthGuard)
   async reconfig(
     @Req() req: fastify.FastifyRequest,
     @Res() res: fastify.FastifyReply,
@@ -40,12 +47,14 @@ export class AppController {
     const configAddress = `${process.cwd()}/config/config.${
       process.env.NODE_ENV ?? 'production'
     }.json`;
-    await rm(configAddress);
+    await rm(configAddress, { force: true });
     res.send('✅ Config file deleted. Restarting...');
     process.exit(1);
   }
 
+  // Exposait la liste des applications Firebase du projet sans garde.
   @Get('apps')
+  @UseGuards(RestJwtAuthGuard)
   async apps(@Res() res: fastify.FastifyReply) {
     const configAddress = `${process.cwd()}/config/config.${
       process.env.NODE_ENV ?? 'production'

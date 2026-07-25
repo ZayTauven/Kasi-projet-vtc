@@ -1,16 +1,10 @@
-﻿import { BadRequestException, HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-import * as fs from 'fs';
-import stream = require('stream');
-import * as util from 'util';
-import { join } from 'path';
 import * as fastify from "fastify";
 import { Repository } from 'typeorm';
 import { MediaEntity } from '@kasi/database/media.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { pipeline } from 'stream';
-
-const pump = util.promisify(pipeline);
+import { storeUploadedFile } from '@kasi/database';
 
 @Injectable()
 export class UploadService {
@@ -19,17 +13,15 @@ export class UploadService {
     private mediaRepository: Repository<MediaEntity>
   ) { }
 
-  async uploadMedia(req: any, res: fastify.FastifyReply<any>, dir: string, fileNamePrefix?: string): Promise<string | null> {
-    //Check request is multipart
-    if (!req.isMultipart()) {
-      res.send(new BadRequestException());
-      return
-    }
-    const data = await req.file();
-    await fs.promises.mkdir(dir, { recursive: true });
-    const _fileName = join(dir, fileNamePrefix != null ? `${fileNamePrefix}-${data.filename}` : data.filename);
-    await pump(data.file, fs.createWriteStream(_fileName));
-    const insert = await this.mediaRepository.insert({ address: _fileName });
-    res.code(200).send({ id: insert.raw.insertId, address: _fileName });
+  async uploadMedia(req: any, res: fastify.FastifyReply<any>, dir: string, fileNamePrefix?: string): Promise<void> {
+    const stored = await storeUploadedFile(req, { dir, fileNamePrefix });
+    // `insert()` + `insert.raw.insertId` etait du MySQL : sur PostgreSQL
+    // (database.module.ts : type 'postgres') `raw` est un TABLEAU de lignes,
+    // donc `insertId` valait toujours `undefined`. Le admin-panel recevait
+    // `{id: undefined}` et faisait `patchValue({mediaId: undefined})` : l'avatar
+    // n'etait jamais rattache a l'enregistrement au submit. `save()` renvoie
+    // l'entite avec son id, quel que soit le SGBD.
+    const media = await this.mediaRepository.save({ address: stored.address });
+    res.code(200).send({ id: media.id, address: stored.address });
   }
 }

@@ -115,8 +115,12 @@ export class ConfigComponent implements OnInit, OnDestroy {
           file: event.file.name,
         }),
       );
+      // Le serveur impose desormais le nom de destination de la cle de service
+      // (le nom local n'est plus repris : il permettait d'ecrire un fichier
+      // arbitraire dans le volume `config/`). On enregistre donc le nom
+      // reellement retenu, renvoye dans la reponse.
       this.currentConfig.currentConfiguration.firebaseProjectPrivateKey =
-        event.file.name;
+        event.file.response?.fileName ?? event.file.name;
     } else if (status === "error") {
       this.msg.error(
         this.translate.instant("config.uploadFailed", {
