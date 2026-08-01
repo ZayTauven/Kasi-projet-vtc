@@ -10,6 +10,7 @@ import { OrderDTO } from './dto/order.dto';
 import { OrderService } from './order.service';
 
 @Resolver(() => OrderDTO)
+@UseGuards(JwtAuthGuard)
 export class DispatcherResolver {
   constructor(
     @Inject(CONTEXT) private context: UserContext,
@@ -25,7 +26,6 @@ export class DispatcherResolver {
   }
 
   @Mutation(() => OrderDTO)
-  @UseGuards(JwtAuthGuard)
   async createOrder(
     @Args('input', { type: () => CreateOrderInput }) input: CreateOrderInput
   ): Promise<OrderDTO> {

@@ -712,4 +712,28 @@ class SEs extends S {
 
   @override
   String get action_retry => 'Retry';
+
+  @override
+  String get login_step_number => 'Enter number';
+
+  @override
+  String get login_step_verify_code => 'Verify code';
+
+  @override
+  String get login_step_name => 'Enter name';
+
+  @override
+  String get login_identity_title => 'Identity information';
+
+  @override
+  String get login_firstname_empty => 'Enter your first name';
+
+  @override
+  String get login_lastname_empty => 'Enter your last name';
+
+  @override
+  String get login_success_congrats => 'Congrats';
+
+  @override
+  String get login_success_subtitle => 'Sign up completed!';
 }

@@ -69,9 +69,15 @@ void main() async {
   await Hive.openBox('settings');
   if (!kIsWeb) {
     await CountryCodes.init();
-    final locale = CountryCodes.detailsForLocale();
-    if (locale.dialCode != null) {
-      defaultCountryCode = locale.dialCode!;
+    // Deux bugs ici auparavant : on affectait un INDICATIF (`dialCode`, « +1 »)
+    // a une variable attendue au format ISO alpha-2 (« SN »), et on laissait la
+    // locale de l'appareil decider du pays alors que Kasi n'opere qu'au Senegal.
+    // Resultat : un telephone en anglais US proposait « +1 » par defaut.
+    if (allowCountrySelection) {
+      final locale = CountryCodes.detailsForLocale();
+      if (locale.alpha2Code != null) {
+        defaultCountryCode = locale.alpha2Code!;
+      }
     }
   }
   await Geolocator.requestPermission();

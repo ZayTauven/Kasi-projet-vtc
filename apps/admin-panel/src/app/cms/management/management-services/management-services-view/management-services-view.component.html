@@ -447,7 +447,8 @@
                         {{ data.name }}
                       </div>
                       <div class="text-sm text-neutral-400 group-hover:text-neutral-700">
-                        {{ data.type }} &#8226; {{ data.icon }}
+                        {{ ('enum.serviceOptionType.' + data.type) | translate }} &#8226;
+                        {{ ('enum.serviceOptionIcon.' + data.icon) | translate }}
                       </div>
                     </div>
                   </div>

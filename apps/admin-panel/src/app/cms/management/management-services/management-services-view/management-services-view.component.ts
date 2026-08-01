@@ -122,13 +122,13 @@ export class ManagementServicesViewComponent implements OnInit {
       const isJpgOrPng =
         file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        this.msg.error("You can only upload JPG file!");
+        this.msg.error(this.translate.instant("msg.uploadJpgOnly"));
         observer.complete();
         return;
       }
       const isLt2M = (file.size ?? 0) / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.msg.error("Image must smaller than 2MB!");
+        this.msg.error(this.translate.instant("msg.uploadTooLarge"));
         observer.complete();
         return;
       }
@@ -175,7 +175,7 @@ export class ManagementServicesViewComponent implements OnInit {
     console.log(input);
     if (regions.length < 1) {
       this.msg.error(
-        "Select at least one region which this service can be ordered from.",
+        this.translate.instant("msg.selectAtLeastOneRegion"),
       );
       return;
     }
@@ -313,7 +313,7 @@ export class ManagementServicesViewComponent implements OnInit {
         this.avatarUrl = event.file.response.address;
         break;
       case "error":
-        this.msg.error("Network error");
+        this.msg.error(this.translate.instant("msg.networkError"));
         this.loadingUpload = false;
         break;
     }
@@ -323,7 +323,7 @@ export class ManagementServicesViewComponent implements OnInit {
     const id = this.form.value.id;
     try {
       await firstValueFrom(this.deleteGql.mutate({ variables: { id } }));
-      this.msg.success("Delete was successful.");
+      this.msg.success(this.translate.instant("msg.deleted"));
       this.routerHelper.goToParent(this.route);
     } catch (error: any) {
       this.msg.error(error.message);

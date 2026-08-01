@@ -99,7 +99,8 @@
     "rider": {
       "status": {
         "blocked": "Blocked",
-        "enabled": "Enabled"
+        "enabled": "Enabled",
+        "disabled": "Blocked"
       }
     },
     "sosActivityAction": {
@@ -121,11 +122,29 @@
     "rewardBeneficiary": {
       "self": "Self",
       "referrer": "Referrer"
+    },
+    "serviceOptionType": {
+      "Free": "Free",
+      "Paid": "Paid",
+      "TwoWay": "Two-way"
+    },
+    "serviceOptionIcon": {
+      "Luggage": "Luggage",
+      "PackageDelivery": "Package delivery",
+      "Pet": "Pet",
+      "Shopping": "Shopping",
+      "TwoWay": "Two-way",
+      "Custom1": "Icon 1",
+      "Custom2": "Icon 2",
+      "Custom3": "Icon 3",
+      "Custom4": "Icon 4",
+      "Custom5": "Icon 5"
     }
   },
   "branding": {
     "menu": {
-      "header": "Kasi"
+      "header": "Kasi",
+      "subtitle": "ADMIN CONSOLE"
     },
     "footer": {
       "address": "https://kasigroupe.com",
@@ -230,8 +249,12 @@
       "requestsTitle": "Orders",
       "revenue": "Revenue",
       "newDriverRegisters": "New Kasiman registrations",
-      "newRiderRegisters": "New client registrations"
-    }
+      "newRiderRegisters": "New client registrations",
+      "daily": "Daily",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "subtitle": "Key activity metrics, in real time."
   },
   "notification": {
     "distressSignals": {
@@ -375,7 +398,9 @@
     "inscriptionTime": "Inscription Time",
     "content": "Content",
     "activityBy": "by",
-    "activityAssignedTo": "Assigned to"
+    "activityAssignedTo": "Assigned to",
+    "title": "Complaint",
+    "subtitle": "Details of the submitted complaint."
   },
   "driver": {
     "profile": {
@@ -405,7 +430,9 @@
     "submittedOn": "Submitted on"
   },
   "drivers": {
-    "notFoundMessage": "Kasiman Not Found!"
+    "notFoundMessage": "Kasiman Not Found!",
+    "title": "Kasimen",
+    "subtitle": "List of all registered Kasimen."
   },
   "dispatcher": {
     "title": "Dispatcher",
@@ -482,7 +509,9 @@
       "transaction": {
         "desc": "Add a manual transaction to the fleet wallet."
       }
-    }
+    },
+    "title": "Fleet",
+    "subtitle": "Fleet settings and exclusivity area."
   },
   "fleets": {
     "title": "Fleets",
@@ -948,7 +977,8 @@
       "apiKeys": {
         "desc": "Payment gateway API keys and secrets."
       }
-    }
+    },
+    "title": "Payment gateway"
   },
   "announcement": {
     "title": "Announcement",
@@ -1302,5 +1332,27 @@
       "OpenStreetMap": "OpenStreetMap",
       "Google": "Google Maps"
     }
+  },
+  "msg": {
+    "uploadJpgOnly": "You can only upload a JPG file.",
+    "uploadTooLarge": "Image must be smaller than 2MB.",
+    "networkError": "Network error.",
+    "unknownError": "Unknown error.",
+    "selectTransactionType": "Please select the transaction type.",
+    "transactionSubmitted": "Transaction submitted.",
+    "saved": "Saved successfully.",
+    "deleted": "Deleted successfully.",
+    "zonePriceDeleted": "Zone price deleted.",
+    "passwordsDontMatch": "Passwords don't match.",
+    "passwordUpdated": "Password updated successfully.",
+    "actionNotAllowed": "Action is not allowed.",
+    "selectAtLeastOneRegion": "Select at least one region this service can be ordered from.",
+    "orderCanceled": "Order canceled.",
+    "activityRecorded": "Activity recorded.",
+    "assignConfirm": "Assign this trip to {{name}}?",
+    "sosCreated": "A distress signal has just been submitted.",
+    "complaintCreated": "A new complaint has just been submitted.",
+    "systemAlreadyConfigured": "System is already configured. Try with the admin password parameter.",
+    "searchLocation": "Search location…"
   }
 }

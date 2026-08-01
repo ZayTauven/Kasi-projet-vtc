@@ -25,7 +25,7 @@
             <nz-form-control>
               <nz-select formControlName="type" id="type">
                 @for (type of types; track type) {
-                  <nz-option [nzLabel]="type" [nzValue]="type">
+                  <nz-option [nzLabel]="('enum.serviceOptionType.' + type) | translate" [nzValue]="type">
                   </nz-option>
                 }
               </nz-select>
@@ -36,7 +36,7 @@
             <nz-form-control>
               <nz-select formControlName="icon" id="icon">
                 @for (icon of icons; track icon) {
-                  <nz-option [nzLabel]="icon" [nzValue]="icon">
+                  <nz-option [nzLabel]="('enum.serviceOptionIcon.' + icon) | translate" [nzValue]="icon">
                   </nz-option>
                 }
               </nz-select>

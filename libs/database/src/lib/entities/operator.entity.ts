@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -7,6 +8,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { hashPassword, isPasswordHashed } from '../auth/password';
 
 import { ComplaintActivityEntity } from './complaint-activity.entity';
 import { DriverTransactionEntity } from './driver-transaction.entity';
@@ -112,4 +115,20 @@ export class OperatorEntity {
 
   @OneToMany(() => SOSActivityEntity, (sosActivity) => sosActivity.operator)
   sosActivities!: SOSActivityEntity[];
+
+  /**
+   * Filet de securite couvrant la mutation `createOneOperator` generee par
+   * nestjs-query : elle passe par `repo.save()`, donc par ce hook, et son
+   * `CreateOperatorInput` accepte un mot de passe en clair.
+   *
+   * A NOTER : TypeORM ne declenche PAS les hooks d'entite sur `repo.update()`.
+   * Tout chemin utilisant `update()` doit hacher explicitement — c'est le cas
+   * de la mutation `updatePassword` (OperatorResolver).
+   */
+  @BeforeInsert()
+  async hashPasswordBeforeInsert(): Promise<void> {
+    if (this.password && !isPasswordHashed(this.password)) {
+      this.password = await hashPassword(this.password);
+    }
+  }
 }

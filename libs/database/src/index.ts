@@ -9,6 +9,7 @@ export * from './lib/order/interfaces/driver-notification.interface';
 export * from './lib/order/interfaces/rider-notification.interface';
 export * from './lib/order/interfaces/noop-driver-notification.service';
 export * from './lib/order/interfaces/noop-rider-notification.service';
+export * from './lib/auth/password';
 export * from './lib/auth/interfaces/phone-auth-verifier.interface';
 export * from './lib/auth/firebase-phone-auth-verifier.service';
 export * from './lib/auth/noop-phone-auth-verifier.service';

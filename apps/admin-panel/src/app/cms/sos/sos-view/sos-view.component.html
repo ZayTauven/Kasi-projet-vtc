@@ -4,7 +4,7 @@
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">#{{sos.id}}</h1>
       <div class="kasi-profile-head__meta">
-        <span>{{ 'complaint.inscriptionTime' | translate }}: {{sos.createdAt | timeago}}</span>
+        <span>{{ 'table.submittedOn' | translate }} {{sos.createdAt | timeago}}</span>
         <span>{{ 'profile.submittedBy' | translate }}: {{sos.submittedByRider ? ('profile.rider' | translate) :
         ('profile.driver' | translate)}}</span>
       </div>

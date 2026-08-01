@@ -24,7 +24,7 @@
     <div class="kasi-profile-head__main">
       <h1 class="kasi-profile-head__name">{{driver.firstName}} {{driver.lastName}}</h1>
       <div class="kasi-profile-head__meta">
-        <span>{{'profile.registeredOn' | translate}} {{driver.registrationTimestamp | timeago}}</span>
+        <span>{{'table.registeredOn' | translate}} {{driver.registrationTimestamp | timeago}}</span>
         @if (driver.status !== 'Online') {
           <span>{{'driver.profile.lastSeenAt' | translate}}: {{driver.lastSeenTimestamp
           != null ? (driver.lastSeenTimestamp | timeago) : '-'}}</span>

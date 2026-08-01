@@ -301,5 +301,13 @@
   "create_address_location_hint": "Search or pick on the map",
   "create_address_location_empty_error": "Select the location on the map",
   "message_error_network": "Network error. Please try again.",
-  "action_retry": "Retry"
+  "action_retry": "Retry",
+  "login_step_number": "Enter number",
+  "login_step_verify_code": "Verify code",
+  "login_step_name": "Enter name",
+  "login_identity_title": "Identity information",
+  "login_firstname_empty": "Enter your first name",
+  "login_lastname_empty": "Enter your last name",
+  "login_success_congrats": "Congrats",
+  "login_success_subtitle": "Sign up completed!"
 }

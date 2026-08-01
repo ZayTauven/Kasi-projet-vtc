@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'onboarding_get_rewards_view.dart';
-import 'onboarding_language_view.dart';
 import 'onboarding_sign_in.dart';
 import 'onboarding_welcome_view.dart';
 
@@ -46,9 +45,14 @@ class OnBoardingView extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
                     Expanded(
+                      // L'étape « Choisir la langue » a été retirée : elle
+                      // imposait un écran de sélection avant la première
+                      // utilisation, avec l'anglais présélectionné, sur un
+                      // marché francophone. L'app démarre en français et la
+                      // langue se change dans Paramètres → Langue.
                       child: PageView.builder(
                           controller: pageController,
-                          itemCount: 4,
+                          itemCount: 3,
                           itemBuilder: (context, index) {
                             switch (index) {
                               case 0:
@@ -60,10 +64,6 @@ class OnBoardingView extends StatelessWidget {
                                     onNextClicked: () => nextPage());
 
                               case 2:
-                                return OnboardingLanguage(
-                                    onNextClicked: () => nextPage());
-
-                              case 3:
                                 return OnboardingSignIn(
                                     onNextClicked: () => nextPage());
                             }

@@ -77,7 +77,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
           this.currentStep += 1;
         } else {
           this.msg.error(
-            result.data?.updateMapsAPIKey.message ?? "Unknown Error",
+            result.data?.updateMapsAPIKey.message ?? this.translate.instant("msg.unknownError"),
           );
         }
         break;
@@ -101,7 +101,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
     if (result.data?.updateFirebase.status == UpdateConfigStatus.Ok) {
       this.configed = true;
     } else {
-      this.msg.error(result.data?.updateFirebase.message ?? "Unknown error");
+      this.msg.error(result.data?.updateFirebase.message ?? this.translate.instant("msg.unknownError"));
     }
   }
 

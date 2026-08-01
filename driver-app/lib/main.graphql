@@ -35,6 +35,7 @@ query Me($versionCode: Int!) {
       }
       service {
         name
+        orderType
       }
       options {
         id
@@ -91,6 +92,7 @@ query AvailableOrders {
     }
     service {
       name
+      orderType
     }
     points {
       ...Point
@@ -122,6 +124,7 @@ subscription OrderCreated {
     }
     service {
       name
+      orderType
     }
     points {
       ...Point
@@ -166,6 +169,7 @@ mutation UpdateDriverLocation($point: PointInput!) {
     }
     service {
       name
+      orderType
     }
     points {
       ...Point

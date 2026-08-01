@@ -3,7 +3,11 @@ interface CountryCodeItem {
   dial_code: string;
   code: string;
 }
-export const COUNTRY_CODE_LIST: CountryCodeItem[] = [
+/**
+ * Liste source, en anglais (heritee d'app-kasi). Ne pas consommer directement :
+ * utiliser `COUNTRY_CODE_LIST`, qui en derive les libelles localises.
+ */
+const COUNTRY_CODE_SOURCE: CountryCodeItem[] = [
   {
     "name": "Afghanistan",
     "dial_code": "+93",
@@ -1215,3 +1219,35 @@ export const COUNTRY_CODE_LIST: CountryCodeItem[] = [
     "code": "ZW"
   }
 ];
+
+/** Langue courante du panel (posee par le selecteur de langue du rail). */
+function panelLang(): string {
+  try {
+    return localStorage.getItem("lang") ?? "fr";
+  } catch {
+    return "fr";
+  }
+}
+
+/**
+ * Nom du pays dans la langue du panel, derive du code ISO 3166-1 alpha-2.
+ * Les selecteurs d'indicatif telephonique affichaient les noms anglais
+ * ("Senegal (+221)") au milieu de formulaires francais.
+ */
+function localizedCountryName(code: string, fallback: string): string {
+  try {
+    return (
+      new Intl.DisplayNames([panelLang()], {
+        type: "region",
+        fallback: "none",
+      }).of(code) ?? fallback
+    );
+  } catch {
+    return fallback;
+  }
+}
+
+/** Liste des indicatifs, libelles dans la langue du panel et triee en consequence. */
+export const COUNTRY_CODE_LIST: CountryCodeItem[] = COUNTRY_CODE_SOURCE.map(
+  (item) => ({ ...item, name: localizedCountryName(item.code, item.name) }),
+).sort((a, b) => a.name.localeCompare(b.name, panelLang()));

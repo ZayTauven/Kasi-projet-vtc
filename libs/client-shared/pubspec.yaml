@@ -7,6 +7,10 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
+  # Utilise par `components/country_code_field.dart`, qui centralise la
+  # politique « Kasi n'opere qu'au Senegal » pour les deux apps (meme version
+  # que celle deja declaree par rider-app et driver-app).
+  country_code_picker: ^3.0.0
   dotted_line: ^3.1.0
   flutter:
     sdk: flutter

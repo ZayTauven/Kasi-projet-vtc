@@ -81,9 +81,14 @@ void main() async {
   await Hive.openBox('user');
   await Hive.openBox('settings');
   await CountryCodes.init();
-  final locale = CountryCodes.detailsForLocale();
-  if (locale.dialCode != null) {
-    defaultCountryCode = locale.dialCode!;
+  // Voir le commentaire equivalent dans rider-app/lib/main.dart : on affectait
+  // un INDICATIF (« +1 ») a une variable au format ISO alpha-2 (« SN »), et la
+  // locale de l'appareil primait alors que Kasi n'opere qu'au Senegal.
+  if (allowCountrySelection) {
+    final locale = CountryCodes.detailsForLocale();
+    if (locale.alpha2Code != null) {
+      defaultCountryCode = locale.alpha2Code!;
+    }
   }
   // Synchronise le fournisseur de carte choisi au panel dès le démarrage, sans
   // attendre le login ni le montage d'un widget carte. NON bloquant : on
@@ -314,9 +319,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                                   "Driver information not found, Do you want to logout and login again?"),
                                               actions: [
                                                 TextButton(
-                                                    onPressed: () {
-                                                      box.delete('jwt');
+                                                    onPressed: () async {
+                                                      // `box.delete('jwt')`
+                                                      // n'effacait que le jeton
+                                                      // applicatif et laissait la
+                                                      // session Firebase ouverte :
+                                                      // c'est le defaut que
+                                                      // `clearSession()` corrige
+                                                      // (cf. session_token.dart),
+                                                      // applique partout ailleurs
+                                                      // mais oublie ici — alors que
+                                                      // ce dialogue propose
+                                                      // justement de « se
+                                                      // deconnecter et se
+                                                      // reconnecter ».
                                                       Navigator.pop(context);
+                                                      await clearSession();
                                                     },
                                                     child: const Text("Yes")),
                                                 TextButton(

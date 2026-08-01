@@ -11,6 +11,7 @@ import {
   ZonePriceNewQuery,
   ZonePriceViewQuery,
 } from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzTimePickerComponent } from "ng-zorro-antd/time-picker";
 import { firstValueFrom, map, Observable, Subscription } from "rxjs";
@@ -156,6 +157,7 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
     private relationsGQL: SetZonePriceRelationsGQL,
     private deleteGQL: DeleteZonePriceGQL,
     private msg: NzMessageService,
+    private translate: TranslateService,
   ) {}
   ngOnInit(): void {
     this.query = this.route.data.pipe(map((data) => data["zonePrice"]));
@@ -345,7 +347,7 @@ export class ZonePriceViewComponent implements OnInit, OnDestroy {
       this.router.navigate(["management/zone-prices"], {
         relativeTo: this.route.root,
       });
-      this.msg.success("Zone price deleted successfully");
+      this.msg.success(this.translate.instant("msg.zonePriceDeleted"));
     } catch (error) {}
   }
 

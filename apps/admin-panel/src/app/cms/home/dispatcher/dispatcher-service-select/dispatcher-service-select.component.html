@@ -2,7 +2,7 @@
   <div class="kasi-card__body">
     <div class="flex flex-col gap-4">
       <h5>{{ 'dispatcher.time' | translate }}</h5>
-      <nz-date-picker [(ngModel)]="time" [nzShowTime]="true" nzFormat="MM/dd/yyyy hh:mm"></nz-date-picker>
+      <nz-date-picker [(ngModel)]="time" [nzShowTime]="true" nzFormat="dd/MM/yyyy HH:mm"></nz-date-picker>
       @if ((query | async)?.data?.calculateFare; as fare) {
         <ul nz-list [nzDataSource]="fare.services" nzBordered
           nzSize="large">

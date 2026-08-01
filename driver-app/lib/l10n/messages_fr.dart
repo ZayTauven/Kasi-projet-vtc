@@ -89,7 +89,7 @@ class SFr extends S {
 
   @override
   String get driver_registration_approved_demo_mode =>
-      'Normalement, à ce stade, l\'administrateur doit approuver la soumission du conducteur à partir du panneau d\'administration. Cependant, pour les besoins de la démo, votre profil est automatiquement approuvé maintenant et est prêt à être utilisé.';
+      'Normalement, à ce stade, l\'administrateur doit approuver la soumission du Kasiman à partir du panneau d\'administration. Cependant, pour les besoins de la démo, votre profil est automatiquement approuvé maintenant et est prêt à être utilisé.';
 
   @override
   String get title_important => 'IMPORTANT!';
@@ -297,7 +297,7 @@ class SFr extends S {
 
   @override
   String get status_offline_description =>
-      'Connectez-vous pour voir les demandes';
+      'Passez en ligne pour voir les demandes';
 
   @override
   String get status_online_description => 'Recherche de course';
@@ -493,7 +493,7 @@ class SFr extends S {
   String get order_status_canceled => 'Annulé';
 
   @override
-  String get driver_register_title => 'Enregistrement du conducteur';
+  String get driver_register_title => 'Inscription Kasiman';
 
   @override
   String get menu_profile => 'Mon profil';

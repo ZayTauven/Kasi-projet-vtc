@@ -1401,6 +1401,54 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Retry'**
   String get action_retry;
+
+  /// No description provided for @login_step_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter number'**
+  String get login_step_number;
+
+  /// No description provided for @login_step_verify_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify code'**
+  String get login_step_verify_code;
+
+  /// No description provided for @login_step_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter name'**
+  String get login_step_name;
+
+  /// No description provided for @login_identity_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity information'**
+  String get login_identity_title;
+
+  /// No description provided for @login_firstname_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your first name'**
+  String get login_firstname_empty;
+
+  /// No description provided for @login_lastname_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your last name'**
+  String get login_lastname_empty;
+
+  /// No description provided for @login_success_congrats.
+  ///
+  /// In en, this message translates to:
+  /// **'Congrats'**
+  String get login_success_congrats;
+
+  /// No description provided for @login_success_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up completed!'**
+  String get login_success_subtitle;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

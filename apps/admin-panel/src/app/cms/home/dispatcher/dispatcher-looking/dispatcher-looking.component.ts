@@ -6,6 +6,7 @@ import {
   OrderUpdatedSubscription,
 } from "@kasi/admin-panel/generated/graphql";
 import { ApolloClient } from "@apollo/client/core";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { firstValueFrom, Observable } from "rxjs";
 
@@ -25,6 +26,7 @@ export class DispatcherLookingComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private msg: NzMessageService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +39,7 @@ export class DispatcherLookingComponent implements OnInit {
     const result = await firstValueFrom(
       this.cancelOrderMutation.mutate({ variables: { orderId } }),
     );
-    this.msg.success("Order Canceled.");
+    this.msg.success(this.translate.instant("msg.orderCanceled"));
     this.router.navigate(["../riders-list"], {
       relativeTo: this.route,
     });

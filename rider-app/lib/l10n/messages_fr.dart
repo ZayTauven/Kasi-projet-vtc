@@ -716,4 +716,28 @@ class SFr extends S {
 
   @override
   String get action_retry => 'Réessayer';
+
+  @override
+  String get login_step_number => 'Numéro';
+
+  @override
+  String get login_step_verify_code => 'Vérification';
+
+  @override
+  String get login_step_name => 'Votre nom';
+
+  @override
+  String get login_identity_title => 'Vos informations';
+
+  @override
+  String get login_firstname_empty => 'Veuillez saisir votre prénom';
+
+  @override
+  String get login_lastname_empty => 'Veuillez saisir votre nom';
+
+  @override
+  String get login_success_congrats => 'Félicitations !';
+
+  @override
+  String get login_success_subtitle => 'Inscription terminée !';
 }

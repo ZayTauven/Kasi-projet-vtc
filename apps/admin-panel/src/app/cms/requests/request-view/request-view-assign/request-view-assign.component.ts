@@ -121,7 +121,7 @@ export class RequestViewAssignComponent
             label: `${d.firstName} ${d.lastName} (${d.mobileNumber})`,
           }));
         } else {
-          this.msg.error(data.error?.message ?? "unknown error");
+          this.msg.error(data.error?.message ?? this.translate.instant("msg.unknownError"));
         }
       });
   }
@@ -188,8 +188,10 @@ export class RequestViewAssignComponent
     if (item == null) return;
     const driverId = item?.nzValue.value;
     this.modalService.confirm({
-      nzTitle: "Confirmation",
-      nzContent: `Are you sure you want to assign this trip to ${item.nzLabel}?`,
+      nzTitle: this.translate.instant("message.areYouSure"),
+      nzContent: this.translate.instant("msg.assignConfirm", {
+        name: item.nzLabel,
+      }),
       nzOnOk: () => {
         this.assignToDriver(driverId);
       },

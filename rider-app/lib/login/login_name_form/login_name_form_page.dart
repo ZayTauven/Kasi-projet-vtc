@@ -30,7 +30,7 @@ class _LoginNameFormPageState extends State<LoginNameFormPage> {
           key: _formKey,
           child: Column(children: [
             Text(
-              "Identity Information",
+              S.of(context).login_identity_title,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
@@ -39,7 +39,8 @@ class _LoginNameFormPageState extends State<LoginNameFormPage> {
               decoration: InputDecoration(
                   labelText: S.of(context).profile_firstname, isDense: true),
               onSaved: (newValue) => firstName = newValue!,
-              validator: (value) => value!.isEmpty ? "Enter First Name" : null,
+              validator: (value) =>
+                  value!.isEmpty ? S.of(context).login_firstname_empty : null,
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -47,7 +48,8 @@ class _LoginNameFormPageState extends State<LoginNameFormPage> {
               decoration: InputDecoration(
                   labelText: S.of(context).profile_lastname, isDense: true),
               onSaved: (newValue) => lastName = newValue!,
-              validator: (value) => value!.isEmpty ? "Enter Last Name" : null,
+              validator: (value) =>
+                  value!.isEmpty ? S.of(context).login_lastname_empty : null,
             ),
             const Spacer(),
             Mutation$UpdateProfile$Widget(

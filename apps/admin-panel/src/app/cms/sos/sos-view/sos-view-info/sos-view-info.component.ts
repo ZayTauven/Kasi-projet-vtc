@@ -10,6 +10,7 @@ import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/t
 import { firstValueFrom, map, Observable } from "rxjs";
 import { camelCase } from "camel-case";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 
@@ -39,6 +40,7 @@ export class SOSViewInfoComponent implements OnInit {
     private msg: NzMessageService,
     private addActivityGql: CreateSosActivityGQL,
     private routerHelper: RouterHelperService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -56,7 +58,7 @@ export class SOSViewInfoComponent implements OnInit {
           activity: { ...this.formActivity.value, sosId },
         } }),
       );
-      this.msg.success("Activity recorded");
+      this.msg.success(this.translate.instant("msg.activityRecorded"));
       this.routerHelper.refresh(this.route);
       this.formActivity.patchValue({});
     } catch (error: any) {

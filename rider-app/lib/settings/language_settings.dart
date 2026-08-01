@@ -2,7 +2,7 @@ import 'package:client_shared/components/back_button.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:kasi_rider/onboarding/onboarding_language_view.dart';
+import 'package:kasi_rider/settings/supported_languages.dart';
 
 import '../l10n/messages.dart';
 
@@ -14,7 +14,7 @@ class LanguageSettings extends StatefulWidget {
 }
 
 class _LanguageSettingsState extends State<LanguageSettings> {
-  String selectedLanguageCode = "en";
+  String selectedLanguageCode = kDefaultLanguageCode;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +45,14 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: ListView.builder(
-                      itemCount: OnboardingLanguage.languages.length,
+                      itemCount: kSupportedLanguages.length,
                       itemBuilder: (context, index) {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 250),
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                  color: OnboardingLanguage.languages.keys
+                                  color: kSupportedLanguages.keys
                                               .elementAt(index) ==
                                           selectedLanguageCode
                                       ? CustomTheme.primaryColors.shade400
@@ -63,7 +63,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                           child: Row(children: [
                             Radio<String>(
                                 visualDensity: VisualDensity.compact,
-                                value: OnboardingLanguage.languages.keys
+                                value: kSupportedLanguages.keys
                                     .elementAt(index),
                                 groupValue: selectedLanguageCode,
                                 onChanged: (value) {
@@ -75,7 +75,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                                   Hive.box('settings').put('language', value);
                                 }),
                             Text(
-                                OnboardingLanguage.languages.values
+                                kSupportedLanguages.values
                                     .elementAt(index),
                                 style: Theme.of(context).textTheme.titleMedium)
                           ]),

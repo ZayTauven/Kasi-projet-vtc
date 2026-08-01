@@ -1,9 +1,25 @@
-// Production Kasi : rider-api derrière le reverse proxy nginx du VPS
-// (le préfixe /rider-api/ est retiré par nginx, voir .nginx/kasi-locations.conf).
-// String serverUrl = "https://kasigroupe.tech/rider-api/"; // ← PROD (rebasculer au déploiement)
-// DEV LOCAL : stack Docker sur la machine (192.168.1.2), proxy nginx :80 → rider-api:3001.
-// Téléphone physique sur le même WiFi ; usesCleartextTraffic=true autorise le http://.
-String serverUrl = "http://192.168.1.2/rider-api/";
+// Adresse du backend rider-api.
+//
+// Elle etait figee en dur sur `http://192.168.1.2/rider-api/`, l'IP que le DHCP
+// de la box avait attribuee a la machine de dev un jour donne. Au bail suivant
+// l'IP a change (la machine est aujourd'hui en .76) et `192.168.1.2` designe
+// desormais un tout autre appareil du reseau, qui repond 404 : toutes les
+// requetes GraphQL echouaient, y compris `login`, sans que rien dans l'app
+// n'indique la vraie cause.
+//
+// Surchargeable au build, donc sans rediter (ni recommiter) ce fichier :
+//   flutter run --dart-define=KASI_SERVER_URL=http://192.168.1.50/rider-api/
+//   flutter build apk --dart-define=KASI_SERVER_URL=https://kasigroupe.tech/rider-api/
+//
+// En production le prefixe /rider-api/ est retire par le reverse proxy nginx du
+// VPS (voir .nginx/kasi-locations.conf). En dev local, nginx :80 -> rider-api:3001 ;
+// `usesCleartextTraffic=true` autorise le http:// depuis un telephone du meme WiFi.
+const String _defaultServerUrl = 'http://192.168.1.76/rider-api/';
+
+String serverUrl = const String.fromEnvironment(
+  'KASI_SERVER_URL',
+  defaultValue: _defaultServerUrl,
+);
 String wsUrl = serverUrl.replaceFirst("http", "ws"); // http -> ws (wss en prod)
 
 // Nominatim configuration (Only for Open Street Maps and MapBox)

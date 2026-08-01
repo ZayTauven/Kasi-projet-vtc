@@ -27,7 +27,8 @@
             <tr [routerLink]="'view/' + data.id" class="group cursor-pointer">
               <td>{{ data.name }}</td>
               <td>
-                {{ data.type }} • {{ data.icon }}
+                {{ ('enum.serviceOptionType.' + data.type) | translate }} •
+                {{ ('enum.serviceOptionIcon.' + data.icon) | translate }}
               </td>
             </tr>
           }

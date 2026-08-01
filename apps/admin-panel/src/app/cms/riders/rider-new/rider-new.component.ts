@@ -6,6 +6,7 @@ import {
 } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { CreateRiderGQL } from "@kasi/admin-panel/generated/graphql";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { firstValueFrom } from "rxjs";
 import { RouterHelperService } from "../../../@services/router-helper.service";
@@ -37,6 +38,7 @@ export class RiderNewComponent {
     private messageService: NzMessageService,
     private routerHelper: RouterHelperService,
     private route: ActivatedRoute,
+    private translate: TranslateService,
   ) {
     this.form.get("phoneNumberPrefix")?.valueChanges.subscribe(() => {
       this.form.get("phoneNumber")?.updateValueAndValidity();
@@ -53,7 +55,7 @@ export class RiderNewComponent {
         },
       } }),
     );
-    this.messageService.success("Saved Successfully.");
+    this.messageService.success(this.translate.instant("msg.saved"));
     this.routerHelper.goToParent(this.route);
   }
 

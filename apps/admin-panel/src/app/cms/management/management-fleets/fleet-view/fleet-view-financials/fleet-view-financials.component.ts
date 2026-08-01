@@ -11,6 +11,7 @@ import {
 import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { firstValueFrom, map, Observable } from "rxjs";
 
@@ -42,6 +43,7 @@ export class FleetViewFinancialsComponent implements OnInit {
     private msg: NzMessageService,
     private routerHelper: RouterHelperService,
     private createTransactionGQL: CreateFleetTransactionGQL,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -63,21 +65,21 @@ export class FleetViewFinancialsComponent implements OnInit {
       this.formTransaction.value.action == "Deduct" &&
       this.formTransaction.value.deductType == null
     ) {
-      this.msg.error("Please select the transaction type.");
+      this.msg.error(this.translate.instant("msg.selectTransactionType"));
       return;
     }
     if (
       this.formTransaction.value.action == "Recharge" &&
       this.formTransaction.value.rechargeType == null
     ) {
-      this.msg.error("Please select the transaction type.");
+      this.msg.error(this.translate.instant("msg.selectTransactionType"));
       return;
     }
     try {
       await firstValueFrom(
         this.createTransactionGQL.mutate({ variables: { input: this.formTransaction.value } }),
       );
-      this.msg.success("Transaction Submitted.");
+      this.msg.success(this.translate.instant("msg.transactionSubmitted"));
       this.routerHelper.refresh(this.route);
       this.formTransaction.patchValue({});
     } catch (error: any) {

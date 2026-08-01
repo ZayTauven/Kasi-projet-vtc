@@ -39,6 +39,16 @@ Future<bool> _tryFetchMapSetting() async {
     final client = GraphQLClient(
       cache: GraphQLCache(),
       link: HttpLink('${serverUrl}graphql'),
+      // Seul client de l'app qui gardait le `queryRequestTimeout` par defaut du
+      // paquet `graphql` (5 s) — les clients principaux sont a 20 s depuis
+      // longtemps (voir graphql_provider.dart). Or cette requete part pendant
+      // le demarrage, quand le thread principal est sature : le delai expirait
+      // systematiquement, ce qui produisait a la fois un « [BOOTSTRAP CARTE]
+      // echec ... TimeoutException after 0:00:05 » trompeur (le reseau etait
+      // sain) et, quand la reponse arrivait juste apres, un
+      // « Bad state: Future already completed » remonte jusqu'a
+      // FlutterError.onError — donc jusqu'a Crashlytics.
+      queryRequestTimeout: const Duration(seconds: 20),
     );
     final result = await client.query(
       QueryOptions(

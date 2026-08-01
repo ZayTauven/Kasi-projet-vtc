@@ -58,7 +58,32 @@ String? applyMapSetting(Map<String, dynamic> m) {
 String loginTermsAndConditionsUrl = "";
 
 String defaultCurrency = "XOF"; // Franc CFA (Sénégal)
-String defaultCountryCode = "SN";
+
+// ---------------------------------------------------------------------------
+// Pays d'exploitation
+// ---------------------------------------------------------------------------
+// Kasi n'opère qu'au Sénégal. Les écrans d'authentification affichaient
+// pourtant un sélecteur listant ~250 pays, et l'indicatif proposé par défaut
+// était celui de la locale de l'appareil (« +1 » sur un téléphone configuré en
+// anglais US) — donc un indicatif qu'aucun Kasiman ni client ne peut utiliser.
+//
+// Tant que `allowCountrySelection` est `false`, l'indicatif est figé à celui de
+// `operatingCountryCode` et affiché en lecture seule. Le jour où Kasi se
+// franchise hors du Sénégal, remettre ce drapeau à `true` suffit à réafficher
+// le sélecteur complet : aucun autre fichier n'est à modifier.
+const bool allowCountrySelection = false;
+
+/// Code ISO 3166-1 **alpha-2** du pays d'exploitation — pas un indicatif
+/// téléphonique. La distinction compte : `defaultCountryCode` était écrasé au
+/// démarrage par `CountryCodes.detailsForLocale().dialCode` (« +1 »), donc la
+/// même variable contenait tantôt « SN », tantôt « +1 », et
+/// `CountryCode.fromCountryCode()` ne savait plus la résoudre.
+const String operatingCountryCode = "SN";
+
+/// Indicatif téléphonique correspondant, pour les libellés en lecture seule.
+const String operatingDialCode = "+221";
+
+String defaultCountryCode = operatingCountryCode;
 const List<double> tipPresets = [500, 1000, 2000]; // en XOF
 
 // Dakar (Place de l'Indépendance) — remplace le fallback San José/Californie

@@ -145,10 +145,16 @@ class _LoginViewState extends State<LoginView> {
                         },
                         builder: (context, state) {
                           return WizardSteps(
+                            // Ces trois libellés étaient codés en dur en
+                            // anglais, seuls textes non traduits d'un parcours
+                            // par ailleurs entièrement francophone.
                             items: [
-                              WizardStepItem(title: "Enter number"),
-                              WizardStepItem(title: "Verify code"),
-                              WizardStepItem(title: "Enter name")
+                              WizardStepItem(
+                                  title: S.of(context).login_step_number),
+                              WizardStepItem(
+                                  title: S.of(context).login_step_verify_code),
+                              WizardStepItem(
+                                  title: S.of(context).login_step_name)
                             ],
                             activePageId: state is LoginInputNumberState
                                 ? 0

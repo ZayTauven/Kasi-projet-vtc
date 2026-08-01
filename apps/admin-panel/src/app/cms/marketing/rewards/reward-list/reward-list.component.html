@@ -38,7 +38,7 @@
                   </div>
                 </div>
               </td>
-              <td>{{ data.beneficiary }}</td>
+              <td>{{ ('enum.rewardBeneficiary.' + data.beneficiary.toLowerCase()) | translate }}</td>
             </tr>
           }
         </tbody>

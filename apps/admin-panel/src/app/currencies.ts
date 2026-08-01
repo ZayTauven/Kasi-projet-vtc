@@ -2,7 +2,11 @@ interface CurrencyItem {
   value: string;
   label: string;
 }
-export const CURRENCY_LIST: CurrencyItem[] = [
+/**
+ * Liste source, en anglais (heritee d'app-kasi). Ne pas consommer directement :
+ * utiliser `CURRENCY_LIST`, qui en derive les libelles localises.
+ */
+const CURRENCY_SOURCE: CurrencyItem[] = [
   { value: "AED", label: "United Arab Emirates Dirham"},
   { value: "AFN", label: "Afghan Afghani"},
   { value: "ALL", label: "Albanian Lek"},
@@ -174,4 +178,41 @@ export const CURRENCY_LIST: CurrencyItem[] = [
   { value: "ZAR", label: "South African Rand"},
   { value: "ZMW", label: "Zambian Kwacha"},
   { value: "ZWL", label: "Zimbabwean Dollar"}
-]
+];
+
+/** Langue courante du panel (posee par le selecteur de langue du rail). */
+function panelLang(): string {
+  try {
+    return localStorage.getItem("lang") ?? "fr";
+  } catch {
+    return "fr";
+  }
+}
+
+/**
+ * Nom de la devise dans la langue du panel, derive du code ISO 4217. Le
+ * selecteur de devise des regions affichait les noms anglais ("CFA Franc
+ * BCEAO") au milieu d'un formulaire francais. Les quelques codes hors ISO
+ * (BTC, GGP, IMP, JEP) conservent leur libelle d'origine.
+ */
+function localizedCurrencyName(code: string, fallback: string): string {
+  try {
+    const label = new Intl.DisplayNames([panelLang()], {
+      type: "currency",
+      fallback: "none",
+    }).of(code);
+    // Intl rend les devises en minuscules en francais ("franc CFA (BCEAO)") :
+    // on capitalise pour un libelle de liste deroulante.
+    return label == null
+      ? fallback
+      : label.charAt(0).toLocaleUpperCase(panelLang()) + label.slice(1);
+  } catch {
+    return fallback;
+  }
+}
+
+/** Devises libellees dans la langue du panel, triees en consequence. */
+export const CURRENCY_LIST: CurrencyItem[] = CURRENCY_SOURCE.map((item) => ({
+  ...item,
+  label: localizedCurrencyName(item.value, item.label),
+})).sort((a, b) => a.label.localeCompare(b.label, panelLang()));

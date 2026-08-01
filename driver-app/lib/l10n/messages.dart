@@ -1015,7 +1015,7 @@ abstract class S {
   /// No description provided for @driver_register_title.
   ///
   /// In en, this message translates to:
-  /// **'Driver Registration'**
+  /// **'Kasiman registration'**
   String get driver_register_title;
 
   /// No description provided for @menu_profile.

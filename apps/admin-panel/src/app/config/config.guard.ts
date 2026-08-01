@@ -1,6 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { CurrentConfigurationGQL } from '@kasi/admin-panel/generated/graphql';
+import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { firstValueFrom } from 'rxjs';
 
@@ -9,7 +10,8 @@ export class ConfigGuard  {
   constructor(
     private router: Router,
     private msg: NzMessageService,
-    private currentConfigGql: CurrentConfigurationGQL
+    private currentConfigGql: CurrentConfigurationGQL,
+    private translate: TranslateService
   ) {}
 
   async canActivate(
@@ -23,7 +25,7 @@ export class ConfigGuard  {
       return true;
     } else {
       this.msg.warning(
-        'System is already configured. Try with admin password parameter'
+        this.translate.instant('msg.systemAlreadyConfigured')
       );
       this.router.navigate(['../login']);
       return false;

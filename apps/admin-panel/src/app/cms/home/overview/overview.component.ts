@@ -34,10 +34,16 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   driverRegistrationsMode = 2;
   riderRegistrationsMode = 2;
 
-  chartTimeOptions = [
-    { label: "Daily", value: ChartTimeframe.Daily },
-    { label: "Monthly", value: ChartTimeframe.Monthly },
-    { label: "Yearly", value: ChartTimeframe.Yearly },
+  /**
+   * Options du sélecteur de période des graphes. Les libellés étaient codés en
+   * dur en anglais ("Daily/Monthly/Yearly") au milieu d'un tableau de bord
+   * francais : ils passent par l'i18n et se resynchronisent au changement de
+   * langue. L'ordre du tableau est significatif (`*Mode` indexe dedans).
+   */
+  chartTimeOptions: { label: string; value: ChartTimeframe }[] = [
+    { label: "", value: ChartTimeframe.Daily },
+    { label: "", value: ChartTimeframe.Monthly },
+    { label: "", value: ChartTimeframe.Yearly },
   ];
 
   private chartRequests!: Chart;
@@ -69,6 +75,28 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.query = this.route.data.pipe(map((data) => data.overview));
+    this.translateService
+      .stream([
+        "overview.chart.daily",
+        "overview.chart.monthly",
+        "overview.chart.yearly",
+      ])
+      .subscribe((labels) => {
+        this.chartTimeOptions = [
+          {
+            label: labels["overview.chart.daily"],
+            value: ChartTimeframe.Daily,
+          },
+          {
+            label: labels["overview.chart.monthly"],
+            value: ChartTimeframe.Monthly,
+          },
+          {
+            label: labels["overview.chart.yearly"],
+            value: ChartTimeframe.Yearly,
+          },
+        ];
+      });
   }
 
   async refreshIncome() {
@@ -182,14 +210,19 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.chartRiderRegistrations.interaction("active-region");
   }
 
+  /**
+   * Format des abscisses des graphes. Les formats hérités étaient des formats
+   * US (`M/d`, heure sur 12 h) : passés en convention francaise (jour/mois,
+   * heure sur 24 h). Le nom des mois suit `LOCALE_ID`.
+   */
   getTimeFormatForQuery(q: ChartTimeframe): string {
     switch (q) {
       case ChartTimeframe.Daily:
-        return 'h"';
+        return "H'h'";
       case ChartTimeframe.Weekly:
         return "W,y";
       case ChartTimeframe.Monthly:
-        return "M/d";
+        return "d/M";
       case ChartTimeframe.Yearly:
         return "MMM y";
     }

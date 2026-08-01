@@ -1,6 +1,7 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, CONTEXT, Mutation, Resolver } from '@nestjs/graphql';
 import { ForbiddenError } from '@nestjs/apollo';
+import { hashPassword, verifyPassword } from '@kasi/database';
 import { UserContext } from '../auth/authenticated-admin';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OperatorDTO } from './dto/operator.dto';
@@ -25,11 +26,16 @@ export class OperatorResolver {
       throw new ForbiddenError('Action not allowed in demo mode.');
     }
     const operator = await this.service.getById(this.context.req.user.id);
-    if (operator.password != input.oldPassword) {
+    // Comparaison a temps constant, et compatible avec les comptes dont le mot
+    // de passe est encore stocke en clair (cf. verifyPassword).
+    if (!(await verifyPassword(input.oldPassword, operator.password))) {
       throw new ForbiddenError("Old password don't match");
     }
-    await this.service.repo.update(operator.id, { password: input.newPasswod });
-    operator.password = input.newPasswod;
+    // `repo.update()` ne declenche PAS le hook @BeforeInsert de l'entite :
+    // le hachage doit etre fait ici, explicitement.
+    const hashed = await hashPassword(input.newPasswod);
+    await this.service.repo.update(operator.id, { password: hashed });
+    operator.password = hashed;
     return operator;
   }
 }

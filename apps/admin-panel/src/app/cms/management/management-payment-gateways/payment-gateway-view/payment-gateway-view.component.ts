@@ -10,6 +10,7 @@ import {
 } from "@kasi/admin-panel/generated/graphql";
 import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzUploadFile } from "ng-zorro-antd/upload";
 import { firstValueFrom, Observable, Observer, Subscription } from "rxjs";
@@ -48,13 +49,13 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
       const isJpgOrPng =
         file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        this.msg.error("You can only upload JPG file!");
+        this.msg.error(this.translate.instant("msg.uploadJpgOnly"));
         observer.complete();
         return;
       }
       const isLt2M = (file.size ?? 0) / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.msg.error("Image must smaller than 2MB!");
+        this.msg.error(this.translate.instant("msg.uploadTooLarge"));
         observer.complete();
         return;
       }
@@ -71,6 +72,7 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
     private createGQL: CreatePaymentGatewayGQL,
     private routerHelper: RouterHelperService,
     private msg: NzMessageService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -111,7 +113,7 @@ export class PaymentGatewayViewComponent implements OnInit, OnDestroy {
         this.avatarUrl = event.file.response.address;
         break;
       case "error":
-        this.msg.error("Network error");
+        this.msg.error(this.translate.instant("msg.networkError"));
         this.loadingUpload = false;
         break;
     }

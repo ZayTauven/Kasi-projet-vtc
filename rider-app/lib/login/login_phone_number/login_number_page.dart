@@ -1,3 +1,4 @@
+import 'package:client_shared/components/country_code_field.dart';
 import 'package:client_shared/components/kasi_banner.dart';
 import 'package:client_shared/config.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -31,7 +32,9 @@ class _LoginNumberPageState extends State<LoginNumberPage> {
 
   String phoneNumber = "";
 
-  String countryCode = !kIsWeb
+  // La locale de l'appareil ne décide du pays que si la sélection est ouverte ;
+  // sinon on part directement du pays d'exploitation.
+  String countryCode = (allowCountrySelection && !kIsWeb)
       ? (CountryCodes.detailsForLocale().alpha2Code ?? defaultCountryCode)
       : defaultCountryCode;
 
@@ -55,28 +58,13 @@ class _LoginNumberPageState extends State<LoginNumberPage> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    color: CustomTheme.neutralColors.shade200,
-                    borderRadius: BorderRadius.circular(10)),
-                child: FormField<String?>(
-                  initialValue: countryCode,
-                  onSaved: (newValue) {
-                    countryCode = newValue ?? defaultCountryCode;
-                  },
-                  builder: (state) => CountryCodePicker(
-                    boxDecoration: BoxDecoration(
-                        color: CustomTheme.neutralColors.shade100,
-                        borderRadius: BorderRadius.circular(10)),
-                    initialSelection: countryCode,
-                    onChanged: (code) {
-                      state.didChange(code.code);
-                      // Tenu à jour immédiatement pour que le validateur du
-                      // numéro applique la règle du pays sélectionné.
-                      countryCode = code.code ?? countryCode;
-                    },
-                  ),
-                ),
+              // Sélecteur remplacé par un indicatif figé tant que Kasi n'opère
+              // qu'au Sénégal (voir `allowCountrySelection` dans
+              // client_shared/config.dart). `countryCode` reste tenu à jour
+              // immédiatement pour que le validateur applique la bonne règle.
+              CountryCodeField(
+                countryCode: countryCode,
+                onChanged: (code) => countryCode = code,
               ),
               const SizedBox(width: 5),
               Flexible(

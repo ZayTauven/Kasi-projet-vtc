@@ -10,6 +10,7 @@ import { AppComponent } from "./app.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { registerLocaleData } from "@angular/common";
 import en from "@angular/common/locales/en";
+import frLocale from "@angular/common/locales/fr";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { SharedModule } from '@kasi/admin-panel/src/app/@components/shared.module';
@@ -37,7 +38,13 @@ import {
   zh_CN,
 } from "ng-zorro-antd/i18n";
 import { GraphQLModule } from "./graphql.module";
-import { TimeagoModule } from "ngx-timeago";
+import {
+  TimeagoCustomFormatter,
+  TimeagoFormatter,
+  TimeagoIntl,
+  TimeagoModule,
+} from "ngx-timeago";
+import { KasiTimeagoIntl } from "./@services/kasi-timeago-intl";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import {
   UserOutline,
@@ -173,7 +180,27 @@ const icons: IconDefinition[] = [
   DownOutline,
   CheckOutline,
 ];
+// La console est francaise par defaut : sans `registerLocaleData(fr)` NI
+// `LOCALE_ID`, les pipes Angular (`date`, `currency`, `number`) retombaient sur
+// `en-US` et affichaient "7/22/26, 4:26 PM" ou "FCFA43,352" au milieu d'une
+// interface francaise. On enregistre les deux locales reellement servies par le
+// panel (fr par defaut, en pour la bascule de langue).
+registerLocaleData(frLocale);
 registerLocaleData(en);
+
+/** Langue courante du panel (memorisee par le selecteur de langue du rail). */
+export function currentLang(): string {
+  return localStorage.getItem("lang") ?? "fr";
+}
+
+/**
+ * `LOCALE_ID` d'Angular. Seules `fr` et `en` disposent des donnees de locale
+ * enregistrees ci-dessus ; toute autre langue de l'interface retombe sur `fr`
+ * (la locale du produit) plutot que sur l'anglais.
+ */
+export function localeIdFactory(): string {
+  return currentLang() === "en" ? "en-US" : "fr";
+}
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -206,13 +233,25 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: false,
     }),
-    TimeagoModule.forRoot(),
+    // Dates relatives ("il y a 2 semaines"). Le formateur par defaut de
+    // ngx-timeago (`TimeagoDefaultFormatter`) ignore `TimeagoIntl` et rend
+    // toujours l'anglais : il faut fournir explicitement le couple
+    // intl + `TimeagoCustomFormatter` pour que la locale soit prise en compte.
+    TimeagoModule.forRoot({
+      intl: { provide: TimeagoIntl, useClass: KasiTimeagoIntl },
+      formatter: {
+        provide: TimeagoFormatter,
+        useClass: TimeagoCustomFormatter,
+        deps: [TimeagoIntl],
+      },
+    }),
   ],
   providers: [
+    { provide: LOCALE_ID, useFactory: localeIdFactory },
     {
       provide: NZ_DATE_LOCALE,
       useFactory: () => {
-        const lang = localStorage.getItem("lang") ?? "fr";
+        const lang = currentLang();
         switch (lang) {
           case "en":
             return enUS;
@@ -246,8 +285,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {
       provide: NZ_I18N,
       //useValue: en_US,
-      useFactory: (localId: string) => {
-        const lang = localStorage.getItem("lang") ?? "fr";
+      useFactory: () => {
+        const lang = currentLang();
         switch (lang) {
           case "en":
             return en_US;
@@ -277,7 +316,6 @@ export function HttpLoaderFactory(http: HttpClient) {
             return fr_FR;
         }
       },
-      deps: [LOCALE_ID],
     },
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
   ],

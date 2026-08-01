@@ -479,7 +479,7 @@ class SEn extends S {
   String get order_status_canceled => 'Canceled';
 
   @override
-  String get driver_register_title => 'Driver Registration';
+  String get driver_register_title => 'Kasiman registration';
 
   @override
   String get menu_profile => 'My profile';

@@ -1,3 +1,4 @@
+import 'package:client_shared/components/country_code_field.dart';
 import 'package:client_shared/components/kasi_banner.dart';
 import 'package:client_shared/config.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -34,7 +35,9 @@ class RegisterPhoneNumberView extends StatefulWidget {
 
 class _RegisterPhoneNumberViewState extends State<RegisterPhoneNumberView> {
   bool agreedToTerms = false;
-  String countryCode = !kIsWeb
+  // La locale de l'appareil ne décide du pays que si la sélection est ouverte ;
+  // sinon on part directement du pays d'exploitation.
+  String countryCode = (allowCountrySelection && !kIsWeb)
       ? (CountryCodes.detailsForLocale().alpha2Code ?? defaultCountryCode)
       : defaultCountryCode;
   String? phoneNumber;
@@ -58,21 +61,12 @@ class _RegisterPhoneNumberViewState extends State<RegisterPhoneNumberView> {
           ),
           const SizedBox(height: 24),
           Row(children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: CustomTheme.neutralColors.shade200,
-                  borderRadius: BorderRadius.circular(10)),
-              child: FormField<String?>(
-                initialValue: countryCode,
-                onSaved: (value) => countryCode = value ?? countryCode,
-                builder: (state) => CountryCodePicker(
-                  boxDecoration: BoxDecoration(
-                      color: CustomTheme.neutralColors.shade100,
-                      borderRadius: BorderRadius.circular(10)),
-                  initialSelection: countryCode,
-                  onChanged: (value) => state.didChange(value.code),
-                ),
-              ),
+            // Sélecteur remplacé par un indicatif figé tant que Kasi n'opère
+            // qu'au Sénégal (voir `allowCountrySelection` dans
+            // client_shared/config.dart).
+            CountryCodeField(
+              countryCode: countryCode,
+              onChanged: (code) => countryCode = code,
             ),
             const SizedBox(width: 5),
             Flexible(
@@ -91,7 +85,17 @@ class _RegisterPhoneNumberViewState extends State<RegisterPhoneNumberView> {
                   if (value == null || value.isEmpty) {
                     return S.of(context).phone_number_empty;
                   }
-                  return null;
+                  // Le contrôle se limitait à « non vide » : un Kasiman pouvait
+                  // lancer un envoi de SMS sur un numéro impossible et n'obtenir
+                  // qu'une erreur Firebase opaque. Même règle que côté client et
+                  // que l'admin-panel : au Sénégal, 9 chiffres commençant par 7
+                  // (plages mobiles Orange/Free/Expresso).
+                  final String? dialCode =
+                      CountryCode.fromCountryCode(countryCode).dialCode;
+                  final bool valid = dialCode == '+221'
+                      ? RegExp(r'^7\d{8}$').hasMatch(value)
+                      : RegExp(r'^\d{4,15}$').hasMatch(value);
+                  return valid ? null : S.of(context).phone_number_empty;
                 },
               ),
             ),

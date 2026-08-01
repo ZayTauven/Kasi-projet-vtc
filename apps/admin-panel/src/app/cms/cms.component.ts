@@ -361,9 +361,11 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
       if (sos == null) return;
       this.newSos += 1;
       this.playNotificationSound();
-      this.notification.error("SOS", "A SOS has been made.", {
-        nzKey: "sos",
-      });
+      this.notification.error(
+        this.translate.instant("menu.sos"),
+        this.translate.instant("msg.sosCreated"),
+        { nzKey: "sos" },
+      );
     });
     this.complaintSubscription = this.complaintSub
       .subscribe()
@@ -372,10 +374,11 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
         if (complaint == null) return;
         this.newComplaints += 1;
         this.playNotificationSound();
-        this.notification.error("Complaint", "A Complaint has been made.", {
-          nzDuration: 0,
-          nzKey: "complaint",
-        });
+        this.notification.error(
+          this.translate.instant("complaint.title"),
+          this.translate.instant("msg.complaintCreated"),
+          { nzDuration: 0, nzKey: "complaint" },
+        );
       });
   }
 
@@ -425,8 +428,19 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeLanguage(language: string): void {
+    const previousLanguage = localStorage.getItem("lang") ?? "fr";
     this.translate.use(language);
     localStorage.setItem("lang", language);
+    // `LOCALE_ID` est resolu une seule fois au demarrage : il pilote les pipes
+    // `date`/`currency`/`number` et ne peut pas etre repose a chaud. Sans
+    // rechargement, l'interface changeait de langue mais gardait les formats de
+    // date et de montant de la langue precedente. On recharge donc la page
+    // lorsque la locale Angular effective change (fr <-> en).
+    const localeOf = (lang: string) => (lang === "en" ? "en-US" : "fr");
+    if (localeOf(previousLanguage) !== localeOf(language)) {
+      window.location.reload();
+      return;
+    }
     switch (language) {
       case "en":
         this.i18n.setLocale(en_US);

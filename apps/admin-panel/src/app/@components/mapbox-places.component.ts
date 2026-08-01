@@ -31,7 +31,7 @@ interface MapboxFeature {
       (ngModelChange)="onInput($event)"
       [nzAutocomplete]="autoComplete"
       style="width: 100%; margin-top: 10px; margin-bottom: 10px;"
-      placeholder="Search location..."
+      placeholder="{{ 'msg.searchLocation' | translate }}"
       />
     <nz-autocomplete #autoComplete (selectionChange)="onSelect($event)">
       @for (feature of suggestions; track feature) {

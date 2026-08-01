@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { TranslateService } from "@ngx-translate/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { UpdatePasswordGQL } from "@kasi/admin-panel/generated/graphql";
 import { firstValueFrom } from "rxjs";
@@ -20,6 +21,7 @@ export class ManagementSettingsPasswordComponent implements OnInit {
     private message: NzMessageService,
     private updatePasswordGql: UpdatePasswordGQL,
     private fb: UntypedFormBuilder,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {}
@@ -30,7 +32,7 @@ export class ManagementSettingsPasswordComponent implements OnInit {
 
   async onSubmit() {
     if (this.form.value.newPassword != this.form.value.newPasswordRepeat) {
-      this.message.error("Passwords don't match.");
+      this.message.error(this.translate.instant("msg.passwordsDontMatch"));
       return;
     }
     try {
@@ -42,10 +44,10 @@ export class ManagementSettingsPasswordComponent implements OnInit {
           },
         } }),
       );
-      this.message.success("Password Updated Successfully.");
+      this.message.success(this.translate.instant("msg.passwordUpdated"));
       this.form.reset();
     } catch (error) {
-      this.message.error("Action is not allowed.");
+      this.message.error(this.translate.instant("msg.actionNotAllowed"));
     }
   }
 }

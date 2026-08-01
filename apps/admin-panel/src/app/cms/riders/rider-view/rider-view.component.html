@@ -26,7 +26,8 @@
       <div class="kasi-profile-head__meta">
         <span>{{ 'profile.mobileNumber' | translate }}: {{rider.mobileNumber | phone}}</span>
         <span>{{ 'profile.registeredOn' | translate }}: {{rider.registrationTimestamp | date: "short"}}</span>
-        <nz-badge [nzStatus]="rider.status === 'Enabled' ? 'success' : 'error'" [nzText]="rider.status"></nz-badge>
+        <nz-badge [nzStatus]="rider.status === 'Enabled' ? 'success' : 'error'"
+        [nzText]="(rider.status === 'Enabled' ? 'enum.rider.status.enabled' : 'enum.rider.status.blocked') | translate"></nz-badge>
       </div>
       <div class="kasi-profile-head__tags">
         @if (rider.status == riderStatus.Disabled) {

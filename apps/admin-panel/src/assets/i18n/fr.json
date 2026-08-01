@@ -2,18 +2,18 @@
   "enum": {
     "request": {
       "Requested": "Demandé",
-      "NotFound": "Pas trouvé",
-      "NoCloseFound": "Aucun résultat trouvé",
-      "Found": "Trouvé",
+      "NotFound": "Aucun Kasiman trouvé",
+      "NoCloseFound": "Aucun Kasiman à proximité",
+      "Found": "Kasiman trouvé",
       "DriverAccepted": "Le Kasiman a accepté",
-      "Arrived": "Arrivé",
+      "Arrived": "Kasiman arrivé",
       "WaitingForPrePay": "En attente de paiement anticipé",
       "DriverCanceled": "Le Kasiman a annulé",
       "RiderCanceled": "Le client a annulé",
-      "Started": "Commencé",
+      "Started": "En cours",
       "WaitingForPostPay": "En attente de post-paiement",
       "WaitingForReview": "En attente d'évaluation",
-      "Finished": "Fini",
+      "Finished": "Terminée",
       "Booked": "Réservé",
       "Expired": "Expiré"
     },
@@ -25,11 +25,11 @@
       "Commission": "Commission",
       "Correction": "Correction",
       "InAppPayment": "Paiement dans l'application",
-      "Withdraw": "Retirer"
+      "Withdraw": "Retrait"
     },
     "transactionStatus": {
-      "Processing": "Traitement",
-      "Done": "Fait",
+      "Processing": "En traitement",
+      "Done": "Effectué",
       "Canceled": "Annulé",
       "Rejected": "Rejeté"
     },
@@ -65,7 +65,7 @@
     "gender": {
       "male": "Homme",
       "female": "Femme",
-      "genderless": "Asexué"
+      "genderless": "Non précisé"
     },
     "packageSize": {
       "small": "Petit",
@@ -88,7 +88,7 @@
         "pendingApproval": "En attente de validation",
         "approved": "Approuvé",
         "blocked": "Bloqué",
-        "softReject": "Rejet doux",
+        "softReject": "Rejet provisoire",
         "hardReject": "Rejet définitif",
         "offline": "Hors ligne",
         "waitingDocuments": "En attente de soumission",
@@ -99,7 +99,8 @@
     "rider": {
       "status": {
         "blocked": "Bloqué",
-        "enabled": "Activé"
+        "enabled": "Activé",
+        "disabled": "Bloqué"
       }
     },
     "sosActivityAction": {
@@ -121,11 +122,29 @@
     "rewardBeneficiary": {
       "self": "Soi-même",
       "referrer": "Parrain"
+    },
+    "serviceOptionType": {
+      "Free": "Gratuite",
+      "Paid": "Payante",
+      "TwoWay": "Aller-retour"
+    },
+    "serviceOptionIcon": {
+      "Luggage": "Bagages",
+      "PackageDelivery": "Colis",
+      "Pet": "Animal",
+      "Shopping": "Courses",
+      "TwoWay": "Aller-retour",
+      "Custom1": "Icône 1",
+      "Custom2": "Icône 2",
+      "Custom3": "Icône 3",
+      "Custom4": "Icône 4",
+      "Custom5": "Icône 5"
     }
   },
   "branding": {
     "menu": {
-      "header": "Kasi"
+      "header": "Kasi",
+      "subtitle": "CONSOLE ADMIN"
     },
     "footer": {
       "address": "https://kasigroupe.com",
@@ -212,26 +231,30 @@
     "showOnMap": "Afficher sur la carte",
     "complaints": {
       "title": "Plaintes",
-      "suffix": "Non révisé"
+      "suffix": "Non traitées"
     },
     "activeOrders": {
       "title": "Commandes actives",
-      "suffix": "Ordres"
+      "suffix": "Commandes"
     },
     "pendingDrivers": {
       "title": "Kasimen en attente",
-      "suffix": "Non vérifié"
+      "suffix": "Non vérifiés"
     },
     "bookedOrders": {
       "title": "Commandes enregistrées",
-      "suffix": "Réservé"
+      "suffix": "Réservées"
     },
     "chart": {
-      "requestsTitle": "Ordres",
+      "requestsTitle": "Commandes",
       "revenue": "Revenu",
       "newDriverRegisters": "Inscriptions de nouveaux Kasimen",
-      "newRiderRegisters": "Nouvelles inscriptions de clients"
-    }
+      "newRiderRegisters": "Nouvelles inscriptions de clients",
+      "daily": "Jour",
+      "monthly": "Mois",
+      "yearly": "Année"
+    },
+    "subtitle": "Indicateurs clés de l'activité, en temps réel."
   },
   "notification": {
     "distressSignals": {
@@ -248,7 +271,7 @@
     "title": "Demandes",
     "subtitle": "Liste de toutes les demandes de course",
     "searchDriverPlaceholder": "Saisir le nom de famille ou le numéro de portable du Kasiman",
-    "bookedFor": "(Réservé pour {{time}})",
+    "bookedFor": "(Réservé {{time}})",
     "expectedTime": "Heure prévue",
     "startTime": "Heure de début",
     "finishTime": "Heure de fin",
@@ -259,7 +282,7 @@
     "service": "Service",
     "distance": "Distance",
     "duration": "Durée",
-    "chats": "Chats",
+    "chats": "Discussions",
     "complaints": "Plaintes",
     "assign": "Attribuer un Kasiman (Alpha)"
   },
@@ -267,7 +290,7 @@
     "status": "Statut",
     "locations": "Emplacements",
     "view": "Voir",
-    "requestInfo": "Demande d'info",
+    "requestInfo": "Informations sur la demande",
     "name": "Nom",
     "mobileNumber": "Numéro de portable",
     "registeredOn": "Inscrit le",
@@ -292,26 +315,26 @@
     "bankRoutingNumber": "Numéro d'acheminement bancaire",
     "bankSwift": "Banque Swift",
     "address": "Adresse",
-    "services": "Prestations de service",
+    "services": "Services",
     "avatarImage": "Image d'avatar",
-    "upload": "Télécharger",
+    "upload": "Importer",
     "save": "Sauvegarder",
     "dateTime": "Date et heure",
-    "rating": "Notation",
-    "review": "Examen",
+    "rating": "Note",
+    "review": "Avis",
     "actions": "Actions",
     "transactionType": "Type de transaction",
     "amount": "Montant",
-    "documentNumber": "numéro de document",
-    "insertTransaction": "Insérer l'opération",
+    "documentNumber": "Numéro de document",
+    "insertTransaction": "Nouvelle transaction",
     "cost": "Coût",
     "goToList": "Aller à la liste",
     "add": "Ajouter",
-    "search": "Recherche",
+    "search": "Rechercher",
     "reset": "Réinitialiser",
     "export": "Exporter",
     "total": "Total",
-    "currency": "Monnaie",
+    "currency": "Devise",
     "date": "Date",
     "next": "Suivant",
     "select": "Sélectionner",
@@ -322,7 +345,7 @@
     "bankAccountInfo": "Informations bancaires",
     "warning": "Avertissement",
     "clearMap": "Effacer la carte",
-    "financialRecords": "Dossiers financiers",
+    "financialRecords": "Transactions",
     "disabled": "Désactivé",
     "visibilityStatus": "Statut de visibilité",
     "enabled": "Activé",
@@ -331,15 +354,15 @@
     "userName": "Nom d'utilisateur",
     "code": "Code",
     "beneficiary": "Bénéficiaire",
-    "availabilityTime": "Temps de disponibilité",
+    "availabilityTime": "Période de disponibilité",
     "appType": "Type d'application",
-    "creditGift": "Cadeau de crédit",
-    "tripFeePercentGift": "Cadeau en pourcentage des frais de voyage",
+    "creditGift": "Crédit offert",
+    "tripFeePercentGift": "Cadeau en pourcentage des frais de course",
     "creditCurrency": "Devise du crédit",
-    "conditionTripCountsLessThan": "Le trajet compte moins de",
+    "conditionTripCountsLessThan": "Nombre de courses inférieur à",
     "conditionUserNumberFirstDigits": "Premiers chiffres des numéros mobiles des bénéficiaires (liste, séparés par des virgules)",
     "subject": "Sujet",
-    "type": "Taper",
+    "type": "Type",
     "paymentGateway": "Passerelle de paiement",
     "rider": "Client",
     "driver": "Kasiman",
@@ -374,19 +397,19 @@
   "complaint": {
     "title": "Plainte",
     "subtitle": "Détail de la plainte soumise.",
-    "inscriptionTime": "Heure d'inscription",
+    "inscriptionTime": "Date de soumission",
     "content": "Contenu",
     "activityBy": "par",
     "activityAssignedTo": "Attribué à"
   },
   "driver": {
     "profile": {
-      "changeStatus": "État de mise à jour",
-      "lastSeenAt": "Vu dernièrement à",
-      "rating": "Notation",
+      "changeStatus": "Modifier le statut",
+      "lastSeenAt": "Dernière activité",
+      "rating": "Note",
       "details": "Détails",
-      "orders": "Ordres",
-      "financials": "Dossiers de crédit",
+      "orders": "Commandes",
+      "financials": "Portefeuille",
       "reviews": "Commentaires",
       "documents": "Documents",
       "ratingSummary": "Résumé des évaluations"
@@ -403,8 +426,8 @@
     "viewRider": "Voir le client",
     "viewComplaint": "Voir la plainte",
     "openInGoogleMaps": "Ouvrir dans Google Maps",
-    "registeredOn": "Inscrit le",
-    "submittedOn": "Soumis le"
+    "registeredOn": "Inscrit",
+    "submittedOn": "Soumis"
   },
   "drivers": {
     "title": "Kasimen",
@@ -428,8 +451,8 @@
       "description": "Prestation à demander"
     },
     "looking": {
-      "title": "En regardant",
-      "description": "Recherche d'un Kasiman éligible",
+      "title": "Recherche d'un Kasiman",
+      "description": "Attente qu'un Kasiman disponible accepte la course",
       "waitMessage": "Recherche d'un Kasiman adapté. Veuillez patienter..."
     },
     "determiningLocation": "Détermination de l'emplacement, veuillez patienter...",
@@ -443,7 +466,7 @@
     "emptyState": "Rien à voir ici."
   },
   "message": {
-    "areYouSure": "Es-tu sûr?",
+    "areYouSure": "Êtes-vous sûr ?",
     "deleteDriverConfirmation": {
       "title": "Voulez-vous vraiment supprimer le Kasiman ?",
       "content": "La suppression des informations du Kasiman masquera le Kasiman de la liste des Kasimen et le profil ne sera plus accessible."
@@ -451,7 +474,7 @@
     "deleteDriverCofirmAlert": "Le Kasiman a été supprimé",
     "driverAssignedSuccessfully": "Le Kasiman est attribué avec succès",
     "deleteConfirmation": {
-      "title": "Etes-vous sûr que vous voulez supprimer?"
+      "title": "Voulez-vous vraiment supprimer ?"
     },
     "deleteRiderConfirmation": {
       "content": "La suppression des informations sur le client masquera le client de la liste des clients et le profil ne sera plus accessible."
@@ -690,7 +713,7 @@
   },
   "shiftRules": {
     "title": "Règles de temps de service",
-    "subtitle": "Définissez les limites d'heures et de pauses des Kasimans.",
+    "subtitle": "Définissez les limites d'heures et de pauses des Kasimen.",
     "frequency": "Fréquence",
     "maxHoursPerPeriod": "Heures max / période",
     "maxHoursPerPeriodHint": "Nombre maximal d'heures de conduite autorisées sur la période choisie.",
@@ -708,7 +731,7 @@
   },
   "shiftRule": {
     "title": "Règle de temps de service",
-    "subtitle": "Paramétrez les limites appliquées aux services des Kasimans.",
+    "subtitle": "Paramétrez les limites appliquées aux services des Kasimen.",
     "section": {
       "general": {
         "title": "Général",
@@ -757,11 +780,11 @@
     }
   },
   "reviewParameters": {
-    "title": "Paramètres d'examen",
-    "subtitle": "Liste des paramètres que le Kasiman peut attribuer à l'expérience de service"
+    "title": "Paramètres d'avis",
+    "subtitle": "Critères que le client peut cocher pour évaluer la qualité du service à la fin de la course."
   },
   "reviewParameter": {
-    "title": "Nouveau paramètre d'examen",
+    "title": "Nouveau paramètre d'avis",
     "subtitle": "Paramètres des avis que le client peut sélectionner pour l'évaluation.",
     "isGood": "Est positif",
     "good": "Positif",
@@ -774,7 +797,7 @@
     }
   },
   "services": {
-    "title": "Prestations de service",
+    "title": "Services",
     "subtitle": "Gérez les catégories et les services proposés dans les applications",
     "editCategory": "Modifier la catégorie",
     "newCategory": "Nouvelle catégorie",
@@ -859,7 +882,7 @@
     }
   },
   "serviceOptions": {
-    "title": "Options d'entretien",
+    "title": "Options de service",
     "subtitle": "Liste des options pouvant être activées sur des services spécifiques."
   },
   "serviceOption": {
@@ -874,7 +897,7 @@
     }
   },
   "settings": {
-    "generalSettings": "réglages généraux",
+    "generalSettings": "Réglages généraux",
     "changePasswordTitle": "Changer le mot de passe",
     "changePasswordSubtitle": "Mettez à jour le mot de passe utilisé pour accéder à ce panneau",
     "oldPassword": "Ancien mot de passe",
@@ -974,7 +997,7 @@
   "coupons": {
     "title": "Coupons",
     "subtitle": "Liste de tous les coupons",
-    "availabilityTime": "Temps de disponibilité",
+    "availabilityTime": "Disponible à partir du",
     "description": "Créez des coupons à utiliser par les clients pour obtenir des réductions sur leurs trajets",
     "expirationTime": "Date d'expiration",
     "manyUsersCanUse": "Nombre d'utilisateurs pouvant l'utiliser",
@@ -1053,11 +1076,11 @@
   "riders": {
     "title": "Clients",
     "subtitle": "Liste de tous les clients inscrits.",
-    "notFoundMessage": "Client introuvable!",
+    "notFoundMessage": "Client introuvable !",
     "tab": {
       "details": "Détails",
-      "creditrecords": "Dossiers de crédit",
-      "orders": "Ordres",
+      "creditrecords": "Portefeuille",
+      "orders": "Commandes",
       "addresses": "Adresses"
     }
   },
@@ -1100,17 +1123,17 @@
   "requestActivityType": {
     "arrivedToDestination": "Arrivé à destination",
     "arrivedToPickupPoint": "Arrivé au point de ramassage",
-    "bookedByOperator": "Réservez par opérateur",
+    "bookedByOperator": "Réservé par l'opérateur",
     "bookedByRider": "Réservé par le client",
     "canceledByDriver": "Annulé par le Kasiman",
     "canceledByOperator": "Annulé par l'opérateur",
     "canceledByRider": "Annulé par le client",
-    "driverAccepted": "Kasiman accepté",
+    "driverAccepted": "Accepté par le Kasiman",
     "expired": "Expiré",
     "paid": "Payé",
     "requestedByOperator": "Demandé par l'opérateur",
     "requestedByRider": "Demandé par le client",
-    "reviewed": "Examiné et évalué",
+    "reviewed": "Évalué et noté",
     "started": "Commencé"
   },
   "complaintActivityType": {
@@ -1309,5 +1332,27 @@
       "OpenStreetMap": "OpenStreetMap",
       "Google": "Google Maps"
     }
+  },
+  "msg": {
+    "uploadJpgOnly": "Seuls les fichiers JPG sont acceptés.",
+    "uploadTooLarge": "L'image doit peser moins de 2 Mo.",
+    "networkError": "Erreur réseau.",
+    "unknownError": "Erreur inconnue.",
+    "selectTransactionType": "Veuillez sélectionner le type de transaction.",
+    "transactionSubmitted": "Transaction enregistrée.",
+    "saved": "Enregistré avec succès.",
+    "deleted": "Suppression effectuée.",
+    "zonePriceDeleted": "Tarif zonal supprimé.",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas.",
+    "passwordUpdated": "Mot de passe mis à jour.",
+    "actionNotAllowed": "Action non autorisée.",
+    "selectAtLeastOneRegion": "Sélectionnez au moins une région depuis laquelle ce service peut être commandé.",
+    "orderCanceled": "Demande annulée.",
+    "activityRecorded": "Activité enregistrée.",
+    "assignConfirm": "Confirmez-vous l'attribution de cette course à {{name}} ?",
+    "sosCreated": "Un signal de détresse vient d'être émis.",
+    "complaintCreated": "Une nouvelle plainte vient d'être déposée.",
+    "systemAlreadyConfigured": "Le système est déjà configuré. Réessayez avec le paramètre de mot de passe administrateur.",
+    "searchLocation": "Rechercher un lieu…"
   }
 }
