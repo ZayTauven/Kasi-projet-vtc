@@ -7,8 +7,6 @@ import 'package:client_shared/config.dart';
 import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
-import 'package:kasi_driver/query_result_view.dart';
-import 'package:kasi_driver/register/register.graphql.dart';
 import 'package:kasi_driver/session_token.dart';
 
 class DrawerView extends StatelessWidget {
@@ -172,91 +170,27 @@ class DrawerView extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           onTap: () async {
-            final logoutDialogResult = await showDialog(
+            // Actions confiees a l'OverflowBar natif d'AlertDialog : un Row
+            // rigide faisait deborder la boite de 71 px en francais, rendant
+            // le bouton de confirmation intouchable (hit-test hors bornes).
+            // La suppression de compte vit desormais dans Parametres.
+            await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
                       title: Text(S.of(context).title_logout),
                       content: Text(S.of(context).logout_dialog_body),
                       actions: [
-                        Row(
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, 2);
-                                    },
-                                    child: Text(
-                                        S.of(context).action_delete_account,
-                                        style: const TextStyle(
-                                            color: Color(0xffb20d0e))))),
-                            const Spacer(),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context, 0);
-                                },
-                                child: Text(S.of(context).action_cancel)),
-                            TextButton(
-                                onPressed: () async {
-                                  Navigator.pop(context, 1);
-                                  await clearSession();
-                                },
-                                child: Text(S.of(context).action_ok))
-                          ],
-                        )
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(S.of(context).action_cancel)),
+                        TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await clearSession();
+                            },
+                            child: Text(S.of(context).action_ok))
                       ],
                     ));
-            if (logoutDialogResult != 2) return;
-            // ignore: use_build_context_synchronously
-            showDialog(
-                context: context,
-                builder: (BuildContext ncontext) {
-                  return AlertDialog(
-                    title: Text(S.of(context).dialog_account_deletion_title),
-                    content: Text(S.of(context).dialog_account_deletion_body),
-                    actions: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Mutation$DeleteUser$Widget(
-                                options: WidgetOptions$Mutation$DeleteUser(
-                                  onCompleted: (p0, p1) async {
-                                    await clearSession();
-                                    if (context.mounted) {
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                  onError: (error) =>
-                                      showOperationErrorMessage(context, error),
-                                ),
-                                builder: (runMutation, result) {
-                                  return TextButton(
-                                      onPressed: () {
-                                        runMutation();
-                                      },
-                                      child: Text(
-                                        S.of(context).action_delete_account,
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                            color: Color(0xffb20d0e)),
-                                      ));
-                                }),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(
-                                S.of(context).action_cancel,
-                                textAlign: TextAlign.end,
-                              ))
-                        ],
-                      ),
-                    ],
-                  );
-                });
-
-            //exit(1);
           },
         )
       ]),

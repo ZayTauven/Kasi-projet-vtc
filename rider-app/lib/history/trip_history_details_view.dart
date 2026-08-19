@@ -20,6 +20,7 @@ import 'package:collection/collection.dart';
 
 import '../config.dart';
 import 'package:kasi_rider/l10n/messages.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 // ignore: must_be_immutable
 class TripHistoryDetailsView extends StatelessWidget {
@@ -172,8 +173,9 @@ class TripHistoryDetailsView extends StatelessWidget {
                                             top: 8,
                                             right: 8,
                                             left: 8),
-                                        child: Image.network(
-                                            serverUrl +
+                                        child: KasiNetworkImage.fromAddress(
+                                            urlPrefix: serverUrl,
+                                            address:
                                                 order.service!.media.address,
                                             width: 80,
                                             height: 80),
@@ -234,11 +236,13 @@ class TripHistoryDetailsView extends StatelessWidget {
                                   color: CustomTheme.neutralColors,
                                 ),
                               if (order.paymentGateway?.media != null)
-                                Image.network(
-                                  serverUrl +
-                                      order.paymentGateway!.media!.address,
+                                KasiNetworkImage.fromAddress(
+                                  urlPrefix: serverUrl,
+                                  address: order.paymentGateway!.media!.address,
                                   width: 24,
                                   height: 24,
+                                  placeholderIcon: Ionicons.card,
+                                  borderRadius: 4,
                                 ),
                               const SizedBox(width: 8),
                               Text(

@@ -13,7 +13,7 @@ import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
 import { RequestEntity } from '@kasi/database/request.entity';
-import { GoogleServicesService } from '@kasi/order/google-services/google-services.service';
+import { RoutingService } from '@kasi/order/routing/routing.service';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
 import { DriverRedisService } from '@kasi/redis/driver-redis.service';
@@ -37,7 +37,7 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     private orderService: OrderService,
     private orderRedisService: OrderRedisService,
     private driverRedisService: DriverRedisService,
-    private googleServices: GoogleServicesService,
+    private routingService: RoutingService,
     private sharedOrderService: SharedOrderService,
     @InjectPubSub()
     private pubSub: RedisPubSub,
@@ -88,9 +88,13 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
         if (travel == null || !allowedStatuses.includes(travel.status)) {
           throw new ForbiddenError('Already Taken');
         }
+        // Passer par RoutingService (provider de map_setting + replis OSRM /
+        // haversine) et non par Google en direct : l'activite DriverAccepted
+        // est deja insertee plus haut, donc une exception reseau ici laisse la
+        // course non assignee alors qu'elle est journalisee comme acceptee.
         const metrics =
           driverLocation != null
-            ? await this.googleServices.getSumDistanceAndDuration([
+            ? await this.routingService.getSumDistanceAndDuration([
                 travel.points[0],
                 driverLocation,
               ])

@@ -53,38 +53,45 @@ class _PayoutMethodsViewState extends State<PayoutMethodsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // bottom: false — le Scaffold retire deja la hauteur du clavier ; laisser
+      // SafeArea rajouter le padding de la barre gestuelle par-dessus faisait
+      // deborder la colonne de 28 px des que le champ prenait le focus.
       body: SafeArea(
-        minimum: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            KasiBackButton(text: S.of(context).action_back),
-            const SizedBox(height: 4),
-            Text(
-              S.of(context).payout_methods_title,
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: Query$PayoutMethods$Widget(
-                builder: (result, {fetchMore, refetch}) {
-                  if (result.isLoading || result.hasException) {
-                    return QueryResultView(result, refetch: refetch);
-                  }
-                  final methods = result.parsedData?.payoutMethods ?? [];
-                  if (_selectedMethodType == null && _selectedMethodId != null) {
-                    for (final m in methods) {
-                      if (m.id == _selectedMethodId) {
-                        _selectedMethodType = m.type;
-                        break;
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              KasiBackButton(text: S.of(context).action_back),
+              const SizedBox(height: 4),
+              Text(
+                S.of(context).payout_methods_title,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Query$PayoutMethods$Widget(
+                  builder: (result, {fetchMore, refetch}) {
+                    if (result.isLoading || result.hasException) {
+                      return QueryResultView(result, refetch: refetch);
+                    }
+                    final methods = result.parsedData?.payoutMethods ?? [];
+                    if (_selectedMethodType == null &&
+                        _selectedMethodId != null) {
+                      for (final m in methods) {
+                        if (m.id == _selectedMethodId) {
+                          _selectedMethodType = m.type;
+                          break;
+                        }
                       }
                     }
-                  }
-                  return _buildContent(context, methods);
-                },
+                    return _buildContent(context, methods);
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

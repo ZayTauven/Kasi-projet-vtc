@@ -29,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import 'bloc/main_bloc.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 class OrderStatusSheetView extends StatelessWidget {
   const OrderStatusSheetView({Key? key}) : super(key: key);
@@ -107,11 +108,13 @@ class OrderStatusSheetView extends StatelessWidget {
                               if (state.order.service != null)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
-                                  child: Image.network(
-                                      serverUrl +
+                                  child: KasiNetworkImage.fromAddress(
+                                      urlPrefix: serverUrl,
+                                      address:
                                           state.order.service!.media.address,
                                       width: 117,
-                                      height: 70),
+                                      height: 70,
+                                      placeholderIcon: Ionicons.car_sport),
                                 ),
                               Positioned(
                                 bottom: 0,

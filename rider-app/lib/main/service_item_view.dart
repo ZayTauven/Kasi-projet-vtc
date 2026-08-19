@@ -7,6 +7,8 @@ import 'package:client_shared/theme/theme.dart';
 
 import 'bloc/main_bloc.dart';
 import 'order.graphql.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 class ServiceItemView extends StatelessWidget {
   final bool isSelected;
@@ -35,10 +37,12 @@ class ServiceItemView extends StatelessWidget {
                 : CustomTheme.primaryColors.shade50),
         child: Row(
           children: [
-            Image.network(
-              serverUrl + service.media.address,
+            KasiNetworkImage.fromAddress(
+              urlPrefix: serverUrl,
+              address: service.media.address,
               width: 75,
               height: 75,
+              placeholderIcon: Ionicons.car_sport,
             ),
             Expanded(
               child: Padding(

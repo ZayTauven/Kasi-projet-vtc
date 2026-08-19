@@ -8,7 +8,7 @@
 // n'indique la vraie cause.
 //
 // Surchargeable au build, donc sans rediter (ni recommiter) ce fichier :
-//   flutter run --dart-define=KASI_SERVER_URL=http://192.168.1.50/driver-api/
+//  flutter run --dart-define=KASI_SERVER_URL=http://192.168.1.50/driver-api/
 //   flutter build apk --dart-define=KASI_SERVER_URL=https://kasigroupe.tech/driver-api/
 //
 // En production le prefixe /driver-api/ est retire par le reverse proxy nginx du

@@ -380,16 +380,35 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                           getMapProvider(box)),
                                   SafeArea(
                                     minimum: const EdgeInsets.all(16),
+                                    // Les deux boutons etendus dimensionnent
+                                    // leur largeur sur leur libelle. Avec un
+                                    // solde a 5 chiffres et « Aller en ligne »,
+                                    // la somme depassait la largeur de l'ecran
+                                    // et la Row debordait (« RIGHT OVERFLOWED
+                                    // BY 5.0 PIXELS » barre en haut de CHAQUE
+                                    // session Kasiman). Les `Spacer` ne
+                                    // pouvaient pas absorber le surplus : ils
+                                    // n'occupent que l'espace restant, ils ne
+                                    // compriment pas leurs voisins. On rend
+                                    // donc les deux boutons compressibles, et
+                                    // leurs libelles s'elident si besoin.
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         _getMenuButton(),
                                         const Spacer(),
-                                        _getWalletButton(context, state),
-                                        if (state is! StatusInService)
-                                          const Spacer(),
-                                        _getOnlineOfflineButton(context, state)
+                                        Flexible(
+                                            child: _getWalletButton(
+                                                context, state)),
+                                        // Etait un second `Spacer` : il
+                                        // reclamait de l'espace flexible au
+                                        // meme titre que les boutons, alors
+                                        // qu'un simple ecart suffit.
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                            child: _getOnlineOfflineButton(
+                                                context, state))
                                       ],
                                     ),
                                   ),
@@ -492,8 +511,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     ? FloatingActionButton.extended(
                         key: const Key('offline'),
                         heroTag: 'fabOffline',
+                        // 36 de chaque cote, soit 72 px consommes par le seul
+                        // rembourrage de ce bouton — la cause reelle du
+                        // debordement de la barre superieure, que les libelles
+                        // francais (« Aller en ligne ») et un solde a cinq
+                        // chiffres faisaient basculer.
                         extendedPadding:
-                            const EdgeInsets.symmetric(horizontal: 36),
+                            const EdgeInsets.symmetric(horizontal: 16),
                         elevation: 0,
                         backgroundColor: CustomTheme.primaryColors,
                         foregroundColor: Colors.white,
@@ -513,7 +537,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                         fcmId: fcmId));
                               },
                         label: Text(S.of(context).statusOffline,
-                            style: Theme.of(context).textTheme.headlineSmall),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            // `headlineSmall` etait trop large : les deux
+                            // boutons etendus de la barre superieure ne
+                            // tenaient pas cote a cote avec des libelles
+                            // francais et un solde a cinq chiffres.
+                            style: Theme.of(context).textTheme.titleMedium),
                         icon: const Icon(Ionicons.car_sport),
                       )
                     : ((state is StatusOnline)
@@ -529,9 +559,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                             status: Enum$DriverStatus.Offline));
                                   },
                             label: Text(S.of(context).statusOnline,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headlineSmall
+                                    .titleMedium
                                     ?.copyWith(
                                         color: CustomTheme
                                             .primaryColors.shade600)),
@@ -584,9 +616,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           name: state.driver!.wallet.first.currency)
                       .format(state.driver!.wallet.first.balance)
                   : "-",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context)
                   .textTheme
-                  .headlineSmall
+                  .titleMedium
                   ?.copyWith(color: CustomTheme.primaryColors))),
     );
   }

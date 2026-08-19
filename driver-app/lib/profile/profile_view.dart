@@ -12,6 +12,7 @@ import 'package:kasi_driver/profile/payout_methods_view.dart';
 import 'package:kasi_driver/unit_of_measurement.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:collection/collection.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -128,6 +129,10 @@ class _ProfileViewState extends State<ProfileView> {
                             const SizedBox(width: 4),
                             Expanded(
                                 child: SingleChildScrollView(
+                              // Le defilement doit suivre l'axe du Row : sans
+                              // cela la liste des services deborde de 140 px
+                              // des que le Kasiman en a plus d'un.
+                              scrollDirection: Axis.horizontal,
                               child: Row(
                                   children: driver.enabledServices
                                       .map((e) => Container(
@@ -245,11 +250,13 @@ class _ProfileViewState extends State<ProfileView> {
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8),
-                                          child: Image.network(
-                                            serverUrl + e.address,
+                                          child: KasiNetworkImage.fromAddress(
+                                            urlPrefix: serverUrl,
+                                            address: e.address,
                                             width: 105,
                                             height: 105,
                                             fit: BoxFit.cover,
+                                            placeholderIcon: Ionicons.document,
                                           ),
                                         ),
                                       ),

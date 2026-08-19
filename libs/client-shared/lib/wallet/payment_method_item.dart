@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 class PaymentMethodItem extends StatelessWidget {
   final String id;
@@ -30,10 +32,11 @@ class PaymentMethodItem extends StatelessWidget {
         if (imageAddress != null)
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Image.network(
-              imageAddress!,
+            child: KasiNetworkImage(
+              url: imageAddress,
               width: 50,
               height: 50,
+              placeholderIcon: Ionicons.card,
             ),
           ),
         Text(

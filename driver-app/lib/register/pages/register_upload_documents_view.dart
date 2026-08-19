@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kasi_driver/main_bloc.dart';
 
 import '../../config.dart';
+import 'package:client_shared/components/kasi_network_image.dart';
 
 class RegisterUploadDocumentsView extends StatefulWidget {
   final Function() onUploaded;
@@ -167,11 +168,13 @@ class _RegisterUploadDocumentsViewState
                                 padding: const EdgeInsets.only(left: 8),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    serverUrl + e.address,
+                                  child: KasiNetworkImage.fromAddress(
+                                    urlPrefix: serverUrl,
+                                    address: e.address,
                                     width: 105,
                                     height: 105,
                                     fit: BoxFit.cover,
+                                    placeholderIcon: Ionicons.document,
                                   ),
                                 ),
                               ),
