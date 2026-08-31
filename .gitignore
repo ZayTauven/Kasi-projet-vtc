@@ -38,6 +38,7 @@ build/
 .env.*
 !.env.example
 !.env.template
+!.env.dokploy.example
 secrets/
 *.pem
 *.key
