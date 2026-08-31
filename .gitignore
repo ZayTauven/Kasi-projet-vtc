@@ -156,3 +156,6 @@ docker-compose.override.yml
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+# Configurations Dokploy par environnement (peuvent pointer des secrets)
+tools/dokploy.*.json
+!tools/dokploy.example.json

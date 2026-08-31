@@ -1,0 +1,33 @@
+{
+  "_comment": [
+    "Configuration d un environnement Kasi dans Dokploy, consommee par",
+    "tools/dokploy-setup.mjs. Copier ce fichier par environnement :",
+    "  dokploy.local.json    -> repetition sur le poste (kasi.localhost, sans TLS)",
+    "  dokploy.staging.json  -> staging.kasigroupe.tech, branche develop",
+    "  dokploy.prod.json     -> kasigroupe.tech, branche main",
+    "Ne JAMAIS mettre de secret ici : envFile pointe vers un .env non versionne.",
+    "Les copies dokploy.*.json sont ignorees par .gitignore, seul cet exemple",
+    "est suivi."
+  ],
+
+  "project": "Kasi-delivery",
+  "description": "Plateforme Kasi",
+
+  "environment": "production",
+
+  "service": "kasi",
+  "serviceDescription": "Stack complete (3 APIs, panel, nginx, PostGIS, Redis)",
+
+  "repository": "git@github.com:ZayTauven/Kasi-projet-vtc.git",
+  "branch": "main",
+  "composePath": "./docker-compose.dokploy.yml",
+
+  "sshKeyName": "github-kasi",
+
+  "envFile": "./.env.dokploy.local",
+
+  "domain": {
+    "host": "kasi.localhost",
+    "https": false
+  }
+}

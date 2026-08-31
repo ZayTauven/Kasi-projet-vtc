@@ -8,6 +8,69 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-08-31 — Chaîne de déploiement : passage à Dokploy auto-hébergé
+
+**Contexte** : le déploiement de production est manuel (`git pull && docker
+compose build && docker compose up -d && docker compose restart nginx` en SSH
+sur `/opt/kasi`). Les workflows GitHub Actions écrits en juillet
+(`ci.yml` + `deploy.yml` vers GHCR) n'ont jamais tourné, bloqués par le verrou
+de facturation du compte GitHub.
+
+**Décision** : adopter **Dokploy** auto-hébergé. Dokploy clone et construit
+**sur le serveur**, déclenché par webhook : aucune minute GitHub Actions n'est
+consommée, ce qui contourne réellement le blocage plutôt que d'attendre sa
+levée. Il apporte aussi le TLS automatique (Traefik), le retour arrière, les
+sauvegardes planifiées et les logs par service.
+
+**Périmètre arbitré — `kasi-nginx` est CONSERVÉ, derrière Traefik.**
+Traefik ne fait que terminer le TLS et router le domaine vers `nginx:80` ; tout
+le routage applicatif reste dans `.nginx/kasi-locations.conf`. Raison : ce
+fichier porte l'upgrade WebSocket des subscriptions, la réponse CORS préflight
+avec `proxy_hide_header` (sinon en-têtes en double rejetés par les navigateurs)
+et le `resolver 127.0.0.11` avec upstreams en variable — le correctif du piège
+d'IP figée. Surtout, **les apps mobiles déjà installées tapent en dur sur
+`/driver-api/` et `/rider-api/`** : réécrire ce routage en middlewares Traefik
+casserait le parc en circulation. L'éclatement en Applications Dokploy (rollback
+et rolling update par service) reste possible plus tard.
+
+**Hors lot, explicitement** : sauvegardes automatisées de la base et migrations
+TypeORM. Ce sont les deux vrais trous du déploiement actuel, mais ce sont des
+chantiers distincts — une chaîne plus propre livre du code plus vite, pas un
+schéma à jour.
+
+**Pièges relevés en écrivant `docker-compose.dokploy.yml`** :
+- Dokploy **re-clone le dépôt à chaque déploiement**. Les montages `./config` et
+  `./data/uploads` pointeraient dans ce clone ; `config/` et `data/` étant
+  gitignorés, ils reviendraient vides à chaque `git push` — perte de la clé de
+  service Firebase et de tous les uploads. D'où `../files/`, répertoire frère
+  du clone que Dokploy n'efface jamais.
+- Les `container_name` fixes et les ports publiés sont globaux à l'hôte :
+  production et staging ne pourraient pas cohabiter. Retirés de la variante.
+- `.gitignore` capturait `.env.dokploy.example` via la règle `.env.*` ;
+  exception ajoutée, sans quoi le fichier référencé par le runbook n'existerait
+  pour personne d'autre.
+- nginx émettait `X-Forwarded-Proto $scheme`, ce qui vaut `http` une fois le TLS
+  terminé par Traefik. Remplacé par un `map` qui retombe sur `$scheme` quand
+  l'en-tête amont est absent : strictement rétrocompatible avec l'architecture
+  actuelle.
+
+**Anomalie de production découverte à l'inventaire (sans rapport avec Dokploy)** :
+`/etc/letsencrypt/renewal/kasigroupe.tech.conf` est en `authenticator =
+standalone` **sans `pre_hook` ni `post_hook`**, alors que `kasi-nginx` détient
+`0.0.0.0:80` en permanence. Le `certbot.timer` sort en succès aujourd'hui
+uniquement parce que le certificat n'est pas encore renouvelable. Premier vrai
+essai attendu **vers le 2026-09-08** (échec), certificat expiré le
+**2026-10-08**. La bascule vers Traefik supprime le problème par construction ;
+sinon, correctif d'attente au §7 du runbook.
+
+**Livrables** : `docker-compose.dokploy.yml`, `.env.dokploy.example`,
+`docs/deploiement-dokploy.md` (runbook local → staging → production → retour
+arrière), `tools/dokploy-setup.mjs` + `tools/dokploy.example.json` (configuration
+de l'API Dokploy scriptée et rejouable — les noms de champs de cette API ne sont
+pas documentés, ils ont été relevés en sondant les erreurs Zod).
+
+---
+
 ## 2026-07-26 — Audit vision produit pour le mémoire de master 2 (kasi-product-vision)
 
 **Contexte** : l'agent `kasi-memoire` a demandé la matière produit des chapitres

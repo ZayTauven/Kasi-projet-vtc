@@ -242,6 +242,44 @@ donc rien de ce qui sera observé ensuite sur la stack Kasi elle-même.
 
 ---
 
+
+### Version scriptée (recommandée pour staging et production)
+
+Les 7 étapes ci-dessus se rejouent avec
+[tools/dokploy-setup.mjs](../tools/dokploy-setup.mjs), qui crée le projet, le
+service, la clé SSH, la source Git, les variables et le domaine via l'API
+Dokploy :
+
+```bash
+cp tools/dokploy.example.json tools/dokploy.prod.json   # ignoré par git
+# éditer branch, repository, domain, envFile
+
+DOKPLOY_URL=https://dokploy.kasigroupe.tech \
+DOKPLOY_API_KEY=<clé générée dans Settings > API/CLI> \
+  node tools/dokploy-setup.mjs --config tools/dokploy.prod.json --dry-run
+```
+
+`--dry-run` n'écrit rien et affiche ce qui serait créé. Sans le drapeau, le
+script applique la configuration et affiche la commande de déploiement.
+
+Il est idempotent : relancé, il retrouve le projet, le service et la clé SSH
+existants et se contente de réappliquer la source, les variables et le domaine.
+
+Deux comportements de l'API valent d'être connus, le script les gère :
+
+- `domain.create` **crée l'objet même avec un corps partiel** — il ne valide
+  pas avant d'écrire. Une sonde exploratoire laisse donc un domaine mal
+  configuré derrière elle.
+- `domain.update` **n'accepte pas de rattacher un `composeId`** après coup : il
+  répond 200 en laissant le champ à `null`. Le rattachement doit se faire à la
+  création, d'où la suppression puis recréation.
+
+Les noms de champs de l'API Dokploy ne sont pas documentés. Ils ont été relevés
+en envoyant un POST avec un corps vide : l'erreur Zod renvoyée énumère les
+champs attendus. Même méthode si Dokploy change son schéma.
+
+---
+
 ## 6. Étape 3 — Staging sur `develop`
 
 Second service Dokploy dans le même projet, identique au précédent, avec :
