@@ -26,7 +26,7 @@ import { EntityManager, EntityTarget, ObjectLiteral } from 'typeorm';
  *
  * Hors perimetre : grand livre en partie double et dette especes (p2-argent).
  */
-export interface WalletPosting<T> {
+export interface WalletPosting<T extends ObjectLiteral> {
   /** Entite de portefeuille (RiderWalletEntity, DriverWalletEntity...). */
   walletEntity: EntityTarget<ObjectLiteral>;
   /** Entite de transaction (RiderTransactionEntity...). */
@@ -55,7 +55,10 @@ export interface WalletPostingResult<W> {
   transactionId?: number;
 }
 
-export async function postWalletOperation<W extends ObjectLiteral, T>(
+export async function postWalletOperation<
+  W extends ObjectLiteral,
+  T extends ObjectLiteral,
+>(
   manager: EntityManager,
   posting: WalletPosting<T>,
 ): Promise<WalletPostingResult<W>> {
@@ -101,7 +104,7 @@ export async function postWalletOperation<W extends ObjectLiteral, T>(
       if (key != null) {
         const existing = (await manager
           .getRepository(posting.transactionEntity)
-          .findOne({ where: { idempotencyKey: key } as never })) as
+          .findOne({ where: { idempotencyKey: key } as never })) as unknown as
           | { id: number }
           | null;
         transactionId = existing?.id;

@@ -60,6 +60,17 @@ export class DriverResolver {
     @Args('input', { type: () => DriverTransactionInput })
     input: DriverTransactionInput,
   ) {
+    // p2-argent I1 (2026-10-19) : permission dediee (A9). Avant : tout
+    // operateur connecte pouvait crediter ou debiter un Kasiman.
+    const operator = await this.operatorRepository.findOne({
+      where: { id: this.context.req.user.id },
+      relations: { role: true },
+    });
+    if (
+      !operator?.role?.permissions.includes(OperatorPermission.DriverWallet_Edit)
+    ) {
+      throw new ForbiddenError('PERMISSION_NOT_GRANTED');
+    }
     input.amount =
       input.action == TransactionAction.Recharge
         ? Math.abs(input.amount)

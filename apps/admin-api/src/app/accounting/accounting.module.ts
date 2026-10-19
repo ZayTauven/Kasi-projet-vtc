@@ -16,7 +16,6 @@ import { ProviderWalletDTO } from './dto/provider-wallet.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { DriverEntity } from '@kasi/database/driver.entity';
 import { RiderEntity } from '@kasi/database/rider-entity';
-import { ProviderTransactionInput } from './dto/provider-transaction.input';
 
 @Module({
   imports: [
@@ -37,8 +36,10 @@ import { ProviderTransactionInput } from './dto/provider-transaction.input';
         {
           EntityClass: ProviderTransactionEntity,
           DTOClass: ProviderTransactionDTO,
-          CreateDTOClass: ProviderTransactionInput,
-          create: { many: { disabled: true } },
+          // p2-argent I1 (2026-10-19) : createOneProviderTransaction retiree
+          // (fiche §8.5) : elle inserait une ligne sans toucher au solde ni a
+          // la cle. Operations manuelles : mutations sur mesure avec permission.
+          create: { disabled: true },
           update: { disabled: true },
           delete: { disabled: true },
           pagingStrategy: PagingStrategies.OFFSET,

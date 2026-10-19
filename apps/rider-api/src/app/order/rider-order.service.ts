@@ -2,7 +2,7 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpServer, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DriverDeductTransactionType } from '@kasi/database/enums/driver-deduct-transaction-type.enum';
+import { DriverRechargeTransactionType } from '@kasi/database/enums/driver-recharge-transaction-type.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { PaymentStatus } from '@kasi/database/enums/payment-status.enum';
@@ -248,10 +248,15 @@ export class RiderOrderService {
           },
           manager,
         );
+        // p2-argent I1 (2026-10-19) : la part d'annulation est un GAIN du
+        // Kasiman : `Recharge` / `OrderFee`, valeurs que driver-app connait
+        // deja et affiche comme un gain (A7). Avant : `Deduct` / `Commission`
+        // avec un montant positif, affiche sous le libelle « Commission ».
+        // Cle inchangee : un rejeu reste absorbe.
         await this.driverService.rechargeWallet(
           {
-            action: TransactionAction.Deduct,
-            deductType: DriverDeductTransactionType.Commission,
+            action: TransactionAction.Recharge,
+            rechargeType: DriverRechargeTransactionType.OrderFee,
             amount: order.service.cancellationDriverShare,
             currency: order.currency,
             driverId: order.driverId,

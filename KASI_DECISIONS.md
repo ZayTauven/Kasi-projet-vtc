@@ -8,6 +8,40 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-19 — `p2-argent` I1 : correctifs d'argent sans table
+
+**Point** : `p2-argent`, incrément I1 de `docs/fiche-conception-argent.md` (§7). Aucune
+migration. Banc d'intégration : 7 fichiers, 61 tests au vert (38 de la phase 1 et 23
+nouveaux), relancé en session principale.
+
+**Corrigé** : carte cadeau (bonne table, verrou de ligne, `isUsed`, disponibilité et
+expiration vérifiés, crédit unique) ; pourboire crédité au Kasiman quand les espèces
+couvrent exactement le prix (A1) ; pourboire négatif refusé (A2) ; attente et coupon gelés
+dès `Started` (A3) ; service `OnlyCash` qui ne débite plus le portefeuille (A4) ; part
+d'annulation du Kasiman enregistrée en `Recharge` / `OrderFee` (A7) ; règles du coupon
+(prix jamais négatif, arrondi au franc, services, bornes, première course, date de
+début), vérifiées avant l'enregistrement de la course ; permissions `DriverWallet_Edit`,
+`RiderWallet_Edit`, `FleetWallet_Edit` exigées sur les opérations manuelles (A9) ;
+mutations génériques `createOne*Transaction` retirées. Ajout : `updateOneOrder` de
+rider-api filtre sur le client connecté (avant, un client pouvait modifier le pourboire
+de la course d'un autre).
+
+**Choix d'interprétation retenus** (contestables) : `allowedServices` vide = tous les
+services ; `minimumCost` / `maximumCost` à 0 = pas de borne ; « course terminée » (coupon
+première course) = `WaitingForReview` ou `Finished` ; pourboire modifiable jusqu'à
+`WaitingForPostPay`. Plafond de pourboire et montant entier non appliqués (non arbitrés,
+fiche §5.5).
+
+**Avant le déploiement en production** : vérifier les rôles d'opérateur. En local, le rôle
+« Comptabilite » n'a que `DriverWallet_Edit` et perdrait les opérations manuelles client
+et flotte. Ajouter les permissions nécessaires aux rôles de production avant de déployer.
+Le déploiement suppose aussi `p1-migrations` appliqué (colonne `idempotencyKey`).
+
+**Reste** : essai de la carte cadeau sur téléphone avec la rider-app installée ;
+traduction de `PERMISSION_NOT_GRANTED` dans le panel (kasi-admin-panel).
+
+---
+
 ## 2026-10-19 — `p2-argent` : cinq arbitrages validés sur la fiche de conception
 
 **Point** : `p2-argent` (`lot-argent`), fiche `docs/fiche-conception-argent.md` §8,

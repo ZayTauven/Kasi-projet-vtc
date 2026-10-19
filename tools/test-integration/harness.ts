@@ -47,6 +47,10 @@ import { FeedbackEntity } from '../../libs/database/src/lib/entities/feedback.en
 import { MediaEntity } from '../../libs/database/src/lib/entities/media.entity';
 import { PayoutEntity } from '../../libs/database/src/lib/entities/payout.entity';
 import { PayoutSessionEntity } from '../../libs/database/src/lib/entities/payout-session.entity';
+import { CouponEntity } from '../../libs/database/src/lib/entities/coupon.entity';
+import { GiftCardEntity } from '../../libs/database/src/lib/entities/gift-card.entity';
+import { OperatorEntity } from '../../libs/database/src/lib/entities/operator.entity';
+import { CommonCouponService } from '../../libs/database/src/lib/coupon/common-coupon.service';
 import { SharedDriverService } from '../../libs/database/src/lib/order/shared-driver.service';
 import { SharedRiderService } from '../../libs/database/src/lib/order/shared-rider.service';
 import { SharedFleetService } from '../../libs/database/src/lib/order/shared-fleet.service';
@@ -64,6 +68,8 @@ import { OrderService as AdminOrderService } from '../../apps/admin-api/src/app/
 import { RiderResolver as AdminRiderResolver } from '../../apps/admin-api/src/app/rider/rider.resolver';
 import { DriverResolver as AdminDriverResolver } from '../../apps/admin-api/src/app/driver/driver.resolver';
 import { PayoutService } from '../../apps/admin-api/src/app/payout/payout.service';
+import { FleetResolver as AdminFleetResolver } from '../../apps/admin-api/src/app/fleet/fleet.resolver';
+import { CouponService as RiderCouponService } from '../../apps/rider-api/src/app/coupon/coupon.service';
 
 export { OrderStatus, DriverStatus };
 
@@ -217,6 +223,10 @@ export interface WorldOptions {
   providerShareFlat?: number;
   /** Rattache le premier Kasiman a une flotte (part de commission de 10 %). */
   firstDriverInFleet?: boolean;
+  /** p2-argent I1 : mode de paiement du service (CashCredit par defaut). */
+  paymentMethod?: 'CashCredit' | 'OnlyCredit' | 'OnlyCash';
+  /** p2-argent I1 : prix d'une minute d'attente (0 par defaut). */
+  perMinuteWait?: number;
 }
 
 async function insertId(ds: DataSource, sql: string, params: unknown[] = []) {
@@ -239,8 +249,9 @@ export async function createWorld(
   const serviceId = await insertId(
     ds,
     `INSERT INTO service ("categoryId", title, "mediaId", "cancellationTotalFee",
-       "cancellationDriverShare", "providerSharePercent", "providerShareFlat")
-     VALUES ($1, 'Course test', $2, $3, $4, $5, $6) RETURNING id`,
+       "cancellationDriverShare", "providerSharePercent", "providerShareFlat",
+       "paymentMethod", "perMinuteWait")
+     VALUES ($1, 'Course test', $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
     [
       categoryId,
       mediaId,
@@ -248,6 +259,8 @@ export async function createWorld(
       options.cancellationDriverShare ?? 0,
       options.providerSharePercent ?? 10,
       options.providerShareFlat ?? 0,
+      options.paymentMethod ?? 'CashCredit',
+      options.perMinuteWait ?? 0,
     ],
   );
   const fleetId = await insertId(
@@ -366,6 +379,104 @@ export async function countRows(
   return n;
 }
 
+/**
+ * p2-argent I1 : operateur du back-office avec un role portant ces permissions
+ * (aucune : role vide).
+ */
+export async function createOperator(
+  ds: DataSource,
+  permissions: string[],
+  userName = `operateur-${Math.random().toString(36).slice(2, 8)}`,
+): Promise<number> {
+  const roleId = await insertId(
+    ds,
+    `INSERT INTO operator_role (title, permissions)
+     VALUES ('Role test', $1::operator_role_permissions_enum[]) RETURNING id`,
+    [permissions],
+  );
+  return insertId(
+    ds,
+    `INSERT INTO operator ("userName", "roleId") VALUES ($1, $2) RETURNING id`,
+    [userName, roleId],
+  );
+}
+
+export interface CouponOptions {
+  code?: string;
+  discountPercent?: number;
+  discountFlat?: number;
+  minimumCost?: number;
+  maximumCost?: number;
+  isFirstTravelOnly?: boolean;
+  /** Decalage du debut de validite, en jours (negatif : deja commence). */
+  startsInDays?: number;
+  /** Services autorises (vide : tous). */
+  serviceIds?: number[];
+}
+
+/** p2-argent I1 : coupon valide (commence hier, expire dans 30 jours). */
+export async function createCoupon(
+  ds: DataSource,
+  options: CouponOptions = {},
+): Promise<number> {
+  const id = await insertId(
+    ds,
+    `INSERT INTO coupon (code, title, "startTimestamp", "expirationTimestamp",
+       "discountPercent", "discountFlat", "minimumCost", "maximumCost",
+       "isFirstTravelOnly", "manyUsersCanUse", "manyTimesUserCanUse")
+     VALUES ($1, 'Coupon test', now() + ($2 || ' days')::interval,
+       now() + interval '30 days', $3, $4, $5, $6, $7, 1000, 10) RETURNING id`,
+    [
+      options.code ?? 'PROMO10',
+      String(options.startsInDays ?? -1),
+      options.discountPercent ?? 0,
+      options.discountFlat ?? 0,
+      options.minimumCost ?? 0,
+      options.maximumCost ?? 0,
+      options.isFirstTravelOnly ?? false,
+    ],
+  );
+  for (const serviceId of options.serviceIds ?? []) {
+    await ds.query(
+      `INSERT INTO coupon_services_service ("couponId", "serviceId") VALUES ($1, $2)`,
+      [id, serviceId],
+    );
+  }
+  return id;
+}
+
+export interface GiftCardOptions {
+  code?: string;
+  amount?: number;
+  isUsed?: boolean;
+  /** Debut de validite, en jours par rapport a maintenant (defaut -1). */
+  availableInDays?: number;
+  /** Expiration, en jours par rapport a maintenant (defaut 30). */
+  expiresInDays?: number;
+}
+
+/** p2-argent I1 : carte cadeau (disponible depuis hier, expire dans 30 jours). */
+export async function createGiftCard(
+  ds: DataSource,
+  options: GiftCardOptions = {},
+): Promise<number> {
+  return insertId(
+    ds,
+    `INSERT INTO gift_card (code, currency, amount, "isUsed", "availableTimestamp",
+       "expirationTimestamp")
+     VALUES ($1, $2, $3, $4, now() + ($5 || ' days')::interval,
+       now() + ($6 || ' days')::interval) RETURNING id`,
+    [
+      options.code ?? 'KDO-5000',
+      CURRENCY,
+      options.amount ?? 5000,
+      options.isUsed ?? false,
+      String(options.availableInDays ?? -1),
+      String(options.expiresInDays ?? 30),
+    ],
+  );
+}
+
 /** Message de l'erreur levee par une promesse (ou null si elle a reussi). */
 export async function errorOf(promise: Promise<unknown>): Promise<string | null> {
   try {
@@ -420,6 +531,11 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
   const orderRedis = new OrderRedisService(redis, sharedDriver);
   const driverRedis = new DriverRedisService(redis);
   const unused = {} as never; // dependances non sollicitees par les chemins testes
+  // p2-argent I1 : vraies regles du coupon (avant : dependance non sollicitee).
+  const commonCoupon = new CommonCouponService(
+    repo(CouponEntity),
+    repo(RequestEntity),
+  );
   const sharedOrder = new SharedOrderService(
     repo(RequestEntity),
     repo(RequestActivityEntity),
@@ -437,7 +553,7 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     sharedDriver,
     sharedProvider,
     sharedFleet,
-    unused, // CommonCouponService
+    commonCoupon,
     d.pubSub as never,
     d.driverNotifications as never,
     d.riderNotifications as never,
@@ -451,6 +567,7 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     sharedOrder,
     orderRedis,
     driverRedis,
+    commonCoupon,
   };
 }
 
@@ -523,8 +640,12 @@ export function buildRiderApi(ds: DataSource, redis: Redis, d: Doubles) {
   const queryService = new RiderOrderQueryService(
     ds.getRepository(RequestEntity),
     riderOrderService,
-    {} as never,
+    shared.commonCoupon,
     d.pubSub as never,
+  );
+  const couponService = new RiderCouponService(
+    ds.getRepository(GiftCardEntity),
+    shared.sharedRider,
   );
   const controller = new RiderAPIController(
     shared.sharedRider,
@@ -541,6 +662,9 @@ export function buildRiderApi(ds: DataSource, redis: Redis, d: Doubles) {
     ...shared,
     riderOrderService,
     controller,
+    /** Equivalent de la mutation `redeemGiftCard(code)` du client `riderId`. */
+    redeemGiftCard: (code: string, riderId: number) =>
+      couponService.redeemGiftCard(code, riderId),
     /** Equivalent de `updateOneOrder` de rider-api pour le client `riderId`. */
     update: (orderId: number, riderId: number, update: Record<string, unknown>) =>
       queryService.updateOne(orderId, update as never, {
@@ -564,9 +688,10 @@ export function buildAdminApi(
     driverResolver: new AdminDriverResolver(
       {} as never,
       shared.sharedDriver,
-      ds.getRepository(DriverEntity) as never,
+      ds.getRepository(OperatorEntity),
       context,
     ),
+    fleetResolver: new AdminFleetResolver(shared.sharedFleet, context, ds),
     orderService: new AdminOrderService(
       ds.getRepository(RequestEntity),
       ds.getRepository(RequestActivityEntity),

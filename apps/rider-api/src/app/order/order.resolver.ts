@@ -73,6 +73,15 @@ export class OrderResolver {
     let coupon;
     if (input.couponCode != null) {
       coupon = await this.commonCouponService.checkCoupon(input.couponCode);
+      // p2-argent I1 (2026-10-19) : coupon « premiere course » refuse des
+      // l'apercu si le client connecte a deja termine une course (service et
+      // bornes de prix : verifies service par service dans calculateFare).
+      if (this.context.req.user?.id != null) {
+        await this.commonCouponService.assertFirstTravel(
+          coupon,
+          this.context.req.user.id,
+        );
+      }
     }
     return this.orderService.calculateFare({
       ...input,

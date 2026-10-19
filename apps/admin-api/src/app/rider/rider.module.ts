@@ -55,7 +55,10 @@ import { RiderInput } from './dto/rider.input';
         {
           EntityClass: RiderTransactionEntity,
           DTOClass: RiderTransactionDTO,
-          create: { many: { disabled: true } },
+          // p2-argent I1 (2026-10-19) : createOneRiderTransaction retiree
+          // (fiche §8.5) : elle inserait une ligne sans toucher au solde ni a
+          // la cle. Operations manuelles : mutations sur mesure avec permission.
+          create: { disabled: true },
           update: { disabled: true },
           delete: { disabled: true },
           pagingStrategy: PagingStrategies.OFFSET,

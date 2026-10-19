@@ -107,3 +107,28 @@ export const ACCEPTABLE_STATUSES: OrderStatus[] = [
   OrderStatus.Requested,
   OrderStatus.Booked,
 ];
+
+/**
+ * p2-argent I1 (2026-10-19) : statuts ou le prix de la course peut encore
+ * changer (temps d'attente, coupon). Apres le demarrage, le prix est gele :
+ * avant, l'attente et le coupon modifiaient le prix enregistre apres coup, sans
+ * mouvement d'argent (anomalie A3 de docs/fiche-conception-argent.md).
+ */
+export const FARE_EDITABLE_STATUSES: OrderStatus[] = [
+  ...UNASSIGNED_STATUSES,
+  OrderStatus.DriverAccepted,
+  OrderStatus.Arrived,
+  OrderStatus.WaitingForPrePay,
+];
+
+/**
+ * p2-argent I1 (2026-10-19) : statuts ou le pourboire peut encore changer,
+ * jusqu'au paiement (rider-app l'envoie aussi depuis l'ecran de paiement,
+ * WaitingForPostPay / WaitingForPrePay). Apres paiement, il ne bouge plus
+ * (anomalie A2).
+ */
+export const TIP_EDITABLE_STATUSES: OrderStatus[] = [
+  ...FARE_EDITABLE_STATUSES,
+  OrderStatus.Started,
+  OrderStatus.WaitingForPostPay,
+];

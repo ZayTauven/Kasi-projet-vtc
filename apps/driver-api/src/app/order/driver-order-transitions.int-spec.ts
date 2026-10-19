@@ -325,6 +325,94 @@ describe('p1-transitions : updateOneOrder de driver-api', () => {
     });
   });
 
+  describe('fin de course : pourboire et service especes seulement (p2-argent I1)', () => {
+    const riderTransactions = async (orderId: number) =>
+      (
+        await ds.query(
+          `SELECT count(*)::int AS n FROM rider_transaction WHERE "requestId" = $1`,
+          [orderId],
+        )
+      )[0].n;
+
+    it('especes = prix exact, pourboire paye par le portefeuille : credite au Kasiman (A1)', async () => {
+      await ds.query(
+        `INSERT INTO rider_wallet (amount, currency, "riderId") VALUES (5000, 'XOF', $1)`,
+        [world.riderId],
+      );
+      const orderId = await orderAt(OrderStatus.Started);
+      await ds.query(`UPDATE request SET "tipAmount" = 500 WHERE id = $1`, [orderId]);
+      // Le Kasiman encaisse exactement le prix (2 000) ; rejoue 3 fois.
+      const results = await concurrently(3, () =>
+        api(0).update(orderId, { status: OrderStatus.Finished, paidAmount: 2000 }),
+      );
+      expect(results.every((r) => r.status === 'fulfilled')).toBe(true);
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForReview);
+      // Client : -500 (pourboire). Kasiman : +500 (pourboire) - 200 (commission).
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(
+        4500,
+      );
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBe(300);
+      const [fee] = await ds.query(
+        `SELECT amount::float AS amount FROM driver_transaction
+          WHERE "requestId" = $1 AND "rechargeType" = 'OrderFee'`,
+        [orderId],
+      );
+      expect(fee.amount).toBe(500);
+      // L'argent ne disparait plus : debit client = credit Kasiman.
+      expect(await walletBalance(ds, 'admin_wallet', {})).toBe(200);
+    });
+
+    it('especes = prix + pourboire : rien ne passe par le portefeuille', async () => {
+      await ds.query(
+        `INSERT INTO rider_wallet (amount, currency, "riderId") VALUES (5000, 'XOF', $1)`,
+        [world.riderId],
+      );
+      const orderId = await orderAt(OrderStatus.Started);
+      await ds.query(`UPDATE request SET "tipAmount" = 500 WHERE id = $1`, [orderId]);
+      await api(0).update(orderId, { status: OrderStatus.Finished, paidAmount: 2500 });
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(
+        5000,
+      );
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBe(-200);
+      expect(await riderTransactions(orderId)).toBe(0);
+    });
+
+    it('service OnlyCash : le portefeuille du client n est jamais debite (A4)', async () => {
+      await ds.query(`UPDATE service SET "paymentMethod" = 'OnlyCash'`);
+      await ds.query(
+        `INSERT INTO rider_wallet (amount, currency, "riderId") VALUES (5000, 'XOF', $1)`,
+        [world.riderId],
+      );
+      // Sans especes declarees : attente de paiement, credit client intact
+      // (avant : 2 000 preleves sur le portefeuille).
+      const orderId = await orderAt(OrderStatus.Started);
+      await api(0).update(orderId, { status: OrderStatus.Finished });
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForPostPay);
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(
+        5000,
+      );
+      // Pourboire ajoute, especes du seul prix : le reste n est pas pris au
+      // portefeuille, la course reste en attente de paiement.
+      await ds.query(`UPDATE request SET "tipAmount" = 500 WHERE id = $1`, [orderId]);
+      await api(0).update(orderId, { status: OrderStatus.Finished, paidAmount: 2000 });
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForPostPay);
+      // Especes du total : course payee, portefeuille client toujours intact.
+      await api(0).update(orderId, { status: OrderStatus.Finished, paidAmount: 2500 });
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForReview);
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(
+        5000,
+      );
+      expect(await riderTransactions(orderId)).toBe(0);
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBe(-200);
+    });
+  });
+
   describe('50 courses d affilee avec concurrence et rejeux (critere de sortie phase 1)', () => {
     it('ni double assignation, ni doublon d activite, ni double prelevement', async () => {
       const COURSES = 50;

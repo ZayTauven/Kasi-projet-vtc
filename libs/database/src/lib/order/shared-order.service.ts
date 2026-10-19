@@ -189,7 +189,17 @@ export class SharedOrderService {
                 }
               }
             }
-            if (input.coupon == null) {
+            // p2-argent I1 (2026-10-19) : coupon hors service ou hors bornes de
+            // prix : aucun prix remise affiche pour ce service (avant : la remise
+            // s'affichait partout, puis etait refusee ou ignoree a la commande).
+            if (
+              input.coupon == null ||
+              this.commonCouponService.refusalForOrder(
+                input.coupon,
+                service.id,
+                cost,
+              ) != null
+            ) {
               return {
                 ...service,
                 cost,
@@ -361,6 +371,20 @@ export class SharedOrderService {
         // });
         // paidAmount = amountNeedsToBePrePaid;
       }
+    }
+    // p2-argent I1 (2026-10-19) : coupon verifie AVANT d'enregistrer la course
+    // (regles du coupon, fiche §1.6). Avant, un coupon refuse levait l'erreur
+    // apres l'enregistrement : course creee mais jamais diffusee.
+    if (input.couponCode != null && input.couponCode != '' && rider != null) {
+      const coupon = await this.commonCouponService.checkCoupon(
+        input.couponCode,
+        rider.id,
+      );
+      this.commonCouponService.assertAppliesToOrder(
+        coupon,
+        input.serviceId,
+        cost,
+      );
     }
     let order: RequestEntity = await this.orderRepository.save({
       serviceId: input.serviceId,
@@ -593,11 +617,18 @@ export class SharedOrderService {
           'Cash payment is not available for this service.',
         );
       }
-      const riderCredit = await this.riderService.getRiderCreditInCurrency(
-        order.riderId,
-        order.currency,
-        manager,
-      );
+      // p2-argent I1 (2026-10-19) : un service « especes seulement » ne debite
+      // jamais le portefeuille du client (A4) ; son credit n'entre pas dans la
+      // decision. Avant : un client avec du credit etait debite meme sur
+      // OnlyCash.
+      const riderCredit =
+        order.service.paymentMethod == ServicePaymentMethod.OnlyCash
+          ? 0
+          : await this.riderService.getRiderCreditInCurrency(
+              order.riderId,
+              order.currency,
+              manager,
+            );
       const providerPercent =
         order.rider.isResident === false
           ? order.service.providerSharePercent *
@@ -697,7 +728,14 @@ export class SharedOrderService {
         },
         manager,
       );
-      if (order.costAfterCoupon - cashAmount > 0) {
+      // p2-argent I1 (2026-10-19) : part payee par le portefeuille (prix +
+      // pourboire - especes) creditee au Kasiman des qu'elle est positive (A1).
+      // Avant : condition `prix - especes > 0` ; quand les especes couvraient
+      // exactement le prix, le client etait debite du pourboire et le Kasiman
+      // n'etait jamais credite.
+      const driverWalletCredit =
+        order.costAfterCoupon - cashAmount + order.tipAmount;
+      if (driverWalletCredit > 0) {
         await this.driverService.rechargeWallet(
           {
             status: TransactionStatus.Done,
@@ -706,7 +744,7 @@ export class SharedOrderService {
             requestId: order.id,
             action: TransactionAction.Recharge,
             rechargeType: DriverRechargeTransactionType.OrderFee,
-            amount: order.costAfterCoupon - cashAmount + order.tipAmount,
+            amount: driverWalletCredit,
             idempotencyKey: MoneyKey.order(order.id, 'driver-order-fee'),
           },
           manager,

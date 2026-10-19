@@ -53,10 +53,13 @@ Transactions, verrous, contraintes uniques et clés étrangères sont ceux de Po
 | `tools/test-integration/global-setup.ts` | Création de la base et migrations |
 | `tools/test-integration/harness.ts` | Connexions, doubles, données minimales, fabrique des vrais services |
 | `tools/test-integration/uuid-shim.js` | `uuid` 14 n'existe qu'en ESM, illisible pour Jest |
-| `apps/driver-api/src/app/order/driver-order-transitions.int-spec.ts` | Transitions côté Kasiman, 50 courses d'affilée |
+| `apps/driver-api/src/app/order/driver-order-transitions.int-spec.ts` | Transitions côté Kasiman, 50 courses d'affilée, pourboire et service `OnlyCash` en fin de course |
 | `apps/rider-api/src/app/order/rider-cancel.int-spec.ts` | Annulation client, avis, retour de passerelle |
-| `apps/admin-api/src/app/payout/admin-money.int-spec.ts` | Opérations manuelles, versements, actions opérateur |
+| `apps/admin-api/src/app/payout/admin-money.int-spec.ts` | Opérations manuelles (et leurs permissions `*Wallet_Edit`), versements, actions opérateur |
 | `libs/database/src/lib/order/wallet-ledger.int-spec.ts` | Écritures de portefeuille, clés d'unicité |
+| `apps/rider-api/src/app/coupon/gift-card.int-spec.ts` | Carte cadeau : crédit unique, carte utilisée, expirée ou pas encore disponible, deux clients simultanés (`p2-argent` I1) |
+| `apps/rider-api/src/app/order/rider-order-update.int-spec.ts` | Pourboire, attente et coupon après démarrage, part d'annulation du Kasiman (`p2-argent` I1) |
+| `libs/database/src/lib/coupon/common-coupon.int-spec.ts` | Règles du coupon : plancher et arrondi, services, bornes de prix, première course, date de début (`p2-argent` I1) |
 
 Les `*.int-spec.ts` sont exclus des builds (`tsconfig.app.json`, `tsconfig.lib.json`)
 et ne sont pas lancés par `nx test` (motif `*.spec.ts`).

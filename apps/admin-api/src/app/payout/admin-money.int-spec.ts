@@ -13,6 +13,7 @@ import {
   buildDriverApi,
   concurrently,
   countRows,
+  createOperator,
   createOrder,
   createWorld,
   Doubles,
@@ -53,8 +54,12 @@ describe('admin-api : argent et actions operateur', () => {
     await resetDatabase(ds, redis);
     d = makeDoubles();
     world = await createWorld(ds, { drivers: 2, providerSharePercent: 10 });
-    [{ id: operatorId }] = await ds.query(
-      `INSERT INTO operator ("userName") VALUES ('operateur-test') RETURNING id`,
+    // p2-argent I1 : les operations manuelles exigent les permissions
+    // *Wallet_Edit ; l'operateur de ces tests les a toutes.
+    operatorId = await createOperator(
+      ds,
+      ['DriverWallet_Edit', 'RiderWallet_Edit', 'FleetWallet_Edit'],
+      'operateur-test',
     );
   });
 
@@ -100,6 +105,74 @@ describe('admin-api : argent et actions operateur', () => {
       await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
     ).toBe(-400);
     expect(await countRows(ds, 'driver_transaction')).toBe(1);
+  });
+
+  describe('permissions des operations manuelles (p2-argent I1, A9)', () => {
+    const driverDebit = (asOperator: number) =>
+      buildAdminApi(ds, redis, d, asOperator).driverResolver.createDriverTransaction({
+        driverId: world.driverIds[0],
+        action: TransactionAction.Deduct,
+        rechargeType: DriverRechargeTransactionType.BankTransfer,
+        amount: 400,
+        currency: 'XOF',
+      } as never);
+    const riderRecharge = (asOperator: number) =>
+      buildAdminApi(ds, redis, d, asOperator).riderResolver.createRiderTransaction({
+        riderId: world.riderId,
+        action: TransactionAction.Recharge,
+        rechargeType: RiderRechargeTransactionType.Correction,
+        amount: 1500,
+        currency: 'XOF',
+      } as never);
+    const fleetRecharge = (asOperator: number) =>
+      buildAdminApi(ds, redis, d, asOperator).fleetResolver.createFleetTransaction({
+        fleetId: world.fleetId,
+        action: TransactionAction.Recharge,
+        rechargeType: 'Commission',
+        amount: 700,
+        currency: 'XOF',
+      } as never);
+
+    it('operateur sans permission (role vide, ou role de lecture) : refuse, rien d ecrit', async () => {
+      const none = await createOperator(ds, [], 'sans-role');
+      const viewer = await createOperator(
+        ds,
+        ['DriverWallet_View', 'RiderWallet_View', 'FleetWallet_View'],
+        'lecture',
+      );
+      const [{ id: noRole }] = await ds.query(
+        `INSERT INTO operator ("userName") VALUES ('aucun-role') RETURNING id`,
+      );
+      for (const op of [none, viewer, noRole]) {
+        expect(await errorOf(driverDebit(op))).toBe('PERMISSION_NOT_GRANTED');
+        expect(await errorOf(riderRecharge(op))).toBe('PERMISSION_NOT_GRANTED');
+        expect(await errorOf(fleetRecharge(op))).toBe('PERMISSION_NOT_GRANTED');
+      }
+      expect(await countRows(ds, 'driver_transaction')).toBe(0);
+      expect(await countRows(ds, 'rider_transaction')).toBe(0);
+      expect(await countRows(ds, 'fleet_transaction')).toBe(0);
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBeNull();
+    });
+
+    it('chaque permission ouvre seulement son portefeuille', async () => {
+      const driverOnly = await createOperator(ds, ['DriverWallet_Edit'], 'compta');
+      await driverDebit(driverOnly);
+      expect(await errorOf(riderRecharge(driverOnly))).toBe('PERMISSION_NOT_GRANTED');
+      expect(await errorOf(fleetRecharge(driverOnly))).toBe('PERMISSION_NOT_GRANTED');
+      const riderOnly = await createOperator(ds, ['RiderWallet_Edit'], 'support');
+      await riderRecharge(riderOnly);
+      const fleetOnly = await createOperator(ds, ['FleetWallet_Edit'], 'flottes');
+      await fleetRecharge(fleetOnly);
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBe(-400);
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(1500);
+      expect(await walletBalance(ds, 'fleet_wallet', { fleetId: world.fleetId })).toBe(700);
+      const [row] = await ds.query(`SELECT "operatorId" FROM fleet_transaction`);
+      expect(row.operatorId).toBe(fleetOnly);
+    });
   });
 
   describe('versements (payout)', () => {

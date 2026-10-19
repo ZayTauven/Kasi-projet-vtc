@@ -17,7 +17,6 @@ import { DriverWalletDTO } from './dto/driver-wallet.dto';
 import { DriverDTO } from './dto/driver.dto';
 import { UpdateDriverInput } from './dto/driver.input';
 import { OperatorEntity } from '@kasi/database/operator.entity';
-import { DriverTransactionInput } from './dto/driver-transaction.input';
 
 @Module({
   imports: [
@@ -58,8 +57,10 @@ import { DriverTransactionInput } from './dto/driver-transaction.input';
         {
           EntityClass: DriverTransactionEntity,
           DTOClass: DriverTransactionDTO,
-          CreateDTOClass: DriverTransactionInput,
-          create: { many: { disabled: true } },
+          // p2-argent I1 (2026-10-19) : createOneDriverTransaction retiree
+          // (fiche §8.5) : elle inserait une ligne sans toucher au solde ni a
+          // la cle. Operations manuelles : mutations sur mesure avec permission.
+          create: { disabled: true },
           update: { disabled: true },
           delete: { disabled: true },
           pagingStrategy: PagingStrategies.OFFSET,
