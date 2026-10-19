@@ -8,7 +8,21 @@ query DriversList($paging: OffsetPaging, $filter: DriverFilter, $sorting: [Drive
             mobileNumber
             status
             registrationTimestamp
+            wallet {
+                balance
+                currency
+            }
         }
         totalCount
     }
+    moneyPolicies {
+        currency
+        debtLimit
+        debtAlertThreshold
+    }
+}
+
+# p2-argent I3 : Kasimen au-dela du plafond de dette (filtre « bloques »).
+query DebtBlockedDriverIds {
+    debtBlockedDriverIds
 }

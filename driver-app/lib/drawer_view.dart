@@ -103,6 +103,22 @@ class DrawerView extends StatelessWidget {
               Navigator.pushNamed(context, 'wallet');
             },
           ),
+        // p2-argent I3 : relevé du compte (solde, dette, plafond, mouvements).
+        // Visible même si le portefeuille est masqué : la dette doit l'être.
+        ListTile(
+          iconColor: CustomTheme.primaryColors.shade800,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          leading: const Icon(Ionicons.document_text),
+          minLeadingWidth: 20.0,
+          title: Text(
+            S.of(context).menu_statement,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          onTap: () {
+            Navigator.pushNamed(context, 'statement');
+          },
+        ),
         if (driver?.isWalletHidden == false)
           ListTile(
             iconColor: CustomTheme.primaryColors.shade800,

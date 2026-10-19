@@ -721,11 +721,6 @@ export type CreateOneDriverInput = {
   driver: UpdateDriverInput;
 };
 
-export type CreateOneDriverTransactionInput = {
-  /** The record to create */
-  driverTransaction: DriverTransactionInput;
-};
-
 export type CreateOneEmailProviderInput = {
   /** The record to create */
   emailProvider: EmailProviderInput;
@@ -766,11 +761,6 @@ export type CreateOnePayoutMethodInput = {
   payoutMethod: PayoutMethodInput;
 };
 
-export type CreateOneProviderTransactionInput = {
-  /** The record to create */
-  providerTransaction: ProviderTransactionInput;
-};
-
 export type CreateOneRegionInput = {
   /** The record to create */
   region: RegionInput;
@@ -794,11 +784,6 @@ export type CreateOneRiderAddressInput = {
 export type CreateOneRiderInput = {
   /** The record to create */
   rider: RiderInput;
-};
-
-export type CreateOneRiderTransactionInput = {
-  /** The record to create */
-  riderTransaction: CreateRiderTransaction;
 };
 
 export type CreateOneSosActivityInput = {
@@ -887,23 +872,6 @@ export type CreateRiderAddress = {
   riderId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
   type: RiderAddressType;
-};
-
-export type CreateRiderTransaction = {
-  action: TransactionAction;
-  amount: Scalars['Float']['input'];
-  createdAt: Scalars['DateTime']['input'];
-  currency: Scalars['String']['input'];
-  deductType?: InputMaybe<RiderDeductTransactionType>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  operatorId?: InputMaybe<Scalars['ID']['input']>;
-  paymentGatewayId?: InputMaybe<Scalars['ID']['input']>;
-  rechargeType?: InputMaybe<RiderRechargeTransactionType>;
-  refrenceNumber?: InputMaybe<Scalars['String']['input']>;
-  requestId?: InputMaybe<Scalars['ID']['input']>;
-  riderId: Scalars['ID']['input'];
-  status: TransactionStatus;
 };
 
 export type CreateSosAcitivtyInput = {
@@ -1735,10 +1703,13 @@ export type DriverTransactionFilter = {
 export type DriverTransactionInput = {
   action: TransactionAction;
   amount: Scalars['Float']['input'];
+  counterparty?: InputMaybe<ManualCounterparty>;
   currency: Scalars['String']['input'];
   deductType?: InputMaybe<DriverDeductTransactionType>;
   description?: InputMaybe<Scalars['String']['input']>;
   driverId: Scalars['ID']['input'];
+  idempotencyKey?: InputMaybe<Scalars['String']['input']>;
+  motif?: InputMaybe<Scalars['String']['input']>;
   rechargeType?: InputMaybe<DriverRechargeTransactionType>;
   refrenceNumber?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2351,10 +2322,13 @@ export type FleetTransactionFilter = {
 export type FleetTransactionInput = {
   action: TransactionAction;
   amount: Scalars['Float']['input'];
+  counterparty?: InputMaybe<ManualCounterparty>;
   currency: Scalars['String']['input'];
   deductType?: InputMaybe<ProviderDeductTransactionType>;
   description?: InputMaybe<Scalars['String']['input']>;
   fleetId: Scalars['ID']['input'];
+  idempotencyKey?: InputMaybe<Scalars['String']['input']>;
+  motif?: InputMaybe<Scalars['String']['input']>;
   rechargeType?: InputMaybe<ProviderRechargeTransactionType>;
   refrenceNumber?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2617,6 +2591,38 @@ export type IntFieldComparisonBetween = {
   upper: Scalars['Int']['input'];
 };
 
+export type LedgerIntegrityIssue = {
+  __typename?: 'LedgerIntegrityIssue';
+  account?: Maybe<Scalars['String']['output']>;
+  count?: Maybe<Scalars['Int']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  detail: Scalars['String']['output'];
+  difference?: Maybe<Scalars['Float']['output']>;
+  kind: Scalars['String']['output'];
+  ledgerBalance?: Maybe<Scalars['Float']['output']>;
+  walletBalance?: Maybe<Scalars['Float']['output']>;
+  walletTable?: Maybe<Scalars['String']['output']>;
+};
+
+export type LedgerIntegrityReport = {
+  __typename?: 'LedgerIntegrityReport';
+  accountCount: Scalars['Int']['output'];
+  checkedAt: Scalars['DateTime']['output'];
+  entryCount: Scalars['Int']['output'];
+  issueCount: Scalars['Int']['output'];
+  issues: Array<LedgerIntegrityIssue>;
+  ok: Scalars['Boolean']['output'];
+  openedAt?: Maybe<Scalars['DateTime']['output']>;
+  walletCount: Scalars['Int']['output'];
+};
+
+/** Contrepartie au grand livre : CORRECTIONS (defaut), PROMOTIONS (geste commercial), CAISSE (especes au siege) */
+export enum ManualCounterparty {
+  Caisse = 'Caisse',
+  Corrections = 'Corrections',
+  Promotions = 'Promotions'
+}
+
 export type MapSetting = {
   __typename?: 'MapSetting';
   googleMapsApiKey?: Maybe<Scalars['String']['output']>;
@@ -2677,6 +2683,16 @@ export enum MessageStatus {
   Sent = 'Sent'
 }
 
+export type MoneyPolicy = {
+  __typename?: 'MoneyPolicy';
+  currency: Scalars['String']['output'];
+  debtAlertThreshold: Scalars['Int']['output'];
+  debtLimit: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  updatedByOperatorId?: Maybe<Scalars['Int']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addEnabledServicesToDriver: Driver;
@@ -2699,7 +2715,6 @@ export type Mutation = {
   createOneComplaintActivity: ComplaintActivity;
   createOneCoupon: Coupon;
   createOneDriver: Driver;
-  createOneDriverTransaction: DriverTransaction;
   createOneEmailProvider: EmailProvider;
   createOneFeedbackParameter: FeedbackParameter;
   createOneFleet: Fleet;
@@ -2708,13 +2723,11 @@ export type Mutation = {
   createOneOrderCancelReason: OrderCancelReason;
   createOnePaymentGateway: PaymentGateway;
   createOnePayoutMethod: PayoutMethod;
-  createOneProviderTransaction: ProviderTransaction;
   createOneRegion: Region;
   createOneRetentionPolicy: RetentionPolicy;
   createOneReward: Reward;
   createOneRider: Rider;
   createOneRiderAddress: RiderAddress;
-  createOneRiderTransaction: RiderTransaction;
   createOneSOSActivity: SosActivity;
   createOneService: Service;
   createOneServiceCategory: ServiceCategory;
@@ -2759,11 +2772,13 @@ export type Mutation = {
   setOptionsOnService: Service;
   setRegionsOnService: Service;
   setServicesOnZonePrice: ZonePrice;
+  settleDriverDebt: DriverWallet;
   testMaskedCall: Scalars['Boolean']['output'];
   updateFirebase: UpdateConfigResult;
   updateManyRiderAddresses: UpdateManyResponse;
   updateMapSetting: MapSetting;
   updateMapsAPIKey: UpdateConfigResult;
+  updateMoneyPolicy: MoneyPolicy;
   updateOneAnnouncement: Announcement;
   updateOneCallMaskingProvider: CallMaskingProvider;
   updateOneCarColor: CarColor;
@@ -2897,11 +2912,6 @@ export type MutationCreateOneDriverArgs = {
 };
 
 
-export type MutationCreateOneDriverTransactionArgs = {
-  input: CreateOneDriverTransactionInput;
-};
-
-
 export type MutationCreateOneEmailProviderArgs = {
   input: CreateOneEmailProviderInput;
 };
@@ -2942,11 +2952,6 @@ export type MutationCreateOnePayoutMethodArgs = {
 };
 
 
-export type MutationCreateOneProviderTransactionArgs = {
-  input: CreateOneProviderTransactionInput;
-};
-
-
 export type MutationCreateOneRegionArgs = {
   input: CreateOneRegionInput;
 };
@@ -2969,11 +2974,6 @@ export type MutationCreateOneRiderArgs = {
 
 export type MutationCreateOneRiderAddressArgs = {
   input: CreateOneRiderAddressInput;
-};
-
-
-export type MutationCreateOneRiderTransactionArgs = {
-  input: CreateOneRiderTransactionInput;
 };
 
 
@@ -3194,6 +3194,11 @@ export type MutationSetServicesOnZonePriceArgs = {
 };
 
 
+export type MutationSettleDriverDebtArgs = {
+  input: SettleDriverDebtInput;
+};
+
+
 export type MutationTestMaskedCallArgs = {
   number: Scalars['String']['input'];
   providerId?: InputMaybe<Scalars['ID']['input']>;
@@ -3218,6 +3223,11 @@ export type MutationUpdateMapSettingArgs = {
 export type MutationUpdateMapsApiKeyArgs = {
   adminPanel: Scalars['String']['input'];
   backend: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateMoneyPolicyArgs = {
+  input: UpdateMoneyPolicyInput;
 };
 
 
@@ -4609,19 +4619,6 @@ export type ProviderTransactionFilter = {
   requestId?: InputMaybe<IdFilterComparison>;
 };
 
-export type ProviderTransactionInput = {
-  action: TransactionAction;
-  amount: Scalars['Float']['input'];
-  createdAt: Scalars['DateTime']['input'];
-  currency: Scalars['String']['input'];
-  deductType?: InputMaybe<ProviderDeductTransactionType>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  operatorId?: InputMaybe<Scalars['ID']['input']>;
-  rechargeType?: InputMaybe<ProviderRechargeTransactionType>;
-  refrenceNumber?: InputMaybe<Scalars['String']['input']>;
-  requestId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type ProviderTransactionSort = {
   direction: SortDirection;
   field: ProviderTransactionSortFields;
@@ -4682,6 +4679,7 @@ export type Query = {
   coupon: Coupon;
   coupons: CouponConnection;
   currentConfiguration: CurrentConfiguration;
+  debtBlockedDriverIds: Array<Scalars['ID']['output']>;
   distressSignal: DistressSignal;
   distressSignalAggregate: Array<DistressSignalAggregateResponse>;
   distressSignals: DistressSignalConnection;
@@ -4714,9 +4712,11 @@ export type Query = {
   giftCard: GiftCard;
   giftCards: GiftCardConnection;
   incomeChart: Array<IncomeResultItem>;
+  ledgerIntegrityReport: LedgerIntegrityReport;
   login: TokenObject;
   mapSetting: MapSetting;
   me: Operator;
+  moneyPolicies: Array<MoneyPolicy>;
   operator: Operator;
   operatorRole: OperatorRole;
   operatorRoles: Array<OperatorRole>;
@@ -5899,9 +5899,12 @@ export type RiderTransactionFilter = {
 export type RiderTransactionInput = {
   action: TransactionAction;
   amount: Scalars['Float']['input'];
+  counterparty?: InputMaybe<ManualCounterparty>;
   currency: Scalars['String']['input'];
   deductType?: InputMaybe<RiderDeductTransactionType>;
   description?: InputMaybe<Scalars['String']['input']>;
+  idempotencyKey?: InputMaybe<Scalars['String']['input']>;
+  motif?: InputMaybe<Scalars['String']['input']>;
   rechargeType?: InputMaybe<RiderRechargeTransactionType>;
   refrenceNumber?: InputMaybe<Scalars['String']['input']>;
   riderId: Scalars['ID']['input'];
@@ -6324,6 +6327,16 @@ export type SetServicesOnZonePriceInput = {
   relationIds: Array<Scalars['ID']['input']>;
 };
 
+export type SettleDriverDebtInput = {
+  amount: Scalars['Int']['input'];
+  currency: Scalars['String']['input'];
+  driverId: Scalars['ID']['input'];
+  idempotencyKey: Scalars['String']['input'];
+  location?: InputMaybe<Scalars['String']['input']>;
+  motif: Scalars['String']['input'];
+  receiptNumber: Scalars['String']['input'];
+};
+
 export type ShiftRule = {
   __typename?: 'ShiftRule';
   createdAt: Scalars['DateTime']['output'];
@@ -6648,6 +6661,12 @@ export type UpdateMapSettingInput = {
   mapboxStyleUser?: InputMaybe<Scalars['String']['input']>;
   mapboxToken?: InputMaybe<Scalars['String']['input']>;
   provider?: InputMaybe<MapTileProvider>;
+};
+
+export type UpdateMoneyPolicyInput = {
+  currency: Scalars['String']['input'];
+  debtAlertThreshold: Scalars['Int']['input'];
+  debtLimit: Scalars['Int']['input'];
 };
 
 export type UpdateOneAnnouncementInput = {
@@ -7042,7 +7061,7 @@ export type ViewDriverQueryVariables = Exact<{
 }>;
 
 
-export type ViewDriverQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, canDeliver?: boolean | null, maxPackageSize?: PackageSize | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null }, services: Array<{ __typename?: 'Service', id: string, name: string }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
+export type ViewDriverQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, canDeliver?: boolean | null, maxPackageSize?: PackageSize | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, moneyPolicies: Array<{ __typename?: 'MoneyPolicy', currency: string, debtLimit: number, debtAlertThreshold: number }>, services: Array<{ __typename?: 'Service', id: string, name: string }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
 
 export type UpdateDriverProfileMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -7069,7 +7088,14 @@ export type DriverFinancialsQueryVariables = Exact<{
 }>;
 
 
-export type DriverFinancialsQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', transactions: { __typename?: 'DriverTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'DriverTransaction', status: TransactionStatus, createdAt: any, amount: number, description?: string | null, currency: string, action: TransactionAction, deductType?: DriverDeductTransactionType | null, rechargeType?: DriverRechargeTransactionType | null, refrenceNumber?: string | null, requestId?: number | null, paymentGatewayId?: number | null, operatorId?: string | null }> }, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
+export type DriverFinancialsQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', transactions: { __typename?: 'DriverTransactionsConnection', totalCount: number, nodes: Array<{ __typename?: 'DriverTransaction', status: TransactionStatus, createdAt: any, amount: number, description?: string | null, currency: string, action: TransactionAction, deductType?: DriverDeductTransactionType | null, rechargeType?: DriverRechargeTransactionType | null, refrenceNumber?: string | null, requestId?: number | null, paymentGatewayId?: number | null, operatorId?: string | null }> }, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> }, moneyPolicies: Array<{ __typename?: 'MoneyPolicy', currency: string, debtLimit: number, debtAlertThreshold: number }> };
+
+export type SettleDriverDebtMutationVariables = Exact<{
+  input: SettleDriverDebtInput;
+}>;
+
+
+export type SettleDriverDebtMutation = { __typename?: 'Mutation', settleDriverDebt: { __typename?: 'DriverWallet', id: string, balance: number, currency: string } };
 
 export type DriverFeedbacksQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -7110,7 +7136,12 @@ export type DriversListQueryVariables = Exact<{
 }>;
 
 
-export type DriversListQuery = { __typename?: 'Query', drivers: { __typename?: 'DriverConnection', totalCount: number, nodes: Array<{ __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, gender?: Gender | null, mobileNumber: string, status: DriverStatus, registrationTimestamp: any }> } };
+export type DriversListQuery = { __typename?: 'Query', drivers: { __typename?: 'DriverConnection', totalCount: number, nodes: Array<{ __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, gender?: Gender | null, mobileNumber: string, status: DriverStatus, registrationTimestamp: any, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }> }, moneyPolicies: Array<{ __typename?: 'MoneyPolicy', currency: string, debtLimit: number, debtAlertThreshold: number }> };
+
+export type DebtBlockedDriverIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DebtBlockedDriverIdsQuery = { __typename?: 'Query', debtBlockedDriverIds: Array<string> };
 
 export type ProviderWalletsListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -7437,6 +7468,18 @@ export type UpdateMapSettingMutationVariables = Exact<{
 
 
 export type UpdateMapSettingMutation = { __typename?: 'Mutation', updateMapSetting: { __typename?: 'MapSetting', id: string, provider: MapTileProvider, mapboxToken?: string | null, mapboxStyleUser: string, mapboxStyleId: string, googleMapsApiKey?: string | null, updatedAt: any } };
+
+export type MoneyPoliciesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MoneyPoliciesQuery = { __typename?: 'Query', moneyPolicies: Array<{ __typename?: 'MoneyPolicy', id: string, currency: string, debtLimit: number, debtAlertThreshold: number, updatedByOperatorId?: number | null, updatedAt: any }>, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', currency: string }> } };
+
+export type UpdateMoneyPolicyMutationVariables = Exact<{
+  input: UpdateMoneyPolicyInput;
+}>;
+
+
+export type UpdateMoneyPolicyMutation = { __typename?: 'Mutation', updateMoneyPolicy: { __typename?: 'MoneyPolicy', id: string, currency: string, debtLimit: number, debtAlertThreshold: number, updatedAt: any } };
 
 export type OrderCancelReasonListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -8540,6 +8583,15 @@ export const ViewDriverDocument = gql`
     }
     rating
     reviewCount
+    wallet {
+      balance
+      currency
+    }
+  }
+  moneyPolicies {
+    currency
+    debtLimit
+    debtAlertThreshold
   }
   services {
     id
@@ -8648,6 +8700,11 @@ export const DriverFinancialsDocument = gql`
       currency
     }
   }
+  moneyPolicies {
+    currency
+    debtLimit
+    debtAlertThreshold
+  }
 }
     `;
 
@@ -8656,6 +8713,26 @@ export const DriverFinancialsDocument = gql`
   })
   export class DriverFinancialsGQL extends Apollo.Query<DriverFinancialsQuery, DriverFinancialsQueryVariables> {
     document = DriverFinancialsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SettleDriverDebtDocument = gql`
+    mutation SettleDriverDebt($input: SettleDriverDebtInput!) {
+  settleDriverDebt(input: $input) {
+    id
+    balance
+    currency
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SettleDriverDebtGQL extends Apollo.Mutation<SettleDriverDebtMutation, SettleDriverDebtMutationVariables> {
+    document = SettleDriverDebtDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -8772,8 +8849,17 @@ export const DriversListDocument = gql`
       mobileNumber
       status
       registrationTimestamp
+      wallet {
+        balance
+        currency
+      }
     }
     totalCount
+  }
+  moneyPolicies {
+    currency
+    debtLimit
+    debtAlertThreshold
   }
 }
     `;
@@ -8783,6 +8869,22 @@ export const DriversListDocument = gql`
   })
   export class DriversListGQL extends Apollo.Query<DriversListQuery, DriversListQueryVariables> {
     document = DriversListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DebtBlockedDriverIdsDocument = gql`
+    query DebtBlockedDriverIds {
+  debtBlockedDriverIds
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DebtBlockedDriverIdsGQL extends Apollo.Query<DebtBlockedDriverIdsQuery, DebtBlockedDriverIdsQueryVariables> {
+    document = DebtBlockedDriverIdsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -9792,6 +9894,56 @@ export const UpdateMapSettingDocument = gql`
   })
   export class UpdateMapSettingGQL extends Apollo.Mutation<UpdateMapSettingMutation, UpdateMapSettingMutationVariables> {
     document = UpdateMapSettingDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const MoneyPoliciesDocument = gql`
+    query MoneyPolicies {
+  moneyPolicies {
+    id
+    currency
+    debtLimit
+    debtAlertThreshold
+    updatedByOperatorId
+    updatedAt
+  }
+  regions {
+    nodes {
+      currency
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class MoneyPoliciesGQL extends Apollo.Query<MoneyPoliciesQuery, MoneyPoliciesQueryVariables> {
+    document = MoneyPoliciesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMoneyPolicyDocument = gql`
+    mutation UpdateMoneyPolicy($input: UpdateMoneyPolicyInput!) {
+  updateMoneyPolicy(input: $input) {
+    id
+    currency
+    debtLimit
+    debtAlertThreshold
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMoneyPolicyGQL extends Apollo.Mutation<UpdateMoneyPolicyMutation, UpdateMoneyPolicyMutationVariables> {
+    document = UpdateMoneyPolicyDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

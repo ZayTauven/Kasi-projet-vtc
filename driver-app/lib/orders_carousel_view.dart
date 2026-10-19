@@ -1,5 +1,8 @@
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
+import 'package:kasi_driver/wallet/kasiman_account_cubit.dart';
+import 'package:kasi_driver/wallet/kasiman_debt_views.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'driver_distance_select_view.dart';
 import 'main_bloc.dart';
@@ -48,8 +51,19 @@ class OrdersCarouselView extends StatelessWidget {
                       mainBloc
                           .add(CurrentOrderUpdated(parsedData.updateOneOrder));
                     },
-                    onError: (error) =>
-                        showOperationErrorMessage(context, error)),
+                    onError: (error) {
+                      // p2-argent I3 : refus au-delà du plafond de dette
+                      // (`KASIMAN_DEBT_LIMIT`) -> écran de blocage avec le
+                      // montant dû et la marche à suivre, au lieu d'un
+                      // simple message.
+                      final debtCubit = context.read<KasimanAccountCubit>();
+                      if (debtCubit.applyDebtLimitError(error)) {
+                        debtCubit.refresh(GraphQLProvider.of(context).value);
+                        DebtBlockedView.open(context);
+                        return;
+                      }
+                      showOperationErrorMessage(context, error);
+                    }),
                 builder: (runMutation, result) =>
                     BlocBuilder<MainBloc, MainState>(builder: (context, state) {
                       // À l'acceptation d'une course l'état devient

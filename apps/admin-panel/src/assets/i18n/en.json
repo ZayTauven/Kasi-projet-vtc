@@ -484,7 +484,8 @@
   "error": {
     "nameInvalid": "Name is not valid",
     "titleInvalid": "Title is not valid",
-    "PERMISSION_NOT_GRANTED": "Permission not granted"
+    "PERMISSION_NOT_GRANTED": "Permission not granted",
+    "KASIMAN_DEBT_LIMIT": "Balance of {{balance}}, above the {{debtLimit}} limit: the Kasiman must settle their debt to receive new rides."
   },
   "fleet": {
     "exclusitivityAreaTitle": "Exclusitivity Area",
@@ -1354,5 +1355,50 @@
     "complaintCreated": "A new complaint has just been submitted.",
     "systemAlreadyConfigured": "System is already configured. Try with the admin password parameter.",
     "searchLocation": "Search location…"
+  },
+  "debt": {
+    "label": "Debt",
+    "column": "Cash debt",
+    "blockedOnly": "Blocked only",
+    "level": {
+      "ok": "Normal",
+      "alert": "Alert",
+      "blocked": "Blocked"
+    },
+    "limits": "Limit {{limit}}, alert at {{alert}}",
+    "noWallet": "No wallet for this Kasiman: no debt.",
+    "section": {
+      "title": "Cash debt",
+      "desc": "Negative part of the balance: commissions on cash rides. Above the limit, the Kasiman receives no rides until the debt is settled."
+    },
+    "settle": {
+      "button": "Settle debt",
+      "submit": "Record settlement",
+      "amount": "Amount received",
+      "amountHint": "Whole number, at most the current debt.",
+      "amountTooHigh": "The amount exceeds the current debt.",
+      "location": "Cash desk",
+      "locationHint": "SIEGE by default, or the Kasi relay code.",
+      "locationInvalid": "Letters, digits, \"_\" or \"-\", 32 characters at most.",
+      "receiptNumber": "Receipt number",
+      "motif": "Reason",
+      "done": "Settlement recorded in the ledger."
+    }
+  },
+  "moneyPolicy": {
+    "tab": "Debt limit",
+    "title": "Kasimen debt limit",
+    "subtitle": "Rule applied to every ride offer, without redeployment.",
+    "section": {
+      "title": "Limit and alert",
+      "desc": "Above the limit, the Kasiman receives no rides. From the alert threshold, they are warned. Changes apply immediately."
+    },
+    "debtLimit": "Debt limit",
+    "debtLimitHint": "Positive whole number, in the selected currency (10,000 FCFA for the pilot).",
+    "debtAlertThreshold": "Alert threshold",
+    "debtAlertThresholdHint": "Positive whole number, below the limit (7,500 FCFA for the pilot).",
+    "alertNotBelowLimit": "The alert threshold must be below the limit.",
+    "noPolicy": "No limit in this currency: saving creates one.",
+    "saved": "Limit saved."
   }
 }

@@ -1,3 +1,78 @@
+<!-- p2-argent I3 (fiche argent §4.4) : dette espèces et règlement au siège ou chez un relais. -->
+<form nz-form [formGroup]="formSettle" (ngSubmit)="onSubmitSettle()" class="mb-4">
+  <div class="kasi-form-sections">
+    <section class="kasi-form-section">
+      <div class="kasi-form-section__aside">
+        <h2 class="kasi-form-section__title">{{ 'debt.section.title' | translate }}</h2>
+        <p class="kasi-form-section__desc">{{ 'debt.section.desc' | translate }}</p>
+      </div>
+      <div class="kasi-form-section__body">
+        @if (debt != null) {
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            <span class="kasi-title">{{ debt.debt | currency: debt.currency }}</span>
+            <nz-tag [nzColor]="debtTagColor(debt.level)">{{ ('debt.level.' + debt.level) | translate }}</nz-tag>
+            @if (debt.debtLimit != null) {
+              <span class="table-second-line">{{ 'debt.limits' | translate: {
+                limit: (debt.debtLimit | currency: debt.currency),
+                alert: (debt.debtAlertThreshold | currency: debt.currency) } }}</span>
+            }
+          </div>
+        } @else {
+          <p class="table-second-line mb-4">{{ 'debt.noWallet' | translate }}</p>
+        }
+        @if (settleKey == null) {
+          @if (debt != null && debt.debt > 0) {
+            <button nz-button nzType="primary" type="button" (click)="openSettle()">
+              <i nz-icon nzType="wallet"></i>{{ 'debt.settle.button' | translate }}
+            </button>
+          }
+        } @else {
+          <div class="kasi-form kasi-form--grid">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="settleAmount">{{ 'debt.settle.amount' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'debt.settle.amountHint' | translate">
+                <nz-input-number formControlName="amount" id="settleAmount" class="w-full"
+                  [nzMin]="1" [nzMax]="debt?.debt ?? 1" [nzStep]="500" [nzPrecision]="0"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired>{{ 'profile.currency' | translate }}</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="currency" nzDisabled>
+                  <nz-option [nzLabel]="debt?.currency ?? ''" [nzValue]="debt?.currency"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="settleLocation">{{ 'debt.settle.location' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'debt.settle.locationHint' | translate"
+                [nzErrorTip]="'debt.settle.locationInvalid' | translate">
+                <input nz-input formControlName="location" id="settleLocation" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="settleReceipt">{{ 'debt.settle.receiptNumber' | translate }}</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="receiptNumber" id="settleReceipt" maxlength="64" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="kasi-form__full">
+              <nz-form-label nzRequired nzFor="settleMotif">{{ 'debt.settle.motif' | translate }}</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="motif" id="settleMotif" maxlength="150" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div class="kasi-form-page-actions">
+            <button nz-button nzType="default" type="button" (click)="closeSettle()">{{ 'form.cancel' | translate }}</button>
+            <button nz-button nzType="primary" type="submit" [nzLoading]="settling"
+              [disabled]="formSettle.invalid || settling">{{ 'debt.settle.submit' | translate }}</button>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</form>
 <div fxLayout="row" fxLayoutGap="4px" class="dt-actionbar">
   <!--<button nz-button nzType="primary"><i nz-icon nzType="plus"></i>Add</button>-->
 </div>

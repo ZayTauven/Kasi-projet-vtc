@@ -288,11 +288,21 @@ class _StatementItemTile extends StatelessWidget {
         MapEntry(s.statement_line_settlement, signed(item.settlement)),
       if (item.other != 0) MapEntry(s.statement_line_other, signed(item.other)),
     ];
+    // Une seule ligne qui répète le montant de l'écriture n'apprend rien.
+    if (details.length == 1 && details.first.value == signed(item.amount)) {
+      details.clear();
+    }
+    // Le numéro de reçu n'a de sens que pour un règlement au guichet ; les
+    // références et motifs de l'ouverture du grand livre sont techniques.
+    final isSettlement = item.nature == 'REGLEMENT_DETTE';
+    final showMotif = item.nature != 'OUVERTURE' &&
+        item.motif != null &&
+        item.motif!.isNotEmpty;
     final subtitle = [
       DateFormat('d MMM y, HH:mm',
               Localizations.localeOf(context).toString()).format(item.createdAt),
       if (item.requestId != null) s.statement_ride(item.requestId!),
-      if (item.reference != null && item.reference!.isNotEmpty)
+      if (isSettlement && item.reference != null && item.reference!.isNotEmpty)
         s.statement_receipt(item.reference!),
     ].join(' · ');
     final amountColor = item.amount < 0
@@ -319,7 +329,7 @@ class _StatementItemTile extends StatelessWidget {
                     Text(_natureLabel(s), style: theme.textTheme.titleSmall),
                     const SizedBox(height: 2),
                     Text(subtitle, style: theme.textTheme.bodySmall),
-                    if (item.motif != null && item.motif!.isNotEmpty)
+                    if (showMotif)
                       Text(item.motif!, style: theme.textTheme.bodySmall),
                   ],
                 ),

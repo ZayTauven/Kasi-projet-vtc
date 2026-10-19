@@ -7,6 +7,11 @@ import {
   UpdateDriverStatusGQL,
   ViewDriverQuery,
 } from "@kasi/admin-panel/generated/graphql";
+import {
+  debtStatusOf,
+  debtTagColor,
+  DebtStatus,
+} from "@kasi/admin-panel/src/app/@services/debt-status";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
 import { NzMessageService } from "ng-zorro-antd/message";
@@ -27,6 +32,7 @@ export class DriverProfileComponent implements OnInit {
   query?: Observable<ApolloClient.QueryResult<ViewDriverQuery>>;
   root = environment.root;
   toCamelCase = camelCase;
+  debtTagColor = debtTagColor;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,6 +48,14 @@ export class DriverProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.query = this.route.data.pipe(map((data) => data.driver));
+  }
+
+  /** p2-argent I3 : dette et statut (normal, alerte, bloque) du Kasiman. */
+  debtOf(
+    wallets: { balance: number; currency: string }[] | null | undefined,
+    policies: ViewDriverQuery["moneyPolicies"] | undefined,
+  ): DebtStatus | null {
+    return debtStatusOf(wallets, policies);
   }
 
   async changeStatus(status: DriverStatus) {

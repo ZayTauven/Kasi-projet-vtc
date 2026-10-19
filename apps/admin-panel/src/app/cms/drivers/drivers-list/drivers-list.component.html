@@ -11,6 +11,10 @@
       <h1 class="kasi-title">{{ 'menu.drivers.header' | translate }}</h1>
       <p>{{ 'menu.drivers.subtitle' | translate }}</p>
     </div>
+    <label class="flex items-center gap-2">
+      <nz-switch [ngModel]="blockedOnly" (ngModelChange)="setBlockedOnly($event)"></nz-switch>
+      <span>{{ 'debt.blockedOnly' | translate }}</span>
+    </label>
     <button class="kasi-btn kasi-btn--primary" routerLink="new">
       <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
     </button>
@@ -40,6 +44,7 @@
               </th>
               <th class="hidden md:table-cell" [nzFilters]="statuses" [nzFilterFn]="true" nzColumnKey="status">
               {{'profile.status' | translate}}</th>
+              <th>{{ 'debt.column' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +63,15 @@
                 <td><a [href]="'tel:+' + data.mobileNumber">{{ data.mobileNumber | phone }}</a></td>
                 <td class="hidden md:table-cell"><nz-tag [nzColor]="tagColor.driver(data.status)">{{('enum.driver.status.' +
                 toCamelCase(data.status)) | translate}}</nz-tag></td>
+                <td>
+                  @let debt = debtOf(data.wallet, (query | async)?.data?.moneyPolicies);
+                  @if (debt != null && debt.debt > 0) {
+                    <span class="mr-2">{{ debt.debt | currency: debt.currency }}</span>
+                    <nz-tag [nzColor]="debtTagColor(debt.level)">{{ ('debt.level.' + debt.level) | translate }}</nz-tag>
+                  } @else {
+                    <span class="table-second-line">—</span>
+                  }
+                </td>
               </tr>
             }
           </tbody>

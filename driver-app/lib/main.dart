@@ -389,8 +389,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 // p2-argent I3 : bandeau d'alerte de dette et
                                 // état bloqué (au-delà du plafond, plus
                                 // d'offre ; une course en cours continue).
-                                return BlocBuilder<KasimanAccountCubit,
+                                // Un solde qui change (règlement, fin de
+                                // course) relit aussi le profil : le bouton
+                                // portefeuille affiche le solde de `Me`.
+                                return BlocConsumer<KasimanAccountCubit,
                                         KasimanAccountState>(
+                                    listenWhen: (previous, next) =>
+                                        previous.account != null &&
+                                        next.account != null &&
+                                        previous.account!.balance !=
+                                            next.account!.balance,
+                                    listener: (context, _) => refetch?.call(),
                                     builder: (context, debtState) {
                                 final account = debtState.account;
                                 final blocked = account?.blocked ?? false;
@@ -417,7 +426,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                     // compriment pas leurs voisins. On rend
                                     // donc les deux boutons compressibles, et
                                     // leurs libelles s'elident si besoin.
-                                    child: Row(
+                                    // Le bandeau de dette (p2-argent I3) se
+                                    // place sous la rangée de boutons, dans
+                                    // la même zone sûre, pour ne jamais la
+                                    // recouvrir.
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                    Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
@@ -436,21 +452,19 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                                 context, state))
                                       ],
                                     ),
-                                  ),
-                                  if (account != null &&
-                                      (account.showAlert ||
-                                          (blocked && !showBlockedCard)))
-                                    Positioned(
-                                      key: const ValueKey('debt-banner'),
-                                      top: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: SafeArea(
-                                          minimum: const EdgeInsets.fromLTRB(
-                                              16, 80, 16, 0),
-                                          child:
-                                              DebtAlertBanner(account: account)),
+                                    if (account != null &&
+                                        (account.showAlert ||
+                                            (blocked && !showBlockedCard)))
+                                      Padding(
+                                        key: const ValueKey('debt-banner'),
+                                        padding:
+                                            const EdgeInsets.only(top: 12),
+                                        child:
+                                            DebtAlertBanner(account: account),
+                                      ),
+                                      ],
                                     ),
+                                  ),
                                   if (showBlockedCard)
                                     Positioned(
                                       key: const ValueKey('debt-blocked'),

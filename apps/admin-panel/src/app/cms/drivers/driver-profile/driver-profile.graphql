@@ -48,6 +48,15 @@ query ViewDriver($id: ID!) {
     }
     rating
     reviewCount
+    wallet {
+      balance
+      currency
+    }
+  }
+  moneyPolicies {
+    currency
+    debtLimit
+    debtAlertThreshold
   }
   services {
     id
@@ -130,6 +139,21 @@ query DriverFinancials(
     nodes {
       currency
     }
+  }
+
+  moneyPolicies {
+    currency
+    debtLimit
+    debtAlertThreshold
+  }
+}
+
+# p2-argent I3 (fiche argent §4.4) : reglement de la dette en especes.
+mutation SettleDriverDebt($input: SettleDriverDebtInput!) {
+  settleDriverDebt(input: $input) {
+    id
+    balance
+    currency
   }
 }
 

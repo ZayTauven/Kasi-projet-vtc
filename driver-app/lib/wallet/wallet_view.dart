@@ -68,7 +68,17 @@ class _WalletViewState extends State<WalletView> {
                         });
                   },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 8),
+                // p2-argent I3 : accès au relevé depuis le portefeuille.
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, 'statement'),
+                      icon: const Icon(Icons.receipt_long, size: 18),
+                      label: Text(S.of(context).menu_statement)),
+                ),
+                const SizedBox(height: 16),
                 Text(S.of(context).wallet_activities_heading,
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 12),

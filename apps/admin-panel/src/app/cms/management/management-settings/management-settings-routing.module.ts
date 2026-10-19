@@ -23,6 +23,14 @@ const routes: Routes = [
           ),
       },
       {
+        // p2-argent I3 : plafond de dette et seuil d'alerte des Kasimen.
+        path: 'debt-limit',
+        loadChildren: () =>
+          import('../management-money-policy/management-money-policy.module').then(
+            (x) => x.ManagementMoneyPolicyModule
+          ),
+      },
+      {
         path: 'payment-gateways',
         loadChildren: () =>
           import('../management-payment-gateways/management-payment-gateways.module').then(

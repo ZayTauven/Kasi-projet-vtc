@@ -1,0 +1,26 @@
+# p2-argent I3 (fiche argent §4.1) : plafond de dette et seuil d'alerte des Kasimen.
+query MoneyPolicies {
+  moneyPolicies {
+    id
+    currency
+    debtLimit
+    debtAlertThreshold
+    updatedByOperatorId
+    updatedAt
+  }
+  regions {
+    nodes {
+      currency
+    }
+  }
+}
+
+mutation UpdateMoneyPolicy($input: UpdateMoneyPolicyInput!) {
+  updateMoneyPolicy(input: $input) {
+    id
+    currency
+    debtLimit
+    debtAlertThreshold
+    updatedAt
+  }
+}

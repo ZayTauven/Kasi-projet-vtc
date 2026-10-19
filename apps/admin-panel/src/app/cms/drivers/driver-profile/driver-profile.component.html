@@ -35,6 +35,11 @@
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.driver(driver.status)">{{('enum.driver.status.' + toCamelCase(driver.status)) |
         translate}}</nz-tag>
+        @let debt = debtOf(driver.wallet, (query | async)?.data?.moneyPolicies);
+        @if (debt != null) {
+          <nz-tag [nzColor]="debtTagColor(debt.level)">{{ 'debt.label' | translate }} :
+            {{ debt.debt | currency: debt.currency }} · {{ ('debt.level.' + debt.level) | translate }}</nz-tag>
+        }
         @if ((query | async)?.data?.driverFeedbackParametersSummary; as summary) {
           @for (parameter of summary; track parameter) {
             <nz-tag [nzColor]="tagColor.boolean(parameter.isGood)">{{parameter.count}} x
@@ -44,6 +49,11 @@
       </div>
     </div>
     <div class="kasi-profile-head__actions">
+      @if (debtOf(driver.wallet, (query | async)?.data?.moneyPolicies)?.debt) {
+        <button nz-button nzType="primary" routerLink="financial" [queryParams]="{ settle: 1 }">
+          <i nz-icon nzType="wallet"></i>{{ 'debt.settle.button' | translate }}
+        </button>
+      }
       <button nz-button [nzType]="'dashed'" nzDanger (click)="deleteDriver(driver.id)">
         <i nz-icon nzType="delete"></i>
       </button>
