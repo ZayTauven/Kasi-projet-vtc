@@ -739,4 +739,140 @@ class SFr extends S {
   String order_duration_estimate(String minutes) {
     return 'dans $minutes min';
   }
+
+  @override
+  String get menu_statement => 'Mon relevé';
+
+  @override
+  String get statement_title => 'Mon relevé';
+
+  @override
+  String get statement_balance => 'Solde Kasi';
+
+  @override
+  String get statement_debt => 'Dette';
+
+  @override
+  String get statement_debt_limit => 'Plafond';
+
+  @override
+  String get statement_no_debt => 'Aucune dette';
+
+  @override
+  String statement_debt_progress(String threshold, String limit) {
+    return 'Alerte à $threshold, courses suspendues au-delà de $limit.';
+  }
+
+  @override
+  String get statement_movements => 'Mouvements';
+
+  @override
+  String get statement_empty => 'Aucun mouvement pour le moment.';
+
+  @override
+  String get statement_load_more => 'Afficher plus';
+
+  @override
+  String statement_balance_after(String amount) {
+    return 'Solde après : $amount';
+  }
+
+  @override
+  String statement_ride(String id) {
+    return 'Course n° $id';
+  }
+
+  @override
+  String statement_receipt(String reference) {
+    return 'Reçu n° $reference';
+  }
+
+  @override
+  String get statement_line_order_price => 'Prix de la course';
+
+  @override
+  String get statement_line_cash => 'Espèces encaissées';
+
+  @override
+  String get statement_line_online => 'Payé en ligne';
+
+  @override
+  String get statement_line_commission => 'Commission Kasi';
+
+  @override
+  String get statement_line_tip => 'Pourboire';
+
+  @override
+  String get statement_line_added_stop => 'Arrêt ajouté';
+
+  @override
+  String get statement_line_settlement => 'Règlement';
+
+  @override
+  String get statement_line_other => 'Autre';
+
+  @override
+  String get statement_nature_fin_course => 'Fin de course';
+
+  @override
+  String get statement_nature_annulation => 'Annulation';
+
+  @override
+  String get statement_nature_recharge => 'Recharge';
+
+  @override
+  String get statement_nature_versement => 'Versement';
+
+  @override
+  String get statement_nature_carte_cadeau => 'Carte cadeau';
+
+  @override
+  String get statement_nature_reglement_dette => 'Règlement de dette';
+
+  @override
+  String get statement_nature_avenant_arret => 'Arrêt ajouté';
+
+  @override
+  String get statement_nature_correction => 'Correction';
+
+  @override
+  String get statement_nature_contre_passation => 'Contre-passation';
+
+  @override
+  String get statement_nature_ouverture => 'Solde d\'ouverture';
+
+  @override
+  String get statement_nature_other => 'Mouvement';
+
+  @override
+  String debt_alert_banner(String debt, String limit) {
+    return 'Dette Kasi de $debt. Au-delà de $limit, vous ne recevrez plus de courses : pensez à la régler.';
+  }
+
+  @override
+  String get debt_blocked_title => 'Courses suspendues';
+
+  @override
+  String debt_blocked_message(String debt, String limit) {
+    return 'Votre dette Kasi est de $debt, au-delà du plafond de $limit. Vous ne recevez plus de nouvelles courses jusqu’au règlement.';
+  }
+
+  @override
+  String get debt_blocked_amount_due => 'Montant dû';
+
+  @override
+  String get debt_blocked_minimum => 'Minimum pour reprendre les courses';
+
+  @override
+  String get debt_blocked_how_title => 'Comment régler';
+
+  @override
+  String get debt_blocked_how_body =>
+      'Déposez le montant en espèces au siège Kasi ou chez un relais Kasi. Un opérateur enregistre le règlement et vous remet un reçu. Les courses reprennent dès l’enregistrement.';
+
+  @override
+  String get debt_blocked_refresh => 'Actualiser';
+
+  @override
+  String get debt_blocked_see_statement => 'Voir mon relevé';
 }

@@ -1431,6 +1431,252 @@ abstract class S {
   /// In en, this message translates to:
   /// **'in {minutes} mins'**
   String order_duration_estimate(String minutes);
+
+  /// No description provided for @menu_statement.
+  ///
+  /// In en, this message translates to:
+  /// **'My statement'**
+  String get menu_statement;
+
+  /// No description provided for @statement_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My statement'**
+  String get statement_title;
+
+  /// No description provided for @statement_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Kasi balance'**
+  String get statement_balance;
+
+  /// No description provided for @statement_debt.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt'**
+  String get statement_debt;
+
+  /// No description provided for @statement_debt_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit'**
+  String get statement_debt_limit;
+
+  /// No description provided for @statement_no_debt.
+  ///
+  /// In en, this message translates to:
+  /// **'No debt'**
+  String get statement_no_debt;
+
+  /// No description provided for @statement_debt_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert at {threshold}, rides suspended above {limit}.'**
+  String statement_debt_progress(String threshold, String limit);
+
+  /// No description provided for @statement_movements.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements'**
+  String get statement_movements;
+
+  /// No description provided for @statement_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No movements yet.'**
+  String get statement_empty;
+
+  /// No description provided for @statement_load_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get statement_load_more;
+
+  /// No description provided for @statement_balance_after.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance after: {amount}'**
+  String statement_balance_after(String amount);
+
+  /// No description provided for @statement_ride.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride #{id}'**
+  String statement_ride(String id);
+
+  /// No description provided for @statement_receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt #{reference}'**
+  String statement_receipt(String reference);
+
+  /// No description provided for @statement_line_order_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride price'**
+  String get statement_line_order_price;
+
+  /// No description provided for @statement_line_cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash collected'**
+  String get statement_line_cash;
+
+  /// No description provided for @statement_line_online.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid online'**
+  String get statement_line_online;
+
+  /// No description provided for @statement_line_commission.
+  ///
+  /// In en, this message translates to:
+  /// **'Kasi commission'**
+  String get statement_line_commission;
+
+  /// No description provided for @statement_line_tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip'**
+  String get statement_line_tip;
+
+  /// No description provided for @statement_line_added_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Added stop'**
+  String get statement_line_added_stop;
+
+  /// No description provided for @statement_line_settlement.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement'**
+  String get statement_line_settlement;
+
+  /// No description provided for @statement_line_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get statement_line_other;
+
+  /// No description provided for @statement_nature_fin_course.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride completed'**
+  String get statement_nature_fin_course;
+
+  /// No description provided for @statement_nature_annulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation'**
+  String get statement_nature_annulation;
+
+  /// No description provided for @statement_nature_recharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up'**
+  String get statement_nature_recharge;
+
+  /// No description provided for @statement_nature_versement.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout'**
+  String get statement_nature_versement;
+
+  /// No description provided for @statement_nature_carte_cadeau.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift card'**
+  String get statement_nature_carte_cadeau;
+
+  /// No description provided for @statement_nature_reglement_dette.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt settlement'**
+  String get statement_nature_reglement_dette;
+
+  /// No description provided for @statement_nature_avenant_arret.
+  ///
+  /// In en, this message translates to:
+  /// **'Added stop'**
+  String get statement_nature_avenant_arret;
+
+  /// No description provided for @statement_nature_correction.
+  ///
+  /// In en, this message translates to:
+  /// **'Correction'**
+  String get statement_nature_correction;
+
+  /// No description provided for @statement_nature_contre_passation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversal'**
+  String get statement_nature_contre_passation;
+
+  /// No description provided for @statement_nature_ouverture.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get statement_nature_ouverture;
+
+  /// No description provided for @statement_nature_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get statement_nature_other;
+
+  /// No description provided for @debt_alert_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Kasi debt of {debt}. Above {limit} you will no longer receive rides: please settle it.'**
+  String debt_alert_banner(String debt, String limit);
+
+  /// No description provided for @debt_blocked_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rides suspended'**
+  String get debt_blocked_title;
+
+  /// No description provided for @debt_blocked_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Kasi debt is {debt}, above the {limit} limit. You will not receive new rides until it is settled.'**
+  String debt_blocked_message(String debt, String limit);
+
+  /// No description provided for @debt_blocked_amount_due.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due'**
+  String get debt_blocked_amount_due;
+
+  /// No description provided for @debt_blocked_minimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum to resume rides'**
+  String get debt_blocked_minimum;
+
+  /// No description provided for @debt_blocked_how_title.
+  ///
+  /// In en, this message translates to:
+  /// **'How to settle'**
+  String get debt_blocked_how_title;
+
+  /// No description provided for @debt_blocked_how_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the amount in cash at the Kasi office or at a Kasi relay point. An operator records the payment and gives you a receipt. Rides resume as soon as it is recorded.'**
+  String get debt_blocked_how_body;
+
+  /// No description provided for @debt_blocked_refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get debt_blocked_refresh;
+
+  /// No description provided for @debt_blocked_see_statement.
+  ///
+  /// In en, this message translates to:
+  /// **'See my statement'**
+  String get debt_blocked_see_statement;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

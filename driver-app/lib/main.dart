@@ -41,6 +41,9 @@ import 'orders_resync.dart';
 import 'query_result_view.dart';
 import 'session_token.dart';
 import 'trip-history/trip_history_list_view.dart';
+import 'wallet/kasiman_account_cubit.dart';
+import 'wallet/kasiman_debt_views.dart';
+import 'wallet/kasiman_statement_view.dart';
 import 'wallet/wallet_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +139,10 @@ class MyApp extends StatelessWidget {
             BlocProvider<MainBloc>(
                 lazy: false, create: (context) => MainBloc()),
             BlocProvider<CurrentLocationCubit>(
-                lazy: false, create: (context) => CurrentLocationCubit())
+                lazy: false, create: (context) => CurrentLocationCubit()),
+            // p2-argent I3 : dette, plafond et blocage du Kasiman.
+            BlocProvider<KasimanAccountCubit>(
+                create: (context) => KasimanAccountCubit())
           ],
           child: MyGraphqlProvider(
             uri: "${serverUrl}graphql",
@@ -166,6 +172,8 @@ class MyApp extends StatelessWidget {
                         'earnings': (context) => const EarningsView(),
                         'chat': (context) => const ChatView(),
                         'wallet': (context) => const WalletView(),
+                        'statement': (context) =>
+                            const KasimanStatementView(),
                         'settings': (context) => const SettingsPage()
                       },
                       theme: CustomTheme.theme1,
@@ -251,6 +259,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               // dont le chargement démonte tout l'écran à chaque relecture du
               // profil (retour au premier plan notamment).
               return OrdersResyncScope(
+                  child: KasimanAccountWatcher(
                   child: LifecycleWrapper(
                   onLifecycleEvent: (event) {
                     if (event == LifecycleEvent.active) {
@@ -377,6 +386,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                   return UnregisteredDriverMessagesView(
                                       driver: state.driver, refetch: refetch);
                                 }
+                                // p2-argent I3 : bandeau d'alerte de dette et
+                                // état bloqué (au-delà du plafond, plus
+                                // d'offre ; une course en cours continue).
+                                return BlocBuilder<KasimanAccountCubit,
+                                        KasimanAccountState>(
+                                    builder: (context, debtState) {
+                                final account = debtState.account;
+                                final blocked = account?.blocked ?? false;
+                                final showBlockedCard = blocked &&
+                                    (state is StatusOffline ||
+                                        state is StatusOnline);
                                 return Stack(children: [
                                   ValueListenableBuilder(
                                       valueListenable: Hive.box('settings')
@@ -417,9 +437,32 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                       ],
                                     ),
                                   ),
-                                  if (state is StatusOffline ||
-                                      (state is StatusOnline &&
-                                          state.orders.isEmpty))
+                                  if (account != null &&
+                                      (account.showAlert ||
+                                          (blocked && !showBlockedCard)))
+                                    Positioned(
+                                      key: const ValueKey('debt-banner'),
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: SafeArea(
+                                          minimum: const EdgeInsets.fromLTRB(
+                                              16, 80, 16, 0),
+                                          child:
+                                              DebtAlertBanner(account: account)),
+                                    ),
+                                  if (showBlockedCard)
+                                    Positioned(
+                                      key: const ValueKey('debt-blocked'),
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: DebtBlockedCard(account: account!),
+                                    ),
+                                  if (!showBlockedCard &&
+                                      (state is StatusOffline ||
+                                          (state is StatusOnline &&
+                                              state.orders.isEmpty)))
                                     Positioned(
                                       // Clés stables sur les deux éléments
                                       // conditionnels : sans elles, quand la
@@ -443,7 +486,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                                   .of(context)
                                                   .status_online_description),
                                     ),
-                                  if (state is StatusOnline)
+                                  if (state is StatusOnline && !showBlockedCard)
                                     Positioned(
                                       key: const ValueKey('orders-carousel'),
                                       bottom: 0,
@@ -478,9 +521,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                       }),
                                     ),
                                 ]);
+                                });
                               });
                             });
-                      })));
+                      }))));
             }));
   }
 

@@ -731,4 +731,140 @@ class SOm extends S {
   String order_duration_estimate(String minutes) {
     return 'in $minutes mins';
   }
+
+  @override
+  String get menu_statement => 'My statement';
+
+  @override
+  String get statement_title => 'My statement';
+
+  @override
+  String get statement_balance => 'Kasi balance';
+
+  @override
+  String get statement_debt => 'Debt';
+
+  @override
+  String get statement_debt_limit => 'Limit';
+
+  @override
+  String get statement_no_debt => 'No debt';
+
+  @override
+  String statement_debt_progress(String threshold, String limit) {
+    return 'Alert at $threshold, rides suspended above $limit.';
+  }
+
+  @override
+  String get statement_movements => 'Movements';
+
+  @override
+  String get statement_empty => 'No movements yet.';
+
+  @override
+  String get statement_load_more => 'Show more';
+
+  @override
+  String statement_balance_after(String amount) {
+    return 'Balance after: $amount';
+  }
+
+  @override
+  String statement_ride(String id) {
+    return 'Ride #$id';
+  }
+
+  @override
+  String statement_receipt(String reference) {
+    return 'Receipt #$reference';
+  }
+
+  @override
+  String get statement_line_order_price => 'Ride price';
+
+  @override
+  String get statement_line_cash => 'Cash collected';
+
+  @override
+  String get statement_line_online => 'Paid online';
+
+  @override
+  String get statement_line_commission => 'Kasi commission';
+
+  @override
+  String get statement_line_tip => 'Tip';
+
+  @override
+  String get statement_line_added_stop => 'Added stop';
+
+  @override
+  String get statement_line_settlement => 'Settlement';
+
+  @override
+  String get statement_line_other => 'Other';
+
+  @override
+  String get statement_nature_fin_course => 'Ride completed';
+
+  @override
+  String get statement_nature_annulation => 'Cancellation';
+
+  @override
+  String get statement_nature_recharge => 'Top-up';
+
+  @override
+  String get statement_nature_versement => 'Payout';
+
+  @override
+  String get statement_nature_carte_cadeau => 'Gift card';
+
+  @override
+  String get statement_nature_reglement_dette => 'Debt settlement';
+
+  @override
+  String get statement_nature_avenant_arret => 'Added stop';
+
+  @override
+  String get statement_nature_correction => 'Correction';
+
+  @override
+  String get statement_nature_contre_passation => 'Reversal';
+
+  @override
+  String get statement_nature_ouverture => 'Opening balance';
+
+  @override
+  String get statement_nature_other => 'Movement';
+
+  @override
+  String debt_alert_banner(String debt, String limit) {
+    return 'Kasi debt of $debt. Above $limit you will no longer receive rides: please settle it.';
+  }
+
+  @override
+  String get debt_blocked_title => 'Rides suspended';
+
+  @override
+  String debt_blocked_message(String debt, String limit) {
+    return 'Your Kasi debt is $debt, above the $limit limit. You will not receive new rides until it is settled.';
+  }
+
+  @override
+  String get debt_blocked_amount_due => 'Amount due';
+
+  @override
+  String get debt_blocked_minimum => 'Minimum to resume rides';
+
+  @override
+  String get debt_blocked_how_title => 'How to settle';
+
+  @override
+  String get debt_blocked_how_body =>
+      'Pay the amount in cash at the Kasi office or at a Kasi relay point. An operator records the payment and gives you a receipt. Rides resume as soon as it is recorded.';
+
+  @override
+  String get debt_blocked_refresh => 'Refresh';
+
+  @override
+  String get debt_blocked_see_statement => 'See my statement';
 }
