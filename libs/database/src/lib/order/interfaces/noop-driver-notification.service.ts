@@ -28,4 +28,8 @@ export class NoOpDriverNotificationService implements IDriverNotificationService
   upcomingBooking(driver: any): void {
     console.warn('Firebase not configured: driver notification skipped', driver);
   }
+
+  async plainText(driver: any, title: string, body: string): Promise<void> {
+    console.warn('Firebase not configured: driver notification skipped', driver?.id, title, body);
+  }
 }

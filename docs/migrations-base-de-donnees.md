@@ -35,7 +35,7 @@ Mis en place le 2026-09-28. Décision : `KASI_DECISIONS.md`, entrée du 2026-09-
 | `libs/database/src/lib/migration/postgres/1790629154960-Baseline.ts` | Migration de référence (ne jamais la modifier) |
 | `libs/database/src/lib/migration/postgres/baseline-tables.ts` | Les 59 tables qu'elle crée (contrôle de `mark-baseline`) |
 | `libs/database/src/lib/migration/migrate.ts` | Exécutable : `run`, `show`, `check`, `mark-baseline`, `revert`, et pour le grand livre `ledger-open`, `ledger-check` |
-| `libs/database/src/lib/migration/all-entities.ts` | Les 53 entités (union des trois API ; dont les 3 du grand livre depuis le 2026-10-19) |
+| `libs/database/src/lib/migration/all-entities.ts` | Les 54 entités (union des trois API ; dont les 3 du grand livre et `money_policy` depuis le 2026-10-19) |
 | `libs/database/src/lib/order/ledger-open.ts`, `ledger-integrity.ts` | Ouverture du grand livre et contrôle d'intégrité (appelés par `migrate.js`) |
 | `libs/database/src/lib/migration/connection-options.ts` | Connexion lue dans `DB_*`, partagée par API, exécutable et CLI |
 | `libs/database/src/lib/migration/data-source.cli.ts` | DataSource de la CLI TypeORM (poste de dev) |
@@ -117,6 +117,18 @@ Migrations après la référence, dans l'ordre :
    fonctions comprises), vérifiée sur `kasi_test` (up, down, up, `check` sans écart)
    puis sur la base locale `kasi`. **Elle est suivie de `ledger-open`** : voir la
    section 7 bis.
+3. `MoneyPolicy1792434023914` (2026-10-19, `p2-argent` I3) : table `money_policy`
+   (une ligne par devise : plafond de dette du Kasiman `debtLimit`, seuil d'alerte
+   `debtAlertThreshold`, `updatedByOperatorId`, `updatedAt`, index unique sur la
+   devise) et sa ligne `XOF` à 10 000 / 7 500 FCFA (`ON CONFLICT DO NOTHING`). Aucune
+   colonne ajoutée à `driver` (dérogation par Kasiman non retenue). Additive,
+   réversible, vérifiée sur `kasi_test` (up, down, up, `check` sans écart) puis sur la
+   base locale `kasi` par le service `migrate` (sauvegarde
+   `../archive/sauvegardes/kasi-avant-dette-20261019.dump`, `ledger-check` à zéro
+   écart ensuite). Rien à lancer après elle. Les montants se règlent ensuite sans
+   déploiement : `UPDATE money_policy SET "debtLimit" = ..., "debtAlertThreshold" = ...
+   WHERE currency = 'XOF'` en attendant l'écran du panel ; les API relisent la table à
+   chaque contrôle.
 
 ## 4. Faire évoluer le schéma (développeur)
 

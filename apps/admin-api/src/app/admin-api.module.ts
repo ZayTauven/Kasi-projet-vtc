@@ -40,6 +40,7 @@ import { ShiftRuleModule } from './shift-rule/shift-rule.module';
 import { RetentionPolicyModule } from './retention-policy/retention-policy.module';
 import { MapSettingModule } from './map-setting/map-setting.module';
 import { LedgerModule } from './ledger/ledger.module';
+import { MoneyPolicyModule } from './money-policy/money-policy.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -138,6 +139,7 @@ export class AdminAPIModule {
             ComplaintModule,
             // p2-argent I2 (2026-10-19) : ledgerIntegrityReport et balayage quotidien.
             LedgerModule,
+            MoneyPolicyModule,
             ConfigurationModule,
             HttpModule,
             RedisModule.forRoot({

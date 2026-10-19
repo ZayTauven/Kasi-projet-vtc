@@ -27,7 +27,7 @@ npm run test:integration -- -t "rejeu"                # les tests dont le nom co
 | Base | `kasi_test` dans le conteneur `kasi-postgres`. Créée si absente, puis mise à niveau par **les migrations** (même liste que le service `migrate`) : `tools/test-integration/global-setup.ts`. Autre nom : `KASI_TEST_DB_NAME` (doit contenir « test »). |
 | Base interdite | `kasi` (jeu de démo du mémoire) : `env.ts` et le harnais refusent tout nom sans « test ». |
 | Redis | Instance locale, base logique **15** (`KASI_TEST_REDIS_DB`), vidée avant chaque test. La base 0 (stack locale) est refusée. |
-| Données | Créées par chaque test (service, client, 2 ou 3 Kasimen, flotte, passerelle), tables vidées (`TRUNCATE`) avant chaque test et en fin de fichier, tables du grand livre comprises (ses déclencheurs d'immuabilité sont des déclencheurs de ligne : `TRUNCATE` ne les déclenche pas). |
+| Données | Créées par chaque test (service, client, 2 ou 3 Kasimen, flotte, passerelle), tables vidées (`TRUNCATE`) avant chaque test et en fin de fichier, tables du grand livre comprises (ses déclencheurs d'immuabilité sont des déclencheurs de ligne : `TRUNCATE` ne les déclenche pas). `money_policy` est vidée aussi : sans politique, aucun plafond ; seul `debt-limit.int-spec.ts` en insère une (XOF, 10 000 / 7 500). |
 | Grand livre | `LEDGER_MODE=strict` par défaut sur le banc (`env.ts`, sauf valeur exportée) : une écriture refusée par le grand livre fait échouer l'opération, donc le test, au lieu d'être seulement journalisée. Le mode `shadow` a son propre test. |
 | Exécution | Un fichier à la fois (`maxWorkers: 1`) : ils partagent la base. |
 | Compilation | ts-jest **avec** vérification de types (pas d'`isolatedModules`, sinon TypeORM refuse les entités à champ d'énumération). |
@@ -38,7 +38,7 @@ Doubles, et pourquoi (`tools/test-integration/harness.ts`) :
   communs à toutes les bases logiques ; publier atteindrait les API de la stack et
   les apps connectées.
 - **Notifications push** : espions qui comptent les envois (un rejeu ne doit pas
-  renvoyer de push).
+  renvoyer de push), push en texte direct `plainText` comprise (I3).
 - **Itinéraire** (OSRM/Mapbox) : durée fixe, pas de réseau.
 - **Passerelle de paiement** (HTTP) : répond en erreur ; le code doit la tolérer.
 - **Appels masqués** : sans effet.
@@ -62,6 +62,7 @@ Transactions, verrous, contraintes uniques et clés étrangères sont ceux de Po
 | `apps/rider-api/src/app/coupon/gift-card.int-spec.ts` | Carte cadeau : crédit unique, carte utilisée, expirée ou pas encore disponible, deux clients simultanés (`p2-argent` I1) |
 | `apps/rider-api/src/app/order/rider-order-update.int-spec.ts` | Pourboire, attente et coupon après démarrage, part d'annulation du Kasiman (`p2-argent` I1) |
 | `libs/database/src/lib/coupon/common-coupon.int-spec.ts` | Règles du coupon : plancher et arrondi, services, bornes de prix, première course, date de début (`p2-argent` I1) |
+| `libs/database/src/lib/order/debt-limit.int-spec.ts` | Dette espèces et plafond (`p2-argent` I3) : règle (plafond strict, alerte, sans politique, plafond relevé sans déploiement) ; Kasiman bloqué absent des destinataires (`getOnlineDriversWithServiceId` de `createOrder`, `processPrePay`, relance du cron), d'`availableOrders` ; acceptation refusée avec le message lisible et `KASIMAN_DEBT_LIMIT` ; attribution opérateur permise ; course en cours terminée ; push une seule fois au passage de chaque seuil (rejeu, deux fins simultanées) ; règlement opérateur qui débloque, rejoué en série et en parallèle = un crédit, refus (montant, motif, permission) ; compensation par une course payée en ligne ; part de flotte (option A) ; `kasimanAccount` et `kasimanStatement` |
 
 Les `*.int-spec.ts` sont exclus des builds (`tsconfig.app.json`, `tsconfig.lib.json`)
 et ne sont pas lancés par `nx test` (motif `*.spec.ts`).

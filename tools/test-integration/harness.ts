@@ -192,6 +192,8 @@ export function spyDriverNotifications(): Spy {
     'paid',
     'assigned',
     'upcomingBooking',
+    // p2-argent I3 : push en texte direct (alerte et blocage de dette).
+    'plainText',
   ]);
 }
 

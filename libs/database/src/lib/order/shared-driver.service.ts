@@ -12,6 +12,7 @@ import {
 } from '../entities/enums/package-size.enum';
 import { ServiceOrderType } from '../entities/enums/service-order-type.enum';
 import { ServiceEntity } from '../entities/service.entity';
+import { blockedForDebtDriverIds } from './debt-limit';
 
 @Injectable()
 export class SharedDriverService {
@@ -47,11 +48,19 @@ export class SharedDriverService {
     return max > 0 ? max : 0;
   }
 
+  /**
+   * Kasimen prevenus d'une offre. p2-argent I3 (2026-10-19, fiche argent
+   * §4.2) : un Kasiman au-dela du plafond de dette n'est ni notifie ni inscrit
+   * dans `driverIds` (createOrder, processPrePay, relance du cron).
+   * `currency` : devise de la course ; absente, le plafond est verifie dans
+   * toutes les devises du Kasiman.
+   */
   async getOnlineDriversWithServiceId(
     driverIds: number[],
     serviceId: number,
     fleetIds: number[] = [],
     delivery?: { service: ServiceEntity; packageSize?: PackageSize | null },
+    currency?: string | null,
   ) {
     let driversWithService: DriverEntity[];
     if (fleetIds.length > 0) {
@@ -82,6 +91,14 @@ export class SharedDriverService {
           packageSizeRank(x.maxPackageSize) >=
             packageSizeRank(delivery.packageSize),
       );
+    }
+    if (driversWithService.length > 0) {
+      const blocked = await blockedForDebtDriverIds(
+        this.driverRepo.manager,
+        driversWithService.map((driver) => driver.id),
+        currency,
+      );
+      driversWithService = driversWithService.filter((x) => !blocked.has(x.id));
     }
     return driversWithService;
   }

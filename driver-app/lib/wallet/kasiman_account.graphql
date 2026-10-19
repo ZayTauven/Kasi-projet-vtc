@@ -1,0 +1,38 @@
+# p2-argent I3 : compte et relevé du Kasiman (dette espèces, plafond).
+query KasimanAccount {
+    kasimanAccount {
+        currency
+        balance
+        debt
+        debtLimit
+        debtAlertThreshold
+        level
+        blocked
+        alert
+    }
+}
+
+query KasimanStatement($limit: Int, $offset: Int) {
+    kasimanStatement(limit: $limit, offset: $offset) {
+        currency
+        totalCount
+        items {
+            entryId
+            createdAt
+            nature
+            requestId
+            orderPrice
+            cashCollected
+            onlinePaid
+            commission
+            tip
+            addedStop
+            settlement
+            other
+            amount
+            balanceAfter
+            reference
+            motif
+        }
+    }
+}

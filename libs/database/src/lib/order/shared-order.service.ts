@@ -53,6 +53,7 @@ import { firstValueFrom } from 'rxjs';
 import { ForbiddenError } from '@nestjs/apollo';
 import { transitionOrder, UNASSIGNED_STATUSES } from './order-transition';
 import { MoneyKey } from './wallet-ledger';
+import { DebtCrossing, sendDebtCrossingPush, watchDebtCrossing } from './debt-limit';
 import {
   LedgerAccounts,
   LedgerEntryNature,
@@ -514,6 +515,7 @@ export class SharedOrderService {
         order.serviceId,
         fleetIdsInPoint,
         { service: order.service, packageSize: order.packageSize },
+        order.currency,
       );
     this.orderRedisService.driverNotified(order.id, driversWithService);
     this.pubSub.publish('orderCreated', {
@@ -572,6 +574,12 @@ export class SharedOrderService {
       );
       outcome = await this.finishInTransaction(orderId, cash, driverId, false);
     }
+    // p2-argent I3 : push d'alerte ou de blocage, apres validation.
+    await sendDebtCrossingPush(
+      this.orderRepository.manager,
+      this.driverNotificationService,
+      outcome.debtCrossing,
+    );
     return outcome;
   }
 
@@ -695,7 +703,16 @@ export class SharedOrderService {
           driverId: order.driverId,
         };
       }
-      await this.postFinishEntry(manager, order, rawCommission, cashAmount, unPaidAmount);
+      // p2-argent I3 (2026-10-19) : la fin de course est le mouvement qui
+      // endette le Kasiman (commission d'une course en especes). Passage du
+      // seuil d'alerte ou du plafond detecte sous le verrou du portefeuille ;
+      // la push part apres validation, une seule fois (fiche argent §4.2).
+      const { crossing: debtCrossing } = await watchDebtCrossing(
+        manager,
+        order.driverId!,
+        order.currency,
+        () => this.postFinishEntry(manager, order, rawCommission, cashAmount, unPaidAmount),
+      );
       await manager.update(RequestEntity, order.id, {
         paidAmount: order.costAfterCoupon,
         status: OrderStatus.WaitingForReview,
@@ -724,6 +741,7 @@ export class SharedOrderService {
         previousStatus,
         status: OrderStatus.WaitingForReview,
         driverId: order.driverId,
+        debtCrossing,
       };
     });
   }
@@ -971,6 +989,8 @@ export interface FinishOutcome {
   driverId?: number;
   /** Interne : capture de preautorisation a tenter hors transaction. */
   capture?: { transactionNumber: string; amount: number };
+  /** p2-argent I3 : seuil de dette franchi par cette fin de course (push). */
+  debtCrossing?: DebtCrossing | null;
 }
 
 /**

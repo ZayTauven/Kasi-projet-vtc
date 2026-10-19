@@ -15,6 +15,7 @@ import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum'
 import { OperatorEntity } from '@kasi/database/operator.entity';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { LedgerAccounts, postManualOperation } from '@kasi/order/ledger';
+import { settleKasimanDebt } from '@kasi/order/debt-limit';
 import { ForbiddenError } from '@nestjs/apollo';
 import { Repository } from 'typeorm';
 import { UserContext } from '../auth/authenticated-admin';
@@ -22,6 +23,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { DriverService } from './driver.service';
 import { OnlineDriver, OnlineDriverWithData } from './dto/driver-location.dto';
 import { DriverTransactionInput } from './dto/driver-transaction.input';
+import { SettleDriverDebtInput } from './dto/settle-driver-debt.input';
 import { DriverWalletDTO } from './dto/driver-wallet.dto';
 import { DriverDTO } from './dto/driver.dto';
 import { FeedbackParameterAggregateDto } from './dto/feedback-parameter-aggregate.dto';
@@ -93,6 +95,39 @@ export class DriverResolver {
         description: input.description,
         status: TransactionStatus.Done,
       },
+    });
+    return posting.wallets[0].wallet;
+  }
+
+  /**
+   * p2-argent I3 (2026-10-19, fiche argent §4.4) : reglement de la dette d'un
+   * Kasiman (especes contre recu). Ecriture `CAISSE:<lieu> -x / KASIMAN +x`,
+   * cle `debt-settlement:<cle>` : un double envoi ne credite qu'une fois.
+   * Permission `DriverWallet_Edit`. Deblocage immediat.
+   */
+  @Mutation(() => DriverWalletDTO)
+  async settleDriverDebt(
+    @Args('input', { type: () => SettleDriverDebtInput })
+    input: SettleDriverDebtInput,
+  ) {
+    const operator = await this.operatorRepository.findOne({
+      where: { id: this.context.req.user.id },
+      relations: { role: true },
+    });
+    if (
+      !operator?.role?.permissions.includes(OperatorPermission.DriverWallet_Edit)
+    ) {
+      throw new ForbiddenError('PERMISSION_NOT_GRANTED');
+    }
+    const posting = await settleKasimanDebt(this.operatorRepository.manager, {
+      driverId: Number(input.driverId),
+      amount: input.amount,
+      currency: input.currency,
+      receiptNumber: input.receiptNumber,
+      motif: input.motif,
+      location: input.location,
+      idempotencyKey: input.idempotencyKey,
+      operatorId: this.context.req.user.id,
     });
     return posting.wallets[0].wallet;
   }

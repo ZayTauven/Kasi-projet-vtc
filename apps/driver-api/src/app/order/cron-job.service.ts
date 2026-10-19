@@ -72,7 +72,8 @@ export class CronJobService {
                 let driverIds = closeDrivers.map(x=>x.driverId);
                 const order = await this.orderService.orderRepository.findOneBy({id: waitingRequest});
                 const fleetIds = await this.sharedFleetService.getFleetIdsInPoint(order.points[0]);
-                const drivers = await this.sharedDriverService.getOnlineDriversWithServiceId(driverIds, order.serviceId, fleetIds);
+                const drivers = await this.sharedDriverService.getOnlineDriversWithServiceId(driverIds, order.serviceId, fleetIds, undefined, order.currency);
+                // p2-argent I3 : Kasimen au-dela du plafond de dette exclus (fiche argent §4.2).
                 this.driverNotificationService.requests(drivers);
             }
         }

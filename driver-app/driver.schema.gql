@@ -2,6 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+
 input AddDocumentsToDriverInput {
   """The id of the record."""
   id: ID!
@@ -512,6 +513,42 @@ input IntFieldComparison {
 input IntFieldComparisonBetween {
   lower: Int!
   upper: Int!
+}
+
+type KasimanAccount {
+  alert: Boolean!
+  balance: Float!
+  blocked: Boolean!
+  currency: String!
+  debt: Float!
+  debtAlertThreshold: Float
+  debtLimit: Float
+  level: String!
+}
+
+type KasimanStatement {
+  currency: String!
+  items: [KasimanStatementItem!]!
+  totalCount: Int!
+}
+
+type KasimanStatementItem {
+  addedStop: Float!
+  amount: Float!
+  balanceAfter: Float!
+  cashCollected: Float
+  commission: Float!
+  createdAt: Timestamp!
+  entryId: ID!
+  motif: String
+  nature: String!
+  onlinePaid: Float!
+  orderPrice: Float
+  other: Float!
+  reference: String
+  requestId: ID
+  settlement: Float!
+  tip: Float!
 }
 
 type Login {
@@ -1108,6 +1145,8 @@ type Query {
   ): [DriverWallet!]!
   getStats(timeframe: TimeQuery!): StatisticsResult!
   getStatsNew(endDate: DateTime!, startDate: DateTime!, timeframe: TimeQuery!): StatisticsResult!
+  kasimanAccount(currency: String): KasimanAccount
+  kasimanStatement(currency: String, limit: Int = 20, offset: Int = 0): KasimanStatement
   mapSetting: MapSetting!
   order(
     """The id of the record to find."""

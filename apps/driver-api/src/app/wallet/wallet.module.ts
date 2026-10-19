@@ -17,6 +17,7 @@ import { DriverTransactionDTO } from './dto/driver-transaction.dto';
 import { DriverWalletDTO } from './dto/driver-wallet.dto';
 import { PaymentGatewayDTO } from './dto/payment-gateway.dto';
 import { EarningsService } from './earnings.service';
+import { KasimanAccountResolver } from './kasiman-account.resolver';
 import { PayoutResolver } from './payout.resolver';
 import { WalletResolver } from './wallet-resolver';
 
@@ -63,6 +64,7 @@ import { WalletResolver } from './wallet-resolver';
       ],
     }),
   ],
-  providers: [WalletResolver, PayoutResolver, EarningsService],
+  // p2-argent I3 : KasimanAccountResolver (kasimanAccount, kasimanStatement).
+  providers: [WalletResolver, PayoutResolver, EarningsService, KasimanAccountResolver],
 })
 export class WalletModule {}

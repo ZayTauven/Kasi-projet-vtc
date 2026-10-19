@@ -19,6 +19,7 @@ import {
   isAtOrBeyond,
   transitionOrder,
 } from '@kasi/order/order-transition';
+import { debtLimitError, kasimanDebtStatus } from '@kasi/order/debt-limit';
 import { RoutingService } from '@kasi/order/routing/routing.service';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
@@ -26,7 +27,7 @@ import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { OrderRedisService } from '@kasi/redis/order-redis.service';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 import { UserContext } from '../auth/authenticated-user';
 import { UpdateOrderInput } from './dto/update-order.input';
@@ -121,6 +122,10 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     // Attribution, activite et passage « in service » : une transaction.
     const changed = await this.orderRepository.manager.transaction(
       async (manager) => {
+        // p2-argent I3 (2026-10-19, fiche argent §4.2) : refus au-dela du
+        // plafond de dette, AVANT l'ecriture conditionnelle. Seul controle
+        // qui fait foi (les filtres d'offres ne sont que des filtres).
+        await this.assertNotBlockedForDebt(manager, orderId, driverId);
         const changed = await transitionOrder(manager, orderId, {
           from: ACCEPTABLE_STATUSES,
           to: OrderStatus.DriverAccepted,
@@ -186,6 +191,35 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     // Filtre cote abonnement : previent tous les Kasimen sauf celui qui a accepte.
     this.pubSub.publish('orderRemoved', { orderRemoved: order });
     return order;
+  }
+
+  /**
+   * p2-argent I3 : leve le refus lisible (message francais affiche tel quel
+   * par driver-app, code `KASIMAN_DEBT_LIMIT` dans `extensions.code`) si le
+   * Kasiman est au-dela du plafond dans la devise de la course. Le rejeu
+   * d'une acceptation deja gagnee par ce Kasiman n'est pas refuse.
+   */
+  private async assertNotBlockedForDebt(
+    manager: EntityManager,
+    orderId: number,
+    driverId: number,
+  ): Promise<void> {
+    const rows: Array<{ currency: string; driverId: number | null }> =
+      await manager.query(
+        `SELECT "currency", "driverId" FROM "request" WHERE "id" = $1`,
+        [orderId],
+      );
+    if (rows.length === 0 || rows[0].driverId === driverId) {
+      return;
+    }
+    const status = await kasimanDebtStatus(manager, driverId, rows[0].currency);
+    if (status.blocked && status.debtLimit != null) {
+      throw debtLimitError(status.balance, {
+        currency: status.currency,
+        debtLimit: status.debtLimit,
+        debtAlertThreshold: status.debtAlertThreshold ?? status.debtLimit,
+      });
+    }
   }
 
   /** Annulation par le Kasiman (bug-annulation). */

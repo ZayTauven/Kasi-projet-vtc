@@ -3,6 +3,7 @@ import { MigrationInterface } from 'typeorm';
 import { Baseline1790629154960 } from './postgres/1790629154960-Baseline';
 import { MoneyIdempotencyKey1790647094992 } from './postgres/1790647094992-MoneyIdempotencyKey';
 import { LedgerTables1792421211893 } from './postgres/1792421211893-LedgerTables';
+import { MoneyPolicy1792434023914 } from './postgres/1792434023914-MoneyPolicy';
 
 /**
  * Liste ORDONNEE et EXPLICITE des migrations PostgreSQL de Kasi.
@@ -22,6 +23,9 @@ export const kasiMigrations: Array<new () => MigrationInterface> = [
   // p2-argent I2 (2026-10-19) : grand livre en partie double (tables,
   // declencheurs, ledgerEntryId). A suivre de `migrate.js ledger-open`.
   LedgerTables1792421211893,
+  // p2-argent I3 (2026-10-19) : plafond de dette du Kasiman par devise
+  // (table money_policy, ligne XOF 10 000 / 7 500).
+  MoneyPolicy1792434023914,
 ];
 
 /**

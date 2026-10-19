@@ -115,6 +115,40 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
     );
   }
 
+  /**
+   * p2-argent I3 (2026-10-19) : push en texte direct (`title` / `body`), comme
+   * la push de message : alerte au seuil et blocage de dette (fiche argent
+   * §4.2). Canal `tripEvents`, deja declare par driver-app.
+   */
+  async plainText(driver: DriverEntity, title: string, body: string): Promise<void> {
+    if (driver?.notificationPlayerId == null || process.env['NODE_ENV'] === 'dev') return;
+    try {
+      await messaging().send({
+        token: driver.notificationPlayerId,
+        notification: { title, body },
+        android: {
+          notification: {
+            sound: 'default',
+            title,
+            body,
+            channelId: 'tripEvents',
+            icon: 'notification_icon',
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+              alert: { title, body },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      Logger.warn(`Push texte non envoyee au Kasiman ${driver.id} : ${(error as Error).message}`);
+    }
+  }
+
   private sendNotification(
     driver: DriverEntity,
     titleLocKey: string,

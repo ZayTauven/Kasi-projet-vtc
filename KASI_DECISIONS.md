@@ -8,6 +8,81 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-19 — `p2-argent` I3 : dette espèces et plafond (backend)
+
+**Point** : `p2-argent` (`lot-argent`), incrément I3 de `docs/fiche-conception-argent.md`
+(§4 et §7), sur les arbitrages validés le même jour (plafond 10 000 FCFA, alerte
+7 500 FCFA, flotte option A, règlement par un opérateur). Migration
+`MoneyPolicy1792434023914`, appliquée sur `kasi_test` et sur la base locale `kasi`
+(sauvegarde `../archive/sauvegardes/kasi-avant-dette-20261019.dump`, `ledger-check` à
+zéro écart). Non déployé. Backend seulement : ni driver-app ni panel dans ce lot.
+
+**Décision 1 : la règle.** Table `money_policy` (une ligne par devise, XOF à
+10 000 / 7 500), relue à chaque contrôle : réglable sans déploiement, déblocage
+immédiat. Dette = partie négative de `driver_wallet` (projection de `KASIMAN:<id>`).
+**Bloqué strictement au-delà du plafond** (dette > 10 000) ; alerte à partir du seuil
+(dette ≥ 7 500). Pas de ligne pour une devise : pas de plafond. Pas de
+`driver.debtLimitOverride` (non retenu pour le pilote, fiche §4.1).
+
+**Décision 2 : une fonction, quatre endroits** (`libs/database/src/lib/order/debt-limit.ts`,
+`isBlockedForDebt` / `blockedForDebtDriverIds`). Filtre dans
+`getOnlineDriversWithServiceId` (donc `createOrder`, `processPrePay`, relance du cron),
+liste vide dans `getOrdersForDriver` (`availableOrders`, mise à jour de position),
+refus dans la transaction d'acceptation **avant** l'écriture conditionnelle (le seul
+contrôle qui fait foi ; le rejeu d'une acceptation déjà gagnée n'est pas refusé),
+attribution par l'opérateur permise. `createOrder` ne connaît pas encore la devise de
+la région quand il choisit les Kasimen : le plafond y est vérifié dans toutes les
+devises du Kasiman (une seule, XOF, au pilote). Le futur dispatcher par vagues
+(`p2-dispatch`) appellera `blockedForDebtDriverIds`.
+
+**Décision 3 : message pour les apps installées.** Refus d'acceptation en `GraphQLError`
+au message français affiché tel quel par driver-app (« Votre solde Kasi est de
+−10 300 FCFA, au-delà du plafond de 10 000 FCFA. Réglez votre dette pour recevoir de
+nouvelles courses. »), sans « forbidden » ni « unauthorized », code
+`KASIMAN_DEBT_LIMIT` dans `extensions.code` (avec `balance`, `debtLimit`, `currency`).
+
+**Décision 4 : push une seule fois au passage d'un seuil.** Méthode `plainText(driver,
+title, body)` ajoutée au service de notification (texte direct, canal `tripEvents`
+déjà déclaré par driver-app ; aucune clé de traduction nouvelle). Le passage est
+détecté **sous le verrou consultatif du portefeuille** (`watchDebtCrossing`, même clé
+que `postWalletOperation`) : deux mouvements simultanés ne voient jamais le même
+passage. Push envoyée après validation. Un mouvement qui franchit les deux seuils
+d'un coup n'envoie que « Courses suspendues ». Détection branchée sur la fin de course
+(le mouvement qui endette). **Limite** : un débit manuel du back-office qui franchit un
+seuil n'envoie pas de push (Firebase n'est pas initialisé au démarrage d'admin-api).
+
+**Décision 5 : règlement `settleDriverDebt`** (admin-api, permission
+`DriverWallet_Edit`). Écriture `REGLEMENT_DETTE` par `postLedgerEntry` :
+`CAISSE:<lieu> −x / KASIMAN +x` (lieu `SIEGE` par défaut), clé
+`debt-settlement:<clé fournie>` (obligatoire), motif et numéro de reçu obligatoires,
+opérateur. Ligne de portefeuille `Recharge` / `BankTransfer` (valeurs existantes).
+**Écart à la fiche, assumé** : le montant ne peut pas dépasser la dette du moment
+(contrôlé sous verrou) ; un règlement ne rend jamais le solde positif, des espèces
+déposées ne peuvent donc pas ressortir en versement.
+
+**Décision 6 : flotte, option A** : rien ne change, la part de flotte reste payée à la
+fin de course, même Kasiman endetté (test au banc).
+
+**Contrat mobile** (skill `kasi-contrat-mobile-backend`) : ajouts seulement.
+driver-api : requêtes `kasimanAccount(currency)` et `kasimanStatement(currency, limit,
+offset)`, types `KasimanAccount`, `KasimanStatement`, `KasimanStatementItem` (nature en
+chaîne, pas d'énumération nouvelle). admin-api : mutation `settleDriverDebt`, type
+`SettleDriverDebtInput`. Comportements : au-delà du plafond, plus d'offre (abonnement,
+push, `availableOrders`) et acceptation refusée avec le message ci-dessus.
+
+**Anomalie trouvée, hors I3** (`bug-offre-perdue`, `p2-dispatch`) :
+`OrderRedisService.getRequestIdsInTimeRage` lit `request-time` par rang (`zrange`) avec
+des bornes en millisecondes ; elle ne renvoie jamais rien, la relance du cron ne part
+donc jamais. Non corrigée ici ; le test du cron fournit la course en attente.
+
+**Reste** : panel (règlement, dette et statut sur la fiche Kasiman, colonne et filtre
+« bloqués », réglage de `money_policy` : l'API d'écriture de la politique reste à
+faire, `UPDATE` en base en attendant) ; driver-app (relevé, bandeau d'alerte, écran de
+blocage, lecture de `KASIMAN_DEBT_LIMIT`) ; images locales driver-api et rider-api à
+reconstruire pour faire tourner I3 sur la stack (admin-api reconstruite pour `migrate`).
+
+---
+
 ## 2026-10-19 — `p2-argent` I2 : grand livre en partie double
 
 **Point** : `p2-argent` (`lot-argent`), incrément I2 de `docs/fiche-conception-argent.md`

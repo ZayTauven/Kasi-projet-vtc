@@ -28,6 +28,7 @@ import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
 import { In, Repository } from 'typeorm';
+import { blockedDebtCurrencies } from '@kasi/order/debt-limit';
 
 @Injectable()
 export class OrderService {
@@ -269,6 +270,18 @@ export class OrderService {
     Logger.log(
       `got filtered orders by fleet criteria ${JSON.stringify(orders)}`,
     );
+    // p2-argent I3 (2026-10-19, fiche argent §4.2) : au-dela du plafond de
+    // dette, plus aucune offre (liste vide dans la devise bloquee). Filtre
+    // seulement : le controle qui fait foi est a l'acceptation.
+    if (orders.length > 0) {
+      const blocked = await blockedDebtCurrencies(
+        this.orderRepository.manager,
+        driverId,
+      );
+      if (blocked.size > 0) {
+        orders = orders.filter((order) => !blocked.has(order.currency));
+      }
+    }
 
     return orders;
   }
