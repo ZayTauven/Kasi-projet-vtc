@@ -54,7 +54,7 @@ export class CronJobService {
         }
         // Expiring requests with expired timestamp (10 minutes ago by default)
         if(expiredRequests.length > 0) {
-            this.orderService.expireOrders(expiredRequests);
+            await this.orderService.expireOrders(expiredRequests);
         }
 
         // Notifying drivers of an unaccepted orders

@@ -2,7 +2,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { FleetTransactionEntity } from '../entities/fleet-transaction.entity';
 import { FleetWalletEntity } from '../entities/fleet-wallet.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { postWalletOperation } from './wallet-ledger';
 import { Point } from '../interfaces/point';
 import { FleetEntity } from '@kasi/database/fleet.entity';
 
@@ -31,26 +32,24 @@ export class SharedFleetService {
       | 'operatorId'
       | 'refrenceNumber'
       | 'description'
+      | 'idempotencyKey'
     >,
-  ) {
-    let wallet = await this.fleetWalletRepository.findOneBy({
-      fleetId: transaction.fleetId,
+    manager: EntityManager = this.fleetWalletRepository.manager,
+  ): Promise<FleetWalletEntity> {
+    // p1-unicite : ecriture unique et atomique (voir wallet-ledger.ts).
+    const result = await postWalletOperation<
+      FleetWalletEntity,
+      FleetTransactionEntity
+    >(manager, {
+      walletEntity: FleetWalletEntity,
+      transactionEntity: FleetTransactionEntity,
+      owner: { fleetId: transaction.fleetId },
       currency: transaction.currency,
+      amount: transaction.amount,
+      transaction,
+      recordZeroAmount: true,
     });
-    if (wallet == null) {
-      wallet = await this.fleetWalletRepository.save({
-        fleetId: transaction.fleetId,
-        balance: transaction.amount,
-        currency: transaction.currency,
-      });
-    } else {
-      await this.fleetWalletRepository.update(wallet.id, {
-        balance: transaction.amount + wallet.balance,
-      });
-      wallet.balance += transaction.amount;
-    }
-    this.fleetTransactionEntity.save(transaction);
-    return wallet;
+    return result.wallet;
   }
 
   async getFleetIdsInPoint(point: Point): Promise<number[]> {

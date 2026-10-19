@@ -3,6 +3,7 @@ import { GuardsConsumer } from "@nestjs/core/guards/guards-consumer";
 import { Args, CONTEXT, Mutation, Resolver } from "@nestjs/graphql";
 import { TransactionAction } from "@kasi/database/enums/transaction-action.enum";
 import { SharedFleetService } from "@kasi/order/shared-fleet.service";
+import { operatorIdempotencyKey } from "@kasi/order/wallet-ledger";
 import { UserContext } from "../auth/authenticated-admin";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { FleetTransactionInput } from "./dto/fleet-transaction.input";
@@ -20,6 +21,10 @@ export class FleetResolver {
     @Mutation(() => FleetWalletDTO)
     async createFleetTransaction(@Args('input', { type: () => FleetTransactionInput }) input: FleetTransactionInput) {
         input.amount = input.action == TransactionAction.Recharge ? Math.abs(input.amount) : Math.abs(input.amount) * -1;
-        return this.sharedFleetService.rechargeWallet({...input, operatorId: this.context.req.user.id});
+        return this.sharedFleetService.rechargeWallet({
+            ...input,
+            idempotencyKey: operatorIdempotencyKey(input.idempotencyKey),
+            operatorId: this.context.req.user.id,
+        });
     }
 }

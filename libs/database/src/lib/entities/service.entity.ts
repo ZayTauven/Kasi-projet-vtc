@@ -56,7 +56,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 12,
     scale: 2,
   })
@@ -64,7 +64,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 12,
     scale: 2,
   })
@@ -72,7 +72,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 12,
     scale: 2,
   })
@@ -80,7 +80,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 12,
     scale: 2,
   })
@@ -88,7 +88,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 10,
     scale: 2,
   })
@@ -118,13 +118,15 @@ export class ServiceEntity {
   })
   distanceFeeMode!: ServiceDistanceFeeMode;
 
+  // Secondes explicites : PostgreSQL stocke '00:00:00'::time, et TypeORM compare
+  // le texte ; '00:00' produisait un faux ecart perpetuel de migration:generate.
   @Column('time', {
-    default: '00:00',
+    default: '00:00:00',
   })
   availableTimeFrom!: string;
 
   @Column('time', {
-    default: '23:59',
+    default: '23:59:00',
   })
   availableTimeTo!: string;
 
@@ -139,7 +141,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 10,
     scale: 2,
   })
@@ -147,7 +149,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 10,
     scale: 2,
   })
@@ -158,7 +160,7 @@ export class ServiceEntity {
 
   @Column('numeric', {
     transformer: new ColumnNumericTransformer(),
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
     precision: 10,
     scale: 2,
   })

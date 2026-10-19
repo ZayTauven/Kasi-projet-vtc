@@ -1,4 +1,3 @@
-import 'package:client_shared/components/kasi_sheet_view.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
 
@@ -18,15 +17,16 @@ class OrdersCarouselView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mainBloc = context.read<MainBloc>();
+    // La liste initiale ne vient plus d'un `Query$AvailableOrders$Widget` ici :
+    // son résultat n'était jamais transmis au bloc (seules les souscriptions
+    // l'alimentaient), et en cas d'échec réseau il affichait une erreur À LA
+    // PLACE des souscriptions, qui n'étaient alors pas montées du tout. La
+    // lecture et les relectures des offres sont faites par `OrdersResyncScope`
+    // (p1-resync) ; ce widget ne garde que l'écoute en temps réel.
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.all(16),
-      child:
-          Query$AvailableOrders$Widget(builder: (result, {refetch, fetchMore}) {
-        if (result.isLoading || result.hasException) {
-          return KasiSheetView(
-              child: QueryResultView(result, refetch: refetch));
-        }
+      child: Builder(builder: (context) {
         return Subscription$OrderCreated$Widget(
             onSubscriptionResult: (subscriptionResult, client) {
           if (subscriptionResult.parsedData != null) {

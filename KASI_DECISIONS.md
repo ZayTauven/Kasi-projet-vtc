@@ -8,6 +8,262 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-19 — `p2-argent` : cinq arbitrages validés sur la fiche de conception
+
+**Point** : `p2-argent` (`lot-argent`), fiche `docs/fiche-conception-argent.md` §8,
+validée par l'utilisateur le 2026-10-19. `d-commission` → Validé.
+
+1. **Commission (`d-commission`)** : fourchette de 10 à 18 %, bornes de saisie dans le
+   panel. Le taux reste un paramètre **par service** (`providerSharePercent`), jamais une
+   valeur en dur. La valeur de lancement (repère 12 à 15 %) est fixée par l'équipe produit
+   avec `p2-parametrage`.
+2. **Plafond de dette du Kasiman** : 10 000 FCFA, alerte à 7 500 FCFA, montants réglables
+   dans le panel sans déploiement. Au-delà du plafond, le Kasiman ne reçoit plus d'offres
+   tant qu'il n'a pas réglé. Il règle lui-même : en espèces contre reçu pendant le pilote,
+   par Wave ou Orange Money après `p2-momo`.
+3. **Flotte** (option A de la fiche, §4.5) : le Kasiman porte sa dette, la part de flotte
+   reste payée à la fin de course. Risque borné par le plafond ; à revoir au bilan du
+   pilote.
+4. **Grand livre écrit en interne**, pas porté de BetterSuite (qui n'a ni partie double,
+   ni dette, ni devis). Les portefeuilles actuels en deviennent des projections. Le
+   reporting comptable de BetterSuite se portera en `p4-pilotage`.
+5. **Mutations CRUD génériques retirées dès l'incrément I1** : `createOneDriverTransaction`,
+   `createOneRiderTransaction` et `createOneProviderTransaction` d'admin-api. Aucun écran ni
+   aucune app ne les appelle (vérifié dans la fiche). Toute opération manuelle passe par les
+   mutations sur mesure, avec permission, clé d'unicité et motif.
+
+**Restent ouverts** (fiche §8.6 à 8.10) : qui finance les coupons, durée d'honneur d'un
+devis pour une app installée, client en négatif, commission touriste, refus de devis sans
+itinéraire. À trancher avant les incréments I3 et I4.
+
+**Ordre** : I1 (correctifs sans table, dont les permissions manquantes sur
+`createDriverTransaction` / `createRiderTransaction`) démarre dès que la phase 1 est
+committée. I2 et la suite créent des tables : ils attendent en plus `p1-migrations` en
+production.
+
+---
+
+## 2026-10-19 — Dokploy reporté, le déploiement reste en SSH
+
+**Points** : `p1-staging` et `act-dokploy` → Bloqué.
+
+**Décision** : on ne crée pas encore de compte Dokploy. La production continue d'être
+mise à jour par SSH (runbook de mise à jour, `docs/migrations-base-de-donnees.md` §6
+pour la première migration). Les livrables Dokploy du 2026-08-31
+(`docker-compose.dokploy.yml`, `tools/dokploy-setup.mjs`, runbook) restent dans le dépôt
+pour la reprise.
+
+**Conséquence sur la feuille de route** : le critère de sortie de la phase 1 ne demande
+plus des tests au vert « sur staging », mais au vert sur le banc d'intégration
+(`npm run test:integration`), puis une version déployée en production par SSH. Le
+hachage des mots de passe opérateurs (`act-hachage`) part avec le prochain déploiement
+SSH au lieu d'attendre Dokploy. Les implémentations fonctionnelles de la phase 2
+continuent.
+
+**Limite assumée** : sans staging, une version n'est essayée sur un serveur qu'en
+production. Le banc d'intégration et le lancement réel sur émulateur et téléphone
+doivent donc précéder chaque déploiement.
+
+---
+
+## 2026-09-29 — `p1-transitions` et `p1-unicite` : écritures conditionnelles, clé d'unicité sur l'argent, banc d'intégration
+
+**Points** : `p1-transitions` (`bug-annulation`, `bug-double-assignation`,
+`bug-doublon-statut`), `p1-unicite` (`bug-rejeu-portefeuille`), amorce de `p1-tests`.
+Lots `lot-fiabilite` / `lot-qualite`, phase 1.
+
+**Décision 1 : une transition de course = une écriture conditionnelle.**
+`UPDATE request SET status = <cible> WHERE id = $1 AND status IN (<attendus>)
+[AND "driverId" = $2] [AND "riderId" = $3]`, et l'on teste le nombre de lignes
+touchées (`libs/database/src/lib/order/order-transition.ts`). Préféré au verrou
+applicatif ou à `SELECT … FOR UPDATE` partout : une seule requête, PostgreSQL sérialise
+les écritures sur la ligne, pas de verrou tenu pendant un appel réseau. Le verrou de ligne
+(`FOR UPDATE`) n'est gardé que là où il faut lire avant de décider sous verrou : fin de
+course (`SharedOrderService.finish`) et attribution par l'opérateur. Activité, remise
+en ligne ou « in service » du Kasiman et écritures d'argent sont dans la **même
+transaction** que le changement de statut ; notifications et diffusion **après**
+succès seulement.
+
+**Décision 2 : un rejeu du même acteur n'est pas une erreur.** Si la course est déjà à
+l'étape demandée (ou plus loin dans la progression DriverAccepted → Arrived → Started →
+WaitingForPostPay → WaitingForReview → Finished) par le même Kasiman, on renvoie l'état
+courant sans effet de bord. Même règle pour l'annulation client (déjà RiderCanceled),
+opérateur (déjà Expired), versement (déjà Paid). Tout autre cas est refusé avec un
+message **déjà connu des apps** : `Already Taken` (offre prise), `CANCEL_NOT_ALLOWED`,
+`Update status to this is not possible`, `Not Allowed`.
+
+**Décision 3 : clé d'unicité `idempotencyKey` sur les 4 tables de transactions**
+(migration `MoneyIdempotencyKey1790647094992`, colonne varchar(128) nullable + index
+unique, additive). Toujours **dérivée côté serveur** (`MoneyKey`,
+`libs/database/src/lib/order/wallet-ledger.ts`) : `payment:<passerelle>:<référence>`,
+`order:<course>:<nature>`, `payout:<versement>`, `gift-card:<carte>`. Écriture par
+`postWalletOperation` : verrou consultatif de transaction par portefeuille, insertion en
+`ON CONFLICT DO NOTHING`, incrément atomique du solde. Historique laissé à NULL (plusieurs
+NULL admis par l'index) : mesuré sur la base de démo, aucune référence de passerelle
+renseignée, rien à rétro-remplir. Le back-office peut fournir une clé optionnelle
+(`idempotencyKey` ajouté, facultatif, aux entrées `createRider/Driver/FleetTransaction`,
+préfixé `operator:`) ; sans clé, chaque appel reste une opération (comportement
+historique).
+
+**Décision 4 : banc d'intégration contre un vrai PostgreSQL** (`kasi_test`, créée par les
+migrations) et un vrai Redis (base logique 15) : `npm run test:integration`,
+`docs/tests-integration.md`. Doubles limités au pub/sub (canaux communs à toutes les
+bases Redis), au push, à l'itinéraire, à la passerelle HTTP et aux appels masqués.
+Fichiers `*.int-spec.ts`, exclus des builds et de `nx test`.
+
+**Comportements modifiés pour les apps installées** (aucun champ renommé ni supprimé ;
+seul ajout : le champ d'entrée facultatif `idempotencyKey` côté admin-api) :
+annulation Kasiman → renvoie la course annulée au lieu de « Already Taken » ; rejeu
+Kasiman (acceptation, arrivée, démarrage, fin, annulation) → plus d'erreur ni de doublon ;
+`updateOneOrder` sans statut (driver-api) → seul `destinationArrivedTo` sur sa course
+démarrée est écrit (`paidAmount` ignoré) ; annulation client refusée sur une course payée,
+terminée ou annulée par un autre ; avis refusé hors WaitingForReview/Finished ; annulation
+et attribution opérateur refusées sur une course payée ou démarrée ; `processPayout` rejoué
+sur un versement payé → renvoyé sans erreur.
+
+**Corrigé au passage dans le même périmètre** : `migrate.ts revert` visait la référence
+dès qu'une seconde migration existait (`getExecutedMigrations()` est trié du plus récent
+au plus ancien) ; annulation client après acceptation sans préautorisation
+(`payments[0].transactionNumber` sur une liste vide, commande #163 locale) qui laissait
+le Kasiman « in service ».
+
+**Hors lot, relevé** : `CouponService.redeemGiftCard` (rider-api) lit la table `coupon`
+au lieu de `gift_card` (dépôt injecté avec `CouponEntity`) et ne vérifie pas `isUsed` ;
+les mutations CRUD `createOneDriverTransaction` / `createOneRiderTransaction` /
+`createOneProviderTransaction` d'admin-api insèrent une ligne sans toucher au solde. Grand
+livre en partie double et dette espèces : `p2-argent`.
+
+---
+
+## 2026-09-28 — `p1-migrations` : le schéma n'évolue plus que par migrations TypeORM
+
+**Constat (mesuré le 2026-09-28)**. Production (commit `8cbe512`, PostgreSQL 16.4,
+PostGIS 3.4.3) : 59 tables applicatives, 52 types enum, aucune table `migrations`.
+Son `pg_dump --schema-only` est **identique** à celui de la base locale de démo, à une
+exception près : 10 clés primaires s'appellent `<table>_pkey` en local (tables créées
+à la main par les scripts `add_*.sql`) et `PK_<hash>` en production (tables créées par
+`FORCE_SYNC_DB` le 2026-07-25). Entités du dépôt contre production : **aucun écart** de
+table, de colonne, d'index, de contrainte ni de type, et **aucune colonne présente en
+production et absente des entités**. Le seul changement d'entité depuis `8cbe512`
+(hook `@BeforeInsert` du hachage scrypt, `operator.entity.ts`) ne touche pas le schéma.
+Aucune migration de rattrapage n'est donc nécessaire.
+
+**Décisions**
+
+1. **`synchronize: false` en dur**, sans variable pour le réactiver. La règle
+   `tables < 5 || FORCE_SYNC_DB` et la procédure `FORCE_SYNC_DB` sont supprimées. Les
+   API ne créent plus ni base ni extension au démarrage ; elles vérifient seulement, en
+   lecture, qu'aucune migration n'est en attente (log `[Migrations]`).
+2. **Un seul exécutant : un service compose ponctuel `migrate`**, et non
+   `migrationsRun` dans une API. Les trois API démarrent en parallèle et chacune ne
+   connaît qu'une partie des entités (seule admin-api charge `RewardEntity`) : confier
+   les migrations à l'une d'elles, c'est laisser les deux autres démarrer sur un schéma
+   pas encore migré, et rejouer la course déjà observée entre deux `synchronize`
+   concurrents (entrée du 2026-07-03, point 7). Avec `depends_on:
+   service_completed_successfully`, l'ordre est garanti par compose, identique en SSH
+   (`docker compose up -d`) et sous Dokploy, et aucune API ne démarre sur un schéma
+   non migré. Limite constatée : si `migrate` échoue pendant `up -d`, les API que
+   compose recrée restent arrêtées ; le déploiement SSH lance donc
+   `docker compose run --rm --no-deps migrate` **avant** `up -d`, pour qu'un échec
+   s'arrête avant de toucher aux API en service. Le service réutilise l'image
+   admin-api : `migrate.js` y est une entrée webpack supplémentaire, à côté de
+   `main.js`.
+3. **Migrations listées explicitement** (`libs/database/src/lib/migration/index.ts`),
+   pas par glob : un bundle webpack ne contient pas de fichiers `.js` à découvrir. L'ancien
+   glob `migrations: [${__dirname}/migration/*.js]` visait d'ailleurs les **migrations
+   MySQL** archivées, qu'admin-api compilait encore dans son `dist/` (étape de build
+   supprimée ; `mysql-archive/` reste pour l'historique, inerte).
+4. **Migration de référence `Baseline1790629154960`** : générée par TypeORM contre une
+   base vide à partir des 50 entités, ordre physique des colonnes aligné à la main sur
+   la production pour 3 tables (colonnes Kasi Moto ajoutées après coup). Vérifié : base
+   neuve migrée = `pg_dump` de production, à la table `migrations` près (plus 3
+   extensions PostGIS annexes que l'image n'installe que dans `POSTGRES_DB`). Sur une
+   base peuplée, elle est **marquée** (`migrate.js mark-baseline`, qui exige la présence
+   des 59 tables), jamais exécutée ; `migrate.js run` refuse de l'exécuter sur une base
+   qui contient déjà une de ces tables ; elle ne se révertit pas.
+5. **24 valeurs par défaut réécrites dans les entités** (`'0.00'` devient
+   `() => '0.00'` pour 22 colonnes `numeric`, `'00:00'`/`'23:59'` devient
+   `'00:00:00'`/`'23:59:00'` pour 2 colonnes `time`). TypeORM comparait le texte `'0.00'` à
+   la constante `0.00` stockée par PostgreSQL et voyait un écart perpétuel : chaque
+   `migration:generate` l'aurait régénéré. Le DDL produit est identique ; rien ne change
+   en base ni dans le contrat GraphQL.
+6. **Verrou consultatif PostgreSQL** autour de `run`, `mark-baseline` et `revert` : deux
+   exécutions simultanées s'attendent.
+
+**Outillage** : scripts `npm run migration:{generate,create,run,revert,show,check,mark-baseline}`
+(ts-node avec vérification de types complète, environ 2 min : en compilation isolée,
+les champs typés par une énumération importée deviennent `Object` et TypeORM refuse
+l'entité). Runbook : `docs/migrations-base-de-donnees.md`.
+
+**Reste à faire** : première mise en place en production (sauvegarde, `check`,
+`mark-baseline`, `up -d`), par l'utilisateur, section 6 du runbook. `p1-migrations`
+passera à « Fait » après cette exécution.
+
+## 2026-09-28 — Phase 0 : licence BetterSuite confirmée, Dira hors du Sénégal, TLS sain
+
+**Licence (`p0-licence`, `bs-act-licence` → Fait)** : le CTO confirme que la licence
+couvre BetterSuite 5.3.2 dans un produit commercial. Conséquence : le dispatch par
+vagues (`p2-dispatch`) est **porté** depuis BetterSuite, pas réécrit ; le code
+BetterSuite entre dans Kasi module par module via le skill `kasi-portage-bettersuite`,
+adapté au socle Kasi (PostgreSQL, TypeORM 1.0). Dira : toujours les idées seulement.
+
+**Dira (`p0-dira` → En cours)** : décidé que Dira n'entravera pas Kasi au Sénégal ;
+les intentions seront formalisées dans la semaine.
+
+**Référentiel (`p0-referentiel` → En cours)** : le CTO soumet le benchmark et le plan
+à l'équipe ; le chantier avance sans attendre la réunion, les remarques seront
+reprises si besoin.
+
+**Mapbox (`p0-mapbox` → Fait)** : le token `sk.` exposé en juillet est révoqué
+(vérifié par l'API Mapbox, `TokenRevoked`). Les tokens publics en service (bundle du
+panel et `map_setting` lu par les apps) restent valides : rien n'est cassé. Un
+nouveau token public a été créé ; son installation est facultative.
+
+**TLS (`p0-tls` → Fait)** : fausse alerte, voir le rectificatif sous l'entrée du
+2026-08-31.
+
+---
+
+## 2026-09-28 — Un référentiel devient la source de vérité du chantier ; « pilote d'abord »
+
+**Contexte** : benchmark du 26 septembre 2026 de Kasi face à BetterSuite 5.3.2 (version
+récente du template d'origine) et à Dira (plateforme VTC et repas en marque blanche,
+Lomé). Il a produit cinq pages publiées, avec un suivi partagé par point.
+
+**Décision 1 : le référentiel fait foi.** Le périmètre du projet est défini par cinq
+pages : Existant (Bilan Kasi, Kasi face à BetterSuite, Kasi face à Dira), Cheminement
+(Feuille de route Kasi), Cible (Kasi cible face à Dira). Leur source et leur miroir
+Markdown vivent hors de ce dépôt, dans `../referentiel/`. Ordre des sources de vérité :
+référentiel, puis `KASI_NARRATIVE_VISION.md`, puis ce journal, puis la mémoire. Tout
+travail cite le code d'un point du référentiel.
+
+**Décision 2 : « pilote d'abord » (`d-pilote`, validé).** Avant le lancement, seuls les
+lots qui rendent possible un pilote payant à Dakar : fiabilisation, tests, dispatch par
+vagues, grand livre et dette des Kasimen sur les espèces, Wave et Orange Money,
+documents typés, catalogue véhicules (environ 22 à 37 semaines-développeur). Le nouveau
+back-office React, la refonte mobile, le commerce, le produit entreprise et les
+tableaux de bord attendent le bilan du pilote (20 à 30 Kasimen existants, 5 à 10
+e-commerçants sous forfait).
+
+**Justification** : le risque principal de Kasi est l'adoption à Dakar, pas la
+technique ; la licence Dira (au moins 104 M FCFA sur 3 ans) dépasse le besoin de
+financement total et ne cède pas le code.
+
+**Conséquences sur l'outillage** : agents recentrés sur leurs points du référentiel ;
+`kasi-supervisor` devient gardien du référentiel (lecture seule) ; skills
+`kasi-freshness-audit` et `kasi-angular-signals-migration` archivées dans
+`../archive/phase-2-outillage/` ; nouvelles skills `kasi-referentiel` et
+`kasi-portage-bettersuite`. Règles : aucun code BetterSuite avant confirmation de la
+licence (`p0-licence`) ; de Dira, seules les idées.
+
+**Bugs relevés dans le code pendant le benchmark (non corrigés)** :
+`apps/driver-api/src/app/order/driver-order.query-service.ts` : `case DriverCanceled`
+sans `break` (fausse activité « acceptée » + erreur « Already Taken ») ; acceptation non
+atomique (double assignation possible) ; `Arrived`/`Started` non idempotents. Traités
+par `p1-transitions`.
+
+---
+
 ## 2026-08-31 — Chaîne de déploiement : passage à Dokploy auto-hébergé
 
 **Contexte** : le déploiement de production est manuel (`git pull && docker
@@ -62,6 +318,17 @@ uniquement parce que le certificat n'est pas encore renouvelable. Premier vrai
 essai attendu **vers le 2026-09-08** (échec), certificat expiré le
 **2026-10-08**. La bascule vers Traefik supprime le problème par construction ;
 sinon, correctif d'attente au §7 du runbook.
+
+> **Rectificatif du 2026-09-28 (`p0-tls`) : fausse alerte.** L'inventaire n'avait
+> lu que `renewal/kasigroupe.tech.conf`. Les hooks existent depuis le 2026-07-10
+> sous forme de scripts dans `/etc/letsencrypt/renewal-hooks/pre|post/`
+> (`stop-kasi-nginx.sh`, `start-kasi-nginx.sh`), que certbot exécute sans les
+> inscrire dans ce fichier (entrée du 2026-07-10 plus bas). Renouvellement réussi le
+> 2026-09-08 (coupure d'environ 20 s), certificat valide jusqu'au **2026-12-07**,
+> vérifié depuis l'extérieur. Nouveau risque relevé au passage : `kasi-nginx` sert
+> aussi Yessal par un fichier ajouté à la main dans le conteneur, avec des upstreams
+> statiques ; si Yessal est absent au prochain renouvellement (vers le 2026-11-07),
+> nginx ne redémarre pas après le post-hook et Kasi tombe. Détail au §7 du runbook.
 
 **Livrables** : `docker-compose.dokploy.yml`, `.env.dokploy.example`,
 `docs/deploiement-dokploy.md` (runbook local → staging → production → retour

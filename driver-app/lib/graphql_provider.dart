@@ -41,12 +41,19 @@ GraphQLClient getClient({
   );
 }*/
 
+/// Dernier lien WebSocket créé par [clientFor] (p1-resync). Lu par
+/// `OrdersResyncScope` pour observer l'état de connexion du socket et relire
+/// les offres à sa reconnexion. Simple observation : ce fichier ne change rien
+/// au comportement du lien ni aux appels GraphQL.
+WebSocketLink? activeWebSocketLink;
+
 ValueNotifier<GraphQLClient> clientFor(
     {required String uri, required String subscriptionUri, String? jwtToken}) {
   final WebSocketLink websocketLink = jwtToken != null
       ? WebSocketLink(subscriptionUri,
           config: SocketClientConfig(initialPayload: {"authToken": jwtToken}))
       : WebSocketLink(subscriptionUri);
+  activeWebSocketLink = websocketLink;
   final HttpLink httpLink = jwtToken != null
       ? HttpLink(uri, defaultHeaders: {"Authorization": "Bearer $jwtToken"})
       : HttpLink(uri);

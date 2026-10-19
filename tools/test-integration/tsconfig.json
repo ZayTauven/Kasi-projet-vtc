@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2021",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "isolatedModules": false,
+    "sourceMap": true,
+    "types": ["jest", "node"]
+  },
+  "include": ["../../apps/*/src/**/*.int-spec.ts", "../../libs/*/src/**/*.int-spec.ts", "./**/*.ts"]
+}

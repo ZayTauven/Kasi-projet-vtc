@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RiderEntity } from '../entities/rider-entity';
 import { RiderTransactionEntity } from '../entities/rider-transaction.entity';
 import { RiderWalletEntity } from '../entities/rider-wallet.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { postWalletOperation, WalletPostingResult } from './wallet-ledger';
 
 @Injectable()
 export class SharedRiderService {
@@ -75,8 +76,14 @@ export class SharedRiderService {
     return user;
   }
 
-  async getRiderCreditInCurrency(riderId: number, currency: string) {
-    const wallet = await this.riderWalletRepo.findOneBy({ riderId, currency });
+  async getRiderCreditInCurrency(
+    riderId: number,
+    currency: string,
+    manager: EntityManager = this.riderWalletRepo.manager,
+  ) {
+    const wallet = await manager
+      .getRepository(RiderWalletEntity)
+      .findOneBy({ riderId, currency });
     return wallet?.balance ?? 0;
   }
 
@@ -96,25 +103,32 @@ export class SharedRiderService {
       | 'refrenceNumber'
       | 'description'
       | 'giftCardId'
+      | 'idempotencyKey'
     >,
+    manager: EntityManager = this.riderWalletRepo.manager,
   ): Promise<RiderWalletEntity> {
-    let wallet = await this.riderWalletRepo.findOneBy({
-      riderId: transaction.riderId,
-      currency: transaction.currency,
-    });
-    if (wallet == null) {
-      wallet = await this.riderWalletRepo.save({
-        balance: transaction.amount,
+    return (await this.postTransaction(transaction, manager)).wallet;
+  }
+
+  /**
+   * Comme `rechargeWallet`, en indiquant si l'operation a ete ecrite (`applied`)
+   * ou absorbee comme rejeu (cle `idempotencyKey` deja connue). p1-unicite.
+   */
+  async postTransaction(
+    transaction: Parameters<SharedRiderService['rechargeWallet']>[0],
+    manager: EntityManager = this.riderWalletRepo.manager,
+  ): Promise<WalletPostingResult<RiderWalletEntity>> {
+    return postWalletOperation<RiderWalletEntity, RiderTransactionEntity>(
+      manager,
+      {
+        walletEntity: RiderWalletEntity,
+        transactionEntity: RiderTransactionEntity,
+        owner: { riderId: transaction.riderId },
         currency: transaction.currency,
-        riderId: transaction.riderId,
-      });
-    } else {
-      await this.riderWalletRepo.update(wallet.id, {
-        balance: transaction.amount + wallet.balance,
-      });
-      wallet.balance += transaction.amount;
-    }
-    this.riderTransactionRepo.save(transaction);
-    return wallet;
+        amount: transaction.amount,
+        transaction,
+        recordZeroAmount: true,
+      },
+    );
   }
 }

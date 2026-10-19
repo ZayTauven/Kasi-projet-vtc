@@ -11,14 +11,7 @@
           "target": "compile"
         }
       ],
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "tsc -p libs/database/src/lib/migration/mysql-archive/tsconfig.json"
-          }
-        ]
-      },
+      "executor": "nx:noop",
       "configurations": {
         "production": {}
       }
@@ -34,6 +27,12 @@
         "deleteOutputPath": false,
         "outputPath": "dist/apps/admin-api",
         "main": "apps/admin-api/src/main.ts",
+        "additionalEntryPoints": [
+          {
+            "entryName": "migrate",
+            "entryPath": "libs/database/src/lib/migration/migrate.ts"
+          }
+        ],
         "tsConfig": "apps/admin-api/tsconfig.app.json",
         "assets": [
           "apps/admin-api/src/assets"

@@ -107,7 +107,11 @@ export class OrderResolver {
   async cancelBooking(
     @Args('id', { type: () => ID }) id: number,
   ): Promise<OrderDTO> {
-    return this.riderOrderService.cancelOrder(id);
+    // p1-transitions : la reservation doit etre celle du client connecte.
+    return this.riderOrderService.cancelOrder(
+      Number(id),
+      this.context.req.user.id,
+    );
   }
 
   @Query(() => Point, { nullable: true })

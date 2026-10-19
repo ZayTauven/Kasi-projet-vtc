@@ -5,6 +5,7 @@ import { TransactionAction } from '@kasi/database/enums/transaction-action.enum'
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
 import { OperatorEntity } from '@kasi/database/operator.entity';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
+import { operatorIdempotencyKey } from '@kasi/order/wallet-ledger';
 import { ForbiddenError } from '@nestjs/apollo';
 import { UserContext } from '../auth/authenticated-admin';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -34,6 +35,7 @@ export class RiderResolver {
         : Math.abs(input.amount) * -1;
     return this.sharedRiderService.rechargeWallet({
       ...input,
+      idempotencyKey: operatorIdempotencyKey(input.idempotencyKey),
       operatorId: this.context.req.user.id,
       status: TransactionStatus.Done,
     });

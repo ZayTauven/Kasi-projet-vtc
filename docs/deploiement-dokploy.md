@@ -30,10 +30,11 @@ Dokploy n'a besoin que d'un accès **lecture** au dépôt.
 - **La lenteur du build.** Le VPS a 2 vCPU et le build Angular tourne avec
   `--max-old-space-size=4096`. Dokploy ne l'accélère pas, il l'affiche. Prévoir
   du swap sur le VPS avant la bascule.
-- **La dérive de schéma en production.** Le projet n'a aucune migration TypeORM
-  et `synchronize` ne s'active jamais sur une base peuplée (procédure de secours
-  `FORCE_SYNC_DB`). Une chaîne de déploiement propre livre du code plus vite,
-  pas un schéma à jour. Chantier applicatif distinct, non couvert ici.
+- **Les migrations de base.** Depuis `p1-migrations` (2026-09-28), le schéma
+  n'évolue que par migrations TypeORM, jouées par le service ponctuel `migrate`
+  du compose ; `synchronize` et `FORCE_SYNC_DB` n'existent plus. Sous Dokploy,
+  `migrate` doit passer avant le démarrage des API (à vérifier avec `p1-staging`).
+  Procédure : `docs/migrations-base-de-donnees.md`.
 - **Les sauvegardes.** Dokploy sait planifier des dumps vers un bucket
   S3-compatible, mais rien n'est configuré tant qu'on ne le fait pas. La base de
   production n'a aujourd'hui **aucune sauvegarde automatisée**.
@@ -299,35 +300,58 @@ ou le déporter sur un second VPS.
 
 ## 7. Étape 4 — Bascule de la production
 
-> ### ⏰ Contrainte de calendrier — anomalie TLS en production
+> ### Renouvellement TLS actuel (certbot standalone + hooks) — état au 2026-09-28
 >
-> Constaté par inventaire du VPS le 2026-08-31 :
-> `/etc/letsencrypt/renewal/kasigroupe.tech.conf` déclare
-> `authenticator = standalone` et **aucun `pre_hook` / `post_hook`**. Or
-> `kasi-nginx` détient `0.0.0.0:80` en permanence, et certbot standalone a
-> besoin de ce port pour répondre au challenge ACME.
+> **Correction de l'inventaire du 2026-08-31.** Celui-ci concluait à un
+> renouvellement impossible parce que `/etc/letsencrypt/renewal/kasigroupe.tech.conf`
+> ne contient ni `pre_hook` ni `post_hook`. C'était une fausse alerte : les
+> hooks sont posés depuis la mise en HTTPS (2026-07-10) **sous forme de
+> scripts dans les répertoires** `/etc/letsencrypt/renewal-hooks/pre/` et
+> `/post/`, que certbot exécute pour tout `certbot renew` sans les inscrire
+> dans le `.conf` :
 >
-> Le `certbot.timer` s'exécute deux fois par jour et sort en succès
-> aujourd'hui **uniquement parce que le certificat n'est pas encore
-> renouvelable** (expiration 2026-10-08, certbot ne tente rien avant J-30).
+> - `pre/stop-kasi-nginx.sh` : `docker compose -f /opt/kasi/docker-compose.yml -f /opt/kasi/docker-compose.override.yml stop nginx`
+> - `post/start-kasi-nginx.sh` : même commande avec `start nginx`
 >
-> - **~2026-09-08** : premier vrai essai de renouvellement → échec, port 80 pris.
-> - **2026-10-08** : certificat expiré → HTTPS de production hors service.
+> **Preuve** : le `certbot.timer` a renouvelé le certificat le
+> **2026-09-08 à 17:07 UTC** (`letsencrypt.log` : pre-hook, challenges
+> http-01, « Congratulations, all renewals succeeded », post-hook). Le
+> certificat servi sur 443 expire le **2026-12-07** ; prochain renouvellement
+> automatique à partir du ~2026-11-07. Coupure HTTP/HTTPS mesurée : ~20 s
+> (dont ~11 s d'arrêt de nginx, qui attend la fermeture des WebSockets).
 >
-> La bascule vers Traefik supprime structurellement le problème (ACME géré par
-> le proxy lui-même, aucune contention de port). Si elle n'est pas faite avant
-> le 8 septembre, poser le correctif d'attente :
+> Pour vérifier l'état : `certbot certificates`, `ls /etc/letsencrypt/renewal-hooks/*/`,
+> `systemctl list-timers certbot.timer`. **Toujours lire les répertoires
+> `renewal-hooks/` en plus du `.conf`.**
 >
-> ```bash
-> PRE=/etc/letsencrypt/renewal-hooks/pre/stop-nginx.sh
-> POST=/etc/letsencrypt/renewal-hooks/post/start-nginx.sh
-> echo '#!/bin/sh'               >  $PRE
-> echo 'docker stop kasi-nginx'  >> $PRE
-> echo '#!/bin/sh'               >  $POST
-> echo 'docker start kasi-nginx' >> $POST
-> chmod +x $PRE $POST
-> certbot renew --dry-run    # doit passer sans "port 80 already in use"
-> ```
+> Points de vigilance :
+>
+> - `certbot renew --dry-run` exécute **aussi** ces hooks : il coupe
+>   kasi-nginx ~20 s. Ne le lancer qu'en fenêtre de maintenance.
+> - Le VPS porte un second certificat, `yessal.kasigroupe.tech`
+>   (`authenticator = manual`, dns-01, sans `manual_auth_hook`), qui ne peut
+>   pas se renouveler seul : à partir du ~2026-11-09, chaque passage du timer
+>   finira en échec pour lui (expiration 2026-12-09). Sans effet sur
+>   `kasigroupe.tech`, mais `certbot.service` apparaîtra en échec. Pour un
+>   essai à blanc limité à Kasi : `certbot renew --dry-run --cert-name kasigroupe.tech`.
+> - **`kasi-nginx` sert aussi Yessal** (constaté le 2026-09-28) :
+>   `/etc/nginx/conf.d/yessal-demo.conf` a été ajouté dans la **couche
+>   inscriptible du conteneur** (pas un montage : `docker diff kasi-nginx`) et
+>   le conteneur est rattaché à la main au réseau `yessal_demo_net`. Deux
+>   conséquences :
+>   1. ce fichier définit des `upstream` **statiques**
+>      (`yessal-demo-web:3000`, `yessal-demo-backend:8000`) : si l'un de ces
+>      conteneurs est absent au moment où le post-hook relance nginx, nginx
+>      refuse de démarrer (« host not found in upstream ») et **Kasi tombe en
+>      entier**, 80 et 443 ;
+>   2. toute recréation de `kasi-nginx` (`docker compose up -d` après
+>      modification du service, `docker compose down`, bascule Dokploy) efface
+>      ce fichier et le rattachement réseau : Yessal tombe.
+>
+> La bascule vers Traefik supprime ce mécanisme (ACME géré par le proxy) :
+> désactiver `certbot.timer` à ce moment-là, comme indiqué ci-dessous, en
+> tenant compte du certificat `yessal` et du routage Yessal s'ils sont encore
+> portés par ce VPS.
 
 
 À exécuter en fenêtre de maintenance. **Ne pas lancer avant que la répétition

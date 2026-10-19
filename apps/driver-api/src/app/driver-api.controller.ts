@@ -15,6 +15,7 @@ import { MediaEntity } from '@kasi/database/media.entity';
 import { Repository } from 'typeorm';
 import { CryptoService, storeUploadedFile } from '@kasi/database';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
+import { MoneyKey } from '@kasi/order/wallet-ledger';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { DriverRechargeTransactionType } from '@kasi/database/enums/driver-recharge-transaction-type.enum';
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
@@ -48,6 +49,8 @@ export class DriverAPIController {
     const decrypted = await this.cryptoService.decrypt(token);
     if (decrypted.userType == 'driver') {
       if (decrypted.status == 'success') {
+        // p1-unicite : la reference de la passerelle est la cle d'unicite. Un
+        // retour rejoue ne credite plus une seconde fois.
         await this.sharedDriverService.rechargeWallet({
           driverId: decrypted.userId,
           amount: decrypted.amount,
@@ -57,6 +60,10 @@ export class DriverAPIController {
           rechargeType: DriverRechargeTransactionType.InAppPayment,
           paymentGatewayId: decrypted.gatewayId,
           status: TransactionStatus.Done,
+          idempotencyKey: MoneyKey.gatewayPayment(
+            decrypted.gatewayId,
+            decrypted.transactionNumber,
+          ),
         });
         await this.paymentRepository.delete({
           transactionNumber: decrypted.transactionNumber,

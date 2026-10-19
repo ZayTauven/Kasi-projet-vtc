@@ -1,4 +1,4 @@
-﻿import { QueryService } from '@ptc-org/nestjs-query-core';
+﻿import { QueryService, UpdateOneOptions } from '@ptc-org/nestjs-query-core';
 import { InjectPubSub } from '@ptc-org/nestjs-query-graphql';
 import { TypeOrmQueryService } from '@ptc-org/nestjs-query-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,7 +28,21 @@ export class RiderOrderQueryService extends TypeOrmQueryService<RequestEntity> {
   async updateOne(
     id: number,
     update: UpdateOrderInput,
+    opts?: UpdateOneOptions<RequestEntity>,
   ): Promise<RequestEntity> {
+    if (update.status === OrderStatus.RiderCanceled) {
+      // p1-transitions (2026-09-29) : annulation conditionnelle et rejouable,
+      // sur la course du client uniquement (filtre d'autorisation d'OrderDTO,
+      // riderId = client connecte). Avant : le statut etait ecrit sans condition
+      // (y compris sur une course payee) puis les frais preleves a chaque appel.
+      const owned = await this.getById(id, opts);
+      const result = await this.orderService.cancelOrder(
+        Number(id),
+        owned.riderId,
+      );
+      this.pubSub.publish('orderUpdated', { orderUpdated: result });
+      return result;
+    }
     let order = await this.orderRepository.findOne({
       where: { id },
       relations: { service: true, coupon: true },
@@ -45,7 +59,7 @@ export class RiderOrderQueryService extends TypeOrmQueryService<RequestEntity> {
       where: { id },
       relations: { service: true, coupon: true },
     });
-    if (update.status != null && update.status != OrderStatus.RiderCanceled) {
+    if (update.status != null) {
       throw new ForbiddenError('Update status to this is not possible');
     }
     let costAfterCoupon = order.costAfterCoupon;
@@ -56,9 +70,6 @@ export class RiderOrderQueryService extends TypeOrmQueryService<RequestEntity> {
       );
     }
     const result = await super.updateOne(id, { ...update, costAfterCoupon });
-    if (update.status != null && update.status == OrderStatus.RiderCanceled) {
-      await this.orderService.cancelOrder(id);
-    }
     this.pubSub.publish('orderUpdated', { orderUpdated: result });
     return result;
   }

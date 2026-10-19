@@ -37,6 +37,7 @@ import 'main_bloc.dart';
 import 'map_providers/open_street_map_provider.dart';
 import 'order_status_card_view.dart';
 import 'orders_carousel_view.dart';
+import 'orders_resync.dart';
 import 'query_result_view.dart';
 import 'session_token.dart';
 import 'trip-history/trip_history_list_view.dart';
@@ -246,7 +247,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   refetch: refetch,
                 );
               }
-              return LifecycleWrapper(
+              // Relecture des offres (p1-resync) : au-dessus de `Query$Me$Widget`,
+              // dont le chargement démonte tout l'écran à chaque relecture du
+              // profil (retour au premier plan notamment).
+              return OrdersResyncScope(
+                  child: LifecycleWrapper(
                   onLifecycleEvent: (event) {
                     if (event == LifecycleEvent.active) {
                       refetch?.call();
@@ -416,6 +421,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                       (state is StatusOnline &&
                                           state.orders.isEmpty))
                                     Positioned(
+                                      // Clés stables sur les deux éléments
+                                      // conditionnels : sans elles, quand la
+                                      // barre d'avis disparaît (première
+                                      // offre), Flutter réutilise son
+                                      // emplacement pour le carrousel et
+                                      // recrée ce dernier, donc désabonne puis
+                                      // réabonne ses souscriptions d'offres
+                                      // (fenêtre où une offre peut être
+                                      // manquée).
+                                      key: const ValueKey('notice-bar'),
                                       bottom: 0,
                                       left: 0,
                                       right: 0,
@@ -430,6 +445,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                     ),
                                   if (state is StatusOnline)
                                     Positioned(
+                                      key: const ValueKey('orders-carousel'),
                                       bottom: 0,
                                       child: SizedBox(
                                           width:
@@ -464,7 +480,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 ]);
                               });
                             });
-                      }));
+                      })));
             }));
   }
 

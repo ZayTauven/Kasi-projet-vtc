@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderTransactionEntity } from '../entities/provider-transaction.entity';
 import { ProviderWalletEntity } from '../entities/provider-wallet.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { postWalletOperation } from './wallet-ledger';
 
 @Injectable()
 export class SharedProviderService {
@@ -25,26 +26,29 @@ export class SharedProviderService {
       | 'operatorId'
       | 'refrenceNumber'
       | 'description'
+      | 'idempotencyKey'
     >,
-  ) {
-    let wallet = await this.providerWalletRepo.findOneBy({
+    manager: EntityManager = this.providerWalletRepo.manager,
+  ): Promise<ProviderWalletEntity> {
+    // p1-unicite : ecriture unique et atomique (voir wallet-ledger.ts).
+    const result = await postWalletOperation<
+      ProviderWalletEntity,
+      ProviderTransactionEntity
+    >(manager, {
+      walletEntity: ProviderWalletEntity,
+      transactionEntity: ProviderTransactionEntity,
+      owner: {},
       currency: transaction.currency,
+      amount: transaction.amount,
+      transaction,
+      recordZeroAmount: false,
     });
-    if (wallet == null) {
-      wallet = await this.providerWalletRepo.save({
-        balance: transaction.amount,
-        currency: transaction.currency,
-      });
-    } else {
-      await this.providerWalletRepo.update(wallet.id, {
-        balance: transaction.amount + wallet.balance,
-      });
-      wallet.balance += transaction.amount;
+    if (!result.applied) {
+      Logger.log(
+        `Operation deja enregistree, rejeu ignore (${transaction.idempotencyKey})`,
+        'SharedProviderService',
+      );
     }
-    if (transaction.amount != 0) {
-      Logger.log(`Saving transaction ${JSON.stringify(transaction)}`);
-      this.providerTransactionRepo.save(transaction);
-    }
-    return wallet;
+    return result.wallet;
   }
 }

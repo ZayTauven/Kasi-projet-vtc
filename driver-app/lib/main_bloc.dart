@@ -24,7 +24,13 @@ class VersionStatusEvent extends MainEvent {
 class AvailableOrdersUpdated extends MainEvent {
   List<Fragment$AvailableOrder> orders;
 
-  AvailableOrdersUpdated(this.orders);
+  /// Joue la sonnerie si la liste contient une offre absente jusqu'ici.
+  /// Activé par la relecture périodique (p1-resync) : une offre dont la
+  /// diffusion initiale a été manquée doit être signalée comme une nouvelle
+  /// offre, sinon un Kasiman qui ne regarde pas l'écran ne la voit pas.
+  final bool notifyNew;
+
+  AvailableOrdersUpdated(this.orders, {this.notifyNew = false});
 }
 
 class AvailabledOrderAdded extends MainEvent {
@@ -171,13 +177,42 @@ class StatusInService extends MainState {
 }
 
 class MainBloc extends Bloc<MainEvent, MainState> {
+  /// Nombre d'événements de souscription (offre créée / retirée) reçus.
+  /// Une relecture complète (p1-resync) le note au départ de la requête : s'il
+  /// a bougé à l'arrivée de la réponse, l'instantané serveur peut être plus
+  /// ancien que ces événements (il ferait disparaître une offre tout juste
+  /// reçue, ou réapparaître une offre tout juste prise) ; il est alors écarté
+  /// et la relecture est rejouée.
+  int get subscriptionRevision => _subscriptionRevision;
+  int _subscriptionRevision = 0;
+
+  @override
+  void onEvent(MainEvent event) {
+    // `onEvent` est appelé de façon synchrone dans `add`, avant le traitement.
+    if (event is AvailabledOrderAdded || event is AvailableOrderRemoved) {
+      _subscriptionRevision++;
+    }
+    super.onEvent(event);
+  }
+
   MainBloc() : super(StatusOffline(null)) {
     on<VersionStatusEvent>(((event, emit) => emit(RequireUpdateState())));
 
     on<DriverUpdated>((event, emit) {
       switch (event.driver.status) {
         case Enum$DriverStatus.Online:
-          emit(StatusOnline(driver: event.driver, orders: const []));
+          // Un Kasiman déjà en ligne garde ses offres : `DriverUpdated` arrive
+          // aussi à chaque relecture du profil (`Me`), notamment au retour de
+          // l'app au premier plan. Repartir d'une liste vide effaçait alors le
+          // carrousel sans que rien ne le recharge (p1-resync). La liste est
+          // ensuite corrigée par la relecture des offres.
+          final current = state;
+          emit(current is StatusOnline
+              ? StatusOnline(
+                  driver: event.driver,
+                  orders: current.orders,
+                  selectedOrder: current.selectedOrder)
+              : StatusOnline(driver: event.driver, orders: const []));
           break;
 
         case Enum$DriverStatus.InService:
@@ -211,6 +246,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final newIds = orders.map((e) => e.id).toSet();
       if (const SetEquality<String>().equals(oldIds, newIds)) {
         return;
+      }
+      if (event.notifyNew && newIds.difference(oldIds).isNotEmpty) {
+        FlutterRingtonePlayer().play(
+            fromAsset: "images/notification.mp3",
+            looping: false,
+            volume: 1.0,
+            asAlarm: true);
       }
       // Conserve la course sélectionnée si elle est toujours proposée, sinon
       // retombe sur la première.

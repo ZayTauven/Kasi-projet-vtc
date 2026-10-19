@@ -9,6 +9,7 @@ import { packageSizeRank } from '@kasi/database/enums/package-size.enum';
 import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { PaymentStatus } from '@kasi/database/enums/payment-status.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
+import { DriverEntity } from '@kasi/database/driver.entity';
 import { PaymentEntity } from '@kasi/database/payment.entity';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
 import { RequestEntity } from '@kasi/database/request.entity';
@@ -19,6 +20,10 @@ import {
   MaskedCallResult,
 } from '@kasi/order/call-masking.service';
 import { OrderRedisService } from '@kasi/redis/order-redis.service';
+import {
+  transitionOrder,
+  UNASSIGNED_STATUSES,
+} from '@kasi/order/order-transition';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
@@ -101,18 +106,56 @@ export class OrderService {
     }
   }
 
-  async cancelOrder(orderId: number): Promise<RequestEntity> {
-    let order = await this.orderRepository.findOneBy({ id: orderId });
-    const allowedStatuses = [OrderStatus.DriverAccepted, OrderStatus.Arrived];
-    if (order == null || !allowedStatuses.includes(order.status)) {
+  /**
+   * Annulation par le Kasiman (p1-transitions, bug-annulation).
+   *
+   * Ecriture conditionnelle : DriverAccepted/Arrived -> DriverCanceled, et
+   * seulement pour la course de CE Kasiman. `changed = false` signale un rejeu
+   * (course deja annulee par lui) : aucun effet de bord, pas d'erreur.
+   * Toute autre situation leve CANCEL_NOT_ALLOWED (message deja traduit par
+   * driver-app, ride_options_sheet_view.dart).
+   */
+  async cancelOrder(
+    orderId: number,
+    driverId?: number,
+  ): Promise<{ order: RequestEntity; changed: boolean }> {
+    // Statut de la course, activite et remise en ligne du Kasiman dans UNE
+    // transaction : jamais d'annulation enregistree avec un Kasiman encore
+    // « in service ».
+    const changed = await this.orderRepository.manager.transaction(
+      async (manager) => {
+        const changed = await transitionOrder(manager, orderId, {
+          from: [OrderStatus.DriverAccepted, OrderStatus.Arrived],
+          to: OrderStatus.DriverCanceled,
+          driverId,
+          set: { finishTimestamp: new Date(), costAfterCoupon: 0 },
+        });
+        if (changed) {
+          const canceled = await manager.findOneByOrFail(RequestEntity, {
+            id: orderId,
+          });
+          await manager.insert(RequestActivityEntity, {
+            requestId: orderId,
+            type: RequestActivityType.CanceledByDriver,
+          });
+          await manager.update(DriverEntity, canceled.driverId, {
+            status: DriverStatus.Online,
+          });
+        }
+        return changed;
+      },
+    );
+    const order = await this.orderRepository.findOneBy({ id: orderId });
+    if (!changed) {
+      if (
+        order != null &&
+        order.status === OrderStatus.DriverCanceled &&
+        (driverId === undefined || order.driverId === driverId)
+      ) {
+        return { order, changed: false };
+      }
       throw new ForbiddenError('CANCEL_NOT_ALLOWED');
     }
-    await this.orderRepository.update(order.id, {
-      status: OrderStatus.DriverCanceled,
-      finishTimestamp: new Date(),
-      costAfterCoupon: 0,
-    });
-    order = await this.orderRepository.findOneBy({ id: order.id });
     const payments = await this.paymentRepository.find({
       where: {
         userType: 'client',
@@ -122,33 +165,60 @@ export class OrderService {
       },
       order: { id: 'DESC' },
     });
-    for (let payment of payments) {
-      await firstValueFrom(
-        this.httpService.get<{ status: 'OK' | 'FAILED' }>(
-          `${process.env.GATEWAY_SERVER_URL}/cancel_preauth?id=${payment.transactionNumber}`,
-        ),
-      );
+    for (const payment of payments) {
+      // L'annulation est deja enregistree : un echec de la passerelle ne doit
+      // pas faire croire au Kasiman qu'elle a echoue.
+      try {
+        await firstValueFrom(
+          this.httpService.get<{ status: 'OK' | 'FAILED' }>(
+            `${process.env.GATEWAY_SERVER_URL}/cancel_preauth?id=${payment.transactionNumber}`,
+          ),
+        );
+      } catch (error) {
+        Logger.warn(
+          `cancel_preauth ${payment.transactionNumber} (course ${order.id}) : ${(error as Error).message}`,
+          'OrderService',
+        );
+      }
     }
-    await this.driverService.updateDriverStatus(
-      order.driverId,
-      DriverStatus.Online,
-    );
     // Course terminale (DriverCanceled) : purge les sessions de call masking.
     await this.safeEndCallMasking(order.id);
-    return order;
+    return { order, changed: true };
   }
 
-  async expireOrders(orderIds: number[]) {
-    this.orderRedisService.expire(orderIds);
-    this.orderRepository.update(orderIds, { status: OrderStatus.Expired });
-    for (const requestId of orderIds) {
-      this.activityRepository.insert({
+  /**
+   * Expiration des offres non prises (cron). Conditionnelle depuis le
+   * 2026-09-29 (p1-transitions) : une course acceptee entre la lecture de
+   * Redis et l'ecriture n'est plus ecrasee en Expired, et l'activite n'est
+   * journalisee que pour les courses reellement expirees.
+   */
+  async expireOrders(orderIds: number[]): Promise<number[]> {
+    await this.orderRedisService.expire(orderIds);
+    if (orderIds.length === 0) {
+      return [];
+    }
+    const result = await this.orderRepository
+      .createQueryBuilder()
+      .update(RequestEntity)
+      .set({ status: OrderStatus.Expired })
+      .where('id IN (:...orderIds)', { orderIds })
+      .andWhere('status IN (:...fromStatuses)', {
+        fromStatuses: [...UNASSIGNED_STATUSES, OrderStatus.WaitingForPrePay],
+      })
+      .returning('id')
+      .execute();
+    const expiredIds: number[] = (
+      Array.isArray(result.raw) ? result.raw : []
+    ).map((row: { id: number }) => row.id);
+    for (const requestId of expiredIds) {
+      await this.activityRepository.insert({
         requestId,
         type: RequestActivityType.Expired,
       });
       // Course terminale (Expired) : purge les sessions de call masking.
       await this.safeEndCallMasking(requestId);
     }
+    return expiredIds;
   }
 
   async getOrdersForDriver(driverId: number): Promise<RequestEntity[]> {

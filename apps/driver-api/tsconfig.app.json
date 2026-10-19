@@ -11,6 +11,7 @@
   },
   "exclude": [
     "**/*.spec.ts",
+    "**/*.int-spec.ts",
     "jest.config.ts"
   ],
   "include": [

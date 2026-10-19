@@ -14,6 +14,7 @@ import { TransactionAction } from '@kasi/database/enums/transaction-action.enum'
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
 import { OperatorEntity } from '@kasi/database/operator.entity';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
+import { operatorIdempotencyKey } from '@kasi/order/wallet-ledger';
 import { ForbiddenError } from '@nestjs/apollo';
 import { Repository } from 'typeorm';
 import { UserContext } from '../auth/authenticated-admin';
@@ -65,6 +66,7 @@ export class DriverResolver {
         : Math.abs(input.amount) * -1;
     return this.sharedDriverService.rechargeWallet({
       ...input,
+      idempotencyKey: operatorIdempotencyKey(input.idempotencyKey),
       operatorId: this.context.req.user.id,
       status: TransactionStatus.Done,
     });

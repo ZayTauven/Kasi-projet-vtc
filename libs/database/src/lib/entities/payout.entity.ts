@@ -25,7 +25,7 @@ export class PayoutEntity {
 
     @Column('numeric', {
       transformer: new ColumnNumericTransformer(),
-      default: '0.00',
+      default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
         precision: 10,
         scale: 2
     })

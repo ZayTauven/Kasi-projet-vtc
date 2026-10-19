@@ -14,4 +14,12 @@ export class DriverTransactionInput {
     @Field(() => ID)
     driverId!: number;
     description?: string;
+
+    /**
+     * p1-unicite (optionnel, additif) : cle fournie par le back-office pour
+     * qu'un double envoi du meme formulaire ne soit ecrit qu'une fois. Sans cle,
+     * chaque appel ecrit une operation (comportement historique).
+     */
+    @Field({ nullable: true })
+    idempotencyKey?: string;
 }

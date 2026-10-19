@@ -11,6 +11,7 @@ import { RequestActivityType } from '@kasi/database/enums/request-activity-type.
 import { RiderDeductTransactionType } from '@kasi/database/enums/rider-deduct-transaction-type.enum';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
+import { DriverEntity } from '@kasi/database/driver.entity';
 import { FeedbackEntity } from '@kasi/database/feedback.entity';
 import { PaymentEntity } from '@kasi/database/payment.entity';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
@@ -32,8 +33,26 @@ import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
 import { In, Repository } from 'typeorm';
+import {
+  transitionOrder,
+  UNASSIGNED_STATUSES,
+} from '@kasi/order/order-transition';
+import { MoneyKey } from '@kasi/order/wallet-ledger';
 
 import { SubmitFeedbackInput } from './dto/submit-feedback.input';
+
+/**
+ * Statuts d'ou le client peut annuler : offre ouverte, prepaiement attendu,
+ * Kasiman en route, arrive, ou course demarree (l'app propose l'annulation
+ * dans ces etats : main_bloc.dart, OrderLooking / OrderInProgress / OrderInvoice).
+ */
+export const RIDER_CANCELABLE_STATUSES: OrderStatus[] = [
+  ...UNASSIGNED_STATUSES,
+  OrderStatus.WaitingForPrePay,
+  OrderStatus.DriverAccepted,
+  OrderStatus.Arrived,
+  OrderStatus.Started,
+];
 
 @Injectable()
 export class RiderOrderService {
@@ -139,93 +158,178 @@ export class RiderOrderService {
   }
 
   async cancelRiderLastOrder(riderId: number) {
-    let order = await this.getCurrentOrder(riderId);
-    return this.cancelOrder(order.id);
+    const order = await this.getCurrentOrder(riderId);
+    if (order == null) {
+      // Rejeu d'une annulation deja faite (la course n'est plus « en cours ») :
+      // on renvoie la course annulee au lieu d'une erreur illisible.
+      const last = await this.getLastOrder(riderId);
+      if (last?.status === OrderStatus.RiderCanceled) {
+        return this.orderRepository.findOneOrFail({
+          where: { id: last.id },
+          relations: { service: true, driver: true, rider: true },
+        });
+      }
+      throw new ForbiddenError('CANCEL_NOT_ALLOWED');
+    }
+    return this.cancelOrder(order.id, riderId);
   }
 
-  async cancelOrder(orderId: number): Promise<RequestEntity> {
-    await this.orderRepository.update(orderId, {
-      status: OrderStatus.RiderCanceled,
-      finishTimestamp: new Date(),
-      costAfterCoupon: 0,
+  /**
+   * Annulation par le client (p1-transitions + p1-unicite, 2026-09-29).
+   *
+   * Ecriture conditionnelle depuis un statut annulable, pour la course de CE
+   * client, et frais d'annulation dans la meme transaction, chacun avec sa cle
+   * d'unicite : un rejeu (timeout, double appui) ne preleve plus deux fois.
+   * Rejeu d'une course deja annulee par le client : renvoie la course, sans
+   * effet. Course terminee, payee ou annulee par un autre : CANCEL_NOT_ALLOWED
+   * (avant : la course etait reecrite en RiderCanceled quel que soit son
+   * statut, y compris apres paiement).
+   */
+  async cancelOrder(orderId: number, riderId?: number): Promise<RequestEntity> {
+    const before = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: { service: true },
     });
+    if (before == null || (riderId !== undefined && before.riderId !== riderId)) {
+      throw new ForbiddenError('CANCEL_NOT_ALLOWED');
+    }
+    const payments = await this.paymentRepo.find({
+      where: {
+        userType: 'client',
+        userId: before.riderId.toString(),
+        status: PaymentStatus.Authorized,
+        orderNumber: before.id.toString(),
+      },
+      order: { amount: 'DESC' },
+    });
+    const riderCreditBefore = await this.riderService.getRiderCreditInCurrency(
+      before.riderId,
+      before.currency,
+    );
+    const { changed, feeCharged } = await this.orderRepository.manager.transaction(
+      async (manager) => {
+        const changed = await transitionOrder(manager, orderId, {
+          from: RIDER_CANCELABLE_STATUSES,
+          to: OrderStatus.RiderCanceled,
+          riderId: before.riderId,
+          set: { finishTimestamp: new Date(), costAfterCoupon: 0 },
+        });
+        if (!changed) {
+          return { changed: false, feeCharged: false };
+        }
+        const order = await manager
+          .getRepository(RequestEntity)
+          .findOneOrFail({ where: { id: orderId }, relations: { service: true } });
+        await manager.insert(RequestActivityEntity, {
+          requestId: order.id,
+          type: RequestActivityType.CanceledByRider,
+        });
+        // Le Kasiman attribue est libere dans la MEME transaction que
+        // l'annulation (avant : apres les appels passerelle ; une erreur la
+        // laissait « in service », app bloquee sur « confirmer l'arrivee »).
+        if (order.driverId != null) {
+          await manager.update(DriverEntity, order.driverId, {
+            status: DriverStatus.Online,
+          });
+        }
+        if (order.driverId == null || !(order.service.cancellationTotalFee > 0)) {
+          return { changed: true, feeCharged: false };
+        }
+        await this.riderService.rechargeWallet(
+          {
+            action: TransactionAction.Deduct,
+            deductType: RiderDeductTransactionType.OrderFee,
+            amount: -order.service.cancellationTotalFee,
+            currency: order.currency,
+            riderId: order.riderId,
+            requestId: order.id,
+            status: TransactionStatus.Done,
+            idempotencyKey: MoneyKey.order(order.id, 'rider-cancel-fee'),
+          },
+          manager,
+        );
+        await this.driverService.rechargeWallet(
+          {
+            action: TransactionAction.Deduct,
+            deductType: DriverDeductTransactionType.Commission,
+            amount: order.service.cancellationDriverShare,
+            currency: order.currency,
+            driverId: order.driverId,
+            requestId: order.id,
+            status: TransactionStatus.Done,
+            idempotencyKey: MoneyKey.order(order.id, 'driver-cancel-share'),
+          },
+          manager,
+        );
+        await this.providerService.rechargeWallet(
+          {
+            action: TransactionAction.Recharge,
+            rechargeType: ProviderRechargeTransactionType.Commission,
+            amount:
+              order.service.cancellationTotalFee -
+              order.service.cancellationDriverShare,
+            currency: order.currency,
+            requestId: order.id,
+            idempotencyKey: MoneyKey.order(order.id, 'provider-cancel-commission'),
+          },
+          manager,
+        );
+        return { changed: true, feeCharged: true };
+      },
+    );
     const order = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
       relations: { service: true, driver: true, rider: true },
     });
-    const payments = await this.paymentRepo.find({
-      where: {
-        userType: 'client',
-        userId: order.riderId.toString(),
-        status: PaymentStatus.Authorized,
-        orderNumber: order.id.toString(),
-      },
-      order: { amount: 'DESC' },
-    });
-    if (order.driverId != null && order.service.cancellationTotalFee > 0) {
-      const riderCredit = await this.riderService.getRiderCreditInCurrency(
-        order.riderId,
-        order.currency,
-      );
-      if (riderCredit < order.service.cancellationTotalFee) {
-        await firstValueFrom(
-          this.httpService.get<{ status: 'OK' | 'FAILED' }>(
-            `${process.env.GATEWAY_SERVER_URL}/capture?id=${payments[0].transactionNumber}&amount=${order.service.cancellationTotalFee}`,
-          ),
-        );
+    if (!changed) {
+      if (order.status === OrderStatus.RiderCanceled) {
+        return order; // rejeu : deja annulee par ce client
       }
-      await Promise.all([
-        this.riderService.rechargeWallet({
-          action: TransactionAction.Deduct,
-          deductType: RiderDeductTransactionType.OrderFee,
-          amount: -order.service.cancellationTotalFee,
-          currency: order.currency,
-          riderId: order.riderId,
-          status: TransactionStatus.Done,
-        }),
-        this.driverService.rechargeWallet({
-          action: TransactionAction.Deduct,
-          deductType: DriverDeductTransactionType.Commission,
-          amount: order.service.cancellationDriverShare,
-          currency: order.currency,
-          driverId: order.driverId,
-          status: TransactionStatus.Done,
-        }),
-        this.providerService.rechargeWallet({
-          action: TransactionAction.Recharge,
-          rechargeType: ProviderRechargeTransactionType.Commission,
-          amount:
-            order.service.cancellationTotalFee -
-            order.service.cancellationDriverShare,
-          currency: order.currency,
-        }),
-      ]);
+      throw new ForbiddenError('CANCEL_NOT_ALLOWED');
     }
-    for (let payment of payments) {
-      await firstValueFrom(
-        this.httpService.get<{ status: 'OK' | 'FAILED' }>(
-          `${process.env.GATEWAY_SERVER_URL}/cancel_preauth?id=${payment.transactionNumber}`,
-        ),
+    if (
+      feeCharged &&
+      riderCreditBefore < order.service.cancellationTotalFee &&
+      payments.length > 0
+    ) {
+      await this.callGateway(
+        `capture?id=${payments[0].transactionNumber}&amount=${order.service.cancellationTotalFee}`,
+        order.id,
+      );
+    }
+    for (const payment of payments) {
+      await this.callGateway(
+        `cancel_preauth?id=${payment.transactionNumber}`,
+        order.id,
       );
     }
     if (order.driverId == null) {
       this.pubSub.publish('orderRemoved', { orderRemoved: order });
-      this.orderRedisService.expire([order.id]);
+      await this.orderRedisService.expire([order.id]);
     } else {
       this.driverNotificationService.canceled(order.driver);
-      await this.driverService.updateDriverStatus(
-        order.driverId,
-        DriverStatus.Online,
-      );
       this.pubSub.publish('orderUpdated', { orderUpdated: order });
     }
-    this.activityRepository.insert({
-      requestId: order.id,
-      type: RequestActivityType.CanceledByRider,
-    });
     // Course terminale (RiderCanceled) : purge les sessions de call masking.
     await this.safeEndCallMasking(order.id);
     return order;
+  }
+
+  // L'annulation est deja enregistree : un echec de la passerelle est journalise
+  // sans faire croire au client que l'annulation a echoue.
+  private async callGateway(path: string, orderId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.httpService.get<{ status: 'OK' | 'FAILED' }>(
+          `${process.env.GATEWAY_SERVER_URL}/${path}`,
+        ),
+      );
+    } catch (error) {
+      Logger.warn(
+        `passerelle ${path.split('?')[0]} (course ${orderId}) : ${(error as Error).message}`,
+        'RiderOrderService',
+      );
+    }
   }
 
   // Purge non bloquante des sessions de masquage à la fin d'une course.
@@ -248,6 +352,16 @@ export class RiderOrderService {
     if (order.riderId != riderId) {
       throw new ForbiddenError('Not Allowed');
     }
+    // p1-transitions : un avis ne se depose que sur une course payee
+    // (WaitingForReview) ou deja notee (Finished, l'avis est remplace). Avant,
+    // il passait n'importe quelle course en Finished, y compris une course
+    // en attente de paiement.
+    if (
+      order.status !== OrderStatus.WaitingForReview &&
+      order.status !== OrderStatus.Finished
+    ) {
+      throw new ForbiddenError('Not Allowed');
+    }
     const previousReview = await this.feedbackRepository.findOne({
       where: { requestId: order.id },
     });
@@ -263,7 +377,7 @@ export class RiderOrderService {
       requestId: order.id,
       parameters: (review.parameterIds ?? []).map((id) => ({ id })),
     });
-    this.activityRepository.insert({
+    await this.activityRepository.insert({
       requestId: order.id,
       type: RequestActivityType.Reviewed,
     });
@@ -278,8 +392,10 @@ export class RiderOrderService {
       averageRating,
       reviews.length,
     );
-    await this.orderRepository.update(order.id, {
-      status: OrderStatus.Finished,
+    await transitionOrder(this.orderRepository, order.id, {
+      from: [OrderStatus.WaitingForReview],
+      to: OrderStatus.Finished,
+      riderId,
     });
     // Course terminale (Finished) : purge les sessions de call masking.
     await this.safeEndCallMasking(order.id);

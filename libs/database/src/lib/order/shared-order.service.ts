@@ -26,6 +26,7 @@ import { OrderStatus } from '../entities/enums/order-status.enum';
 import { PackageSize } from '../entities/enums/package-size.enum';
 import { RequestEntity } from '../entities/request.entity';
 import { ServiceCategoryEntity } from '../entities/service-category.entity';
+import { DriverEntity } from '../entities/driver.entity';
 import { Point } from '../interfaces/point';
 import {
   DriverLocationWithId,
@@ -50,6 +51,8 @@ import { SharedProviderService } from './shared-provider.service';
 import { SharedRiderService } from './shared-rider.service';
 import { firstValueFrom } from 'rxjs';
 import { ForbiddenError } from '@nestjs/apollo';
+import { transitionOrder, UNASSIGNED_STATUSES } from './order-transition';
+import { MoneyKey } from './wallet-ledger';
 
 @Injectable()
 export class SharedOrderService {
@@ -450,9 +453,18 @@ export class SharedOrderService {
     ) {
       throw new ForbiddenError('Credit is not enough');
     }
-    await this.orderRepository.update(order.id, {
-      status: OrderStatus.Requested,
+    // p1-transitions : WaitingForPrePay -> Requested une seule fois. Un retour
+    // de passerelle rejoue ne rediffuse pas l'offre aux Kasimen.
+    const changed = await transitionOrder(this.orderRepository, order.id, {
+      from: [OrderStatus.WaitingForPrePay],
+      to: OrderStatus.Requested,
     });
+    if (!changed) {
+      return this.orderRepository.findOneOrFail({
+        where: { id: orderId },
+        relations: { service: true, driver: { fleet: true }, rider: true },
+      });
+    }
     const closeDriverIds = (
       await this.driverRedisService.getClose(
         order.points[0],
@@ -481,146 +493,282 @@ export class SharedOrderService {
     });
   }
 
-  async finish(orderId: number, cashAmount = 0.0) {
-    const order: RequestEntity = await this.orderRepository.findOneOrFail({
-      where: { id: orderId },
-      relations: { service: true, driver: { fleet: true }, rider: true },
-    });
-    if (
-      order.service.paymentMethod == ServicePaymentMethod.OnlyCredit &&
-      cashAmount > 0
-    ) {
-      throw new ForbiddenError(
-        'Cash payment is not available for this service.',
-      );
-    }
-    let riderCredit = await this.riderService.getRiderCreditInCurrency(
-      order.riderId,
-      order.currency,
-    );
-    const providerPercent =
-      order.rider.isResident === false
-        ? order.service.providerSharePercent * order.service.touristMultiplier
-        : order.service.providerSharePercent;
-    const commission =
-      (providerPercent * order.costAfterCoupon) / 100 +
-      order.service.providerShareFlat;
-    let unPaidAmount =
-      order.costAfterCoupon - order.paidAmount + order.tipAmount;
-    if (riderCredit + cashAmount < unPaidAmount) {
-      const payment = await this.paymentRepository.find({
-        where: {
-          userType: 'client',
-          userId: order.riderId.toString(),
-          status: PaymentStatus.Authorized,
-          orderNumber: order.id.toString(),
-        },
-        order: { id: 'DESC' },
-      });
-      const status = OrderStatus.WaitingForPostPay;
-      if (payment.length > 0) {
+  /**
+   * Fin de course et paiement (p1-transitions + p1-unicite, 2026-09-29).
+   *
+   * - Verrou de ligne sur la course (SELECT ... FOR UPDATE) : deux fins de course
+   *   simultanees (rejeu apres timeout de 20 s, retour de passerelle en meme
+   *   temps que l'encaissement especes) s'executent l'une apres l'autre ; la
+   *   seconde trouve la course deja payee et ne fait rien.
+   * - Transitions permises : Started ou WaitingForPostPay -> WaitingForPostPay
+   *   (credit insuffisant) ou WaitingForReview (paye). Deja WaitingForReview ou
+   *   Finished : rejeu, rien n'est ecrit (`changed = false`).
+   * - Tous les mouvements d'argent sont dans la meme transaction que le
+   *   changement de statut, chacun avec sa cle d'unicite `order:<id>:<nature>`.
+   * - La capture de preautorisation (HTTP vers la passerelle) se fait HORS
+   *   transaction, puis la decision est reprise.
+   *
+   * `driverId` (optionnel) : exige que la course soit celle de ce Kasiman.
+   */
+  async finish(
+    orderId: number,
+    cashAmount = 0.0,
+    driverId?: number,
+  ): Promise<FinishOutcome> {
+    const cash = Number(cashAmount ?? 0);
+    let outcome = await this.finishInTransaction(orderId, cash, driverId, true);
+    if (outcome.capture != null) {
+      let captured = false;
+      try {
         const captureResult = await firstValueFrom(
           this.httpService.get<{ status: 'OK' | 'FAILED' }>(
-            `${process.env.GATEWAY_SERVER_URL}/capture?id=${
-              payment[0].transactionNumber
-            }&amount=${unPaidAmount - riderCredit}`,
+            `${process.env.GATEWAY_SERVER_URL}/capture?id=${outcome.capture.transactionNumber}&amount=${outcome.capture.amount}`,
           ),
         );
-        if (captureResult.data.status == 'OK') {
-          riderCredit = await this.riderService.getRiderCreditInCurrency(
-            order.riderId,
-            order.currency,
-          );
-          unPaidAmount =
-            order.costAfterCoupon - order.paidAmount + order.tipAmount;
-          if (riderCredit + cashAmount < unPaidAmount) {
-            await this.orderRepository.update(order.id, {
-              status,
-            });
-            return;
-          }
-        } else {
-          await this.orderRepository.update(order.id, {
-            status,
-          });
-          return;
-        }
-      } else {
-        await this.orderRepository.update(order.id, {
-          status,
-        });
-        return;
+        captured = captureResult.data.status == 'OK';
+      } catch (error) {
+        Logger.warn(
+          `capture ${outcome.capture.transactionNumber} (course ${orderId}) : ${(error as Error).message}`,
+          'SharedOrderService',
+        );
       }
+      Logger.log(
+        `capture course ${orderId} : ${captured ? 'OK' : 'echec'}`,
+        'SharedOrderService',
+      );
+      outcome = await this.finishInTransaction(orderId, cash, driverId, false);
     }
-    await this.driverService.rechargeWallet({
-      status: TransactionStatus.Done,
-      driverId: order.driverId!,
-      currency: order.currency,
-      action: TransactionAction.Deduct,
-      deductType: DriverDeductTransactionType.Commission,
-      amount: -1 * commission,
-      requestId: order.id,
-    });
-    let fleetShare = 0;
-    if (order.driver?.fleetId != null) {
-      fleetShare =
-        (commission * order.driver.fleet!.commissionSharePercent) / 100 +
-        order.driver.fleet!.commissionShareFlat;
-      if (fleetShare > 0) {
-        this.sharedFleetService.rechargeWallet({
-          fleetId: order.driver.fleetId,
+    return outcome;
+  }
+
+  private async finishInTransaction(
+    orderId: number,
+    cashAmount: number,
+    driverId: number | undefined,
+    allowCapture: boolean,
+  ): Promise<FinishOutcome> {
+    return this.orderRepository.manager.transaction(async (manager) => {
+      const locked = await manager
+        .getRepository(RequestEntity)
+        .createQueryBuilder('request')
+        .setLock('pessimistic_write')
+        .where('request.id = :orderId', { orderId })
+        .getOne();
+      if (locked == null) {
+        throw new ForbiddenError('ORDER_NOT_FOUND');
+      }
+      if (driverId !== undefined && locked.driverId !== driverId) {
+        throw new ForbiddenError('Update status to this is not possible');
+      }
+      const previousStatus = locked.status;
+      if (
+        previousStatus === OrderStatus.WaitingForReview ||
+        previousStatus === OrderStatus.Finished
+      ) {
+        return {
+          changed: false,
+          paid: false,
+          previousStatus,
+          status: previousStatus,
+          driverId: locked.driverId,
+        };
+      }
+      if (
+        previousStatus !== OrderStatus.Started &&
+        previousStatus !== OrderStatus.WaitingForPostPay
+      ) {
+        throw new ForbiddenError('Update status to this is not possible');
+      }
+      const order: RequestEntity = await manager
+        .getRepository(RequestEntity)
+        .findOneOrFail({
+          where: { id: orderId },
+          relations: { service: true, driver: { fleet: true }, rider: true },
+        });
+      if (
+        order.service.paymentMethod == ServicePaymentMethod.OnlyCredit &&
+        cashAmount > 0
+      ) {
+        throw new ForbiddenError(
+          'Cash payment is not available for this service.',
+        );
+      }
+      const riderCredit = await this.riderService.getRiderCreditInCurrency(
+        order.riderId,
+        order.currency,
+        manager,
+      );
+      const providerPercent =
+        order.rider.isResident === false
+          ? order.service.providerSharePercent *
+            order.service.touristMultiplier
+          : order.service.providerSharePercent;
+      const commission =
+        (providerPercent * order.costAfterCoupon) / 100 +
+        order.service.providerShareFlat;
+      const unPaidAmount =
+        order.costAfterCoupon - order.paidAmount + order.tipAmount;
+      if (riderCredit + cashAmount < unPaidAmount) {
+        if (allowCapture) {
+          const payment = await manager.getRepository(PaymentEntity).find({
+            where: {
+              userType: 'client',
+              userId: order.riderId.toString(),
+              status: PaymentStatus.Authorized,
+              orderNumber: order.id.toString(),
+            },
+            order: { id: 'DESC' },
+          });
+          if (payment.length > 0) {
+            // Capture hors transaction, puis nouvelle decision.
+            return {
+              changed: false,
+              paid: false,
+              previousStatus,
+              status: previousStatus,
+              driverId: order.driverId,
+              capture: {
+                transactionNumber: payment[0].transactionNumber,
+                amount: unPaidAmount - riderCredit,
+              },
+            };
+          }
+        }
+        const changed = previousStatus !== OrderStatus.WaitingForPostPay;
+        if (changed) {
+          await manager.update(RequestEntity, order.id, {
+            status: OrderStatus.WaitingForPostPay,
+          });
+          await manager.insert(RequestActivityEntity, {
+            requestId: order.id,
+            type: RequestActivityType.ArrivedToDestination,
+          });
+        }
+        return {
+          changed,
+          paid: false,
+          previousStatus,
+          status: OrderStatus.WaitingForPostPay,
+          driverId: order.driverId,
+        };
+      }
+      await this.driverService.rechargeWallet(
+        {
+          status: TransactionStatus.Done,
+          driverId: order.driverId!,
+          currency: order.currency,
+          action: TransactionAction.Deduct,
+          deductType: DriverDeductTransactionType.Commission,
+          amount: -1 * commission,
+          requestId: order.id,
+          idempotencyKey: MoneyKey.order(order.id, 'driver-commission'),
+        },
+        manager,
+      );
+      let fleetShare = 0;
+      if (order.driver?.fleetId != null) {
+        fleetShare =
+          (commission * order.driver.fleet!.commissionSharePercent) / 100 +
+          order.driver.fleet!.commissionShareFlat;
+        if (fleetShare > 0) {
+          await this.sharedFleetService.rechargeWallet(
+            {
+              fleetId: order.driver.fleetId,
+              action: TransactionAction.Recharge,
+              rechargeType: ProviderRechargeTransactionType.Commission,
+              amount: fleetShare,
+              currency: order.currency,
+              requestId: order.id,
+              driverId: order.driverId,
+              idempotencyKey: MoneyKey.order(order.id, 'fleet-commission'),
+            },
+            manager,
+          );
+        }
+      }
+      await this.sharedProviderService.rechargeWallet(
+        {
           action: TransactionAction.Recharge,
           rechargeType: ProviderRechargeTransactionType.Commission,
-          amount: fleetShare,
           currency: order.currency,
+          amount: commission - fleetShare,
           requestId: order.id,
-          driverId: order.driverId,
+          idempotencyKey: MoneyKey.order(order.id, 'provider-commission'),
+        },
+        manager,
+      );
+      if (order.costAfterCoupon - cashAmount > 0) {
+        await this.driverService.rechargeWallet(
+          {
+            status: TransactionStatus.Done,
+            driverId: order.driverId!,
+            currency: order.currency,
+            requestId: order.id,
+            action: TransactionAction.Recharge,
+            rechargeType: DriverRechargeTransactionType.OrderFee,
+            amount: order.costAfterCoupon - cashAmount + order.tipAmount,
+            idempotencyKey: MoneyKey.order(order.id, 'driver-order-fee'),
+          },
+          manager,
+        );
+      }
+      if (riderCredit > 0 && cashAmount < unPaidAmount) {
+        await this.riderService.rechargeWallet(
+          {
+            status: TransactionStatus.Done,
+            action: TransactionAction.Deduct,
+            deductType: RiderDeductTransactionType.OrderFee,
+            currency: order.currency,
+            requestId: order.id,
+            amount: -1 * (unPaidAmount - cashAmount),
+            riderId: order.riderId,
+            idempotencyKey: MoneyKey.order(order.id, 'rider-order-fee'),
+          },
+          manager,
+        );
+      }
+      await manager.update(RequestEntity, order.id, {
+        paidAmount: order.costAfterCoupon,
+        status: OrderStatus.WaitingForReview,
+        finishTimestamp: new Date(),
+      });
+      // Activites et remise en ligne du Kasiman dans la meme transaction que
+      // le paiement : tout ou rien.
+      if (previousStatus === OrderStatus.Started) {
+        await manager.insert(RequestActivityEntity, {
+          requestId: order.id,
+          type: RequestActivityType.ArrivedToDestination,
         });
       }
-    }
-    await this.sharedProviderService.rechargeWallet({
-      action: TransactionAction.Recharge,
-      rechargeType: ProviderRechargeTransactionType.Commission,
-      currency: order.currency,
-      amount: commission - fleetShare,
-    });
-    if (order.costAfterCoupon - cashAmount > 0) {
-      await this.driverService.rechargeWallet({
-        status: TransactionStatus.Done,
-        driverId: order.driverId!,
-        currency: order.currency,
+      await manager.insert(RequestActivityEntity, {
         requestId: order.id,
-        action: TransactionAction.Recharge,
-        rechargeType: DriverRechargeTransactionType.OrderFee,
-        amount: order.costAfterCoupon - cashAmount + order.tipAmount,
+        type: RequestActivityType.Paid,
       });
-    }
-    if (riderCredit > 0 && cashAmount < unPaidAmount) {
-      await this.riderService.rechargeWallet({
-        status: TransactionStatus.Done,
-        action: TransactionAction.Deduct,
-        deductType: RiderDeductTransactionType.OrderFee,
-        currency: order.currency,
-        requestId: order.id,
-        amount: -1 * (unPaidAmount - cashAmount),
-        riderId: order.riderId,
-      });
-    }
-    await this.orderRepository.update(order.id, {
-      paidAmount: order.costAfterCoupon,
-      status: OrderStatus.WaitingForReview,
-      finishTimestamp: new Date(),
-    });
-    await this.driverService.updateDriverStatus(
-      order.driverId!,
-      DriverStatus.Online,
-    );
-    this.activityRepository.insert({
-      requestId: order.id,
-      type: RequestActivityType.Paid,
+      if (order.driverId != null) {
+        await manager.update(DriverEntity, order.driverId, {
+          status: DriverStatus.Online,
+        });
+      }
+      return {
+        changed: true,
+        paid: true,
+        previousStatus,
+        status: OrderStatus.WaitingForReview,
+        driverId: order.driverId,
+      };
     });
   }
 
+  /**
+   * Attribution manuelle par un operateur (admin-api, assignDriverToOrder).
+   *
+   * p1-transitions (2026-09-29) : verrou de ligne pendant l'attribution (une
+   * acceptation simultanee par un Kasiman ne peut plus s'intercaler entre la
+   * lecture et l'ecriture), activite et notifications seulement apres succes,
+   * rejeu (meme Kasiman deja attribue) sans effet. Refusee sur une course
+   * demarree, terminee ou annulee (avant : acceptee sans condition, ce qui
+   * pouvait reattribuer une course deja payee).
+   */
   async assignOrderToDriver(orderId: number, driverId: number) {
     const [travel, driverLocation] = await Promise.all([
       this.orderRepository.findOneOrFail({
@@ -629,24 +777,6 @@ export class SharedOrderService {
       }),
       this.driverRedisService.getDriverCoordinate(driverId),
     ]);
-    this.activityRepository.insert({
-      requestId: orderId,
-      type: RequestActivityType.DriverAccepted,
-    });
-    //  const allowedStatuses = [OrderStatus.Found, OrderStatus.NoCloseFound, OrderStatus.Requested, OrderStatus.Booked];
-    // if (travel == null || !allowedStatuses.includes(travel.status)) {
-    if (travel == null) {
-      throw new ForbiddenError('Already Taken');
-    }
-    if (travel.driverId != null) {
-      this.driverNotificationService.canceled(travel.driver!);
-      await this.driverService.updateDriverStatus(
-        travel.driverId,
-        DriverStatus.Online,
-      );
-      travel.status = OrderStatus.RiderCanceled;
-      this.pubSub.publish('orderUpdated', { orderUpdated: travel });
-    }
     const metrics =
       driverLocation != null
         ? await this.routingService.getSumDistanceAndDuration([
@@ -656,13 +786,67 @@ export class SharedOrderService {
         : { distance: 0, duration: 0 };
     const dt = new Date();
     const etaPickup = dt.setSeconds(dt.getSeconds() + metrics.duration);
-    this.driverService.updateDriverStatus(driverId, DriverStatus.InService);
+    const assignment = await this.orderRepository.manager.transaction(
+      async (manager) => {
+        const locked = await manager
+          .getRepository(RequestEntity)
+          .createQueryBuilder('request')
+          .setLock('pessimistic_write')
+          .where('request.id = :orderId', { orderId })
+          .getOne();
+        if (locked == null) {
+          throw new ForbiddenError('Already Taken');
+        }
+        if (
+          locked.driverId === driverId &&
+          (locked.status === OrderStatus.DriverAccepted ||
+            locked.status === OrderStatus.Arrived)
+        ) {
+          return { changed: false, previousDriverId: locked.driverId };
+        }
+        if (!OPERATOR_ASSIGNABLE_STATUSES.includes(locked.status)) {
+          throw new ForbiddenError('Already Taken');
+        }
+        await manager.update(RequestEntity, orderId, {
+          status: OrderStatus.DriverAccepted,
+          etaPickup: new Date(etaPickup),
+          driverId,
+        });
+        await manager.insert(RequestActivityEntity, {
+          requestId: orderId,
+          type: RequestActivityType.DriverAccepted,
+        });
+        if (locked.driverId != null && locked.driverId !== driverId) {
+          await manager.update(DriverEntity, locked.driverId, {
+            status: DriverStatus.Online,
+          });
+        }
+        await manager.update(DriverEntity, driverId, {
+          status: DriverStatus.InService,
+        });
+        return { changed: true, previousDriverId: locked.driverId };
+      },
+    );
+    if (!assignment.changed) {
+      return this.orderRepository.findOneOrFail({
+        where: { id: orderId },
+        relations: {
+          driver: { car: true, carColor: true },
+          service: true,
+          rider: true,
+        },
+      });
+    }
+    if (
+      assignment.previousDriverId != null &&
+      assignment.previousDriverId !== driverId &&
+      travel.driver != null
+    ) {
+      this.driverNotificationService.canceled(travel.driver);
+      travel.status = OrderStatus.RiderCanceled;
+      this.pubSub.publish('orderUpdated', { orderUpdated: travel });
+    }
     await this.orderRedisService.expire([orderId]);
-    await this.orderRepository.update(orderId, {
-      status: OrderStatus.DriverAccepted,
-      etaPickup: new Date(etaPickup),
-      driverId,
-    });
     const result = await this.orderRepository.findOneOrFail({
       where: { id: orderId },
       relations: {
@@ -686,6 +870,32 @@ export class SharedOrderService {
     return result;
   }
 }
+
+/** Resultat de `SharedOrderService.finish` (p1-transitions). */
+export interface FinishOutcome {
+  /** false : rien n'a change (rejeu, ou deja en attente de paiement). */
+  changed: boolean;
+  /** true : paiement enregistre, course passee en WaitingForReview. */
+  paid: boolean;
+  previousStatus: OrderStatus;
+  status: OrderStatus;
+  driverId?: number;
+  /** Interne : capture de preautorisation a tenter hors transaction. */
+  capture?: { transactionNumber: string; amount: number };
+}
+
+/**
+ * Statuts depuis lesquels un operateur peut attribuer une course : offre
+ * ouverte, expiree (attribution manuelle apres expiration), en attente de
+ * prepaiement, ou deja attribuee mais pas demarree (reattribution).
+ */
+const OPERATOR_ASSIGNABLE_STATUSES: OrderStatus[] = [
+  ...UNASSIGNED_STATUSES,
+  OrderStatus.Expired,
+  OrderStatus.WaitingForPrePay,
+  OrderStatus.DriverAccepted,
+  OrderStatus.Arrived,
+];
 
 enum CalculateFareError {
   RegionUnsupported = 'REGION_UNSUPPORTED',

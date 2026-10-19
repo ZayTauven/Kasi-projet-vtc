@@ -85,6 +85,39 @@ services:
       start_period: 10s
 
   # ===========================================================================
+  # Migrations du schema (p1-migrations, 2026-09-28)
+  # Conteneur ponctuel : applique les migrations en attente puis s'arrete
+  # (code 0). Les trois API attendent sa reussite
+  # (`service_completed_successfully`) : si une migration echoue, aucune API
+  # ne demarre sur un schema incoherent -- mais celles que compose recree
+  # restent ARRETEES. En deploiement, lancer d'abord
+  # `docker compose run --rm --no-deps migrate` puis `up -d` (voir le runbook).
+  # `synchronize` est desactive pour de bon ; c'est le SEUL chemin qui modifie
+  # le schema.
+  # Meme image qu'admin-api (bundle `migrate.js` a cote de `main.js`) : pas de
+  # build separe, `docker compose build` construit admin-api et donc migrate.
+  # Commandes ponctuelles : docker compose run --rm migrate node migrate.js <show|check|mark-baseline|revert>
+  # Voir docs/migrations-base-de-donnees.md.
+  # ===========================================================================
+
+  migrate:
+    image: ${IMAGE_REGISTRY:-kasi-local}/admin-api:${IMAGE_TAG:-latest}
+    container_name: kasi-migrate
+    command: ["node", "migrate.js", "run"]
+    restart: "no"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-kasi}
+      DB_USER: ${DB_USER:-kasi}
+      DB_PASS: ${DB_PASS:-CHANGEME_kasi}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - kasi-net
+
+  # ===========================================================================
   # APIs NestJS
   # Contexte de build = racine du monorepo (app-kasi/) car les Dockerfiles
   # copient package.json, nx.json, tsconfig.base.json depuis cette racine.
@@ -144,6 +177,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 
@@ -186,6 +221,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 
@@ -227,6 +264,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 

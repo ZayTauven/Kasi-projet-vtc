@@ -12,6 +12,7 @@ import { RiderRechargeTransactionType } from '@kasi/database/enums/rider-recharg
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
+import { MoneyKey } from '@kasi/order/wallet-ledger';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import * as fastify from 'fastify';
 
@@ -71,6 +72,9 @@ export class RiderAPIController {
 
     if (decrypted.userType == 'client') {
       if (decrypted.status == 'success') {
+        // p1-unicite : la reference de la passerelle est la cle d'unicite. Un
+        // retour rejoue (rechargement de la page, double redirection) ne
+        // credite plus une seconde fois.
         await this.sharedRiderService.rechargeWallet({
           riderId: decrypted.userId,
           amount: decrypted.amount,
@@ -80,6 +84,10 @@ export class RiderAPIController {
           rechargeType: RiderRechargeTransactionType.InAppPayment,
           paymentGatewayId: decrypted.gatewayId,
           status: TransactionStatus.Done,
+          idempotencyKey: MoneyKey.gatewayPayment(
+            decrypted.gatewayId,
+            decrypted.transactionNumber,
+          ),
         });
         await this.paymentRepository.delete({
           transactionNumber: decrypted.transactionNumber,

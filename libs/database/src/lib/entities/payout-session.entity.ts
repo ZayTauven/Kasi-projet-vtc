@@ -30,7 +30,7 @@ export class PayoutSessionEntity {
 
     @Column('numeric', {
       transformer: new ColumnNumericTransformer(),
-      default: '0.00',
+      default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
         precision: 10,
         scale: 2
     })
@@ -39,7 +39,7 @@ export class PayoutSessionEntity {
     // Somme des payouts générés à la création (instantané).
     @Column('numeric', {
       transformer: new ColumnNumericTransformer(),
-      default: '0.00',
+      default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
         precision: 12,
         scale: 2
     })

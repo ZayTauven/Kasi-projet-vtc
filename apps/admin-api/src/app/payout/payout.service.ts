@@ -13,6 +13,7 @@ import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum'
 import { PayoutMethodEntity } from '@kasi/database/payout-method.entity';
 import { PayoutSessionEntity } from '@kasi/database/payout-session.entity';
 import { PayoutEntity } from '@kasi/database/payout.entity';
+import { MoneyKey, postWalletOperation } from '@kasi/order/wallet-ledger';
 import { CreatePayoutSessionInput } from './dto/create-payout-session.input';
 import { PayoutSessionPreviewDTO } from './dto/payout-session-preview.dto';
 
@@ -125,41 +126,74 @@ export class PayoutService {
 
   // Marque un versement comme payé (le paiement Wave/OM/virement/espèces a
   // eu lieu hors application) et débite le wallet du Kasiman.
+  /**
+   * p1-unicite (2026-09-29) : un versement ne debite qu'une fois. Dans une
+   * seule transaction : passage Pending -> Paid conditionnel (un second appel
+   * simultane ne trouve plus la ligne en Pending), controle du solde sous
+   * verrou du portefeuille, debit avec la cle `payout:<id>`. Avant : lecture
+   * du statut et du solde puis ecritures separees, deux clics simultanes
+   * debitaient deux fois. Rejeu sur un versement deja paye : renvoye sans
+   * effet (au lieu de PAYOUT_NOT_PENDING).
+   */
   async processPayout(
     payoutId: number,
     operatorId: number,
   ): Promise<PayoutEntity> {
+    const paid = await this.payoutRepo.manager.transaction(async (manager) => {
+      const claim = await manager
+        .createQueryBuilder()
+        .update(PayoutEntity)
+        .set({ status: PayoutStatus.Paid, processedAt: new Date() })
+        .where('id = :payoutId', { payoutId })
+        .andWhere('status = :pending', { pending: PayoutStatus.Pending })
+        .execute();
+      if ((claim.affected ?? 0) === 0) {
+        return false;
+      }
+      const payout = await manager
+        .getRepository(PayoutEntity)
+        .findOneOrFail({ where: { id: payoutId } });
+      const amount = Number(payout.amount);
+      const posting = await postWalletOperation<
+        DriverWalletEntity,
+        DriverTransactionEntity
+      >(manager, {
+        walletEntity: DriverWalletEntity,
+        transactionEntity: DriverTransactionEntity,
+        owner: { driverId: payout.driverId },
+        currency: payout.currency,
+        amount: -amount,
+        recordZeroAmount: false,
+        guard: (balance) => {
+          if (balance < amount) {
+            throw new Error('INSUFFICIENT_DRIVER_BALANCE');
+          }
+        },
+        transaction: {
+          action: TransactionAction.Deduct,
+          deductType: DriverDeductTransactionType.Withdraw,
+          status: TransactionStatus.Done,
+          currency: payout.currency,
+          driverId: payout.driverId,
+          operatorId,
+          description: `Payout #${payout.id} (session #${payout.sessionId}, ${payout.methodName})`,
+          idempotencyKey: MoneyKey.payout(payout.id),
+        },
+      });
+      await manager.update(PayoutEntity, payout.id, {
+        driverTransactionId: posting.transactionId,
+      });
+      return true;
+    });
     const payout = await this.payoutRepo.findOneOrFail({
       where: { id: payoutId },
     });
-    if (payout.status !== PayoutStatus.Pending) {
+    if (!paid) {
+      if (payout.status === PayoutStatus.Paid) {
+        return payout;
+      }
       throw new Error('PAYOUT_NOT_PENDING');
     }
-    const amount = Number(payout.amount);
-    const wallet = await this.walletRepo.findOneBy({
-      driverId: payout.driverId,
-      currency: payout.currency,
-    });
-    if (wallet == null || Number(wallet.balance) < amount) {
-      throw new Error('INSUFFICIENT_DRIVER_BALANCE');
-    }
-    await this.walletRepo.update(wallet.id, {
-      balance: Number(wallet.balance) - amount,
-    });
-    const transaction = await this.transactionRepo.save({
-      action: TransactionAction.Deduct,
-      deductType: DriverDeductTransactionType.Withdraw,
-      status: TransactionStatus.Done,
-      amount: -amount,
-      currency: payout.currency,
-      driverId: payout.driverId,
-      operatorId,
-      description: `Payout #${payout.id} (session #${payout.sessionId}, ${payout.methodName})`,
-    });
-    payout.status = PayoutStatus.Paid;
-    payout.processedAt = new Date();
-    payout.driverTransactionId = transaction.id;
-    await this.payoutRepo.save(payout);
     await this.refreshSessionStatus(payout.sessionId);
     return payout;
   }

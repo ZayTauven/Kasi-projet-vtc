@@ -40,29 +40,27 @@ l'historique, plus la référence active.
 - Design system v3 (pétrole/orange, Bricolage Grotesque/DM Sans) appliqué
   à l'admin-panel et aux deux apps mobiles.
 
-## Agents (`.claude/agents/`)
+## Référentiel du chantier (depuis le 2026-09-28)
 
-`kasi-supervisor` (orchestration) → délègue à `kasi-backend-services`,
-`kasi-mobile-apps`, `kasi-admin-panel`, `kasi-integrations-auditor`,
-`kasi-devops-infra`, `kasi-product-vision` (garant de la vision
-narrative). Détail des rôles dans `.claude/agents/README-agents.md`.
+Le périmètre du projet (existant, feuille de route, cible) est défini par
+un référentiel de cinq pages, tenu **hors de ce dépôt** dans
+`../referentiel/` (miroir Markdown lisible dans `../referentiel/miroir/`).
+Le `CLAUDE.md` du dossier parent (`../CLAUDE.md`) en donne les règles :
+tout travail cite le code d'un point du référentiel et suit l'ordre de la
+feuille de route (principe « pilote d'abord »).
 
-## Skills (`.claude/skills/`)
+## Agents et skills
 
-Six skills actives, techniques et transverses au pivot produit :
-`kasi-freshness-audit` (mesure l'écart version/idiomes, point de départ
-recommandé), `kasi-angular-signals-migration`,
-`kasi-backend-modernization`, `kasi-flutter-palier-migration`,
-`kasi-contrat-mobile-backend` (gouverne le contrat mobile↔backend, à
-utiliser avant toute migration TypeORM/Apollo touchant des apps déjà en
-circulation), `kasi-design-system` (source unique des tokens de marque).
+Ils vivent dans le `.claude/` du dossier parent, pas dans ce dépôt. Rôles,
+lots portés et skills actives : `../.claude/agents/README-agents.md`.
 
 ## Sources de vérité vivantes
 
-- `KASI_DECISIONS.md` (racine) — journal des décisions structurantes,
-  pivoté le 2026-07-22 (voir l'entrée en tête).
-- Mémoire persistante du projet — à consulter et enrichir en continu.
-- `KASI_NARRATIVE_VISION.md` (racine) — la cible produit.
+1. Le référentiel (`../referentiel/`) — le périmètre du chantier.
+2. `KASI_NARRATIVE_VISION.md` (racine) — la cible produit.
+3. `KASI_DECISIONS.md` (racine) — journal des décisions structurantes,
+   pivoté le 2026-07-22 (voir l'entrée en tête).
+4. Mémoire persistante du projet — à consulter et enrichir en continu.
 
 Il n'y a plus de script d'audit à relancer pour "découvrir" la stack :
 elle est connue. Un doute sur son état actuel se lève en lisant le code

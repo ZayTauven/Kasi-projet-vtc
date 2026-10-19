@@ -96,6 +96,35 @@ services:
       start_period: 10s
 
   # ===========================================================================
+  # Migrations du schema (p1-migrations, 2026-09-28) — meme role que dans
+  # docker-compose.yml : conteneur ponctuel qui applique les migrations puis
+  # s'arrete ; les trois API attendent sa reussite. Sur une base NEUVE
+  # (staging), c'est lui qui cree tout le schema : `synchronize` n'existe plus.
+  # Construit depuis le Dockerfile d'admin-api (le bundle `migrate.js` y est
+  # produit a cote de `main.js`) ; les couches sont partagees avec admin-api
+  # par le cache de build, le surcout est negligeable.
+  # Voir docs/migrations-base-de-donnees.md.
+  # ===========================================================================
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/admin-api/Dockerfile
+    command: ["node", "migrate.js", "run"]
+    restart: "no"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - kasi-net
+
+  # ===========================================================================
   # APIs NestJS
   # Contexte de build = racine du monorepo, comme docker-compose.yml.
   # Dokploy clone le depot dans <compose>/code/ et build depuis la.
@@ -136,6 +165,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 
@@ -168,6 +199,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 
@@ -198,6 +231,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - kasi-net
 

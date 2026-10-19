@@ -14,10 +14,12 @@
   },
   "exclude": [
     "**/*.spec.ts",
+    "**/*.int-spec.ts",
     "jest.config.ts"
   ],
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "../../libs/database/src/lib/migration/migrate.ts"
   ],
   "angularCompilerOptions": {
     "strictTemplates": false

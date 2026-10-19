@@ -79,7 +79,7 @@ export class RequestEntity {
     transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
   })
   costAfterCoupon!: number;
 
@@ -87,7 +87,7 @@ export class RequestEntity {
     transformer: new ColumnNumericTransformer(),
     precision: 10,
     scale: 2,
-    default: '0.00',
+    default: () => '0.00', // DEFAULT 0.00 brut, comme en base (sinon faux ecart perpetuel de migration:generate)
   })
   tipAmount!: number;
 

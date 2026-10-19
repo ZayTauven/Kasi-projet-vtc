@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
+import { postWalletOperation, WalletPostingResult } from './wallet-ledger';
 
 import { DriverTransactionEntity } from '../entities/driver-transaction.entity';
 import { DriverWalletEntity } from '../entities/driver-wallet.entity';
@@ -117,32 +118,43 @@ export class SharedDriverService {
       | 'paymentGatewayId'
       | 'refrenceNumber'
       | 'description'
+      | 'idempotencyKey'
     >,
-  ) {
-    let wallet = await this.driverWalletRepo.findOneBy({
-      driverId: transaction.driverId,
+    manager: EntityManager = this.driverWalletRepo.manager,
+  ): Promise<DriverWalletEntity> {
+    return (await this.postTransaction(transaction, manager)).wallet;
+  }
+
+  /**
+   * Comme `rechargeWallet`, en indiquant si l'operation a ete ecrite (`applied`)
+   * ou absorbee comme rejeu (cle `idempotencyKey` deja connue). `guard` est
+   * appele sous verrou avec le solde courant (ex. solde suffisant). p1-unicite.
+   */
+  async postTransaction(
+    transaction: Parameters<SharedDriverService['rechargeWallet']>[0],
+    manager: EntityManager = this.driverWalletRepo.manager,
+    guard?: (currentBalance: number) => void,
+  ): Promise<WalletPostingResult<DriverWalletEntity>> {
+    const result = await postWalletOperation<
+      DriverWalletEntity,
+      DriverTransactionEntity
+    >(manager, {
+      walletEntity: DriverWalletEntity,
+      transactionEntity: DriverTransactionEntity,
+      owner: { driverId: transaction.driverId },
       currency: transaction.currency,
+      amount: transaction.amount,
+      transaction,
+      recordZeroAmount: false,
+      guard,
     });
-    transaction.amount = parseFloat(transaction.amount.toString());
-    if (wallet == null) {
-      wallet = await this.driverWalletRepo.save({
-        balance: transaction.amount,
-        currency: transaction.currency,
-        driverId: transaction.driverId,
-      });
-    } else {
-      await this.driverWalletRepo.update(wallet.id, {
-        balance:
-          parseFloat(transaction.amount.toString()) +
-          parseFloat(wallet.balance.toString()),
-      });
-      wallet.balance += transaction.amount;
+    if (!result.applied) {
+      Logger.log(
+        `Operation deja enregistree, rejeu ignore (${transaction.idempotencyKey})`,
+        'SharedDriverService',
+      );
     }
-    if (transaction.amount != 0) {
-      Logger.log(`Saving transaction ${JSON.stringify(transaction)}`);
-      this.driverTransactionRepo.save(transaction);
-    }
-    return wallet;
+    return result;
   }
 
   async setRating(driverId: number, rating: number, totalRatingCount: number) {

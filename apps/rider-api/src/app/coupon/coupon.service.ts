@@ -6,6 +6,7 @@ import { TransactionAction } from '@kasi/database/enums/transaction-action.enum'
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
 import { GiftCardEntity } from '@kasi/database/gift-card.entity';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
+import { MoneyKey } from '@kasi/order/wallet-ledger';
 import { ForbiddenError } from '@nestjs/apollo';
 import { Repository } from 'typeorm';
 import { RiderWalletDTO } from '../wallet/dto/rider-wallet.dto';
@@ -30,6 +31,8 @@ export class CouponService {
       currency: card.currency,
       amount: card.amount,
       giftCardId: card.id,
+      // p1-unicite : une carte ne credite qu'une fois, meme rejouee.
+      idempotencyKey: MoneyKey.giftCard(card.id),
     });
   }
 }
