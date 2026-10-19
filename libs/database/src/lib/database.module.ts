@@ -49,6 +49,9 @@ import { CallMaskingProviderEntity } from './entities/call-masking-provider.enti
 import { ShiftRuleEntity } from './entities/shift-rule.entity';
 import { RetentionPolicyEntity } from './entities/retention-policy.entity';
 import { MapSettingEntity } from './entities/map-setting.entity';
+import { LedgerAccountEntity } from './entities/ledger-account.entity';
+import { LedgerEntryEntity } from './entities/ledger-entry.entity';
+import { LedgerLineEntity } from './entities/ledger-line.entity';
 import { kasiConnectionOptions, MIGRATIONS_TABLE_NAME } from './migration/connection-options';
 import { kasiMigrations } from './migration/index';
 
@@ -177,4 +180,8 @@ export const entities = [
   ShiftRuleEntity,
   RetentionPolicyEntity,
   MapSettingEntity,
+  // p2-argent I2 (2026-10-19) : grand livre en partie double (migration LedgerTables).
+  LedgerAccountEntity,
+  LedgerEntryEntity,
+  LedgerLineEntity,
 ];

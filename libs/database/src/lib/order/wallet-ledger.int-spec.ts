@@ -27,6 +27,13 @@ import { TransactionStatus } from '../entities/enums/transaction-status.enum';
 import { RiderRechargeTransactionType } from '../entities/enums/rider-recharge-transaction-type.enum';
 import { ProviderRechargeTransactionType } from '../entities/enums/provider-recharge-transaction-type.enum';
 import { MoneyKey } from './wallet-ledger';
+import {
+  LedgerAccountRef,
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+} from './ledger';
 
 describe('p1-unicite : ecritures de portefeuille', () => {
   let ds: DataSource;
@@ -107,13 +114,33 @@ describe('p1-unicite : ecritures de portefeuille', () => {
     );
   });
 
+  // p2-argent I2 (2026-10-19) : `rechargeWallet` n'existe plus ; les memes
+  // garanties (p1-unicite) sont verifiees au travers de postLedgerEntry, seul
+  // point d'entree, avec une contrepartie KASI:CORRECTIONS.
+  const credit = (
+    account: LedgerAccountRef,
+    amount: number,
+    entryKey: string,
+    fields: Record<string, unknown>,
+  ) =>
+    postLedgerEntry(ds.manager, {
+      idempotencyKey: entryKey,
+      nature: LedgerEntryNature.Correction,
+      currency: 'XOF',
+      lines: [
+        { account, amount, nature: LedgerLineNature.Correction },
+        {
+          account: LedgerAccounts.kasiCorrections(),
+          amount: -amount,
+          nature: LedgerLineNature.Correction,
+        },
+      ],
+      walletLines: [{ account, amount, fields }],
+    });
+
   it('credits distincts simultanes sur un portefeuille neuf : un seul portefeuille, aucun credit perdu', async () => {
-    const { sharedRider } = buildRiderApi(ds, redis, d);
     const results = await concurrently(20, (i) =>
-      sharedRider.rechargeWallet({
-        riderId: world.riderId,
-        amount: 100,
-        currency: 'XOF',
+      credit(LedgerAccounts.client(world.riderId), 100, `test:distinct:${i}`, {
         action: TransactionAction.Recharge,
         rechargeType: RiderRechargeTransactionType.BankTransfer,
         status: TransactionStatus.Done,
@@ -126,13 +153,10 @@ describe('p1-unicite : ecritures de portefeuille', () => {
   });
 
   it('meme cle sur le portefeuille du provider (commission) rejouee en meme temps : une ligne', async () => {
-    const { sharedProvider } = buildRiderApi(ds, redis, d);
     await concurrently(5, () =>
-      sharedProvider.rechargeWallet({
+      credit(LedgerAccounts.kasiProduits(), 300, 'test:provider-commission', {
         action: TransactionAction.Recharge,
         rechargeType: ProviderRechargeTransactionType.Commission,
-        currency: 'XOF',
-        amount: 300,
         idempotencyKey: MoneyKey.order(1, 'provider-commission'),
       }),
     );
@@ -141,14 +165,10 @@ describe('p1-unicite : ecritures de portefeuille', () => {
   });
 
   it('flotte : meme cle rejouee, une seule ligne', async () => {
-    const { sharedFleet } = buildRiderApi(ds, redis, d);
     await concurrently(4, () =>
-      sharedFleet.rechargeWallet({
-        fleetId: world.fleetId,
+      credit(LedgerAccounts.flotte(world.fleetId), 20, 'test:fleet-commission', {
         action: TransactionAction.Recharge,
         rechargeType: ProviderRechargeTransactionType.Commission,
-        currency: 'XOF',
-        amount: 20,
         idempotencyKey: MoneyKey.order(1, 'fleet-commission'),
       }),
     );

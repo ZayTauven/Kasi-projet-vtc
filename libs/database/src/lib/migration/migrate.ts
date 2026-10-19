@@ -13,6 +13,12 @@
  *   mark-baseline  base DEJA peuplee : enregistre la migration de reference
  *                  comme appliquee, sans l'executer
  *   revert         annule la derniere migration (jamais la reference)
+ *   ledger-open    p2-argent I2 : ouverture du grand livre (une ecriture
+ *                  OUVERTURE par portefeuille), a lancer apres la migration
+ *                  LedgerTables, API arretees ; relancer ne fait rien
+ *                  (alias : ledger:open)
+ *   ledger-check   p2-argent I2 : controle d'integrite du grand livre, en
+ *                  lecture seule ; code 1 si ecart
  *
  * Deux gardes-fous :
  * - un verrou consultatif PostgreSQL : deux executions simultanees (deux
@@ -29,12 +35,29 @@ import { allEntities } from './all-entities';
 import { kasiConnectionOptions, MIGRATIONS_TABLE_NAME } from './connection-options';
 import { BASELINE_MIGRATION_NAME, kasiMigrations } from './index';
 import { BASELINE_TABLES } from './postgres/baseline-tables';
+import { openLedger } from '../order/ledger-open';
+import { describeIntegrity, ledgerIntegrityReport } from '../order/ledger-integrity';
 
 /** Cle arbitraire mais fixe du verrou consultatif des migrations Kasi. */
 const MIGRATION_LOCK_KEY = 4815162342;
 
-type Command = 'run' | 'show' | 'check' | 'mark-baseline' | 'revert';
-const COMMANDS: Command[] = ['run', 'show', 'check', 'mark-baseline', 'revert'];
+type Command =
+  | 'run'
+  | 'show'
+  | 'check'
+  | 'mark-baseline'
+  | 'revert'
+  | 'ledger-open'
+  | 'ledger-check';
+const COMMANDS: Command[] = [
+  'run',
+  'show',
+  'check',
+  'mark-baseline',
+  'revert',
+  'ledger-open',
+  'ledger-check',
+];
 
 function log(message: string): void {
   console.log(`[migrate] ${message}`);
@@ -219,8 +242,43 @@ async function revert(ds: DataSource): Promise<number> {
   });
 }
 
+/** p2-argent I2 : les tables du grand livre existent-elles (migration LedgerTables) ? */
+async function ledgerTablesPresent(ds: DataSource): Promise<boolean> {
+  const [{ present }] = await ds.query(
+    `SELECT to_regclass('public.ledger_entry') IS NOT NULL AS present`,
+  );
+  return present === true;
+}
+
+/**
+ * p2-argent I2 (2026-10-19) : ouverture du grand livre (fiche §3.8). Voir
+ * libs/database/src/lib/order/ledger-open.ts. Le controle d'integrite suit.
+ */
+async function ledgerOpen(ds: DataSource): Promise<number> {
+  if (!(await ledgerTablesPresent(ds))) {
+    log('REFUS : tables du grand livre absentes. Lancer d\'abord `node migrate.js run`.');
+    return 2;
+  }
+  await openLedger(ds, (message) => log(`ledger-open : ${message}`));
+  return ledgerCheck(ds);
+}
+
+async function ledgerCheck(ds: DataSource): Promise<number> {
+  if (!(await ledgerTablesPresent(ds))) {
+    log('REFUS : tables du grand livre absentes. Lancer d\'abord `node migrate.js run`.');
+    return 2;
+  }
+  const report = await ledgerIntegrityReport(ds.manager);
+  log(`ledger-check : ${describeIntegrity(report)}`);
+  for (const issue of report.issues.slice(10)) {
+    log(`  [${issue.kind}] ${issue.detail}`);
+  }
+  return report.ok ? 0 : 1;
+}
+
 async function main(): Promise<number> {
-  const command = (process.argv[2] ?? 'run') as Command;
+  const raw = process.argv[2] ?? 'run';
+  const command = (raw === 'ledger:open' ? 'ledger-open' : raw) as Command;
   if (!COMMANDS.includes(command)) {
     console.error(`[migrate] commande inconnue "${command}". Attendu : ${COMMANDS.join(' | ')}`);
     return 64;
@@ -253,6 +311,10 @@ async function main(): Promise<number> {
         return await markBaseline(ds);
       case 'revert':
         return await revert(ds);
+      case 'ledger-open':
+        return await ledgerOpen(ds);
+      case 'ledger-check':
+        return await ledgerCheck(ds);
     }
   } finally {
     await ds.destroy();

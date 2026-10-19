@@ -70,6 +70,11 @@ import { DriverResolver as AdminDriverResolver } from '../../apps/admin-api/src/
 import { PayoutService } from '../../apps/admin-api/src/app/payout/payout.service';
 import { FleetResolver as AdminFleetResolver } from '../../apps/admin-api/src/app/fleet/fleet.resolver';
 import { CouponService as RiderCouponService } from '../../apps/rider-api/src/app/coupon/coupon.service';
+import { LedgerResolver } from '../../apps/admin-api/src/app/ledger/ledger.resolver';
+import {
+  ledgerIntegrityReport,
+  LedgerIntegrityReport,
+} from '../../libs/database/src/lib/order/ledger-integrity';
 
 export { OrderStatus, DriverStatus };
 
@@ -106,7 +111,12 @@ export function openRedis(): Redis {
   });
 }
 
-/** Vide toutes les tables de la base de test (jamais la table migrations). */
+/**
+ * Vide toutes les tables de la base de test (jamais la table migrations).
+ * p2-argent I2 : y compris ledger_account, ledger_entry et ledger_line. Les
+ * declencheurs d'immuabilite du grand livre sont des declencheurs de LIGNE
+ * (UPDATE, DELETE) : TRUNCATE ne les declenche pas.
+ */
 export async function resetDatabase(ds: DataSource, redis?: Redis): Promise<void> {
   const [{ db }] = await ds.query('SELECT current_database() AS db');
   if (!String(db).includes('test')) {
@@ -377,6 +387,38 @@ export async function countRows(
     params,
   );
   return n;
+}
+
+// ---------------------------------------------------------------------------
+// p2-argent I2 (2026-10-19) : lectures du grand livre
+// ---------------------------------------------------------------------------
+
+/** Solde d'un compte du grand livre (somme de ses lignes), 0 s'il n'existe pas. */
+export async function ledgerBalance(ds: DataSource, code: string): Promise<number> {
+  const [{ total }] = await ds.query(
+    `SELECT COALESCE(SUM(l.amount), 0)::text AS total
+       FROM ledger_line l JOIN ledger_account a ON a.id = l."accountId"
+      WHERE a.code = $1 AND a.currency = $2`,
+    [code, CURRENCY],
+  );
+  return Number(total);
+}
+
+/** Ecritures du grand livre (filtre SQL facultatif sur ledger_entry). */
+export async function ledgerEntries(
+  ds: DataSource,
+  where = 'TRUE',
+  params: unknown[] = [],
+): Promise<Array<{ id: number; idempotencyKey: string; nature: string; motif: string | null }>> {
+  return ds.query(
+    `SELECT id, "idempotencyKey", nature, motif FROM ledger_entry WHERE ${where} ORDER BY id`,
+    params,
+  );
+}
+
+/** Controle d'integrite (meme fonction que ledgerIntegrityReport d'admin-api). */
+export async function integrity(ds: DataSource): Promise<LedgerIntegrityReport> {
+  return ledgerIntegrityReport(ds.manager);
 }
 
 /**
@@ -692,6 +734,8 @@ export function buildAdminApi(
       context,
     ),
     fleetResolver: new AdminFleetResolver(shared.sharedFleet, context, ds),
+    // p2-argent I2 : requete ledgerIntegrityReport.
+    ledgerResolver: new LedgerResolver(ds, context),
     orderService: new AdminOrderService(
       ds.getRepository(RequestEntity),
       ds.getRepository(RequestActivityEntity),

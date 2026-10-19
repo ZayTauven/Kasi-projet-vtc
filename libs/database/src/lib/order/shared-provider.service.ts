@@ -1,9 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProviderTransactionEntity } from '../entities/provider-transaction.entity';
 import { ProviderWalletEntity } from '../entities/provider-wallet.entity';
-import { EntityManager, Repository } from 'typeorm';
-import { postWalletOperation } from './wallet-ledger';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SharedProviderService {
@@ -14,41 +13,7 @@ export class SharedProviderService {
     private providerTransactionRepo: Repository<ProviderTransactionEntity>,
   ) {}
 
-  async rechargeWallet(
-    transaction: Pick<
-      ProviderTransactionEntity,
-      | 'action'
-      | 'rechargeType'
-      | 'deductType'
-      | 'amount'
-      | 'currency'
-      | 'requestId'
-      | 'operatorId'
-      | 'refrenceNumber'
-      | 'description'
-      | 'idempotencyKey'
-    >,
-    manager: EntityManager = this.providerWalletRepo.manager,
-  ): Promise<ProviderWalletEntity> {
-    // p1-unicite : ecriture unique et atomique (voir wallet-ledger.ts).
-    const result = await postWalletOperation<
-      ProviderWalletEntity,
-      ProviderTransactionEntity
-    >(manager, {
-      walletEntity: ProviderWalletEntity,
-      transactionEntity: ProviderTransactionEntity,
-      owner: {},
-      currency: transaction.currency,
-      amount: transaction.amount,
-      transaction,
-      recordZeroAmount: false,
-    });
-    if (!result.applied) {
-      Logger.log(
-        `Operation deja enregistree, rejeu ignore (${transaction.idempotencyKey})`,
-        'SharedProviderService',
-      );
-    }
-    return result.wallet;
-  }
+  // p2-argent I2 (2026-10-19) : `rechargeWallet` est retiree. Le portefeuille
+  // de Kasi (admin_wallet) est la projection du compte KASI:PRODUITS : toute
+  // operation passe par `postLedgerEntry` (ledger.ts).
 }

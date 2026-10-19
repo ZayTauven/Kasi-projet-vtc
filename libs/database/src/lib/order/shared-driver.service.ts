@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Repository } from 'typeorm';
-import { postWalletOperation, WalletPostingResult } from './wallet-ledger';
+import { In, Repository } from 'typeorm';
 
 import { DriverTransactionEntity } from '../entities/driver-transaction.entity';
 import { DriverWalletEntity } from '../entities/driver-wallet.entity';
@@ -103,59 +102,9 @@ export class SharedDriverService {
     );
   }
 
-  async rechargeWallet(
-    transaction: Pick<
-      DriverTransactionEntity,
-      | 'status'
-      | 'action'
-      | 'rechargeType'
-      | 'deductType'
-      | 'amount'
-      | 'currency'
-      | 'driverId'
-      | 'requestId'
-      | 'operatorId'
-      | 'paymentGatewayId'
-      | 'refrenceNumber'
-      | 'description'
-      | 'idempotencyKey'
-    >,
-    manager: EntityManager = this.driverWalletRepo.manager,
-  ): Promise<DriverWalletEntity> {
-    return (await this.postTransaction(transaction, manager)).wallet;
-  }
-
-  /**
-   * Comme `rechargeWallet`, en indiquant si l'operation a ete ecrite (`applied`)
-   * ou absorbee comme rejeu (cle `idempotencyKey` deja connue). `guard` est
-   * appele sous verrou avec le solde courant (ex. solde suffisant). p1-unicite.
-   */
-  async postTransaction(
-    transaction: Parameters<SharedDriverService['rechargeWallet']>[0],
-    manager: EntityManager = this.driverWalletRepo.manager,
-    guard?: (currentBalance: number) => void,
-  ): Promise<WalletPostingResult<DriverWalletEntity>> {
-    const result = await postWalletOperation<
-      DriverWalletEntity,
-      DriverTransactionEntity
-    >(manager, {
-      walletEntity: DriverWalletEntity,
-      transactionEntity: DriverTransactionEntity,
-      owner: { driverId: transaction.driverId },
-      currency: transaction.currency,
-      amount: transaction.amount,
-      transaction,
-      recordZeroAmount: false,
-      guard,
-    });
-    if (!result.applied) {
-      Logger.log(
-        `Operation deja enregistree, rejeu ignore (${transaction.idempotencyKey})`,
-        'SharedDriverService',
-      );
-    }
-    return result;
-  }
+  // p2-argent I2 (2026-10-19) : `rechargeWallet` et `postTransaction` sont
+  // retirees. Toute operation d'argent passe par `postLedgerEntry`
+  // (ledger.ts), qui ecrit la ligne de portefeuille du Kasiman.
 
   async setRating(driverId: number, rating: number, totalRatingCount: number) {
     return this.driverRepo.update(driverId, {

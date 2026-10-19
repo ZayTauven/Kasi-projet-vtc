@@ -39,6 +39,7 @@ import { GiftModule } from './gift/gift.module';
 import { ShiftRuleModule } from './shift-rule/shift-rule.module';
 import { RetentionPolicyModule } from './retention-policy/retention-policy.module';
 import { MapSettingModule } from './map-setting/map-setting.module';
+import { LedgerModule } from './ledger/ledger.module';
 
 @Module({})
 export class AdminAPIModule {
@@ -135,6 +136,8 @@ export class AdminAPIModule {
             RetentionPolicyModule,
             MapSettingModule,
             ComplaintModule,
+            // p2-argent I2 (2026-10-19) : ledgerIntegrityReport et balayage quotidien.
+            LedgerModule,
             ConfigurationModule,
             HttpModule,
             RedisModule.forRoot({

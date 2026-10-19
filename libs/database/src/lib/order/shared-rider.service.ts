@@ -4,7 +4,6 @@ import { RiderEntity } from '../entities/rider-entity';
 import { RiderTransactionEntity } from '../entities/rider-transaction.entity';
 import { RiderWalletEntity } from '../entities/rider-wallet.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { postWalletOperation, WalletPostingResult } from './wallet-ledger';
 
 @Injectable()
 export class SharedRiderService {
@@ -87,48 +86,7 @@ export class SharedRiderService {
     return wallet?.balance ?? 0;
   }
 
-  async rechargeWallet(
-    transaction: Pick<
-      RiderTransactionEntity,
-      | 'status'
-      | 'action'
-      | 'rechargeType'
-      | 'deductType'
-      | 'amount'
-      | 'currency'
-      | 'riderId'
-      | 'requestId'
-      | 'operatorId'
-      | 'paymentGatewayId'
-      | 'refrenceNumber'
-      | 'description'
-      | 'giftCardId'
-      | 'idempotencyKey'
-    >,
-    manager: EntityManager = this.riderWalletRepo.manager,
-  ): Promise<RiderWalletEntity> {
-    return (await this.postTransaction(transaction, manager)).wallet;
-  }
-
-  /**
-   * Comme `rechargeWallet`, en indiquant si l'operation a ete ecrite (`applied`)
-   * ou absorbee comme rejeu (cle `idempotencyKey` deja connue). p1-unicite.
-   */
-  async postTransaction(
-    transaction: Parameters<SharedRiderService['rechargeWallet']>[0],
-    manager: EntityManager = this.riderWalletRepo.manager,
-  ): Promise<WalletPostingResult<RiderWalletEntity>> {
-    return postWalletOperation<RiderWalletEntity, RiderTransactionEntity>(
-      manager,
-      {
-        walletEntity: RiderWalletEntity,
-        transactionEntity: RiderTransactionEntity,
-        owner: { riderId: transaction.riderId },
-        currency: transaction.currency,
-        amount: transaction.amount,
-        transaction,
-        recordZeroAmount: true,
-      },
-    );
-  }
+  // p2-argent I2 (2026-10-19) : `rechargeWallet` et `postTransaction` sont
+  // retirees. Toute operation d'argent passe par `postLedgerEntry`
+  // (ledger.ts), qui ecrit la ligne de portefeuille du client.
 }

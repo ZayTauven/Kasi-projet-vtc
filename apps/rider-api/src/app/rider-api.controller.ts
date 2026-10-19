@@ -13,6 +13,12 @@ import { TransactionAction } from '@kasi/database/enums/transaction-action.enum'
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
 import { MoneyKey } from '@kasi/order/wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+} from '@kasi/order/ledger';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import * as fastify from 'fastify';
 
@@ -75,19 +81,42 @@ export class RiderAPIController {
         // p1-unicite : la reference de la passerelle est la cle d'unicite. Un
         // retour rejoue (rechargement de la page, double redirection) ne
         // credite plus une seconde fois.
-        await this.sharedRiderService.rechargeWallet({
-          riderId: decrypted.userId,
-          amount: decrypted.amount,
+        // p2-argent I2 (2026-10-19) : ecriture du grand livre avec sa
+        // contrepartie (fiche §3.4) : PASSERELLE:<id> -x ; CLIENT +x. Meme cle
+        // pour l'ecriture et la ligne de portefeuille.
+        const key = MoneyKey.gatewayPayment(
+          decrypted.gatewayId,
+          decrypted.transactionNumber,
+        );
+        const client = LedgerAccounts.client(decrypted.userId);
+        const amount = Number(decrypted.amount);
+        await postLedgerEntry(this.paymentRepository.manager, {
+          idempotencyKey: key,
+          nature: LedgerEntryNature.Recharge,
           currency: decrypted.currency,
-          refrenceNumber: decrypted.transactionNumber,
-          action: TransactionAction.Recharge,
-          rechargeType: RiderRechargeTransactionType.InAppPayment,
-          paymentGatewayId: decrypted.gatewayId,
-          status: TransactionStatus.Done,
-          idempotencyKey: MoneyKey.gatewayPayment(
-            decrypted.gatewayId,
-            decrypted.transactionNumber,
-          ),
+          reference: decrypted.transactionNumber,
+          lines: [
+            {
+              account: LedgerAccounts.passerelle(decrypted.gatewayId),
+              amount: -amount,
+              nature: LedgerLineNature.Recharge,
+            },
+            { account: client, amount, nature: LedgerLineNature.Recharge },
+          ],
+          walletLines: [
+            {
+              account: client,
+              amount,
+              fields: {
+                refrenceNumber: decrypted.transactionNumber,
+                action: TransactionAction.Recharge,
+                rechargeType: RiderRechargeTransactionType.InAppPayment,
+                paymentGatewayId: decrypted.gatewayId,
+                status: TransactionStatus.Done,
+                idempotencyKey: key,
+              },
+            },
+          ],
         });
         await this.paymentRepository.delete({
           transactionNumber: decrypted.transactionNumber,

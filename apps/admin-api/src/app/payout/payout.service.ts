@@ -13,7 +13,13 @@ import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum'
 import { PayoutMethodEntity } from '@kasi/database/payout-method.entity';
 import { PayoutSessionEntity } from '@kasi/database/payout-session.entity';
 import { PayoutEntity } from '@kasi/database/payout.entity';
-import { MoneyKey, postWalletOperation } from '@kasi/order/wallet-ledger';
+import { MoneyKey } from '@kasi/order/wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+} from '@kasi/order/ledger';
 import { CreatePayoutSessionInput } from './dto/create-payout-session.input';
 import { PayoutSessionPreviewDTO } from './dto/payout-session-preview.dto';
 
@@ -154,34 +160,49 @@ export class PayoutService {
         .getRepository(PayoutEntity)
         .findOneOrFail({ where: { id: payoutId } });
       const amount = Number(payout.amount);
-      const posting = await postWalletOperation<
-        DriverWalletEntity,
-        DriverTransactionEntity
-      >(manager, {
-        walletEntity: DriverWalletEntity,
-        transactionEntity: DriverTransactionEntity,
-        owner: { driverId: payout.driverId },
+      // p2-argent I2 (2026-10-19) : versement = ecriture du grand livre avec
+      // sa contrepartie, la sortie reelle (fiche §3.4) : KASIMAN -x ;
+      // TRESORERIE:<WAVE|ORANGE_MONEY|BANQUE> +x, ou CAISSE:SIEGE pour un
+      // versement en especes. Garde « solde suffisant » sous verrou, inchangee.
+      const kasiman = LedgerAccounts.kasiman(payout.driverId);
+      const key = MoneyKey.payout(payout.id);
+      const posting = await postLedgerEntry(manager, {
+        idempotencyKey: key,
+        nature: LedgerEntryNature.Versement,
         currency: payout.currency,
-        amount: -amount,
-        recordZeroAmount: false,
-        guard: (balance) => {
-          if (balance < amount) {
-            throw new Error('INSUFFICIENT_DRIVER_BALANCE');
-          }
-        },
-        transaction: {
-          action: TransactionAction.Deduct,
-          deductType: DriverDeductTransactionType.Withdraw,
-          status: TransactionStatus.Done,
-          currency: payout.currency,
-          driverId: payout.driverId,
-          operatorId,
-          description: `Payout #${payout.id} (session #${payout.sessionId}, ${payout.methodName})`,
-          idempotencyKey: MoneyKey.payout(payout.id),
-        },
+        operatorId,
+        reference: `payout#${payout.id}`,
+        motif: `Versement #${payout.id} (session #${payout.sessionId}, ${payout.methodName})`,
+        lines: [
+          { account: kasiman, amount: -amount, nature: LedgerLineNature.Versement },
+          {
+            account: LedgerAccounts.payoutCounterpart(payout.methodType),
+            amount,
+            nature: LedgerLineNature.Versement,
+          },
+        ],
+        walletLines: [
+          {
+            account: kasiman,
+            amount: -amount,
+            guard: (balance) => {
+              if (balance < amount) {
+                throw new Error('INSUFFICIENT_DRIVER_BALANCE');
+              }
+            },
+            fields: {
+              action: TransactionAction.Deduct,
+              deductType: DriverDeductTransactionType.Withdraw,
+              status: TransactionStatus.Done,
+              operatorId,
+              description: `Payout #${payout.id} (session #${payout.sessionId}, ${payout.methodName})`,
+              idempotencyKey: key,
+            },
+          },
+        ],
       });
       await manager.update(PayoutEntity, payout.id, {
-        driverTransactionId: posting.transactionId,
+        driverTransactionId: posting.wallets[0]?.transactionId,
       });
       return true;
     });

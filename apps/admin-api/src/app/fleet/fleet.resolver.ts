@@ -4,7 +4,7 @@ import { OperatorPermission } from "@kasi/database/enums/operator-permission.enu
 import { TransactionAction } from "@kasi/database/enums/transaction-action.enum";
 import { OperatorEntity } from "@kasi/database/operator.entity";
 import { SharedFleetService } from "@kasi/order/shared-fleet.service";
-import { operatorIdempotencyKey } from "@kasi/order/wallet-ledger";
+import { LedgerAccounts, postManualOperation } from "@kasi/order/ledger";
 import { ForbiddenError } from "@nestjs/apollo";
 import { DataSource } from "typeorm";
 import { UserContext } from "../auth/authenticated-admin";
@@ -38,10 +38,24 @@ export class FleetResolver {
             throw new ForbiddenError('PERMISSION_NOT_GRANTED');
         }
         input.amount = input.action == TransactionAction.Recharge ? Math.abs(input.amount) : Math.abs(input.amount) * -1;
-        return this.sharedFleetService.rechargeWallet({
-            ...input,
-            idempotencyKey: operatorIdempotencyKey(input.idempotencyKey),
+        // p2-argent I2 (2026-10-19) : ecriture du grand livre avec contrepartie
+        // et motif, facultatifs (defauts : KASI:CORRECTIONS, puis description).
+        const posting = await postManualOperation(this.datasource.manager, {
+            account: LedgerAccounts.flotte(input.fleetId),
+            amount: input.amount,
+            currency: input.currency,
             operatorId: this.context.req.user.id,
+            clientKey: input.idempotencyKey,
+            counterparty: input.counterparty,
+            motif: input.motif,
+            walletFields: {
+                action: input.action,
+                deductType: input.deductType,
+                rechargeType: input.rechargeType,
+                refrenceNumber: input.refrenceNumber,
+                description: input.description,
+            },
         });
+        return posting.wallets[0].wallet;
     }
 }

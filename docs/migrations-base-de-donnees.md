@@ -34,8 +34,9 @@ Mis en place le 2026-09-28. Décision : `KASI_DECISIONS.md`, entrée du 2026-09-
 | `libs/database/src/lib/migration/index.ts` | Liste ordonnée des migrations + nom de la référence |
 | `libs/database/src/lib/migration/postgres/1790629154960-Baseline.ts` | Migration de référence (ne jamais la modifier) |
 | `libs/database/src/lib/migration/postgres/baseline-tables.ts` | Les 59 tables qu'elle crée (contrôle de `mark-baseline`) |
-| `libs/database/src/lib/migration/migrate.ts` | Exécutable : `run`, `show`, `check`, `mark-baseline`, `revert` |
-| `libs/database/src/lib/migration/all-entities.ts` | Les 50 entités (union des trois API) |
+| `libs/database/src/lib/migration/migrate.ts` | Exécutable : `run`, `show`, `check`, `mark-baseline`, `revert`, et pour le grand livre `ledger-open`, `ledger-check` |
+| `libs/database/src/lib/migration/all-entities.ts` | Les 53 entités (union des trois API ; dont les 3 du grand livre depuis le 2026-10-19) |
+| `libs/database/src/lib/order/ledger-open.ts`, `ledger-integrity.ts` | Ouverture du grand livre et contrôle d'intégrité (appelés par `migrate.js`) |
 | `libs/database/src/lib/migration/connection-options.ts` | Connexion lue dans `DB_*`, partagée par API, exécutable et CLI |
 | `libs/database/src/lib/migration/data-source.cli.ts` | DataSource de la CLI TypeORM (poste de dev) |
 | `tools/typeorm/register.js` | Préchargement ts-node + `.env` pour les scripts npm |
@@ -64,6 +65,8 @@ docker compose run --rm --no-deps migrate node migrate.js check          # base 
 docker compose run --rm --no-deps migrate node migrate.js run            # appliquer (fait par `up -d`)
 docker compose run --rm --no-deps migrate node migrate.js mark-baseline  # une seule fois par base peuplée
 docker compose run --rm --no-deps migrate node migrate.js revert         # annuler la dernière (jamais la référence)
+docker compose run --rm --no-deps migrate node migrate.js ledger-open    # p2-argent I2 : ouverture du grand livre (une fois, API arrêtées)
+docker compose run --rm --no-deps migrate node migrate.js ledger-check   # p2-argent I2 : intégrité, lecture seule (code 1 si écart)
 ```
 
 Sur le poste de développement (depuis `app-kasi/`) :
@@ -74,6 +77,8 @@ npm run migration:check
 npm run migration:run
 npm run migration:revert
 npm run migration:mark-baseline
+npm run ledger:open      # p2-argent I2 : ouverture du grand livre (relancer ne fait rien)
+npm run ledger:check     # p2-argent I2 : contrôle d'intégrité, lecture seule
 npm run migration:generate -- libs/database/src/lib/migration/postgres/NomExplicite
 npm run migration:create   -- libs/database/src/lib/migration/postgres/NomExplicite
 ```
@@ -99,9 +104,19 @@ Garde-fous de `migrate.js` :
   (corrigé le 2026-09-29 : il visait à tort la référence dès qu'une seconde migration
   existait, et refusait donc tout retour arrière).
 
-Migrations après la référence : `MoneyIdempotencyKey1790647094992` (2026-09-29,
-`p1-unicite`, colonne `idempotencyKey` + index unique sur les 4 tables de
-transactions, additive, réversible, vérifiée sur une copie de la base de démo).
+Migrations après la référence, dans l'ordre :
+
+1. `MoneyIdempotencyKey1790647094992` (2026-09-29, `p1-unicite`) : colonne
+   `idempotencyKey` + index unique sur les 4 tables de transactions. Additive,
+   réversible, vérifiée sur une copie de la base de démo.
+2. `LedgerTables1792421211893` (2026-10-19, `p2-argent` I2) : tables `ledger_account`,
+   `ledger_entry`, `ledger_line` (vides), colonne `ledgerEntryId` nullable et indexée sur
+   les 4 tables de transactions, et déclencheurs **écrits à la main** (équilibre de
+   chaque écriture contrôlé à la validation de la transaction ; `UPDATE` et `DELETE`
+   refusés sur les écritures et les lignes). Additive, réversible (`down` complet,
+   fonctions comprises), vérifiée sur `kasi_test` (up, down, up, `check` sans écart)
+   puis sur la base locale `kasi`. **Elle est suivie de `ledger-open`** : voir la
+   section 7 bis.
 
 ## 4. Faire évoluer le schéma (développeur)
 
@@ -259,6 +274,61 @@ Si le déploiement contient une migration (`git diff --stat <avant>..HEAD -- lib
 4. retour arrière d'une migration : `docker compose run --rm --no-deps migrate node migrate.js revert`,
    puis redéployer le code précédent ; sinon, restauration du dump.
 
+## 7 bis. Grand livre : premier déploiement (`p2-argent` I2)
+
+À faire **une seule fois**, lors du déploiement qui contient `LedgerTables1792421211893`
+(décision du 2026-10-19 : déploiement regroupé plus tard, après `p1-migrations` et la
+phase 1). Fiche : `docs/fiche-conception-argent.md` §3.7 à §3.9.
+
+Pourquoi un ordre strict : `ledger-open` reprend le solde de chaque portefeuille comme
+ouverture de son compte. Si une **ancienne** API (sans grand livre) écrit un mouvement
+d'argent après l'ouverture, ce mouvement n'aura pas d'écriture et le contrôle
+d'intégrité le signalera. Les trois API sont donc arrêtées entre la migration et le
+démarrage des nouvelles (environ une minute).
+
+```sh
+cd /opt/kasi
+# 1. Sauvegarde (comme section 6, étape 1)
+docker exec kasi-postgres sh -c 'pg_dump -U kasi -Fc kasi' > /root/backups/kasi_avant_grand-livre_$(date +%F_%H%M).dump
+# 2. Code et images (les conteneurs en service ne bougent pas)
+git pull && docker compose build
+docker compose run --rm --no-deps migrate node migrate.js show
+#   attendu : [ ] LedgerTables1792421211893 (et les précédentes si elles manquent)
+# 3. Arrêt des trois API : plus aucun mouvement d'argent
+docker compose stop admin-api driver-api rider-api
+# 4. Migration
+docker compose run --rm --no-deps migrate
+#   attendu : appliquee : LedgerTables1792421211893 ; code de sortie 0, sinon S'ARRÊTER
+# 5. Ouverture du grand livre, suivie du contrôle d'intégrité
+docker compose run --rm --no-deps migrate node migrate.js ledger-open
+#   attendu : "N compte(s) examine(s) : N ouvert(s)" puis
+#             "ledger-check : grand livre integre ... aucun ecart" ; code de sortie 0
+# 6. Nouvelles API (LEDGER_MODE absent de .env = shadow)
+docker compose up -d && docker compose restart nginx
+# 7. Contrôle, à refaire les jours suivants (la tâche quotidienne d'admin-api le journalise aussi)
+docker compose run --rm --no-deps migrate node migrate.js ledger-check
+```
+
+- `ledger-open` est **rejouable** : clé `opening:<compte>:<devise>`, verrou consultatif.
+  Une relance n'écrit rien (`0 ouvert(s), N deja ouvert(s)`).
+- Ce qu'il écrit : pour chaque portefeuille (Kasiman, client, flotte, `admin_wallet`),
+  une écriture `OUVERTURE` (compte +solde arrondi au franc, `KASI:OUVERTURE` −solde) ;
+  le portefeuille est aligné sur l'entier (écart de moins d'un franc, sans ligne de
+  portefeuille) ; la somme des écarts d'arrondi va sur `KASI:ARRONDIS`, arrondie au
+  franc. L'historique d'avant l'ouverture n'est pas reconstitué.
+- Code de sortie 1 à l'étape 5 (écart) : ne pas démarrer les API ; lire les lignes
+  `[PROJECTION]` / `[UNLINKED_LINE]` ; restaurer le dump au besoin.
+- **Bascule `strict`** : après deux semaines de `ledger-check` à zéro écart, ajouter
+  `LEDGER_MODE=strict` dans `/opt/kasi/.env`, puis `docker compose up -d`. Retour à
+  `shadow` : retirer la ligne et relancer `up -d`.
+- Retour arrière de la migration : `node migrate.js revert` supprime les trois tables,
+  les déclencheurs et la colonne `ledgerEntryId` (le grand livre est perdu, les
+  portefeuilles restent) ; puis redéployer le code précédent.
+
+En local (base `kasi`), même ordre avec les scripts npm (`npm run migration:run`,
+`npm run ledger:open`) ou le service `migrate` ; fait le 2026-10-19, sauvegarde
+préalable dans `../archive/sauvegardes/`.
+
 ## 8. Dokploy
 
 `docker-compose.dokploy.yml` a le même service `migrate` (construit depuis le
@@ -301,3 +371,7 @@ ALTER TABLE "sms_provider"          RENAME CONSTRAINT "sms_provider_pkey"       
 | Log API `[Migrations] N migration(s) non appliquee(s)` | `migrate` sauté ou en échec | `docker compose logs migrate`, puis `run` |
 | `service "migrate" didn't complete successfully` au `up -d` | Migration en échec (rien n'a été commité : une seule transaction). Les API recréées sont arrêtées (`Created`) | Lire `docker compose logs migrate` ; corriger ou revenir au code précédent, puis `up -d` |
 | `migration:check` signale des `SET DEFAULT` | Valeur par défaut écrite sous une forme que TypeORM relit autrement | Voir la règle des valeurs par défaut (section 4) |
+| `ledger-check` : `[PROJECTION] ... sans compte au grand livre` | Grand livre jamais ouvert sur cette base | `ledger-open` (section 7 bis) |
+| `ledger-check` : `[UNLINKED_LINE]` | Ligne de portefeuille sans écriture : en `shadow`, une écriture a échoué (voir les logs `[Ledger] ... NON enregistree`), ou une ancienne API a tourné après l'ouverture | Corriger par une écriture motivée, jamais en touchant un solde |
+| `LEDGER_IMMUTABLE` | `UPDATE` ou `DELETE` sur `ledger_entry` / `ledger_line` | Interdit : contre-passation |
+| `LEDGER_ENTRY_UNBALANCED` | Écriture dont les lignes ne somment pas à zéro (refusée par la base) | Bug du site d'appel : lire l'écriture refusée dans les logs |

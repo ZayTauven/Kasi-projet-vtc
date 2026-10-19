@@ -35,6 +35,8 @@
     "migration:revert": "node -r ./tools/typeorm/register.js libs/database/src/lib/migration/migrate.ts revert",
     "migration:show": "node -r ./tools/typeorm/register.js libs/database/src/lib/migration/migrate.ts show",
     "migration:mark-baseline": "node -r ./tools/typeorm/register.js libs/database/src/lib/migration/migrate.ts mark-baseline",
+    "ledger:open": "node -r ./tools/typeorm/register.js libs/database/src/lib/migration/migrate.ts ledger-open",
+    "ledger:check": "node -r ./tools/typeorm/register.js libs/database/src/lib/migration/migrate.ts ledger-check",
     "test:integration": "jest -c tools/test-integration/jest.config.js",
     "semantic-release": "semantic-release"
   },

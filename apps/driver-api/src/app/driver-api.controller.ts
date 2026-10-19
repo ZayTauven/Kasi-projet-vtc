@@ -16,6 +16,12 @@ import { Repository } from 'typeorm';
 import { CryptoService, storeUploadedFile } from '@kasi/database';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { MoneyKey } from '@kasi/order/wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+} from '@kasi/order/ledger';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { DriverRechargeTransactionType } from '@kasi/database/enums/driver-recharge-transaction-type.enum';
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
@@ -51,19 +57,43 @@ export class DriverAPIController {
       if (decrypted.status == 'success') {
         // p1-unicite : la reference de la passerelle est la cle d'unicite. Un
         // retour rejoue ne credite plus une seconde fois.
-        await this.sharedDriverService.rechargeWallet({
-          driverId: decrypted.userId,
-          amount: decrypted.amount,
+        // p2-argent I2 (2026-10-19) : ecriture du grand livre avec sa
+        // contrepartie : PASSERELLE:<id> -x ; KASIMAN +x (une recharge du
+        // Kasiman reduit sa dette, fiche §3.10). Meme cle pour l'ecriture et
+        // la ligne de portefeuille.
+        const key = MoneyKey.gatewayPayment(
+          decrypted.gatewayId,
+          decrypted.transactionNumber,
+        );
+        const kasiman = LedgerAccounts.kasiman(decrypted.userId);
+        const amount = Number(decrypted.amount);
+        await postLedgerEntry(this.paymentRepository.manager, {
+          idempotencyKey: key,
+          nature: LedgerEntryNature.Recharge,
           currency: decrypted.currency,
-          refrenceNumber: decrypted.transactionNumber,
-          action: TransactionAction.Recharge,
-          rechargeType: DriverRechargeTransactionType.InAppPayment,
-          paymentGatewayId: decrypted.gatewayId,
-          status: TransactionStatus.Done,
-          idempotencyKey: MoneyKey.gatewayPayment(
-            decrypted.gatewayId,
-            decrypted.transactionNumber,
-          ),
+          reference: decrypted.transactionNumber,
+          lines: [
+            {
+              account: LedgerAccounts.passerelle(decrypted.gatewayId),
+              amount: -amount,
+              nature: LedgerLineNature.Recharge,
+            },
+            { account: kasiman, amount, nature: LedgerLineNature.Recharge },
+          ],
+          walletLines: [
+            {
+              account: kasiman,
+              amount,
+              fields: {
+                refrenceNumber: decrypted.transactionNumber,
+                action: TransactionAction.Recharge,
+                rechargeType: DriverRechargeTransactionType.InAppPayment,
+                paymentGatewayId: decrypted.gatewayId,
+                status: TransactionStatus.Done,
+                idempotencyKey: key,
+              },
+            },
+          ],
         });
         await this.paymentRepository.delete({
           transactionNumber: decrypted.transactionNumber,

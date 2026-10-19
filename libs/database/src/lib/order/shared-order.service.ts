@@ -19,7 +19,7 @@ import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
 import { ServiceOptionEntity } from '@kasi/database/service-option.entity';
 import { ZonePriceEntity } from '@kasi/database/zone-price.entity';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 
 import { OrderStatus } from '../entities/enums/order-status.enum';
@@ -53,6 +53,16 @@ import { firstValueFrom } from 'rxjs';
 import { ForbiddenError } from '@nestjs/apollo';
 import { transitionOrder, UNASSIGNED_STATUSES } from './order-transition';
 import { MoneyKey } from './wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineInput,
+  LedgerLineNature,
+  LedgerWalletLineInput,
+  postLedgerEntry,
+  roundFcfa,
+  splitCommission,
+} from './ledger';
 
 @Injectable()
 export class SharedOrderService {
@@ -634,7 +644,9 @@ export class SharedOrderService {
           ? order.service.providerSharePercent *
             order.service.touristMultiplier
           : order.service.providerSharePercent;
-      const commission =
+      // p2-argent I2 (2026-10-19) : commission brute ; arrondie au franc plus
+      // bas (splitCommission). Pourboire hors commission (inchange).
+      const rawCommission =
         (providerPercent * order.costAfterCoupon) / 100 +
         order.service.providerShareFlat;
       const unPaidAmount =
@@ -683,88 +695,7 @@ export class SharedOrderService {
           driverId: order.driverId,
         };
       }
-      await this.driverService.rechargeWallet(
-        {
-          status: TransactionStatus.Done,
-          driverId: order.driverId!,
-          currency: order.currency,
-          action: TransactionAction.Deduct,
-          deductType: DriverDeductTransactionType.Commission,
-          amount: -1 * commission,
-          requestId: order.id,
-          idempotencyKey: MoneyKey.order(order.id, 'driver-commission'),
-        },
-        manager,
-      );
-      let fleetShare = 0;
-      if (order.driver?.fleetId != null) {
-        fleetShare =
-          (commission * order.driver.fleet!.commissionSharePercent) / 100 +
-          order.driver.fleet!.commissionShareFlat;
-        if (fleetShare > 0) {
-          await this.sharedFleetService.rechargeWallet(
-            {
-              fleetId: order.driver.fleetId,
-              action: TransactionAction.Recharge,
-              rechargeType: ProviderRechargeTransactionType.Commission,
-              amount: fleetShare,
-              currency: order.currency,
-              requestId: order.id,
-              driverId: order.driverId,
-              idempotencyKey: MoneyKey.order(order.id, 'fleet-commission'),
-            },
-            manager,
-          );
-        }
-      }
-      await this.sharedProviderService.rechargeWallet(
-        {
-          action: TransactionAction.Recharge,
-          rechargeType: ProviderRechargeTransactionType.Commission,
-          currency: order.currency,
-          amount: commission - fleetShare,
-          requestId: order.id,
-          idempotencyKey: MoneyKey.order(order.id, 'provider-commission'),
-        },
-        manager,
-      );
-      // p2-argent I1 (2026-10-19) : part payee par le portefeuille (prix +
-      // pourboire - especes) creditee au Kasiman des qu'elle est positive (A1).
-      // Avant : condition `prix - especes > 0` ; quand les especes couvraient
-      // exactement le prix, le client etait debite du pourboire et le Kasiman
-      // n'etait jamais credite.
-      const driverWalletCredit =
-        order.costAfterCoupon - cashAmount + order.tipAmount;
-      if (driverWalletCredit > 0) {
-        await this.driverService.rechargeWallet(
-          {
-            status: TransactionStatus.Done,
-            driverId: order.driverId!,
-            currency: order.currency,
-            requestId: order.id,
-            action: TransactionAction.Recharge,
-            rechargeType: DriverRechargeTransactionType.OrderFee,
-            amount: driverWalletCredit,
-            idempotencyKey: MoneyKey.order(order.id, 'driver-order-fee'),
-          },
-          manager,
-        );
-      }
-      if (riderCredit > 0 && cashAmount < unPaidAmount) {
-        await this.riderService.rechargeWallet(
-          {
-            status: TransactionStatus.Done,
-            action: TransactionAction.Deduct,
-            deductType: RiderDeductTransactionType.OrderFee,
-            currency: order.currency,
-            requestId: order.id,
-            amount: -1 * (unPaidAmount - cashAmount),
-            riderId: order.riderId,
-            idempotencyKey: MoneyKey.order(order.id, 'rider-order-fee'),
-          },
-          manager,
-        );
-      }
+      await this.postFinishEntry(manager, order, rawCommission, cashAmount, unPaidAmount);
       await manager.update(RequestEntity, order.id, {
         paidAmount: order.costAfterCoupon,
         status: OrderStatus.WaitingForReview,
@@ -794,6 +725,126 @@ export class SharedOrderService {
         status: OrderStatus.WaitingForReview,
         driverId: order.driverId,
       };
+    });
+  }
+
+  /**
+   * p2-argent I2 (2026-10-19) : la fin de course est UNE ecriture du grand
+   * livre (cle `order:<id>:finish`) au lieu de cinq operations sans lien
+   * (fiche §3.4). Lignes de portefeuille inchangees pour les apps : memes
+   * types, memes cles (`order:<id>:driver-commission`...), memes montants a
+   * l'arrondi au franc pres.
+   *
+   * - Commission arrondie au franc (demi vers le haut), part de flotte
+   *   arrondie, part Kasi par difference (splitCommission ; flotte option A :
+   *   payee a la fin de course, especes comprises).
+   * - Part payee par le portefeuille du client (prix + pourboire - especes),
+   *   arrondie au franc : debit du client, credit du Kasiman (une ligne
+   *   `OrderFee` de chaque cote, comme avant) ; au grand livre, lignes PRIX et
+   *   POURBOIRE distinctes (les especes couvrent d'abord le prix). Avant : le
+   *   credit du Kasiman ignorait `paidAmount` ; il vaut toujours 0 a ce stade
+   *   (prepaiement desactive), les deux montants sont donc identiques.
+   * - `cashCollected` : especes declarees par l'app, pour le releve (I3).
+   */
+  private async postFinishEntry(
+    manager: EntityManager,
+    order: RequestEntity,
+    rawCommission: number,
+    cashAmount: number,
+    unPaidAmount: number,
+  ): Promise<void> {
+    const fleet = order.driver?.fleetId != null ? order.driver.fleet : null;
+    const { commission, fleetShare, kasiShare } = splitCommission(rawCommission, fleet);
+    const walletPaid = Math.max(0, roundFcfa(unPaidAmount - cashAmount));
+    const tipPart = Math.min(Math.max(0, roundFcfa(order.tipAmount ?? 0)), walletPaid);
+    const pricePart = walletPaid - tipPart;
+    const kasiman = LedgerAccounts.kasiman(order.driverId!);
+    const client = LedgerAccounts.client(order.riderId);
+    const kasi = LedgerAccounts.kasiProduits();
+    const common = { requestId: order.id };
+
+    const lines: LedgerLineInput[] = [
+      { account: kasiman, amount: -commission, nature: LedgerLineNature.Commission },
+      { account: kasi, amount: kasiShare, nature: LedgerLineNature.Commission },
+    ];
+    const walletLines: LedgerWalletLineInput[] = [
+      {
+        account: kasiman,
+        amount: -commission,
+        fields: {
+          ...common,
+          status: TransactionStatus.Done,
+          action: TransactionAction.Deduct,
+          deductType: DriverDeductTransactionType.Commission,
+          idempotencyKey: MoneyKey.order(order.id, 'driver-commission'),
+        },
+      },
+      {
+        account: kasi,
+        amount: kasiShare,
+        fields: {
+          ...common,
+          action: TransactionAction.Recharge,
+          rechargeType: ProviderRechargeTransactionType.Commission,
+          idempotencyKey: MoneyKey.order(order.id, 'provider-commission'),
+        },
+      },
+    ];
+    if (fleet != null && fleetShare > 0) {
+      const flotte = LedgerAccounts.flotte(order.driver!.fleetId!);
+      lines.push({ account: flotte, amount: fleetShare, nature: LedgerLineNature.PartFlotte });
+      walletLines.push({
+        account: flotte,
+        amount: fleetShare,
+        fields: {
+          ...common,
+          driverId: order.driverId,
+          action: TransactionAction.Recharge,
+          rechargeType: ProviderRechargeTransactionType.Commission,
+          idempotencyKey: MoneyKey.order(order.id, 'fleet-commission'),
+        },
+      });
+    }
+    if (walletPaid > 0) {
+      lines.push(
+        { account: client, amount: -pricePart, nature: LedgerLineNature.Prix },
+        { account: client, amount: -tipPart, nature: LedgerLineNature.Pourboire },
+        { account: kasiman, amount: pricePart, nature: LedgerLineNature.Prix },
+        { account: kasiman, amount: tipPart, nature: LedgerLineNature.Pourboire },
+      );
+      walletLines.push(
+        {
+          account: kasiman,
+          amount: walletPaid,
+          fields: {
+            ...common,
+            status: TransactionStatus.Done,
+            action: TransactionAction.Recharge,
+            rechargeType: DriverRechargeTransactionType.OrderFee,
+            idempotencyKey: MoneyKey.order(order.id, 'driver-order-fee'),
+          },
+        },
+        {
+          account: client,
+          amount: -walletPaid,
+          fields: {
+            ...common,
+            status: TransactionStatus.Done,
+            action: TransactionAction.Deduct,
+            deductType: RiderDeductTransactionType.OrderFee,
+            idempotencyKey: MoneyKey.order(order.id, 'rider-order-fee'),
+          },
+        },
+      );
+    }
+    await postLedgerEntry(manager, {
+      idempotencyKey: MoneyKey.order(order.id, 'finish'),
+      nature: LedgerEntryNature.FinCourse,
+      currency: order.currency,
+      requestId: order.id,
+      cashCollected: Math.max(0, roundFcfa(cashAmount)),
+      lines,
+      walletLines,
     });
   }
 

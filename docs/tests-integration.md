@@ -15,7 +15,7 @@ Prérequis : la stack locale tourne (`kasi-postgres` sur 127.0.0.1:5433,
 `kasi-redis` sur 127.0.0.1:6379) et `.env` existe à la racine du monorepo.
 
 ```sh
-npm run test:integration                              # tout (~2 min)
+npm run test:integration                              # tout (~3 min)
 npm run test:integration -- driver-order-transitions  # un fichier (filtre sur le chemin)
 npm run test:integration -- -t "rejeu"                # les tests dont le nom contient « rejeu »
 ```
@@ -27,7 +27,8 @@ npm run test:integration -- -t "rejeu"                # les tests dont le nom co
 | Base | `kasi_test` dans le conteneur `kasi-postgres`. Créée si absente, puis mise à niveau par **les migrations** (même liste que le service `migrate`) : `tools/test-integration/global-setup.ts`. Autre nom : `KASI_TEST_DB_NAME` (doit contenir « test »). |
 | Base interdite | `kasi` (jeu de démo du mémoire) : `env.ts` et le harnais refusent tout nom sans « test ». |
 | Redis | Instance locale, base logique **15** (`KASI_TEST_REDIS_DB`), vidée avant chaque test. La base 0 (stack locale) est refusée. |
-| Données | Créées par chaque test (service, client, 2 ou 3 Kasimen, flotte, passerelle), tables vidées (`TRUNCATE`) avant chaque test et en fin de fichier. |
+| Données | Créées par chaque test (service, client, 2 ou 3 Kasimen, flotte, passerelle), tables vidées (`TRUNCATE`) avant chaque test et en fin de fichier, tables du grand livre comprises (ses déclencheurs d'immuabilité sont des déclencheurs de ligne : `TRUNCATE` ne les déclenche pas). |
+| Grand livre | `LEDGER_MODE=strict` par défaut sur le banc (`env.ts`, sauf valeur exportée) : une écriture refusée par le grand livre fait échouer l'opération, donc le test, au lieu d'être seulement journalisée. Le mode `shadow` a son propre test. |
 | Exécution | Un fichier à la fois (`maxWorkers: 1`) : ils partagent la base. |
 | Compilation | ts-jest **avec** vérification de types (pas d'`isolatedModules`, sinon TypeORM refuse les entités à champ d'énumération). |
 
@@ -56,7 +57,8 @@ Transactions, verrous, contraintes uniques et clés étrangères sont ceux de Po
 | `apps/driver-api/src/app/order/driver-order-transitions.int-spec.ts` | Transitions côté Kasiman, 50 courses d'affilée, pourboire et service `OnlyCash` en fin de course |
 | `apps/rider-api/src/app/order/rider-cancel.int-spec.ts` | Annulation client, avis, retour de passerelle |
 | `apps/admin-api/src/app/payout/admin-money.int-spec.ts` | Opérations manuelles (et leurs permissions `*Wallet_Edit`), versements, actions opérateur |
-| `libs/database/src/lib/order/wallet-ledger.int-spec.ts` | Écritures de portefeuille, clés d'unicité |
+| `libs/database/src/lib/order/wallet-ledger.int-spec.ts` | Écritures de portefeuille, clés d'unicité (depuis I2, au travers de `postLedgerEntry`) |
+| `libs/database/src/lib/order/ledger.int-spec.ts` | Grand livre (`p2-argent` I2) : écriture déséquilibrée refusée par la base, `UPDATE` / `DELETE` refusés, rejeu en série et en parallèle, 50 opérations mêlées puis balayage à zéro écart, 10 fins de course simultanées, ouverture lancée deux fois, arrondis, contrepartie et motif par défaut, modes `shadow` et `strict`, aucun appel direct hors de `postLedgerEntry` |
 | `apps/rider-api/src/app/coupon/gift-card.int-spec.ts` | Carte cadeau : crédit unique, carte utilisée, expirée ou pas encore disponible, deux clients simultanés (`p2-argent` I1) |
 | `apps/rider-api/src/app/order/rider-order-update.int-spec.ts` | Pourboire, attente et coupon après démarrage, part d'annulation du Kasiman (`p2-argent` I1) |
 | `libs/database/src/lib/coupon/common-coupon.int-spec.ts` | Règles du coupon : plancher et arrondi, services, bornes de prix, première course, date de début (`p2-argent` I1) |
@@ -91,6 +93,13 @@ it('...', async () => {
   échoue à 14 tests sur 15, les anciens `rechargeWallet` échouent sur tous les rejeux.
 - Nouvelle entité ou colonne : la migration d'abord (`docs/migrations-base-de-donnees.md`),
   le banc l'applique tout seul au lancement suivant.
+- Argent (depuis `p2-argent` I2) : toute opération passe par `postLedgerEntry`. Les
+  lectures utiles sont dans le harnais : `ledgerBalance(ds, 'KASIMAN:12')`,
+  `ledgerEntries(ds, where)`, `integrity(ds)` (même fonction que la requête
+  `ledgerIntegrityReport`). Terminer un test d'argent par `expect((await
+  integrity(ds)).ok).toBe(true)`. Un portefeuille créé à la main (`INSERT INTO
+  rider_wallet ...`) n'a pas d'ouverture : le contrôle d'intégrité le signale, c'est
+  voulu.
 
 ## 5. Ce qui reste pour `p1-tests`
 

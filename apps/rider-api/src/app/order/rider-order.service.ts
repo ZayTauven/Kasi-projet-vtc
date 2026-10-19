@@ -38,6 +38,13 @@ import {
   UNASSIGNED_STATUSES,
 } from '@kasi/order/order-transition';
 import { MoneyKey } from '@kasi/order/wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+  roundFcfa,
+} from '@kasi/order/ledger';
 
 import { SubmitFeedbackInput } from './dto/submit-feedback.input';
 
@@ -235,50 +242,69 @@ export class RiderOrderService {
         if (order.driverId == null || !(order.service.cancellationTotalFee > 0)) {
           return { changed: true, feeCharged: false };
         }
-        await this.riderService.rechargeWallet(
-          {
-            action: TransactionAction.Deduct,
-            deductType: RiderDeductTransactionType.OrderFee,
-            amount: -order.service.cancellationTotalFee,
-            currency: order.currency,
-            riderId: order.riderId,
-            requestId: order.id,
-            status: TransactionStatus.Done,
-            idempotencyKey: MoneyKey.order(order.id, 'rider-cancel-fee'),
-          },
-          manager,
-        );
-        // p2-argent I1 (2026-10-19) : la part d'annulation est un GAIN du
-        // Kasiman : `Recharge` / `OrderFee`, valeurs que driver-app connait
-        // deja et affiche comme un gain (A7). Avant : `Deduct` / `Commission`
-        // avec un montant positif, affiche sous le libelle « Commission ».
-        // Cle inchangee : un rejeu reste absorbe.
-        await this.driverService.rechargeWallet(
-          {
-            action: TransactionAction.Recharge,
-            rechargeType: DriverRechargeTransactionType.OrderFee,
-            amount: order.service.cancellationDriverShare,
-            currency: order.currency,
-            driverId: order.driverId,
-            requestId: order.id,
-            status: TransactionStatus.Done,
-            idempotencyKey: MoneyKey.order(order.id, 'driver-cancel-share'),
-          },
-          manager,
-        );
-        await this.providerService.rechargeWallet(
-          {
-            action: TransactionAction.Recharge,
-            rechargeType: ProviderRechargeTransactionType.Commission,
-            amount:
-              order.service.cancellationTotalFee -
-              order.service.cancellationDriverShare,
-            currency: order.currency,
-            requestId: order.id,
-            idempotencyKey: MoneyKey.order(order.id, 'provider-cancel-commission'),
-          },
-          manager,
-        );
+        // p2-argent I2 (2026-10-19) : frais d'annulation = UNE ecriture du
+        // grand livre (cle `order:<id>:cancel-fee`) : CLIENT -frais ; KASIMAN
+        // +part ; KASI:PRODUITS +reste. Montants arrondis au franc. Lignes de
+        // portefeuille inchangees (types et cles d'avant).
+        const fee = roundFcfa(order.service.cancellationTotalFee);
+        const driverShare = Math.max(0, roundFcfa(order.service.cancellationDriverShare ?? 0));
+        const client = LedgerAccounts.client(order.riderId);
+        const kasiman = LedgerAccounts.kasiman(order.driverId);
+        const kasi = LedgerAccounts.kasiProduits();
+        await postLedgerEntry(manager, {
+          idempotencyKey: MoneyKey.order(order.id, 'cancel-fee'),
+          nature: LedgerEntryNature.Annulation,
+          currency: order.currency,
+          requestId: order.id,
+          lines: [
+            { account: client, amount: -fee, nature: LedgerLineNature.FraisAnnulation },
+            {
+              account: kasiman,
+              amount: driverShare,
+              nature: LedgerLineNature.PartKasimanAnnulation,
+            },
+            { account: kasi, amount: fee - driverShare, nature: LedgerLineNature.FraisAnnulation },
+          ],
+          walletLines: [
+            {
+              account: client,
+              amount: -fee,
+              fields: {
+                action: TransactionAction.Deduct,
+                deductType: RiderDeductTransactionType.OrderFee,
+                requestId: order.id,
+                status: TransactionStatus.Done,
+                idempotencyKey: MoneyKey.order(order.id, 'rider-cancel-fee'),
+              },
+            },
+            // p2-argent I1 (2026-10-19) : la part d'annulation est un GAIN du
+            // Kasiman : `Recharge` / `OrderFee`, valeurs que driver-app connait
+            // deja et affiche comme un gain (A7). Avant : `Deduct` / `Commission`
+            // avec un montant positif, affiche sous le libelle « Commission ».
+            // Cle inchangee : un rejeu reste absorbe.
+            {
+              account: kasiman,
+              amount: driverShare,
+              fields: {
+                action: TransactionAction.Recharge,
+                rechargeType: DriverRechargeTransactionType.OrderFee,
+                requestId: order.id,
+                status: TransactionStatus.Done,
+                idempotencyKey: MoneyKey.order(order.id, 'driver-cancel-share'),
+              },
+            },
+            {
+              account: kasi,
+              amount: fee - driverShare,
+              fields: {
+                action: TransactionAction.Recharge,
+                rechargeType: ProviderRechargeTransactionType.Commission,
+                requestId: order.id,
+                idempotencyKey: MoneyKey.order(order.id, 'provider-cancel-commission'),
+              },
+            },
+          ],
+        });
         return { changed: true, feeCharged: true };
       },
     );

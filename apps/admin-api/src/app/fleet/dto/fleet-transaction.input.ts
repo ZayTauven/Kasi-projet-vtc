@@ -2,6 +2,7 @@
 import { ProviderDeductTransactionType } from '@kasi/database/enums/provider-deduct-transaction-type.enum';
 import { ProviderRechargeTransactionType } from '@kasi/database/enums/provider-recharge-transaction-type.enum';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
+import { ManualCounterparty } from '../../ledger/dto/manual-counterparty.enum';
 
 @InputType()
 export class FleetTransactionInput {
@@ -22,4 +23,18 @@ export class FleetTransactionInput {
      */
     @Field({ nullable: true })
     idempotencyKey?: string;
+
+    /**
+     * p2-argent I2 (2026-10-19, optionnel, additif) : contrepartie au grand
+     * livre. Absente : KASI:CORRECTIONS.
+     */
+    @Field(() => ManualCounterparty, { nullable: true })
+    counterparty?: ManualCounterparty;
+
+    /**
+     * p2-argent I2 (2026-10-19, optionnel, additif) : motif inscrit sur
+     * l'ecriture. Absent : la description, sinon un motif generique.
+     */
+    @Field({ nullable: true })
+    motif?: string;
 }

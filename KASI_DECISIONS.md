@@ -8,6 +8,96 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-19 — `p2-argent` I2 : grand livre en partie double
+
+**Point** : `p2-argent` (`lot-argent`), incrément I2 de `docs/fiche-conception-argent.md`
+(§3 et §7). Migration `LedgerTables1792421211893`, appliquée sur `kasi_test` et sur la
+base locale `kasi` (sauvegarde préalable hors dépôt), puis `ledger-open`. Non déployé.
+
+**Décision 1 : un seul point d'entrée, `postLedgerEntry(manager, entry)`**
+(`libs/database/src/lib/order/ledger.ts`). Les 9 sites (fin de course, frais
+d'annulation, deux retours de passerelle, carte cadeau, versement, trois opérations
+manuelles) écrivent une écriture équilibrée ; les lignes de portefeuille en sont la
+projection (`ledgerEntryId`), avec leurs types et leurs clés d'avant. `rechargeWallet`
+et `postTransaction` sont retirées des services partagés ; un test du banc vérifie
+qu'aucun autre appel à `postWalletOperation` n'existe. Une écriture peut avoir plus de
+lignes que de lignes de portefeuille (PRIX et POURBOIRE au grand livre, une seule ligne
+`OrderFee` au portefeuille, comme avant) : le code exige, par compte projeté, que la
+somme des lignes de portefeuille égale celle des lignes du grand livre.
+
+**Décision 2 : garde-fous dans la base.** Déclencheur de contrainte différé (équilibre
+et devise de chaque écriture à la validation ; avancé en `IMMEDIATE` par
+`postLedgerEntry` pour échouer dans son `SAVEPOINT`) ; `UPDATE` et `DELETE` refusés.
+`TRUNCATE` reste permis (vidage du banc).
+
+**Décision 3 : arrondis au franc (fiche §3.5).** Commission arrondie demi vers le haut,
+part de flotte calculée sur la commission arrondie puis arrondie, part Kasi par
+différence. Écart à la fiche, assumé : les **montants payés** sont aussi arrondis au
+franc (part payée par le portefeuille, frais et part d'annulation), parce qu'un prix
+peut encore avoir des décimales tant que le devis figé (I4) n'existe pas ; le prix
+enregistré, lui, n'est pas touché. Un montant non entier venu de l'extérieur (passerelle,
+versement, opération manuelle) n'est pas arrondi : refusé en `strict`, journalisé en
+`shadow`.
+
+**Décision 4 : comptes et contreparties.** Unicité du compte sur (code, devise), et non
+sur le seul code comme dans la fiche, parce qu'un portefeuille existe par propriétaire
+**et** par devise. Versement : `TRESORERIE:WAVE`, `TRESORERIE:ORANGE_MONEY`,
+`TRESORERIE:BANQUE` (virement), et `CAISSE:SIEGE` pour un versement en espèces.
+Opérations manuelles : champs GraphQL facultatifs `counterparty` (`CORRECTIONS` par
+défaut, `PROMOTIONS`, `CAISSE`) et `motif` (défaut : la description, sinon « Operation
+manuelle du back-office (motif non saisi) ») ; sans clé fournie, l'écriture reçoit
+`operator-auto:<uuid>`. Le financement des coupons n'est pas changé (§8.6 ouvert).
+
+**Décision 5 : `LEDGER_MODE`.** `shadow` par défaut (compose et `.env.example`), `strict`
+sur le banc d'intégration. Une erreur métier (garde « solde suffisant » d'un versement)
+est propagée dans les deux modes. Rejeu d'une opération écrite avant I2 avec la même clé
+de portefeuille : l'écriture neuve est annulée, l'opération est traitée comme un rejeu.
+
+**Décision 6 : ouverture (`node migrate.js ledger-open`, `npm run ledger:open`).** Une
+écriture `OUVERTURE` par compte (clé `opening:<compte>:<devise>`), montant = solde
+arrondi − lignes déjà présentes (rien de compté deux fois si une API a écrit avant),
+portefeuille aligné sur l'entier sans ligne de portefeuille, écart d'arrondi cumulé par
+devise sur `KASI:ARRONDIS`. Verrou consultatif ; relance sans effet. Au déploiement :
+migration, API arrêtées, `ledger-open`, puis nouvelles API (ordre exact dans
+`docs/migrations-base-de-donnees.md` §7 bis).
+
+**Décision 7 : contrôle d'intégrité.** Requête `ledgerIntegrityReport` d'admin-api,
+permission `ProviderWallet_View` (aucune nouvelle valeur de permission : le type
+PostgreSQL et le panel devraient suivre), tâche `@Interval` de 24 h qui journalise,
+commande `migrate.js ledger-check` (code 1 si écart).
+
+**Contrat mobile** : aucun champ renommé ni supprimé. driver-api et rider-api : schéma
+inchangé. admin-api : ajouts seulement (`ledgerIntegrityReport`, types
+`LedgerIntegrityReport` et `LedgerIntegrityIssue`, énumération `ManualCounterparty`,
+champs facultatifs `counterparty` et `motif`).
+
+**Reste** : journal du grand livre et rapport dans le panel (kasi-admin-panel) ;
+images Docker locales des trois API à reconstruire pour faire tourner I2 sur la stack
+locale ; bascule `strict` après deux semaines à zéro écart, une fois déployé.
+
+---
+
+## 2026-10-19 — Implémentations en local d'abord, déploiement regroupé plus tard
+
+**Décision de l'utilisateur** : on enchaîne les implémentations fonctionnelles en local.
+La mise en production (migration de référence `p1-migrations`, vérification des rôles
+d'opérateur, déploiement SSH, traduction de `PERMISSION_NOT_GRANTED` dans le panel)
+forme un chantier de déploiement à part, traité plus tard en une fois.
+
+**Conséquence** : la condition posée par le superviseur le matin même (« pas de table avant
+`p1-migrations` en production ») est levée pour le travail local. Les migrations
+s'accumulent dans `libs/database/src/lib/migration/index.ts`, dans l'ordre, et
+s'appliqueront en production à la suite de la baseline marquée, par le service `migrate`
+(`docs/migrations-base-de-donnees.md`). Chaque migration reste additive et réversible,
+et elle est éprouvée sur `kasi_test` (banc d'intégration) puis sur la base locale `kasi`.
+
+**Garde-fou** : la base locale `kasi` porte le jeu de démo du mémoire. Avant d'y appliquer
+une nouvelle migration, on en fait un `pg_dump`. Le chantier de déploiement devra
+rejouer la suite complète des migrations sur une copie de la production avant de
+l'appliquer.
+
+---
+
 ## 2026-10-19 — `p2-argent` I1 : correctifs d'argent sans table
 
 **Point** : `p2-argent`, incrément I1 de `docs/fiche-conception-argent.md` (§7). Aucune

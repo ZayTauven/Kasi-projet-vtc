@@ -25,6 +25,11 @@ import { EntityManager, EntityTarget, ObjectLiteral } from 'typeorm';
  * ecrite a chaque appel, comme avant, mais le solde reste exact en concurrence.
  *
  * Hors perimetre : grand livre en partie double et dette especes (p2-argent).
+ *
+ * p2-argent I2 (2026-10-19) : `postWalletOperation` n'est plus appelee que par
+ * `postLedgerEntry` (ledger.ts) : la ligne de portefeuille est la projection
+ * d'une ecriture du grand livre (colonne `ledgerEntryId`). Un test du banc
+ * (ledger.int-spec.ts) verifie qu'aucun autre appel n'existe.
  */
 export interface WalletPosting<T extends ObjectLiteral> {
   /** Entite de portefeuille (RiderWalletEntity, DriverWalletEntity...). */
@@ -72,12 +77,8 @@ export async function postWalletOperation<
   const amount = parseFloat(`${posting.amount}`);
   const where = { ...posting.owner, currency: posting.currency };
 
-  const ownerKey = Object.keys(posting.owner)
-    .sort()
-    .map((key) => `${key}=${posting.owner[key]}`)
-    .join(',');
   await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
-    `kasi-wallet:${walletMeta.tableName}:${ownerKey}:${posting.currency}`,
+    walletLockKey(walletMeta.tableName, posting.owner, posting.currency),
   ]);
 
   let wallet = (await walletRepo.findOneBy(where)) as W | null;
@@ -131,6 +132,23 @@ export async function postWalletOperation<
   return { wallet, applied, transactionId };
 }
 
+/**
+ * Cle du verrou consultatif d'un portefeuille. p2-argent I2 (2026-10-19) :
+ * exportee pour l'ouverture du grand livre (ledger-open.ts), qui aligne les
+ * soldes sous le meme verrou que les operations.
+ */
+export function walletLockKey(
+  walletTable: string,
+  owner: Record<string, number>,
+  currency: string,
+): string {
+  const ownerKey = Object.keys(owner)
+    .sort()
+    .map((key) => `${key}=${owner[key]}`)
+    .join(',');
+  return `kasi-wallet:${walletTable}:${ownerKey}:${currency}`;
+}
+
 /** Cles d'unicite derivees cote serveur (un seul endroit pour les formats). */
 export const MoneyKey = {
   /** Retour de passerelle de paiement (payment_result) : reference de la passerelle. */
@@ -144,6 +162,8 @@ export const MoneyKey = {
   giftCard: (giftCardId: number) => `gift-card:${giftCardId}`,
   /** Operation manuelle du back-office, cle fournie par le client (optionnelle). */
   operator: (clientKey: string) => `operator:${clientKey}`,
+  /** p2-argent I2 : ouverture du grand livre, une par compte et par devise. */
+  opening: (accountCode: string, currency: string) => `opening:${accountCode}:${currency}`,
 };
 
 /**

@@ -89,4 +89,14 @@ export class FleetTransactionEntity {
     @Index('IDX_fleet_transaction_idempotencyKey', { unique: true })
     @Column('varchar', { length: 128, nullable: true })
     idempotencyKey?: string | null;
+
+    /**
+     * p2-argent I2 (2026-10-19) : ecriture du grand livre dont cette ligne est
+     * la projection (ledger_entry.id). NULL pour l'historique anterieur a
+     * l'ouverture du grand livre, et en mode LEDGER_MODE=shadow quand
+     * l'ecriture a echoue (ecart signale par ledgerIntegrityReport).
+     */
+    @Index('IDX_fleet_transaction_ledgerEntryId')
+    @Column('integer', { nullable: true })
+    ledgerEntryId?: number | null;
 }

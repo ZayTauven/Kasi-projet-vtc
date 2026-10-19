@@ -8,6 +8,12 @@ import { RiderTransactionEntity } from '@kasi/database/rider-transaction.entity'
 import { RiderWalletEntity } from '@kasi/database/rider-wallet.entity';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
 import { MoneyKey } from '@kasi/order/wallet-ledger';
+import {
+  LedgerAccounts,
+  LedgerEntryNature,
+  LedgerLineNature,
+  postLedgerEntry,
+} from '@kasi/order/ledger';
 import { ForbiddenError } from '@nestjs/apollo';
 import { In, Repository } from 'typeorm';
 import { RiderWalletDTO } from '../wallet/dto/rider-wallet.dto';
@@ -89,26 +95,45 @@ export class CouponService {
         throw new ForbiddenError(GiftCardRefusal.Expired);
       }
       await manager.update(GiftCardEntity, card.id, { isUsed: true });
-      const posting = await this.sharedRiderService.postTransaction(
-        {
-          riderId,
-          action: TransactionAction.Recharge,
-          rechargeType: RiderRechargeTransactionType.Gift,
-          status: TransactionStatus.Done,
-          currency: card.currency,
-          amount: card.amount,
-          giftCardId: card.id,
-          // p1-unicite : une carte ne credite qu'une fois, meme rejouee.
-          idempotencyKey: MoneyKey.giftCard(card.id),
-        },
-        manager,
-      );
+      // p2-argent I2 (2026-10-19) : la carte cadeau est une charge
+      // commerciale de Kasi (fiche §3.4) : KASI:PROMOTIONS -x ; CLIENT +x.
+      const client = LedgerAccounts.client(riderId);
+      const amount = Number(card.amount);
+      // p1-unicite : une carte ne credite qu'une fois, meme rejouee.
+      const key = MoneyKey.giftCard(card.id);
+      const posting = await postLedgerEntry(manager, {
+        idempotencyKey: key,
+        nature: LedgerEntryNature.CarteCadeau,
+        currency: card.currency,
+        reference: `gift-card#${card.id}`,
+        lines: [
+          {
+            account: LedgerAccounts.kasiPromotions(),
+            amount: -amount,
+            nature: LedgerLineNature.Promotion,
+          },
+          { account: client, amount, nature: LedgerLineNature.Promotion },
+        ],
+        walletLines: [
+          {
+            account: client,
+            amount,
+            fields: {
+              action: TransactionAction.Recharge,
+              rechargeType: RiderRechargeTransactionType.Gift,
+              status: TransactionStatus.Done,
+              giftCardId: card.id,
+              idempotencyKey: key,
+            },
+          },
+        ],
+      });
       if (!posting.applied) {
         // Cle deja connue alors que la carte n'etait pas marquee : etat
         // incoherent, on refuse plutot que de crediter.
         throw new ForbiddenError(GiftCardRefusal.AlreadyUsed);
       }
-      return posting.wallet;
+      return posting.wallets[0].wallet as RiderWalletEntity;
     });
   }
 }

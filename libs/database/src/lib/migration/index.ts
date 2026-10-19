@@ -2,6 +2,7 @@ import { MigrationInterface } from 'typeorm';
 
 import { Baseline1790629154960 } from './postgres/1790629154960-Baseline';
 import { MoneyIdempotencyKey1790647094992 } from './postgres/1790647094992-MoneyIdempotencyKey';
+import { LedgerTables1792421211893 } from './postgres/1792421211893-LedgerTables';
 
 /**
  * Liste ORDONNEE et EXPLICITE des migrations PostgreSQL de Kasi.
@@ -18,6 +19,9 @@ export const kasiMigrations: Array<new () => MigrationInterface> = [
   Baseline1790629154960,
   // p1-unicite (2026-09-29) : cle d'unicite sur les 4 tables de transactions.
   MoneyIdempotencyKey1790647094992,
+  // p2-argent I2 (2026-10-19) : grand livre en partie double (tables,
+  // declencheurs, ledgerEntryId). A suivre de `migrate.js ledger-open`.
+  LedgerTables1792421211893,
 ];
 
 /**

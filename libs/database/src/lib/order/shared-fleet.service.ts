@@ -2,8 +2,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { FleetTransactionEntity } from '../entities/fleet-transaction.entity';
 import { FleetWalletEntity } from '../entities/fleet-wallet.entity';
-import { EntityManager, Repository } from 'typeorm';
-import { postWalletOperation } from './wallet-ledger';
+import { Repository } from 'typeorm';
 import { Point } from '../interfaces/point';
 import { FleetEntity } from '@kasi/database/fleet.entity';
 
@@ -18,39 +17,9 @@ export class SharedFleetService {
     private fleetTransactionEntity: Repository<FleetTransactionEntity>,
   ) {}
 
-  async rechargeWallet(
-    transaction: Pick<
-      FleetTransactionEntity,
-      | 'action'
-      | 'rechargeType'
-      | 'deductType'
-      | 'fleetId'
-      | 'amount'
-      | 'currency'
-      | 'requestId'
-      | 'driverId'
-      | 'operatorId'
-      | 'refrenceNumber'
-      | 'description'
-      | 'idempotencyKey'
-    >,
-    manager: EntityManager = this.fleetWalletRepository.manager,
-  ): Promise<FleetWalletEntity> {
-    // p1-unicite : ecriture unique et atomique (voir wallet-ledger.ts).
-    const result = await postWalletOperation<
-      FleetWalletEntity,
-      FleetTransactionEntity
-    >(manager, {
-      walletEntity: FleetWalletEntity,
-      transactionEntity: FleetTransactionEntity,
-      owner: { fleetId: transaction.fleetId },
-      currency: transaction.currency,
-      amount: transaction.amount,
-      transaction,
-      recordZeroAmount: true,
-    });
-    return result.wallet;
-  }
+  // p2-argent I2 (2026-10-19) : `rechargeWallet` est retiree. Toute operation
+  // d'argent passe par `postLedgerEntry` (ledger.ts), qui ecrit la ligne de
+  // portefeuille de la flotte.
 
   async getFleetIdsInPoint(point: Point): Promise<number[]> {
     // SQL Postgres/PostGIS : colonne camelCase à quoter, SRID 4326 explicite.

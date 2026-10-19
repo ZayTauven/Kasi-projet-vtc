@@ -142,6 +142,10 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      # p2-argent I2 (2026-10-19) : grand livre. shadow (defaut) : une erreur
+      # du grand livre est journalisee sans bloquer ; strict : elle annule
+      # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
+      LEDGER_MODE: ${LEDGER_MODE:-shadow}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -182,6 +186,10 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      # p2-argent I2 (2026-10-19) : grand livre. shadow (defaut) : une erreur
+      # du grand livre est journalisee sans bloquer ; strict : elle annule
+      # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
+      LEDGER_MODE: ${LEDGER_MODE:-shadow}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -216,6 +224,10 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      # p2-argent I2 (2026-10-19) : grand livre. shadow (defaut) : une erreur
+      # du grand livre est journalisee sans bloquer ; strict : elle annule
+      # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
+      LEDGER_MODE: ${LEDGER_MODE:-shadow}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}

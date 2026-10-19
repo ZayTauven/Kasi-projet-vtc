@@ -9,6 +9,7 @@
  * - La base visee est TOUJOURS une base de test : KASI_TEST_DB_NAME, par
  *   defaut `kasi_test`. Le nom doit contenir "test" ; `kasi` (jeu de demo du
  *   memoire) est refuse.
+ * - p2-argent I2 : LEDGER_MODE=strict par defaut (voir plus bas).
  */
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -39,6 +40,12 @@ export function configureTestEnv(): void {
   process.env.DB_NAME = dbName;
   // Pas de passerelle de paiement reelle en test.
   process.env.GATEWAY_SERVER_URL = 'http://127.0.0.1:9';
+  // p2-argent I2 (2026-10-19) : le banc tourne en LEDGER_MODE=strict (sauf
+  // valeur exportee) : une ecriture refusee par le grand livre fait echouer le
+  // test au lieu d'etre seulement journalisee. Le mode shadow a son test.
+  if (process.env.LEDGER_MODE == null || process.env.LEDGER_MODE === '') {
+    process.env.LEDGER_MODE = 'strict';
+  }
 }
 
 configureTestEnv();
