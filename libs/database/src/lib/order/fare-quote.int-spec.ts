@@ -231,6 +231,16 @@ describe('p2-argent I4 : devis fige', () => {
     });
     const rounded = await fare({ selectedOptionIds: [optionId] });
     expect(rounded.cost % 25).toBe(0);
+
+    // p2-parametrage : arrondi a 50 FCFA, le prix apres coupon aussi (pilote en
+    // especes), du devis jusqu'a la course enregistree.
+    await ds.query(`UPDATE service SET "roundingFactor" = 50 WHERE id = $1`, [world.serviceId]);
+    const promo = await fare({ selectedOptionIds: [optionId], couponCode: 'PROMO15' });
+    expect(promo.cost % 50).toBe(0);
+    expect(promo.costAfterCoupon! % 50).toBe(0);
+    expect(promo.costAfterCoupon).toBeLessThan(promo.cost);
+    const paid = await order({ quoteId: promo.quoteId, optionIds: [optionId], couponCode: 'PROMO15' });
+    expect((await orderRow(ds, paid.id)).costAfterCoupon).toBe(promo.costAfterCoupon);
   });
 
   // -------------------------------------------------------------------------

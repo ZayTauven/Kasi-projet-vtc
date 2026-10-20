@@ -728,7 +728,7 @@ class SFr extends S {
 
   @override
   String get location_service_notification_title =>
-      'Kasi Driver partage votre position';
+      'Kasi Pro partage votre position';
 
   @override
   String get location_service_notification_text =>

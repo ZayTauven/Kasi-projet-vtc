@@ -8,6 +8,76 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-20 — `p2-parametrage` : une seule région de Dakar, aux limites administratives
+
+**Tranché par la session principale, à revoir par l'équipe produit.** Points : `p2-parametrage`,
+`act-dakar`, `p2-vehicules`. Fiche : `docs/fiche-parametrage-dakar.md`. Appliqué à la base
+locale uniquement (sauvegarde `../archive/sauvegardes/kasi-avant-parametrage-dakar-20261020.dump`).
+
+**Constat** : les 5 zones rectangulaires du jeu de démo laissaient 8 quartiers de la région sans
+zone (Mermoz, Sacré-Cœur, Ouakam, HLM, Hann, Keur Massar, Mbao, Sébikotane). Toute commande partie
+de là était refusée (`REGION_UNSUPPORTED`).
+
+**Décisions** :
+- une région unique, « Région de Dakar », sur le contour administratif (OpenStreetMap, relation
+  2892079, ODbL, terre ferme seulement), ouverte aux 5 services ; les rectangles sont désactivés,
+  pas supprimés ;
+- véhicules admis : Kasi Moto en moto, Kasi Ville en voiture, Kasi Tournée en moto et camionnette ;
+- catégorie « Kasi Pro — entreprises » renommée « Kasi Entreprises ».
+
+Script rejouable `tools/parametrage/dakar.sql`, avec son contour `region-dakar.geojson`. Vérifié :
+second passage sans effet, et `getFare` depuis Mermoz renvoie un prix pour les 5 services.
+
+**Valeurs de lancement (fiche §4)** :
+- **arrondi des prix à 50 FCFA, décidé par l'utilisateur**. Il s'applique aussi après coupon
+  (`fare-quote.service.ts`, test dans `fare-quote.int-spec.ts`) : un coupon en pourcentage
+  donnait sinon un prix comme 1 665 FCFA ;
+- le reste choisi par la session principale à la demande de l'utilisateur (« des paramètres
+  standards, modifiables en production ») :
+  - commission 15 % (Kasi Moto, Kasi Ville Confort) et 12 % (Kasi Ville, Kasi Tournée) ;
+  - formules inchangées ;
+  - seul le forfait Plateau ↔ AIBD reste lié, les forfaits urbains étant plus chers que la
+    formule ;
+  - pas de service camionnette pour les clients au pilote ;
+  - visite technique exigée pour les voitures et camionnettes seulement ;
+  - plafond de dette de 10 000 FCFA inchangé.
+
+Appliqué en local par la section 6 du script. Mermoz → Plateau : 2 000, 2 900, 1 800, 3 300 et
+5 900 FCFA.
+
+---
+
+## 2026-10-20 — Décisions de l'utilisateur : « Kasi Pro », Dakar d'abord, local jusqu'à nouvel ordre
+
+**Décisions de l'utilisateur.** Points : `d-nom-app`, `p2-parametrage`, `p3-kasimen`,
+`socle-deploiement`.
+
+1. **L'app Kasiman s'appelle « Kasi Pro »** (`d-nom-app` → Validé). Appliqué le même jour au nom
+   affiché seulement :
+   - libellé Android, `CFBundleDisplayName` iOS, titre et manifeste web ;
+   - notification de partage de position (en, fr, et les autres langues par repli).
+
+   Les identifiants techniques ne changent pas (package Android, bundle iOS, nom Dart
+   `kasi_driver`, projet Firebase) : les modifier casserait les mises à jour des apps
+   installées. Le dossier mort `driver-app/lib/generated/` garde l'ancien nom.
+   **Collision relevée puis tranchée par l'utilisateur** : le service client « Kasi Pro Tournée »
+   (livraison en tournée pour les entreprises) est renommé, pour réserver « Kasi Pro » à l'app
+   Kasiman. Nom retenu par la session principale parmi les exemples proposés : **« Kasi
+   Tournée »**, modifiable. Appliqué à la base locale (service 9) et aux scripts du jeu de démo
+   (`Kasi-ressources/jeu-de-donnees-demo/scripts/seed_01_referentiel.sql`, `seed_02_acteurs.sql`).
+2. **Zones : d'abord la région de Dakar** (`p2-parametrage`).
+3. **Tout reste en local** ; la production viendra « à la phase 4 ». **Écart avec la feuille de
+   route, signalé** : la phase 3 (pilote, 20 à 30 Kasimen réels) a besoin de la production, et
+   « pilote d'abord » (validé le 28 septembre) interdit la phase 4 avant le bilan du pilote.
+   **Confirmé par l'utilisateur** : on reste en local jusqu'à la fin de la phase 2 ; la mise en
+   production est la première étape de la phase 3 (pilote). « Pilote d'abord » reste intact.
+4. **Recrutement des Kasimen non commencé** (`p3-kasimen` : À faire). La feuille de route le
+   faisait démarrer pendant la phase 2.
+
+Lots committés par l'utilisateur (`6e53d53`, `18a4035`).
+
+---
+
 ## 2026-10-20 — `p2-dispatch` : livraison au banc pilote, acceptation réservée au Kasiman apte
 
 **Tranché par la session principale, à revoir par l'utilisateur.** Points : `p2-dispatch`

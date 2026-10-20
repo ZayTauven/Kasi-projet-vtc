@@ -548,6 +548,13 @@ export class FareQuoteService {
       this.couponService.refusalForOrder(ctx.coupon, service.id, totalBeforeCoupon) == null
     ) {
       total = this.couponService.applyCouponOnPrice(ctx.coupon, totalBeforeCoupon);
+      // p2-parametrage (2026-10-20) : le prix apres coupon reste un multiple de
+      // l'arrondi du service. Le pilote se paie en especes : 10 % sur 1 850
+      // donnaient 1 665, une monnaie que le Kasiman n'a pas. La remise financee
+      // par Kasi (I4) est la difference, donc reste exacte.
+      if (factor > 0) {
+        total = Math.max(0, Math.round(total / factor) * factor);
+      }
       couponId = ctx.coupon.id;
       breakdown['coupon'] = {
         id: ctx.coupon.id,

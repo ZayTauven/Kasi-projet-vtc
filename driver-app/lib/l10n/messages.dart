@@ -1417,7 +1417,7 @@ abstract class S {
   /// No description provided for @location_service_notification_title.
   ///
   /// In en, this message translates to:
-  /// **'Kasi Driver is sharing your location'**
+  /// **'Kasi Pro is sharing your location'**
   String get location_service_notification_title;
 
   /// No description provided for @location_service_notification_text.

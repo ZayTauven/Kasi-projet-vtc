@@ -716,7 +716,7 @@ class SHi extends S {
 
   @override
   String get location_service_notification_title =>
-      'Kasi Driver is sharing your location';
+      'Kasi Pro is sharing your location';
 
   @override
   String get location_service_notification_text =>

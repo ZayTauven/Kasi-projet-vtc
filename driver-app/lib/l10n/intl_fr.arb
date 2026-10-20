@@ -325,7 +325,7 @@
       }
     }
   },
-  "location_service_notification_title": "Kasi Driver partage votre position",
+  "location_service_notification_title": "Kasi Pro partage votre position",
   "location_service_notification_text": "Votre position est mise à jour pour vous proposer les courses à proximité.",
   "location_service_notification_channel": "Suivi de position",
   "order_duration_estimate": "dans {minutes} min",
