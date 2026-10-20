@@ -54,6 +54,15 @@ import { ForbiddenError } from '@nestjs/apollo';
 import { transitionOrder, UNASSIGNED_STATUSES } from './order-transition';
 import { MoneyKey } from './wallet-ledger';
 import { DebtCrossing, sendDebtCrossingPush, watchDebtCrossing } from './debt-limit';
+import { FareQuoteEntity } from '../entities/fare-quote.entity';
+import {
+  FARE_QUOTE_PICKUP_TOLERANCE_MINUTES,
+  fareQuoteError,
+  FareQuoteRefusal,
+  FareQuoteService,
+  hashPoints,
+  normalizeOptionIds,
+} from './fare-quote.service';
 import {
   LedgerAccounts,
   LedgerEntryNature,
@@ -96,148 +105,73 @@ export class SharedOrderService {
     @Inject(DRIVER_NOTIFICATION_SERVICE) private readonly driverNotificationService: IDriverNotificationService,
     @Inject(RIDER_NOTIFICATION_SERVICE) private readonly riderNotificationService: IRiderNotificationService,
     private httpService: HttpService,
+    // p2-argent I4 (2026-10-20) : devis fige, seul calcul de prix.
+    private fareQuoteService: FareQuoteService,
   ) {}
 
-  async getZonePricingsForPoints(
-    from: Point,
-    to: Point,
-  ): Promise<ZonePriceEntity[]> {
-    // SQL Postgres/PostGIS : placeholders $1..$4 (les « ? » MySQL ne sont pas
-    // des paramètres ici), mots réservés "from"/"to" entre guillemets doubles,
-    // point construit avec le SRID 4326 des colonnes de zone_price.
-    let pricings: ZonePriceEntity[] = await this.zonePriceRepository.query(
-      'SELECT * FROM zone_price WHERE ST_Within(ST_SetSRID(ST_MakePoint($1, $2), 4326), "from") AND ST_Within(ST_SetSRID(ST_MakePoint($3, $4), 4326), "to")',
-      [from.lng, from.lat, to.lng, to.lat],
-    );
-    pricings = await this.zonePriceRepository.find({
-      where: { id: In(pricings.map((p) => p.id)) },
-      relations: { services: true, fleets: true },
-    });
-    return pricings;
-  }
-
+  /**
+   * Apercu du prix (getFare et calculateFare de rider-api, calculateFare du
+   * dispatcher d'admin-api). p2-argent I4 (2026-10-20) : un seul calcul,
+   * FareQuoteService (fiche argent §5.1). `persist` : devis enregistres et
+   * renvoyes (`quoteId`, `quoteExpiresAt`) ; false pour le back-office.
+   */
   async calculateFare(input: {
     points: Point[];
     twoWay?: boolean;
     coupon?: CouponEntity;
     riderId?: number;
+    selectedOptionIds?: string[];
+    intervalMinutes?: number;
+    persist?: boolean;
   }) {
-    let zonePricings: ZonePriceEntity[] = [];
-    if (input.points.length == 2) {
-      zonePricings = await this.getZonePricingsForPoints(
-        input.points[0],
-        input.points[1],
-      );
-    }
-    const regions = await this.regionService.getRegionWithPoint(
-      input.points[0],
+    const pickupAt = new Date(Date.now() + (Number(input.intervalMinutes ?? 0) | 0) * 60 * 1000);
+    const preview = await this.fareQuoteService.preview(
+      {
+        points: input.points,
+        twoWay: input.twoWay ?? false,
+        coupon: input.coupon ?? null,
+        riderId: input.riderId ?? null,
+        optionIds: input.selectedOptionIds ?? [],
+        pickupAt,
+      },
+      input.persist ?? false,
     );
-    if (regions.length < 1) {
-      throw new ForbiddenError(CalculateFareError.RegionUnsupported);
-    }
-    const servicesInRegion = await this.regionService.getRegionServices(
-      regions[0].id,
-    );
-    if (servicesInRegion.length < 1) {
-      throw new ForbiddenError(CalculateFareError.NoServiceInRegion);
-    }
-    if ((input.twoWay ?? false) && input.points.length > 1) {
-      input.points.push(input.points[0]);
-    }
-    const metrics =
-      servicesInRegion.findIndex((x) => x.perHundredMeters > 0) > -1
-        ? await this.routingService.getSumDistanceAndDuration(input.points)
-        : { distance: 0, duration: 0, directions: [] };
-    const cats = await this.serviceCategoryRepository.find({
-      relations: { services: { media: true, options: true } },
-    });
-    let isResident = process.env.MOTAXI == null;
-    if (input.riderId != null) {
-      const rider = await this.riderService.findById(input.riderId);
-      isResident = rider?.isResident ?? process.env.MOTAXI == null;
-    }
-    const fleetIdsInPoint = await this.sharedFleetService.getFleetIdsInPoint(
-      input.points[0],
-    );
-    const feeMultiplier =
-      (await this.sharedFleetService.getFleetById(fleetIdsInPoint[0]))
-        ?.feeMultiplier ?? 1;
-    const _cats = cats
-      .map((cat) => {
-        const { services, ..._cat } = cat;
-
-        const _services = services
-          .filter(
-            (x) => servicesInRegion.filter((y) => y.id == x.id).length > 0,
-          )
-          .map((service) => {
-            let cost = this.servicesService.calculateCost(
-              service,
-              metrics.distance,
-              metrics.duration,
-              new Date(),
-              feeMultiplier,
-              isResident,
-            );
-            if (
-              zonePricings.length > 0 &&
-              zonePricings[0].services.filter(
-                (_service) => _service.id == service.id,
-              ).length > 0
-            ) {
-              cost = zonePricings[0].cost;
-              let eta = new Date();
-              for (const _multiplier of zonePricings[0].timeMultipliers) {
-                const startMinutes =
-                  parseInt(_multiplier.startTime.split(':')[0]) * 60 +
-                  parseInt(_multiplier.startTime.split(':')[1]);
-                const nowMinutes = eta.getHours() * 60 + eta.getMinutes();
-                const endMinutes =
-                  parseInt(_multiplier.endTime.split(':')[0]) * 60 +
-                  parseInt(_multiplier.endTime.split(':')[1]);
-                if (nowMinutes >= startMinutes && nowMinutes <= endMinutes) {
-                  cost *= _multiplier.multiply;
-                }
-              }
-            }
-            // p2-argent I1 (2026-10-19) : coupon hors service ou hors bornes de
-            // prix : aucun prix remise affiche pour ce service (avant : la remise
-            // s'affichait partout, puis etait refusee ou ignoree a la commande).
-            if (
-              input.coupon == null ||
-              this.commonCouponService.refusalForOrder(
-                input.coupon,
-                service.id,
-                cost,
-              ) != null
-            ) {
-              return {
-                ...service,
-                cost,
-              };
-            } else {
-              const costAfterCoupon =
-                this.commonCouponService.applyCouponOnPrice(input.coupon, cost);
-              return {
-                ...service,
-                cost,
-                costAfterCoupon,
-              };
-            }
-          });
-        return {
-          ..._cat,
-          services: _services,
-        };
-      })
-      .filter((x) => x.services.length > 0);
     return {
-      ...metrics,
-      currency: regions[0].currency,
-      services: _cats,
+      distance: preview.distance,
+      duration: preview.duration,
+      directions: preview.directions,
+      currency: preview.currency,
+      services: preview.categories.map(({ category, services }) => {
+        const { services: _all, ...cat } = category;
+        void _all;
+        return {
+          ...cat,
+          services: services.map(({ service, quote }) => ({
+            ...service,
+            cost: quote.totalBeforeCoupon,
+            ...(quote.couponId != null ? { costAfterCoupon: quote.total } : {}),
+            ...(input.persist
+              ? { quoteId: quote.id, quoteExpiresAt: quote.expiresAt }
+              : {}),
+          })),
+        };
+      }),
     };
   }
 
+  /**
+   * Commande. p2-argent I4 (2026-10-20) : le prix vient d'un devis
+   * (fiche argent §5.3), consomme dans la meme transaction que la course :
+   * - `quoteId` (nouvelle rider-app) : ce devis, s'il correspond a la commande
+   *   et n'a pas expire (2 min) ; sinon refus QUOTE_EXPIRED / QUOTE_MISMATCH /
+   *   QUOTE_ALREADY_USED ;
+   * - sans `quoteId` (rider-app installee) : dernier devis du meme client pour
+   *   ce service, ces points et ces options, de moins de 10 min, coupon
+   *   compris ; pas trouve : devis calcule a la commande (origine `commande`,
+   *   mesure « devis recalcule ») ;
+   * - back-office : devis calcule a la commande.
+   * `costBest` = prix avant coupon, `costAfterCoupon` = prix du devis.
+   */
   async createOrder(input: {
     riderId?: number;
     serviceId: number;
@@ -248,205 +182,238 @@ export class SharedOrderService {
     twoWay?: boolean;
     optionIds?: string[];
     couponCode?: string;
+    quoteId?: string;
     fleetId?: number;
     packageSize?: PackageSize;
     recipientName?: string;
     recipientMobileNumber?: string;
     deliveryInstructions?: string;
   }): Promise<RequestEntity> {
-    let zonePricings: ZonePriceEntity[] = [];
-    if (input.points.length == 2) {
-      zonePricings = await this.getZonePricingsForPoints(
-        input.points[0],
-        input.points[1],
-      );
-    }
     const service = await this.servicesService.getWithId(input.serviceId);
     if (service == undefined) {
       throw new ForbiddenError('SERVICE_NOT_FOUND');
     }
-    const closeDrivers = await this.driverRedisService.getClose(
-      input.points[0],
-      service.searchRadius,
-    );
-    const driverIds = closeDrivers.map((x: DriverLocationWithId) => x.driverId);
-    const fleetIdsInPoint = await this.sharedFleetService.getFleetIdsInPoint(
-      input.points[0],
-    );
-    const driversWithService =
-      await this.driverService.getOnlineDriversWithServiceId(
-        driverIds,
-        input.serviceId,
-        fleetIdsInPoint,
-        { service, packageSize: input.packageSize },
-      );
-    let optionFee = 0;
-    let options: ServiceOptionEntity[] = [];
-    if (input.optionIds != null) {
-      options = await this.serviceOptionRepository.findBy({
-        id: In(input.optionIds),
-      });
-      if (
-        options.filter((option) => option.type == ServiceOptionType.TwoWay)
-          .length > 0
-      ) {
-        input.points.push(input.points[0]);
-      }
-      const paidOptions = options.filter(
-        (option) => option.type == ServiceOptionType.Paid,
-      );
-      optionFee =
-        paidOptions.length == 0
-          ? 0
-          : paidOptions
-              .map((option) => option.additionalFee ?? 0)
-              .reduce(
-                (previous: number, current: number) => (current += previous),
-              );
+    const rawPoints: Point[] = input.points.map((p) => ({
+      lat: Number(p.lat),
+      lng: Number(p.lng),
+    }));
+    const regions = await this.regionService.getRegionWithPoint(rawPoints[0]);
+    if (regions.length < 1) {
+      throw fareQuoteError(FareQuoteRefusal.RegionUnsupported);
     }
-    const metrics =
-      service.perHundredMeters > 0
-        ? await this.routingService.getSumDistanceAndDuration(input.points)
-        : { distance: 0, duration: 0, directions: [] };
-    const eta = new Date(
-      new Date().getTime() + (input.intervalMinutes | 0) * 60 * 1000,
-    );
+    const currency = regions[0].currency;
     const rider =
-      input.riderId == null
-        ? null
-        : await this.riderService.findById(input.riderId);
-    const isResident = rider?.isResident ?? process.env.MOTAXI == null;
-    const feeMultiplier =
-      fleetIdsInPoint.length == 0
-        ? 1
-        : (await this.sharedFleetService.getFleetById(fleetIdsInPoint[0]))
-            ?.feeMultiplier ?? 1;
-    let cost =
-      this.servicesService.calculateCost(
-        service,
-        metrics.distance,
-        metrics.duration,
-        eta,
-        feeMultiplier,
-        isResident,
-      ) + optionFee;
-    const zonePricing = zonePricings.filter((price) => {
-      return (
-        price.services.filter((service) => service.id == input.serviceId)
-          .length > 0
-      );
-    });
-    if (zonePricing.length > 0) {
-      cost = zonePricing[0].cost;
-      let eta = new Date();
-      for (const _multiplier of zonePricings[0].timeMultipliers) {
-        const startMinutes =
-          parseInt(_multiplier.startTime.split(':')[0]) * 60 +
-          parseInt(_multiplier.startTime.split(':')[1]);
-        const nowMinutes = eta.getHours() * 60 + eta.getMinutes();
-        const endMinutes =
-          parseInt(_multiplier.endTime.split(':')[0]) * 60 +
-          parseInt(_multiplier.endTime.split(':')[1]);
-        if (nowMinutes >= startMinutes && nowMinutes <= endMinutes) {
-          cost *= _multiplier.multiply;
-        }
+      input.riderId == null ? null : await this.riderService.findById(input.riderId);
+    const eta = new Date(Date.now() + (input.intervalMinutes | 0) * 60 * 1000);
+    const options = await this.fareQuoteService.optionsForService(
+      input.serviceId,
+      input.optionIds,
+    );
+    const optionIds = normalizeOptionIds(options.map((o) => o.id));
+    const twoWay =
+      (input.twoWay ?? false) || options.some((o) => o.type == ServiceOptionType.TwoWay);
+    // Coupon saisi a la commande : regles du coupon (I1) avant toute ecriture.
+    const explicitCoupon =
+      input.couponCode != null && input.couponCode != '' && rider != null
+        ? await this.commonCouponService.checkCoupon(input.couponCode, rider.id)
+        : null;
+
+    let quote: FareQuoteEntity | null = null;
+    let mode: 'quote' | 'installed-app' | 'new' = 'new';
+    let directions: Point[] | null = null;
+    if (input.quoteId != null && input.quoteId !== '') {
+      quote = await this.fareQuoteService.findById(input.quoteId);
+      if (quote == null) {
+        throw fareQuoteError(FareQuoteRefusal.Expired);
+      }
+      if (quote.consumedAt != null) {
+        throw fareQuoteError(FareQuoteRefusal.AlreadyUsed);
+      }
+      const pickupGap = Math.abs(new Date(quote.pickupAt).getTime() - eta.getTime());
+      if (
+        (quote.riderId != null && Number(quote.riderId) !== Number(input.riderId)) ||
+        Number(quote.serviceId) !== Number(input.serviceId) ||
+        quote.pointsHash !== hashPoints(rawPoints) ||
+        normalizeOptionIds(quote.optionIds).join(',') !== optionIds.join(',') ||
+        quote.twoWay !== twoWay ||
+        pickupGap > FARE_QUOTE_PICKUP_TOLERANCE_MINUTES * 60 * 1000
+      ) {
+        throw fareQuoteError(FareQuoteRefusal.Mismatch);
+      }
+      if (explicitCoupon != null && quote.couponId !== explicitCoupon.id) {
+        const refusal = this.commonCouponService.refusalForOrder(
+          explicitCoupon,
+          input.serviceId,
+          quote.totalBeforeCoupon,
+        );
+        throw refusal != null
+          ? new ForbiddenError(refusal)
+          : fareQuoteError(FareQuoteRefusal.Mismatch);
+      }
+      mode = 'quote';
+    } else if (rider != null && input.operatorId == null) {
+      quote = await this.fareQuoteService.findForInstalledApp({
+        riderId: rider.id,
+        serviceId: input.serviceId,
+        points: rawPoints,
+        optionIds,
+        twoWay,
+        couponId: explicitCoupon?.id ?? null,
+      });
+      if (quote != null) {
+        mode = 'installed-app';
       }
     }
-    const regions = await this.regionService.getRegionWithPoint(
-      input.points[0],
-    );
+    if (quote == null) {
+      const computed = await this.fareQuoteService.computeForOrder(
+        input.serviceId,
+        {
+          points: rawPoints,
+          optionIds,
+          coupon: explicitCoupon,
+          riderId: input.riderId ?? null,
+          pickupAt: eta,
+          twoWay,
+        },
+        currency,
+      );
+      quote = computed.quote;
+      directions = computed.directions;
+      if (explicitCoupon != null) {
+        // Coupon saisi qui ne s'applique pas a cette course : refus lisible (I1).
+        this.commonCouponService.assertAppliesToOrder(
+          explicitCoupon,
+          input.serviceId,
+          quote.totalBeforeCoupon,
+        );
+      }
+      if (rider != null && input.operatorId == null) {
+        Logger.log(
+          `devis recalcule a la commande (client ${rider.id}, service ${input.serviceId})`,
+          'FareQuote',
+        );
+      }
+    } else if (quote.couponId != null && rider != null) {
+      // Devis avec coupon : le coupon est revalide (limites d'usage, dates).
+      const coupon = await this.commonCouponService.findById(quote.couponId);
+      const checked = await this.commonCouponService.checkCoupon(coupon.code, rider.id);
+      this.commonCouponService.assertAppliesToOrder(
+        checked,
+        input.serviceId,
+        quote.totalBeforeCoupon,
+      );
+    }
     if (
       service.maximumDestinationDistance != 0 &&
-      metrics.distance > service.maximumDestinationDistance
+      quote.distance > service.maximumDestinationDistance
     ) {
       throw new ForbiddenError('DISTANCE_TOO_FAR');
     }
+    const routePoints = twoWay ? [...rawPoints, rawPoints[0]] : rawPoints;
+    if (directions == null) {
+      // Trace pour la carte seulement : le prix et la distance sont ceux du devis.
+      directions =
+        quote.distance > 0
+          ? (await this.routingService.getSumDistanceAndDuration(routePoints)).directions
+          : [];
+    }
+
+    const closeDrivers = await this.driverRedisService.getClose(
+      rawPoints[0],
+      service.searchRadius,
+    );
+    const driverIds = closeDrivers.map((x: DriverLocationWithId) => x.driverId);
+    const fleetIdsInPoint = await this.sharedFleetService.getFleetIdsInPoint(rawPoints[0]);
+    const driversWithService = await this.driverService.getOnlineDriversWithServiceId(
+      driverIds,
+      input.serviceId,
+      fleetIdsInPoint,
+      { service, packageSize: input.packageSize },
+    );
     let shouldPrePay = false;
-    let paidAmount = 0;
     if (service.prepayPercent > 0 && input.riderId != null) {
       const balance = await this.riderService.getRiderCreditInCurrency(
         input.riderId,
-        regions[0].currency,
+        currency,
       );
-      const amountNeedsToBePrePaid = (cost * service.prepayPercent) / 100;
-      if (balance < amountNeedsToBePrePaid) {
+      if (balance < (quote.total * service.prepayPercent) / 100) {
         shouldPrePay = true;
-      } else {
-        // await this.riderService.rechargeWallet({
-        //     amount: -amountNeedsToBePrePaid,
-        //     currency: regions[0].currency,
-        //     action: TransactionAction.Deduct,
-        //     deductType: RiderDeductTransactionType.OrderFee,
-        //     status: TransactionStatus.Done,
-        //     riderId: input.riderId
-        // });
-        // paidAmount = amountNeedsToBePrePaid;
       }
     }
-    // p2-argent I1 (2026-10-19) : coupon verifie AVANT d'enregistrer la course
-    // (regles du coupon, fiche §1.6). Avant, un coupon refuse levait l'erreur
-    // apres l'enregistrement : course creee mais jamais diffusee.
-    if (input.couponCode != null && input.couponCode != '' && rider != null) {
-      const coupon = await this.commonCouponService.checkCoupon(
-        input.couponCode,
-        rider.id,
-      );
-      this.commonCouponService.assertAppliesToOrder(
-        coupon,
-        input.serviceId,
-        cost,
-      );
-    }
-    let order: RequestEntity = await this.orderRepository.save({
-      serviceId: input.serviceId,
-      currency: regions[0].currency,
-      riderId: input.riderId,
-      points: input.points,
-      addresses: input.addresses.map((address) => address.replace(', ', '-')),
-      distanceBest: metrics.distance,
-      durationBest: metrics.duration,
-      directions: metrics.directions,
-      status: shouldPrePay
-        ? OrderStatus.WaitingForPrePay
-        : input.intervalMinutes > 30
-        ? OrderStatus.Booked
-        : driversWithService.length < 1
-        ? OrderStatus.NoCloseFound
-        : OrderStatus.Requested,
-      paidAmount: paidAmount,
-      costBest: cost,
-      costAfterCoupon: cost,
-      expectedTimestamp: eta,
-      operatorId: input.operatorId,
-      fleetId: input.fleetId,
-      providerShare:
-        service.providerShareFlat + (service.providerSharePercent * cost) / 100,
-      options: options,
-      packageSize: input.packageSize,
-      recipientName: input.recipientName,
-      recipientMobileNumber: input.recipientMobileNumber,
-      deliveryInstructions: input.deliveryInstructions,
-    });
-    if (input.couponCode != null && input.couponCode != '' && rider != null) {
-      order = await this.commonCouponService.applyCoupon(
-        input.couponCode,
-        order.id,
-        rider.id,
-      );
-    }
-    let activityType = RequestActivityType.RequestedByRider;
+    let activityType: RequestActivityType;
     if (input.intervalMinutes > 0) {
       activityType =
         input.operatorId == null
-          ? (activityType = RequestActivityType.BookedByRider)
+          ? RequestActivityType.BookedByRider
           : RequestActivityType.BookedByOperator;
     } else {
       activityType =
         input.operatorId == null
-          ? (activityType = RequestActivityType.RequestedByRider)
+          ? RequestActivityType.RequestedByRider
           : RequestActivityType.RequestedByOperator;
     }
-    this.activityRepository.insert({ requestId: order.id, type: activityType });
+    const finalQuote = quote;
+    const order: RequestEntity = await this.orderRepository.manager.transaction(
+      async (manager) => {
+        if (mode === 'new') {
+          await this.fareQuoteService.insertQuotes(manager, [finalQuote]);
+        }
+        const saved = await manager.getRepository(RequestEntity).save({
+          serviceId: input.serviceId,
+          currency,
+          riderId: input.riderId,
+          points: routePoints,
+          addresses: input.addresses.map((address) => address.replace(', ', '-')),
+          distanceBest: finalQuote.distance,
+          durationBest: finalQuote.duration,
+          directions: directions ?? [],
+          status: shouldPrePay
+            ? OrderStatus.WaitingForPrePay
+            : input.intervalMinutes > 30
+              ? OrderStatus.Booked
+              : driversWithService.length < 1
+                ? OrderStatus.NoCloseFound
+                : OrderStatus.Requested,
+          paidAmount: 0,
+          costBest: finalQuote.totalBeforeCoupon,
+          costAfterCoupon: finalQuote.total,
+          couponId: finalQuote.couponId ?? undefined,
+          quoteId: finalQuote.id,
+          expectedTimestamp: eta,
+          operatorId: input.operatorId,
+          fleetId: input.fleetId,
+          providerShare:
+            service.providerShareFlat +
+            (service.providerSharePercent * finalQuote.totalBeforeCoupon) / 100,
+          options,
+          packageSize: input.packageSize,
+          recipientName: input.recipientName,
+          recipientMobileNumber: input.recipientMobileNumber,
+          deliveryInstructions: input.deliveryInstructions,
+        } as RequestEntity);
+        const consumed = await this.fareQuoteService.consume(
+          manager,
+          finalQuote.id,
+          saved.id,
+          mode === 'installed-app' ? 'installed-app' : 'quote',
+        );
+        if (!consumed) {
+          const current = await manager
+            .getRepository(FareQuoteEntity)
+            .findOneBy({ id: finalQuote.id });
+          throw fareQuoteError(
+            current?.consumedAt != null
+              ? FareQuoteRefusal.AlreadyUsed
+              : FareQuoteRefusal.Expired,
+          );
+        }
+        await manager.insert(RequestActivityEntity, {
+          requestId: saved.id,
+          type: activityType,
+        });
+        return saved;
+      },
+    );
     await this.orderRedisService.add(
       { ...order, fleetIds: fleetIdsInPoint },
       input.intervalMinutes | 0,
@@ -652,10 +619,15 @@ export class SharedOrderService {
           ? order.service.providerSharePercent *
             order.service.touristMultiplier
           : order.service.providerSharePercent;
+      // p2-argent I4 (2026-10-20, decision §8.6) : Kasi finance les coupons.
+      // Le Kasiman est paye sur le prix AVANT coupon et la commission porte
+      // sur ce prix ; la remise est une ligne KASI:PROMOTIONS. Avant : il
+      // recevait `costAfterCoupon` et la commission baissait d'autant.
+      const promotion = couponDiscount(order);
       // p2-argent I2 (2026-10-19) : commission brute ; arrondie au franc plus
       // bas (splitCommission). Pourboire hors commission (inchange).
       const rawCommission =
-        (providerPercent * order.costAfterCoupon) / 100 +
+        (providerPercent * (order.costAfterCoupon + promotion)) / 100 +
         order.service.providerShareFlat;
       const unPaidAmount =
         order.costAfterCoupon - order.paidAmount + order.tipAmount;
@@ -711,7 +683,15 @@ export class SharedOrderService {
         manager,
         order.driverId!,
         order.currency,
-        () => this.postFinishEntry(manager, order, rawCommission, cashAmount, unPaidAmount),
+        () =>
+          this.postFinishEntry(
+            manager,
+            order,
+            rawCommission,
+            cashAmount,
+            unPaidAmount,
+            promotion,
+          ),
       );
       await manager.update(RequestEntity, order.id, {
         paidAmount: order.costAfterCoupon,
@@ -770,6 +750,7 @@ export class SharedOrderService {
     rawCommission: number,
     cashAmount: number,
     unPaidAmount: number,
+    promotion = 0,
   ): Promise<void> {
     const fleet = order.driver?.fleetId != null ? order.driver.fleet : null;
     const { commission, fleetShare, kasiShare } = splitCommission(rawCommission, fleet);
@@ -854,6 +835,28 @@ export class SharedOrderService {
           },
         },
       );
+    }
+    if (promotion > 0) {
+      // p2-argent I4 (decision §8.6) : remise du coupon payee au Kasiman par
+      // Kasi. Au portefeuille, une ligne `OrderFee` (valeur existante, lue
+      // comme un gain de course par driver-app) avec sa propre cle.
+      const promotions = LedgerAccounts.kasiPromotions();
+      lines.push(
+        { account: kasiman, amount: promotion, nature: LedgerLineNature.Promotion },
+        { account: promotions, amount: -promotion, nature: LedgerLineNature.Promotion },
+      );
+      walletLines.push({
+        account: kasiman,
+        amount: promotion,
+        fields: {
+          ...common,
+          status: TransactionStatus.Done,
+          action: TransactionAction.Recharge,
+          rechargeType: DriverRechargeTransactionType.OrderFee,
+          description: 'Remise coupon financée par Kasi',
+          idempotencyKey: MoneyKey.order(order.id, 'driver-promotion'),
+        },
+      });
     }
     await postLedgerEntry(manager, {
       idempotencyKey: MoneyKey.order(order.id, 'finish'),
@@ -978,6 +981,25 @@ export class SharedOrderService {
   }
 }
 
+/**
+ * p2-argent I4 (decision §8.6) : remise du coupon d'une course, financee par
+ * Kasi = prix avant coupon (prix du devis + attente) - prix apres coupon,
+ * entier, jamais negatif. 0 sans coupon.
+ */
+export function couponDiscount(order: {
+  couponId?: number | null;
+  costBest: number;
+  costAfterCoupon: number;
+  waitMinutes?: number;
+  service?: { perMinuteWait?: number } | null;
+}): number {
+  if (order.couponId == null) return 0;
+  const beforeCoupon =
+    Number(order.costBest) +
+    Number(order.waitMinutes ?? 0) * Number(order.service?.perMinuteWait ?? 0);
+  return Math.max(0, roundFcfa(beforeCoupon) - roundFcfa(Number(order.costAfterCoupon)));
+}
+
 /** Resultat de `SharedOrderService.finish` (p1-transitions). */
 export interface FinishOutcome {
   /** false : rien n'a change (rejeu, ou deja en attente de paiement). */
@@ -1006,7 +1028,3 @@ const OPERATOR_ASSIGNABLE_STATUSES: OrderStatus[] = [
   OrderStatus.Arrived,
 ];
 
-enum CalculateFareError {
-  RegionUnsupported = 'REGION_UNSUPPORTED',
-  NoServiceInRegion = 'NO_SERVICE_IN_REGION',
-}

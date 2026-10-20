@@ -13,7 +13,8 @@ import { FARE_EDITABLE_STATUSES } from '../order/order-transition';
  * §1.6). Messages des nouveaux refus en francais : rider-app affiche tel quel le
  * message de l'erreur GraphQL (`getErrorMessage`, query_result_view.dart). Les
  * messages existants (« Incorrect code », « Coupon expired »...) sont gardes.
- * Qui finance la remise (fiche §8.6) n'est pas tranche : inchange.
+ * Qui finance la remise : Kasi (decision §8.6, 2026-10-20, p2-argent I4) ;
+ * voir SharedOrderService.postFinishEntry (ligne KASI:PROMOTIONS).
  */
 export const CouponRefusal = {
   NotStarted: "Ce coupon n'est pas encore valable.",
@@ -103,6 +104,14 @@ export class CommonCouponService {
     if (completed > 0) {
       throw new ForbiddenError(CouponRefusal.FirstTravelOnly);
     }
+  }
+
+  /** p2-argent I4 : coupon d'un devis (revalide ensuite par checkCoupon). */
+  async findById(id: number): Promise<CouponEntity> {
+    return this.couponRepo.findOneOrFail({
+      where: { id },
+      relations: { allowedServices: true },
+    });
   }
 
   async checkCoupon(code: string, riderId?: number): Promise<CouponEntity> {

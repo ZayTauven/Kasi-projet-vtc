@@ -27,6 +27,9 @@ export class ServiceService {
     eta: Date,
     fleetMultiplier: number = 1,
     isResident: boolean = true,
+    // p2-argent I4 (2026-10-20) : FareQuoteService arrondit lui-meme, APRES
+    // forfait de zone et options (fiche §3.5) ; il passe false.
+    applyRounding: boolean = true,
   ) {
     let i = service.baseFare;
     let multiplier = 1;
@@ -92,7 +95,7 @@ export class ServiceService {
     if (isResident === false) {
       i *= service.touristMultiplier;
     }
-    if (service.roundingFactor != null) {
+    if (applyRounding && service.roundingFactor != null) {
       i = Math.round(i / service.roundingFactor) * service.roundingFactor;
       console.log(`After Rounding factor applied: ${i}`);
     }

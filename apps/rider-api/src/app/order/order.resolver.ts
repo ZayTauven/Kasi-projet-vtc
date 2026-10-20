@@ -54,13 +54,18 @@ export class OrderResolver {
     return { order, driverLocation };
   }
 
+  /**
+   * p2-argent I4 (2026-10-20) : meme calcul que getFare (client connecte,
+   * coupon, options, heure de prise en charge), devis enregistres. Avant :
+   * ni client ni coupon (C6).
+   */
   @Mutation(() => CalculateFareDTO)
   @UseGuards(GqlAuthGuard)
   async calculateFare(
     @Args('input', { type: () => CalculateFareInput })
     input: CalculateFareInput,
   ): Promise<CalculateFareDTO> {
-    return this.orderService.calculateFare(input);
+    return this.fare(input, this.context.req.user.id);
   }
 
   @Query(() => CalculateFareDTO)
@@ -69,25 +74,36 @@ export class OrderResolver {
     @Args('input', { type: () => CalculateFareInput })
     input: CalculateFareInput,
   ): Promise<CalculateFareDTO> {
-    Logger.log(`Creating order for userId:${this.context.req.user?.id}`);
+    return this.fare(input, this.context.req.user?.id);
+  }
+
+  /**
+   * Apercu chiffre par FareQuoteService ; chaque service porte son devis
+   * (`quoteId`, `quoteExpiresAt`), que createOrder consomme.
+   */
+  private async fare(
+    input: CalculateFareInput,
+    riderId: number | undefined,
+  ): Promise<CalculateFareDTO> {
     let coupon;
-    if (input.couponCode != null) {
+    if (input.couponCode != null && input.couponCode != '') {
       coupon = await this.commonCouponService.checkCoupon(input.couponCode);
       // p2-argent I1 (2026-10-19) : coupon « premiere course » refuse des
       // l'apercu si le client connecte a deja termine une course (service et
-      // bornes de prix : verifies service par service dans calculateFare).
-      if (this.context.req.user?.id != null) {
-        await this.commonCouponService.assertFirstTravel(
-          coupon,
-          this.context.req.user.id,
-        );
+      // bornes de prix : verifies service par service dans le devis).
+      if (riderId != null) {
+        await this.commonCouponService.assertFirstTravel(coupon, riderId);
       }
     }
     return this.orderService.calculateFare({
-      ...input,
+      points: input.points,
+      twoWay: input.twoWay,
+      selectedOptionIds: input.selectedOptionIds,
+      intervalMinutes: input.intervalMinutes,
       coupon,
-      riderId: this.context.req.user?.id,
-    });
+      riderId,
+      persist: true,
+    }) as Promise<CalculateFareDTO>;
   }
 
   @Mutation(() => OrderDTO)

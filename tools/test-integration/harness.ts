@@ -11,6 +11,8 @@
  *   atteindrait les API de la stack Docker et les apps connectees.
  * - Notifications push (Firebase) : espions qui comptent les envois.
  * - Calcul d'itineraire (OSRM/Mapbox via map_setting) : duree fixe, pas de reseau.
+ *   p2-argent I4 : `RoutingDouble` (d.routing) simule chaque source (mapbox,
+ *   google, osrm, haversine = estimation a vol d'oiseau), distance et duree.
  * - Passerelle de paiement (HTTP) : repond en erreur ; le code doit la tolerer.
  * - Appels masques : sans effet.
  * Rien d'autre n'est simule : transactions, verrous et contraintes sont ceux
@@ -71,6 +73,14 @@ import { PayoutService } from '../../apps/admin-api/src/app/payout/payout.servic
 import { FleetResolver as AdminFleetResolver } from '../../apps/admin-api/src/app/fleet/fleet.resolver';
 import { CouponService as RiderCouponService } from '../../apps/rider-api/src/app/coupon/coupon.service';
 import { LedgerResolver } from '../../apps/admin-api/src/app/ledger/ledger.resolver';
+import { RegionEntity } from '../../libs/database/src/lib/entities/region.entity';
+import { ServiceEntity } from '../../libs/database/src/lib/entities/service.entity';
+import { FareQuoteEntity } from '../../libs/database/src/lib/entities/fare-quote.entity';
+import { RegionService } from '../../libs/database/src/lib/order/region/region.service';
+import { ServiceService } from '../../libs/database/src/lib/order/service.service';
+import { FareQuoteService } from '../../libs/database/src/lib/order/fare-quote.service';
+import type { RouteMetrics, RouteSource } from '../../libs/database/src/lib/order/routing/routing.service';
+import type { Point } from '../../libs/database/src/lib/interfaces/point';
 import {
   ledgerIntegrityReport,
   LedgerIntegrityReport,
@@ -198,12 +208,43 @@ export function spyDriverNotifications(): Spy {
 }
 
 export const routingStub = {
-  getSumDistanceAndDuration: async () => ({
+  getSumDistanceAndDuration: async (): Promise<RouteMetrics> => ({
     distance: 1200,
     duration: 180,
     directions: [],
+    source: 'osrm',
   }),
 };
+
+/**
+ * p2-argent I4 : double du calcul d'itineraire, reglable par test. `use()`
+ * choisit la source simulee : `mapbox`, `google`, `osrm` (vrais calculs
+ * routiers) ou `haversine` (estimation a vol d'oiseau quand tous les
+ * fournisseurs echouent, comme RoutingService). Chaque appel est note.
+ */
+export class RoutingDouble {
+  source: RouteSource = 'mapbox';
+  distance = 1200;
+  duration = 180;
+  readonly calls: Point[][] = [];
+
+  use(source: RouteSource, distance = this.distance, duration = this.duration): this {
+    this.source = source;
+    this.distance = distance;
+    this.duration = duration;
+    return this;
+  }
+
+  async getSumDistanceAndDuration(points: Point[]): Promise<RouteMetrics> {
+    this.calls.push(points);
+    return {
+      distance: this.distance,
+      duration: this.duration,
+      directions: points.map((p) => ({ lat: p.lat, lng: p.lng })),
+      source: this.source,
+    };
+  }
+}
 
 export class GatewayStub {
   readonly urls: string[] = [];
@@ -521,6 +562,119 @@ export async function createGiftCard(
   );
 }
 
+// ---------------------------------------------------------------------------
+// p2-argent I4 (2026-10-20) : tarification (region, prix du service, forfait
+// de zone, options) pour le devis fige
+// ---------------------------------------------------------------------------
+
+/** Points des courses de test (memes que createOrder). */
+export const PLATEAU = { lat: 14.6928, lng: -17.4467 };
+export const ALMADIES = { lat: 14.7392, lng: -17.5065 };
+
+/** Region couvrant Dakar, ouverte aux services donnes. */
+export async function createRegion(ds: DataSource, serviceIds: number[]): Promise<number> {
+  const id = await insertId(
+    ds,
+    `INSERT INTO region (name, currency, enabled, location)
+     VALUES ('Dakar test', $1, TRUE,
+       ST_GeomFromText('POLYGON((-17.6 14.6,-17.3 14.6,-17.3 14.9,-17.6 14.9,-17.6 14.6))', 4326))
+     RETURNING id`,
+    [CURRENCY],
+  );
+  for (const serviceId of serviceIds) {
+    await ds.query(
+      `INSERT INTO service_regions_region ("serviceId", "regionId") VALUES ($1, $2)`,
+      [serviceId, id],
+    );
+  }
+  return id;
+}
+
+export interface PricingOptions {
+  baseFare?: number;
+  perHundredMeters?: number;
+  perMinuteDrive?: number;
+  minimumFee?: number;
+  roundingFactor?: number | null;
+  /** Format de la colonne : `HH:MM-HH:MM|multiplicateur`. */
+  timeMultipliers?: string[];
+  /** Format : `debutMs-finMs|multiplicateur` (horodatages en millisecondes). */
+  dateRangeMultipliers?: string[];
+  maxDestinationDistance?: number;
+}
+
+/** Tarif du service (par defaut : 500 + 50 / 100 m + 10 / min, sans arrondi). */
+export async function setServicePricing(
+  ds: DataSource,
+  serviceId: number,
+  p: PricingOptions = {},
+): Promise<void> {
+  await ds.query(
+    `UPDATE service SET "baseFare" = $2, "perHundredMeters" = $3, "perMinuteDrive" = $4,
+       "minimumFee" = $5, "roundingFactor" = $6, "timeMultipliers" = $7,
+       "maxDestinationDistance" = $8, "dateRangeMultipliers" = $9
+     WHERE id = $1`,
+    [
+      serviceId,
+      p.baseFare ?? 500,
+      p.perHundredMeters ?? 50,
+      p.perMinuteDrive ?? 10,
+      p.minimumFee ?? 0,
+      p.roundingFactor ?? null,
+      p.timeMultipliers == null || p.timeMultipliers.length === 0 ? null : p.timeMultipliers.join(','),
+      p.maxDestinationDistance ?? 0,
+      p.dateRangeMultipliers == null || p.dateRangeMultipliers.length === 0
+        ? null
+        : p.dateRangeMultipliers.join(','),
+    ],
+  );
+}
+
+/** Forfait de zone Plateau -> Almadies pour les services donnes. */
+export async function createZonePrice(
+  ds: DataSource,
+  serviceIds: number[],
+  cost: number,
+  timeMultipliers: string[] = [],
+): Promise<number> {
+  const id = await insertId(
+    ds,
+    `INSERT INTO zone_price (name, "from", "to", cost, "timeMultipliers")
+     VALUES ('Plateau-Almadies',
+       ST_GeomFromText('POLYGON((-17.47 14.67,-17.42 14.67,-17.42 14.71,-17.47 14.71,-17.47 14.67))', 4326),
+       ST_GeomFromText('POLYGON((-17.53 14.72,-17.48 14.72,-17.48 14.76,-17.53 14.76,-17.53 14.72))', 4326),
+       $1, $2) RETURNING id`,
+    [cost, timeMultipliers.length === 0 ? null : timeMultipliers.join(',')],
+  );
+  for (const serviceId of serviceIds) {
+    await ds.query(
+      `INSERT INTO zone_price_services_service ("zonePriceId", "serviceId") VALUES ($1, $2)`,
+      [id, serviceId],
+    );
+  }
+  return id;
+}
+
+/** Option d'un service (payante par defaut). */
+export async function createServiceOption(
+  ds: DataSource,
+  serviceId: number,
+  type: 'Free' | 'Paid' | 'TwoWay' = 'Paid',
+  fee = 0,
+): Promise<number> {
+  const id = await insertId(
+    ds,
+    `INSERT INTO service_option (name, type, "additionalFee", icon)
+     VALUES ('Option test', $1, $2, 'Luggage') RETURNING id`,
+    [type, fee],
+  );
+  await ds.query(
+    `INSERT INTO service_options_service_option ("serviceId", "serviceOptionId") VALUES ($1, $2)`,
+    [serviceId, id],
+  );
+  return id;
+}
+
 /** Message de l'erreur levee par une promesse (ou null si elle a reussi). */
 export async function errorOf(promise: Promise<unknown>): Promise<string | null> {
   try {
@@ -540,6 +694,8 @@ export interface Doubles {
   riderNotifications: Spy;
   driverNotifications: Spy;
   gateway: GatewayStub;
+  /** p2-argent I4 : itineraire simule (source, distance, duree). */
+  routing: RoutingDouble;
 }
 
 export function makeDoubles(): Doubles {
@@ -548,6 +704,7 @@ export function makeDoubles(): Doubles {
     riderNotifications: spyRiderNotifications(),
     driverNotifications: spyDriverNotifications(),
     gateway: new GatewayStub(),
+    routing: new RoutingDouble(),
   };
 }
 
@@ -580,17 +737,34 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     repo(CouponEntity),
     repo(RequestEntity),
   );
+  // p2-argent I4 : vrai calcul de prix (devis fige), itineraire simule.
+  const region = new RegionService(repo(RegionEntity));
+  const serviceService = new ServiceService(repo(ServiceEntity));
+  const routing = (d.routing ?? new RoutingDouble()) as never;
+  const fareQuote = new FareQuoteService(
+    repo(FareQuoteEntity),
+    repo(ServiceCategoryEntity),
+    repo(ServiceEntity),
+    repo(ServiceOptionEntity),
+    repo(ZonePriceEntity),
+    region,
+    routing,
+    serviceService,
+    sharedRider,
+    sharedFleet,
+    commonCoupon,
+  );
   const sharedOrder = new SharedOrderService(
     repo(RequestEntity),
     repo(RequestActivityEntity),
-    unused, // RegionService (calcul de prix, hors perimetre)
+    region,
     repo(ServiceCategoryEntity),
     repo(ServiceOptionEntity),
     repo(ZonePriceEntity),
     repo(PaymentEntity),
     unused, // GoogleServicesService
-    routingStub as never,
-    unused, // ServiceService
+    routing,
+    serviceService,
     sharedRider,
     driverRedis,
     orderRedis,
@@ -602,6 +776,7 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     d.driverNotifications as never,
     d.riderNotifications as never,
     d.gateway as never,
+    fareQuote,
   );
   return {
     sharedDriver,
@@ -612,6 +787,7 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     orderRedis,
     driverRedis,
     commonCoupon,
+    fareQuote,
   };
 }
 

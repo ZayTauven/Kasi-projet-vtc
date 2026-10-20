@@ -20,11 +20,17 @@ export interface KasimanStatementLine {
   createdAt: Date;
   nature: string;
   requestId: number | null;
-  /** Prix de la course (`costAfterCoupon`), pour une ecriture de course. */
+  /**
+   * Prix de la course pour le Kasiman : `costAfterCoupon` + remise financee
+   * par Kasi (p2-argent I4, decision §8.6), pour une ecriture de course.
+   */
   orderPrice: number | null;
   /** Especes encaissees par le Kasiman (fin de course). */
   cashCollected: number | null;
-  /** Part payee en ligne (portefeuille du client) creditee au Kasiman. */
+  /**
+   * Part payee en ligne creditee au Kasiman : portefeuille du client, et
+   * remise du coupon financee par Kasi (ligne PROMOTION, I4).
+   */
   onlinePaid: number;
   commission: number;
   tip: number;
@@ -64,7 +70,8 @@ export async function kasimanStatement(
        SELECT e."id", e."createdAt", e."nature", e."requestId", e."reference", e."motif",
               e."cashCollected",
               SUM(l."amount") AS "amount",
-              COALESCE(SUM(l."amount") FILTER (WHERE l."nature" = 'PRIX'), 0) AS "onlinePaid",
+              COALESCE(SUM(l."amount") FILTER (WHERE l."nature" IN ('PRIX', 'PROMOTION')), 0) AS "onlinePaid",
+              COALESCE(SUM(l."amount") FILTER (WHERE l."nature" = 'PROMOTION'), 0) AS "promotion",
               COALESCE(SUM(l."amount") FILTER (WHERE l."nature" = 'COMMISSION'), 0) AS "commission",
               COALESCE(SUM(l."amount") FILTER (WHERE l."nature" = 'POURBOIRE'), 0) AS "tip",
               COALESCE(SUM(l."amount") FILTER (WHERE l."nature" = 'ARRET_AJOUTE'), 0) AS "addedStop",
@@ -74,7 +81,7 @@ export async function kasimanStatement(
         WHERE l."accountId" IN (SELECT "id" FROM acc)
         GROUP BY e."id"
      )
-     SELECT p.*, r."costAfterCoupon" AS "orderPrice",
+     SELECT p.*, r."costAfterCoupon" + p."promotion" AS "orderPrice",
             SUM(p."amount") OVER (ORDER BY p."id") AS "balanceAfter",
             COUNT(*) OVER () AS "totalCount"
        FROM per_entry p

@@ -179,6 +179,14 @@ export class RequestEntity {
   @Column({ nullable: true })
   couponId?: number;
 
+  /**
+   * p2-argent I4 (2026-10-20) : devis consomme par cette course (fare_quote).
+   * Null : course d'avant I4. costBest / costAfterCoupon restent remplis a
+   * partir du devis (les apps installees les lisent).
+   */
+  @Column('uuid', { nullable: true })
+  quoteId?: string | null;
+
   @Column('char', { length: 3 })
   currency!: string;
 

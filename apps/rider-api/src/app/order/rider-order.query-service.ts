@@ -9,6 +9,7 @@ import {
   FARE_EDITABLE_STATUSES,
   TIP_EDITABLE_STATUSES,
 } from '@kasi/order/order-transition';
+import { roundFcfa } from '@kasi/order/ledger';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { Repository } from 'typeorm';
@@ -118,9 +119,15 @@ export class RiderOrderQueryService extends TypeOrmQueryService<RequestEntity> {
     }
     if (waitChanged) {
       set.waitMinutes = update.waitMinutes;
-      set.costAfterCoupon = this.commonCouponService.applyCouponOnPrice(
-        order.coupon,
-        order.costBest + order.service.perMinuteWait * update.waitMinutes!,
+      // p2-argent I4 (2026-10-20) : prix toujours entier au franc, coupon ou non.
+      set.costAfterCoupon = Math.max(
+        0,
+        roundFcfa(
+          this.commonCouponService.applyCouponOnPrice(
+            order.coupon,
+            order.costBest + order.service.perMinuteWait * update.waitMinutes!,
+          ),
+        ),
       );
     }
     if (Object.keys(set).length > 0) {

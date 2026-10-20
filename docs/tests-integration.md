@@ -39,7 +39,16 @@ Doubles, et pourquoi (`tools/test-integration/harness.ts`) :
   les apps connectées.
 - **Notifications push** : espions qui comptent les envois (un rejeu ne doit pas
   renvoyer de push), push en texte direct `plainText` comprise (I3).
-- **Itinéraire** (OSRM/Mapbox) : durée fixe, pas de réseau.
+- **Itinéraire** (OSRM/Mapbox) : pas de réseau. Depuis `p2-argent` I4, `d.routing`
+  (`RoutingDouble`) est réglable par test : `d.routing.use('haversine')` simule
+  l'estimation à vol d'oiseau (tous les fournisseurs en échec), `'mapbox'`,
+  `'google'` ou `'osrm'` un vrai calcul routier ; distance et durée en option
+  (`use('osrm', 1234, 77)`, défaut 1 200 m et 180 s). Chaque appel est noté
+  (`d.routing.calls`).
+- **Calcul du prix** : réel depuis I4 (`FareQuoteService`, `RegionService`,
+  `ServiceService`). Pour chiffrer, un test crée la tarification avec les aides du
+  harnais : `createRegion`, `setServicePricing`, `createZonePrice`,
+  `createServiceOption`, points `PLATEAU` et `ALMADIES`.
 - **Passerelle de paiement** (HTTP) : répond en erreur ; le code doit la tolérer.
 - **Appels masqués** : sans effet.
 
@@ -62,6 +71,7 @@ Transactions, verrous, contraintes uniques et clés étrangères sont ceux de Po
 | `apps/rider-api/src/app/coupon/gift-card.int-spec.ts` | Carte cadeau : crédit unique, carte utilisée, expirée ou pas encore disponible, deux clients simultanés (`p2-argent` I1) |
 | `apps/rider-api/src/app/order/rider-order-update.int-spec.ts` | Pourboire, attente et coupon après démarrage, part d'annulation du Kasiman (`p2-argent` I1) |
 | `libs/database/src/lib/coupon/common-coupon.int-spec.ts` | Règles du coupon : plancher et arrondi, services, bornes de prix, première course, date de début (`p2-argent` I1) |
+| `libs/database/src/lib/order/fare-quote.int-spec.ts` | Devis figé (`p2-argent` I4), par les vrais résolveurs `getFare` et `createOrder` de rider-api : prix commandé = prix affiché (itinéraire changé entre-temps, options payantes, coupon, forfait de zone et ses multiplicateurs, réservation chiffrée à l'heure prévue) ; total entier, `roundingFactor` ; devis expiré ou inconnu refusé (`QUOTE_EXPIRED`), trajet différent refusé (`QUOTE_MISMATCH`) ; app sans `quoteId` qui retrouve son devis jusqu'à 10 minutes, coupon compris, puis devis recalculé (origine `commande`) ; deux `createOrder` simultanés sur un devis = une course ; Mapbox, Google, OSRM acceptés, vol d'oiseau refusé (`ROUTE_UNAVAILABLE`), forfait de zone accepté sans itinéraire ; fin de course avec coupon financé par Kasi (commission sur le prix avant coupon, `KASI:PROMOTIONS`, rejeu, relevé) ; purge des devis de plus de 24 h |
 | `libs/database/src/lib/order/debt-limit.int-spec.ts` | Dette espèces et plafond (`p2-argent` I3) : règle (plafond strict, alerte, sans politique, plafond relevé sans déploiement) ; Kasiman bloqué absent des destinataires (`getOnlineDriversWithServiceId` de `createOrder`, `processPrePay`, relance du cron), d'`availableOrders` ; acceptation refusée avec le message lisible et `KASIMAN_DEBT_LIMIT` ; attribution opérateur permise ; course en cours terminée ; push une seule fois au passage de chaque seuil (rejeu, deux fins simultanées) ; règlement opérateur qui débloque, rejoué en série et en parallèle = un crédit, refus (montant, motif, permission) ; compensation par une course payée en ligne ; part de flotte (option A) ; `kasimanAccount` et `kasimanStatement` |
 
 Les `*.int-spec.ts` sont exclus des builds (`tsconfig.app.json`, `tsconfig.lib.json`)
@@ -104,6 +114,6 @@ it('...', async () => {
 
 ## 5. Ce qui reste pour `p1-tests`
 
-Commande (création, calcul du prix, dispatch), offres Redis (`availableOrders`,
+Dispatch à la commande (le calcul du prix et la création sont couverts depuis I4), offres Redis (`availableOrders`,
 resynchronisation), annulation sur course réservée, notation, tests au vert sur le
 staging (`p1-staging`) et en CI.

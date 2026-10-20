@@ -26,6 +26,8 @@ import { RegionModule } from '@kasi/order/region/region.module';
 import { RoutingModule } from '@kasi/order/routing/routing.module';
 import { SharedRiderService } from '@kasi/order/shared-rider.service';
 import { ServiceService } from '@kasi/order/service.service';
+import { FareQuoteService } from '@kasi/order/fare-quote.service';
+import { FareQuoteEntity } from '@kasi/database/fare-quote.entity';
 
 import { OrderDTO } from './dto/order.dto';
 import { OrderResolver } from './order.resolver';
@@ -71,6 +73,8 @@ import { HttpModule } from '@nestjs/axios';
       ZonePriceEntity,
       PaymentEntity,
       ShiftRuleEntity,
+      // p2-argent I4 (2026-10-20) : devis fige (dependance de SharedOrderService).
+      FareQuoteEntity,
     ]),
     RegionModule,
     RoutingModule,
@@ -110,6 +114,7 @@ import { HttpModule } from '@nestjs/axios';
     SharedDriverService,
     SharedProviderService,
     SharedFleetService,
+    FareQuoteService,
     RedisPubSubProvider.provider(),
     CronJobService,
   ],

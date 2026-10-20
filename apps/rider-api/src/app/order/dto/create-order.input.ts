@@ -13,6 +13,13 @@ export class CreateOrderInput {
     twoWay?: boolean;
     optionIds?: string[];
     couponCode?: string;
+    /**
+     * p2-argent I4 (2026-10-20) : devis renvoye par getFare (champ
+     * `quoteId` du service choisi). Ajout facultatif : sans lui, le serveur
+     * retrouve le devis affiche (10 min, coupon compris).
+     */
+    @Field(() => ID, { nullable: true })
+    quoteId?: string;
     packageSize?: PackageSize;
     recipientName?: string;
     recipientMobileNumber?: string;

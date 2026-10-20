@@ -8,10 +8,23 @@ import { MapTileProvider } from '../../entities/enums/map-tile-provider.enum';
 import { Point } from '../../interfaces/point';
 import { GoogleServicesService } from '../google-services/google-services.service';
 
+/**
+ * p2-argent I4 (2026-10-20) : d'ou vient l'itineraire. `haversine` = estimation
+ * a vol d'oiseau (aucun fournisseur n'a repondu) : FareQuoteService refuse
+ * d'en faire un devis, sauf forfait de zone (fiche argent §5.4, KASI_DECISIONS).
+ */
+export type RouteSource = 'mapbox' | 'google' | 'osrm' | 'haversine' | 'none';
+
 export interface RouteMetrics {
   distance: number; // metres
   duration: number; // secondes
   directions: { lat: number; lng: number }[]; // trace decode
+  source: RouteSource;
+}
+
+/** Vrai calcul routier (Mapbox, Google, OSRM), et non une estimation. */
+export function isRealRoute(source: RouteSource | undefined | null): boolean {
+  return source === 'mapbox' || source === 'google' || source === 'osrm';
 }
 
 // Calcul distance/duree/trace d'un itineraire, route selon le provider
@@ -19,9 +32,12 @@ export interface RouteMetrics {
 // mobile). Ridy = 100% Google Distance Matrix ; Kasi = Mapbox -> il fallait
 // debrancher la dependance Google (cle vide => HTTP 403 sur getFare/createOrder).
 //
-// Invariant capital : cette methode ne DOIT JAMAIS lever d'exception reseau
-// (403/timeout). getFare et createOrder en dependent : un devis doit toujours
-// etre calculable, quitte a degrader (OSRM public puis estimation haversine).
+// Invariant : cette methode ne DOIT JAMAIS lever d'exception reseau
+// (403/timeout) ; elle degrade (OSRM public puis estimation haversine) et
+// INDIQUE sa source (`source`). p2-argent I4 (2026-10-20, fiche §5.4) :
+// l'ancien invariant « un devis doit toujours etre calculable » est leve :
+// c'est FareQuoteService qui refuse un devis sur une estimation haversine.
+// Les autres appelants (ETA de prise en charge) gardent l'estimation.
 @Injectable()
 export class RoutingService {
   private readonly logger = new Logger(RoutingService.name);
@@ -63,7 +79,7 @@ export class RoutingService {
 
   async getSumDistanceAndDuration(points: Point[]): Promise<RouteMetrics> {
     if (points == null || points.length < 2) {
-      return { distance: 0, duration: 0, directions: [] };
+      return { distance: 0, duration: 0, directions: [], source: 'none' };
     }
     const setting = await this.getSetting();
     const provider = this.resolveProvider(setting);
@@ -71,7 +87,10 @@ export class RoutingService {
     if (provider === MapTileProvider.Google) {
       // Chemin Google historique conserve intact (si une cle est fournie).
       try {
-        return await this.googleServices.getSumDistanceAndDuration(points);
+        return {
+          ...(await this.googleServices.getSumDistanceAndDuration(points)),
+          source: 'google',
+        };
       } catch (error) {
         this.logger.error(`Google routing en echec, repli: ${error}`);
         return this.fallback(points);
@@ -123,6 +142,7 @@ export class RoutingService {
       return {
         distance: Math.round(route.distance),
         duration: Math.round(route.duration),
+        source: 'mapbox',
         // Trace toujours renvoye (la carte mobile en depend) — independant
         // de SHOW_DIRECTIONS, la geometrie est deja dans cette reponse.
         directions: this.googleServices.decode(route.geometry) ?? [],
@@ -150,6 +170,7 @@ export class RoutingService {
           distance: Math.round(route.distance),
           duration: Math.round(route.duration),
           directions: this.googleServices.decode(route.geometry) ?? [],
+          source: 'osrm',
         };
       }
     } catch (error) {
@@ -170,6 +191,7 @@ export class RoutingService {
       distance,
       duration: Math.round(distance / RoutingService.FALLBACK_SPEED_MPS),
       directions: points.map((p) => ({ lat: p.lat, lng: p.lng })),
+      source: 'haversine',
     };
   }
 

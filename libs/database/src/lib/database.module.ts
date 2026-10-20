@@ -53,6 +53,7 @@ import { LedgerAccountEntity } from './entities/ledger-account.entity';
 import { LedgerEntryEntity } from './entities/ledger-entry.entity';
 import { LedgerLineEntity } from './entities/ledger-line.entity';
 import { MoneyPolicyEntity } from './entities/money-policy.entity';
+import { FareQuoteEntity } from './entities/fare-quote.entity';
 import { kasiConnectionOptions, MIGRATIONS_TABLE_NAME } from './migration/connection-options';
 import { kasiMigrations } from './migration/index';
 
@@ -187,4 +188,6 @@ export const entities = [
   LedgerLineEntity,
   // p2-argent I3 (2026-10-19) : plafond de dette par devise (migration MoneyPolicy).
   MoneyPolicyEntity,
+  // p2-argent I4 (2026-10-20) : devis fige (migration FareQuote).
+  FareQuoteEntity,
 ];

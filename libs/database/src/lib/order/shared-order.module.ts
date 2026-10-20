@@ -21,6 +21,7 @@ import { ServiceCategoryEntity } from '@kasi/database/service-category.entity';
 import { ServiceOptionEntity } from '@kasi/database/service-option.entity';
 import { ServiceEntity } from '@kasi/database/service.entity';
 import { ZonePriceEntity } from '@kasi/database/zone-price.entity';
+import { FareQuoteEntity } from '@kasi/database/fare-quote.entity';
 import { RedisHelpersModule } from '@kasi/redis/redis-helper.module';
 import { SharedConfigurationService } from '../shared-configuration.service';
 import { FirebaseNotificationModule } from './firebase-notification-service/firebase-notification-service.module';
@@ -28,6 +29,7 @@ import { GoogleServicesModule } from './google-services/google-services.module';
 import { RoutingModule } from './routing/routing.module';
 import { RegionModule } from './region/region.module';
 import { ServiceService } from './service.service';
+import { FareQuoteService } from './fare-quote.service';
 import { SharedDriverService } from './shared-driver.service';
 import { SharedFleetService } from './shared-fleet.service';
 import { SharedOrderService } from './shared-order.service';
@@ -57,6 +59,8 @@ import { SharedRiderService } from './shared-rider.service';
       RequestActivityEntity,
       ZonePriceEntity,
       PaymentEntity,
+      // p2-argent I4 (2026-10-20) : devis fige.
+      FareQuoteEntity,
     ]),
     HttpModule,
     RegionModule,
@@ -73,6 +77,7 @@ import { SharedRiderService } from './shared-rider.service';
     SharedProviderService,
     SharedRiderService,
     SharedConfigurationService,
+    FareQuoteService,
   ],
   exports: [
     SharedDriverService,
@@ -80,6 +85,7 @@ import { SharedRiderService } from './shared-rider.service';
     SharedOrderService,
     SharedProviderService,
     SharedRiderService,
+    FareQuoteService,
   ],
 })
 export class SharedOrderModule {}

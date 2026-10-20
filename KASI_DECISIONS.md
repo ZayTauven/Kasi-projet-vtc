@@ -8,6 +8,78 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-20 — `p2-argent` I4 : devis figé (backend)
+
+**Point** : `p2-argent` (`lot-argent`), incrément I4 de `docs/fiche-conception-argent.md`
+(§2, §5, §7), anomalie `bug-prix`. Migration `FareQuote1792452456288` (table
+`fare_quote`, colonne `request.quoteId`), appliquée sur `kasi_test` (up, down, up,
+`check` sans écart) et sur la base locale `kasi` (sauvegarde
+`../archive/sauvegardes/kasi-avant-devis-20261019.dump`). Non déployé. Backend seulement.
+
+**Arbitrages validés par l'utilisateur le 2026-10-20** :
+- **§8.6 : Kasi finance les coupons.** Le Kasiman est payé sur le prix avant coupon, la
+  commission se calcule sur ce prix, la remise est une ligne `KASI:PROMOTIONS` de
+  l'écriture `order:<id>:finish` (`KASIMAN +remise / KASI:PROMOTIONS −remise`, nature
+  `PROMOTION`). Au portefeuille du Kasiman : une ligne `Recharge` / `OrderFee` (valeur
+  existante), clé `order:<id>:driver-promotion`. Remise = `costBest` + attente −
+  `costAfterCoupon`. Le relevé compte la remise dans `onlinePaid` et `orderPrice` est le
+  prix avant coupon.
+- **§8.7 : durée du devis.** 2 minutes quand l'app envoie `quoteId`
+  (`FARE_QUOTE_TTL_SECONDS`, 120 par défaut). Sans `quoteId` (apps installées), le serveur
+  retrouve le devis pendant 10 minutes, coupon compris.
+- **§8.10 : refus sans itinéraire réel.** Une estimation à vol d'oiseau ne donne pas de
+  devis quand le prix dépend de la distance ou de la durée ; le forfait de zone reste
+  accepté (`routingSource = zone`). OSRM reste accepté. L'invariant de
+  `routing.service.ts` est levé : le routage ne lève toujours jamais d'erreur, il indique
+  sa source (`RouteMetrics.source`), et c'est le devis qui refuse.
+
+**Décision 1 : un seul calcul**, `FareQuoteService` (`libs/database/src/lib/order/fare-quote.service.ts`),
+pour `getFare`, la mutation `calculateFare` de rider-api (client et coupon désormais pris
+en compte, C6), le `calculateFare` du dispatcher (sans enregistrement) et `createOrder`.
+Ordre : base (forfait de zone avec **ses** multiplicateurs horaires, ou formule du service
+à l'heure de prise en charge), + options payantes (ajoutées aussi au forfait de zone),
+arrondi `roundingFactor`, arrondi au franc, puis coupon. Corrige C2, C3, C4, C5, C6.
+Correction au passage : l'aperçu prenait le multiplicateur de la première flotte en base
+quand le point n'était dans aucune flotte.
+
+**Décision 2 : consommation atomique.** La course et la consommation du devis sont dans la
+même transaction : `UPDATE fare_quote SET consumedAt, requestId WHERE id AND consumedAt
+IS NULL AND (expiresAt > now() | createdAt > now() − 10 min)`. Deux `createOrder` sur le
+même devis : une seule course, l'autre reçoit `QUOTE_ALREADY_USED`. Horodatage du devis
+par la base (`now()`), pas par le processus. `costBest` = prix avant coupon,
+`costAfterCoupon` = prix du devis, `couponId` rempli depuis le devis.
+
+**Décision 3 : appariement des apps installées.** Sans `quoteId` : dernier devis non
+consommé du même client, même service, mêmes points (6 décimales, `pointsHash`), mêmes
+options du service, même aller-retour, de moins de 10 minutes ; coupon compris (corrige C1
+sans mise à jour de l'app). Pas trouvé : devis calculé à la commande, origine `commande`
+(mesure « devis recalculé » : `SELECT count(*) FROM fare_quote WHERE origin = 'commande'
+AND "riderId" IS NOT NULL`). Le back-office calcule toujours un devis neuf. Avec
+`quoteId` : refus `QUOTE_EXPIRED` (expiré ou inconnu), `QUOTE_MISMATCH` (client, service,
+points, options, aller-retour ou prise en charge à plus de 10 min), messages français
+dans `extensions.code`.
+
+**Décision 4 : getFare sans itinéraire.** Les services refusés faute d'itinéraire sont
+retirés de la liste ; si aucun ne reste, refus `ROUTE_UNAVAILABLE` (« Impossible de
+calculer l'itinéraire pour le moment. Réessayez dans un instant. »).
+
+**Décision 5 : purge quotidienne** (admin-api, `FareQuotePurgeJob`) des devis non consommés
+de plus de 24 h.
+
+**Contrat mobile** (skill `kasi-contrat-mobile-backend`), ajouts seulement : `Service.quoteId`
+(ID) et `Service.quoteExpiresAt` (nullables), `CreateOrderInput.quoteId`,
+`CalculateFareInput.intervalMinutes` (facultatif, réservation chiffrée à l'heure prévue).
+Comportements visibles par les apps installées : prix d'aperçu entier et options payantes
+comprises ; coupon de l'aperçu appliqué à la commande ; refus lisible sans itinéraire
+réel ; panel : `calculateFare` peut refuser de la même façon. Prix du Kasiman sur une
+course avec coupon : plus élevé (ligne `OrderFee` de la remise).
+
+**Reste** : rider-app (envoi de `quoteId` et du coupon, `optionIds` aussi en
+réservation, `intervalMinutes` dans `getFare`, relance sur `QUOTE_EXPIRED`, « Réessayer »
+sur `ROUTE_UNAVAILABLE`) ; avenants (`kind = avenant`, I5).
+
+---
+
 ## 2026-10-19 — `p2-argent` I3 : dette espèces et plafond (backend)
 
 **Point** : `p2-argent` (`lot-argent`), incrément I3 de `docs/fiche-conception-argent.md`

@@ -35,7 +35,7 @@ Mis en place le 2026-09-28. Décision : `KASI_DECISIONS.md`, entrée du 2026-09-
 | `libs/database/src/lib/migration/postgres/1790629154960-Baseline.ts` | Migration de référence (ne jamais la modifier) |
 | `libs/database/src/lib/migration/postgres/baseline-tables.ts` | Les 59 tables qu'elle crée (contrôle de `mark-baseline`) |
 | `libs/database/src/lib/migration/migrate.ts` | Exécutable : `run`, `show`, `check`, `mark-baseline`, `revert`, et pour le grand livre `ledger-open`, `ledger-check` |
-| `libs/database/src/lib/migration/all-entities.ts` | Les 54 entités (union des trois API ; dont les 3 du grand livre et `money_policy` depuis le 2026-10-19) |
+| `libs/database/src/lib/migration/all-entities.ts` | Les 55 entités (union des trois API ; dont les 3 du grand livre et `money_policy` depuis le 2026-10-19, `fare_quote` depuis le 2026-10-20) |
 | `libs/database/src/lib/order/ledger-open.ts`, `ledger-integrity.ts` | Ouverture du grand livre et contrôle d'intégrité (appelés par `migrate.js`) |
 | `libs/database/src/lib/migration/connection-options.ts` | Connexion lue dans `DB_*`, partagée par API, exécutable et CLI |
 | `libs/database/src/lib/migration/data-source.cli.ts` | DataSource de la CLI TypeORM (poste de dev) |
@@ -129,6 +129,19 @@ Migrations après la référence, dans l'ordre :
    déploiement : `UPDATE money_policy SET "debtLimit" = ..., "debtAlertThreshold" = ...
    WHERE currency = 'XOF'` en attendant l'écran du panel ; les API relisent la table à
    chaque contrôle.
+4. `FareQuote1792452456288` (2026-10-20, `p2-argent` I4, devis figé) : table `fare_quote`
+   (vide : identifiant uuid fourni par le code, client, service, devise, points
+   `MultiPoint` 4326 et `pointsHash`, `optionIds`, `couponId`, `twoWay`, `pickupAt`,
+   `distance`, `duration`, `routingSource`, `breakdown` jsonb, `totalBeforeCoupon`,
+   `total`, `origin`, `createdAt`, `expiresAt`, `consumedAt`, `requestId` à index unique,
+   `kind`, `parentQuoteId` ; index d'appariement `riderId, serviceId, pointsHash` et index
+   sur `createdAt` pour la purge) et colonne nullable `request.quoteId` (uuid). Aucune
+   valeur par défaut d'identifiant : pas besoin de l'extension `uuid-ossp`, absente des
+   bases Kasi. Additive, réversible, vérifiée sur `kasi_test` (up, down, up, `check`
+   sans écart) puis sur la base locale `kasi` par le service `migrate` (sauvegarde
+   `../archive/sauvegardes/kasi-avant-devis-20261019.dump`, `ledger-check` à zéro écart
+   ensuite). Rien à lancer après elle. Les devis non consommés de plus de 24 h sont
+   purgés chaque jour par admin-api (`FareQuotePurgeJob`).
 
 ## 4. Faire évoluer le schéma (développeur)
 
