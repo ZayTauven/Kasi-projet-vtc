@@ -31,6 +31,14 @@ volumes:
   redis-data:
     driver: local
 
+# p1-sentry (2026-10-20) : rotation des journaux des API (fiche
+# docs/fiche-suivi-des-erreurs.md §5) : 5 fichiers de 10 Mo au plus par conteneur.
+x-api-logging: &api-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
 services:
 
   # ===========================================================================
@@ -134,6 +142,7 @@ services:
       dockerfile: apps/admin-api/Dockerfile
     container_name: kasi-admin-api
     restart: unless-stopped
+    logging: *api-logging
     environment:
       # Port d ecoute interne — lu par apps/admin-api/src/main.ts (defaut 3000
       # si absent, ce qui coincidait avec le mapping ci-dessous, mais explicite
@@ -149,6 +158,10 @@ services:
       # du grand livre est journalisee sans bloquer ; strict : elle annule
       # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
       LEDGER_MODE: ${LEDGER_MODE:-shadow}
+      # p2-dispatch D2-D3 (2026-10-20) : legacy (defaut) = diffusion unique a la
+      # creation ; waves = vagues 1/2/3 km + rayon du service, expiration 2 min apres
+      # la derniere. Meme valeur sur les 3 API. Voir docs/fiche-portage-dispatch.md.
+      DISPATCH_MODE: ${DISPATCH_MODE:-legacy}
       # Redis (subscriptions GraphQL via graphql-redis-subscriptions + ioredis)
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -160,6 +173,11 @@ services:
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
       FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
       FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+      # p1-sentry : suivi des erreurs (GlitchTip ou Sentry, meme protocole).
+      # Vide = aucun envoi. Ne jamais journaliser le DSN.
+      SENTRY_DSN_ADMIN_API: ${SENTRY_DSN_ADMIN_API:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
     volumes:
       # Persistance de la configuration runtime (config.production.json +
       # cle de service Firebase uploadee via l ecran /config). Sans ce mount,
@@ -194,6 +212,7 @@ services:
       dockerfile: apps/driver-api/Dockerfile
     container_name: kasi-driver-api
     restart: unless-stopped
+    logging: *api-logging
     environment:
       # Port d ecoute interne — lu par apps/driver-api/src/main.ts (defaut 3000
       # si absent, ce qui ne correspondait PAS au mapping "3002:3002" ci-dessous :
@@ -208,6 +227,10 @@ services:
       # du grand livre est journalisee sans bloquer ; strict : elle annule
       # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
       LEDGER_MODE: ${LEDGER_MODE:-shadow}
+      # p2-dispatch D2-D3 (2026-10-20) : legacy (defaut) = diffusion unique a la
+      # creation ; waves = vagues 1/2/3 km + rayon du service, expiration 2 min apres
+      # la derniere. Meme valeur sur les 3 API. Voir docs/fiche-portage-dispatch.md.
+      DISPATCH_MODE: ${DISPATCH_MODE:-legacy}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-CHANGEME_redis}
@@ -215,6 +238,11 @@ services:
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
       FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
       FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+      # p1-sentry : suivi des erreurs (GlitchTip ou Sentry, meme protocole).
+      # Vide = aucun envoi. Ne jamais journaliser le DSN.
+      SENTRY_DSN_DRIVER_API: ${SENTRY_DSN_DRIVER_API:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
     volumes:
       # Meme config partagee que admin-api (FirebaseNotificationModule lit
       # /app/config/config.production.json + la cle de service).
@@ -242,6 +270,7 @@ services:
       dockerfile: apps/rider-api/Dockerfile
     container_name: kasi-rider-api
     restart: unless-stopped
+    logging: *api-logging
     environment:
       # Port d ecoute interne — meme correctif que DRIVER_API_PORT ci-dessus,
       # cf. apps/rider-api/src/main.ts (defaut 3000, mapping publie = 3001).
@@ -255,6 +284,10 @@ services:
       # du grand livre est journalisee sans bloquer ; strict : elle annule
       # l'operation. Voir docs/migrations-base-de-donnees.md (grand livre).
       LEDGER_MODE: ${LEDGER_MODE:-shadow}
+      # p2-dispatch D2-D3 (2026-10-20) : legacy (defaut) = diffusion unique a la
+      # creation ; waves = vagues 1/2/3 km + rayon du service, expiration 2 min apres
+      # la derniere. Meme valeur sur les 3 API. Voir docs/fiche-portage-dispatch.md.
+      DISPATCH_MODE: ${DISPATCH_MODE:-legacy}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-CHANGEME_redis}
@@ -262,6 +295,11 @@ services:
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
       FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
       FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+      # p1-sentry : suivi des erreurs (GlitchTip ou Sentry, meme protocole).
+      # Vide = aucun envoi. Ne jamais journaliser le DSN.
+      SENTRY_DSN_RIDER_API: ${SENTRY_DSN_RIDER_API:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
     volumes:
       # Meme config partagee que admin-api (FirebaseNotificationModule lit
       # /app/config/config.production.json + la cle de service).

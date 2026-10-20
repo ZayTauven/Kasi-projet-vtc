@@ -7,6 +7,7 @@
   UnPagedRelation,
 } from '@ptc-org/nestjs-query-graphql';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import { DistanceMultiplier } from '@kasi/database';
 import { TimeMultiplier } from '@kasi/database';
 import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
@@ -48,6 +49,9 @@ export class ServiceDTO {
   searchRadius!: number;
   paymentMethod!: ServicePaymentMethod;
   orderType!: ServiceOrderType;
+  /** p2-vehicules : vehicules admis (vide = tous). */
+  @Field(() => [VehicleType])
+  vehicleTypes!: VehicleType[];
   cancellationTotalFee!: number;
   cancellationDriverShare!: number;
   @Field(() => Int)

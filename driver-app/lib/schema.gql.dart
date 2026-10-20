@@ -12364,6 +12364,176 @@ class _CopyWithStubImpl$Input$ShiftRuleSort<TRes>
   }) => _res;
 }
 
+class Input$SubmitDriverDocumentInput {
+  factory Input$SubmitDriverDocumentInput({
+    String? expiresAt,
+    required String mediaId,
+    String? number,
+    required String typeId,
+  }) => Input$SubmitDriverDocumentInput._({
+    if (expiresAt != null) r'expiresAt': expiresAt,
+    r'mediaId': mediaId,
+    if (number != null) r'number': number,
+    r'typeId': typeId,
+  });
+
+  Input$SubmitDriverDocumentInput._(this._$data);
+
+  factory Input$SubmitDriverDocumentInput.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('expiresAt')) {
+      final l$expiresAt = data['expiresAt'];
+      result$data['expiresAt'] = (l$expiresAt as String?);
+    }
+    final l$mediaId = data['mediaId'];
+    result$data['mediaId'] = (l$mediaId as String);
+    if (data.containsKey('number')) {
+      final l$number = data['number'];
+      result$data['number'] = (l$number as String?);
+    }
+    final l$typeId = data['typeId'];
+    result$data['typeId'] = (l$typeId as String);
+    return Input$SubmitDriverDocumentInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String? get expiresAt => (_$data['expiresAt'] as String?);
+
+  String get mediaId => (_$data['mediaId'] as String);
+
+  String? get number => (_$data['number'] as String?);
+
+  String get typeId => (_$data['typeId'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('expiresAt')) {
+      final l$expiresAt = expiresAt;
+      result$data['expiresAt'] = l$expiresAt;
+    }
+    final l$mediaId = mediaId;
+    result$data['mediaId'] = l$mediaId;
+    if (_$data.containsKey('number')) {
+      final l$number = number;
+      result$data['number'] = l$number;
+    }
+    final l$typeId = typeId;
+    result$data['typeId'] = l$typeId;
+    return result$data;
+  }
+
+  CopyWith$Input$SubmitDriverDocumentInput<Input$SubmitDriverDocumentInput>
+  get copyWith => CopyWith$Input$SubmitDriverDocumentInput(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$SubmitDriverDocumentInput ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$expiresAt = expiresAt;
+    final lOther$expiresAt = other.expiresAt;
+    if (_$data.containsKey('expiresAt') !=
+        other._$data.containsKey('expiresAt')) {
+      return false;
+    }
+    if (l$expiresAt != lOther$expiresAt) {
+      return false;
+    }
+    final l$mediaId = mediaId;
+    final lOther$mediaId = other.mediaId;
+    if (l$mediaId != lOther$mediaId) {
+      return false;
+    }
+    final l$number = number;
+    final lOther$number = other.number;
+    if (_$data.containsKey('number') != other._$data.containsKey('number')) {
+      return false;
+    }
+    if (l$number != lOther$number) {
+      return false;
+    }
+    final l$typeId = typeId;
+    final lOther$typeId = other.typeId;
+    if (l$typeId != lOther$typeId) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$expiresAt = expiresAt;
+    final l$mediaId = mediaId;
+    final l$number = number;
+    final l$typeId = typeId;
+    return Object.hashAll([
+      _$data.containsKey('expiresAt') ? l$expiresAt : const {},
+      l$mediaId,
+      _$data.containsKey('number') ? l$number : const {},
+      l$typeId,
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$SubmitDriverDocumentInput<TRes> {
+  factory CopyWith$Input$SubmitDriverDocumentInput(
+    Input$SubmitDriverDocumentInput instance,
+    TRes Function(Input$SubmitDriverDocumentInput) then,
+  ) = _CopyWithImpl$Input$SubmitDriverDocumentInput;
+
+  factory CopyWith$Input$SubmitDriverDocumentInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$SubmitDriverDocumentInput;
+
+  TRes call({
+    String? expiresAt,
+    String? mediaId,
+    String? number,
+    String? typeId,
+  });
+}
+
+class _CopyWithImpl$Input$SubmitDriverDocumentInput<TRes>
+    implements CopyWith$Input$SubmitDriverDocumentInput<TRes> {
+  _CopyWithImpl$Input$SubmitDriverDocumentInput(this._instance, this._then);
+
+  final Input$SubmitDriverDocumentInput _instance;
+
+  final TRes Function(Input$SubmitDriverDocumentInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? expiresAt = _undefined,
+    Object? mediaId = _undefined,
+    Object? number = _undefined,
+    Object? typeId = _undefined,
+  }) => _then(
+    Input$SubmitDriverDocumentInput._({
+      ..._instance._$data,
+      if (expiresAt != _undefined) 'expiresAt': (expiresAt as String?),
+      if (mediaId != _undefined && mediaId != null)
+        'mediaId': (mediaId as String),
+      if (number != _undefined) 'number': (number as String?),
+      if (typeId != _undefined && typeId != null) 'typeId': (typeId as String),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Input$SubmitDriverDocumentInput<TRes>
+    implements CopyWith$Input$SubmitDriverDocumentInput<TRes> {
+  _CopyWithStubImpl$Input$SubmitDriverDocumentInput(this._res);
+
+  TRes _res;
+
+  call({String? expiresAt, String? mediaId, String? number, String? typeId}) =>
+      _res;
+}
+
 class Input$TopUpWalletInput {
   factory Input$TopUpWalletInput({
     required double amount,
@@ -12633,6 +12803,7 @@ class Input$UpdateDriverInput {
     String? payoutMethodId,
     int? searchDistance,
     Enum$DriverStatus? status,
+    Enum$VehicleType? vehicleType,
   }) => Input$UpdateDriverInput._({
     if (accountNumber != null) r'accountNumber': accountNumber,
     if (address != null) r'address': address,
@@ -12657,6 +12828,7 @@ class Input$UpdateDriverInput {
     if (payoutMethodId != null) r'payoutMethodId': payoutMethodId,
     if (searchDistance != null) r'searchDistance': searchDistance,
     if (status != null) r'status': status,
+    if (vehicleType != null) r'vehicleType': vehicleType,
   });
 
   Input$UpdateDriverInput._(this._$data);
@@ -12751,6 +12923,12 @@ class Input$UpdateDriverInput {
           ? null
           : fromJson$Enum$DriverStatus((l$status as String));
     }
+    if (data.containsKey('vehicleType')) {
+      final l$vehicleType = data['vehicleType'];
+      result$data['vehicleType'] = l$vehicleType == null
+          ? null
+          : fromJson$Enum$VehicleType((l$vehicleType as String));
+    }
     return Input$UpdateDriverInput._(result$data);
   }
 
@@ -12798,6 +12976,9 @@ class Input$UpdateDriverInput {
   int? get searchDistance => (_$data['searchDistance'] as int?);
 
   Enum$DriverStatus? get status => (_$data['status'] as Enum$DriverStatus?);
+
+  Enum$VehicleType? get vehicleType =>
+      (_$data['vehicleType'] as Enum$VehicleType?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -12888,6 +13069,12 @@ class Input$UpdateDriverInput {
       result$data['status'] = l$status == null
           ? null
           : toJson$Enum$DriverStatus(l$status);
+    }
+    if (_$data.containsKey('vehicleType')) {
+      final l$vehicleType = vehicleType;
+      result$data['vehicleType'] = l$vehicleType == null
+          ? null
+          : toJson$Enum$VehicleType(l$vehicleType);
     }
     return result$data;
   }
@@ -13086,6 +13273,15 @@ class Input$UpdateDriverInput {
     if (l$status != lOther$status) {
       return false;
     }
+    final l$vehicleType = vehicleType;
+    final lOther$vehicleType = other.vehicleType;
+    if (_$data.containsKey('vehicleType') !=
+        other._$data.containsKey('vehicleType')) {
+      return false;
+    }
+    if (l$vehicleType != lOther$vehicleType) {
+      return false;
+    }
     return true;
   }
 
@@ -13112,6 +13308,7 @@ class Input$UpdateDriverInput {
     final l$payoutMethodId = payoutMethodId;
     final l$searchDistance = searchDistance;
     final l$status = status;
+    final l$vehicleType = vehicleType;
     return Object.hashAll([
       _$data.containsKey('accountNumber') ? l$accountNumber : const {},
       _$data.containsKey('address') ? l$address : const {},
@@ -13138,6 +13335,7 @@ class Input$UpdateDriverInput {
       _$data.containsKey('payoutMethodId') ? l$payoutMethodId : const {},
       _$data.containsKey('searchDistance') ? l$searchDistance : const {},
       _$data.containsKey('status') ? l$status : const {},
+      _$data.containsKey('vehicleType') ? l$vehicleType : const {},
     ]);
   }
 }
@@ -13173,6 +13371,7 @@ abstract class CopyWith$Input$UpdateDriverInput<TRes> {
     String? payoutMethodId,
     int? searchDistance,
     Enum$DriverStatus? status,
+    Enum$VehicleType? vehicleType,
   });
 }
 
@@ -13208,6 +13407,7 @@ class _CopyWithImpl$Input$UpdateDriverInput<TRes>
     Object? payoutMethodId = _undefined,
     Object? searchDistance = _undefined,
     Object? status = _undefined,
+    Object? vehicleType = _undefined,
   }) => _then(
     Input$UpdateDriverInput._({
       ..._instance._$data,
@@ -13240,6 +13440,8 @@ class _CopyWithImpl$Input$UpdateDriverInput<TRes>
       if (searchDistance != _undefined)
         'searchDistance': (searchDistance as int?),
       if (status != _undefined) 'status': (status as Enum$DriverStatus?),
+      if (vehicleType != _undefined)
+        'vehicleType': (vehicleType as Enum$VehicleType?),
     }),
   );
 }
@@ -13272,6 +13474,7 @@ class _CopyWithStubImpl$Input$UpdateDriverInput<TRes>
     String? payoutMethodId,
     int? searchDistance,
     Enum$DriverStatus? status,
+    Enum$VehicleType? vehicleType,
   }) => _res;
 }
 
@@ -13890,6 +14093,54 @@ Enum$DriverDeductTransactionType fromJson$Enum$DriverDeductTransactionType(
       return Enum$DriverDeductTransactionType.Withdraw;
     default:
       return Enum$DriverDeductTransactionType.$unknown;
+  }
+}
+
+enum Enum$DriverDocumentStatus {
+  Approved,
+  Expired,
+  Pending,
+  Rejected,
+  Replaced,
+  $unknown;
+
+  factory Enum$DriverDocumentStatus.fromJson(String value) =>
+      fromJson$Enum$DriverDocumentStatus(value);
+
+  String toJson() => toJson$Enum$DriverDocumentStatus(this);
+}
+
+String toJson$Enum$DriverDocumentStatus(Enum$DriverDocumentStatus e) {
+  switch (e) {
+    case Enum$DriverDocumentStatus.Approved:
+      return r'Approved';
+    case Enum$DriverDocumentStatus.Expired:
+      return r'Expired';
+    case Enum$DriverDocumentStatus.Pending:
+      return r'Pending';
+    case Enum$DriverDocumentStatus.Rejected:
+      return r'Rejected';
+    case Enum$DriverDocumentStatus.Replaced:
+      return r'Replaced';
+    case Enum$DriverDocumentStatus.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$DriverDocumentStatus fromJson$Enum$DriverDocumentStatus(String value) {
+  switch (value) {
+    case r'Approved':
+      return Enum$DriverDocumentStatus.Approved;
+    case r'Expired':
+      return Enum$DriverDocumentStatus.Expired;
+    case r'Pending':
+      return Enum$DriverDocumentStatus.Pending;
+    case r'Rejected':
+      return Enum$DriverDocumentStatus.Rejected;
+    case r'Replaced':
+      return Enum$DriverDocumentStatus.Replaced;
+    default:
+      return Enum$DriverDocumentStatus.$unknown;
   }
 }
 
@@ -15238,6 +15489,44 @@ Enum$TransactionAction fromJson$Enum$TransactionAction(String value) {
       return Enum$TransactionAction.Recharge;
     default:
       return Enum$TransactionAction.$unknown;
+  }
+}
+
+enum Enum$VehicleType {
+  Car,
+  Motorcycle,
+  Van,
+  $unknown;
+
+  factory Enum$VehicleType.fromJson(String value) =>
+      fromJson$Enum$VehicleType(value);
+
+  String toJson() => toJson$Enum$VehicleType(this);
+}
+
+String toJson$Enum$VehicleType(Enum$VehicleType e) {
+  switch (e) {
+    case Enum$VehicleType.Car:
+      return r'Car';
+    case Enum$VehicleType.Motorcycle:
+      return r'Motorcycle';
+    case Enum$VehicleType.Van:
+      return r'Van';
+    case Enum$VehicleType.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$VehicleType fromJson$Enum$VehicleType(String value) {
+  switch (value) {
+    case r'Car':
+      return Enum$VehicleType.Car;
+    case r'Motorcycle':
+      return Enum$VehicleType.Motorcycle;
+    case r'Van':
+      return Enum$VehicleType.Van;
+    default:
+      return Enum$VehicleType.$unknown;
   }
 }
 

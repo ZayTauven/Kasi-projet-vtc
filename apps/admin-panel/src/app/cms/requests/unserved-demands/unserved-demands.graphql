@@ -1,0 +1,18 @@
+# p2-dispatch D6 : demandes non servies (aucun Kasiman apres les vagues).
+query UnservedDemands($since: DateTime, $limit: Int) {
+  unservedDemands(since: $since, limit: $limit) {
+    id
+    requestId
+    serviceId
+    lat
+    lng
+    driversSolicited
+    createdAt
+    alertedAt
+    alertedDrivers
+  }
+  services {
+    id
+    name
+  }
+}

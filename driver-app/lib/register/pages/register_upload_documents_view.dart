@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:client_shared/config.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -7,12 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:http/http.dart' as http;
+import 'package:kasi_driver/documents/upload_driver_file.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/query_result_view.dart';
 import 'package:kasi_driver/register/register.graphql.dart';
-import 'package:kasi_driver/session_token.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kasi_driver/main_bloc.dart';
 
@@ -252,28 +249,10 @@ class _RegisterUploadDocumentsViewState
 
   Future<Fragment$DriverMedia> uploadFile(
       String path, UploadMedia media) async {
-    var postUri = Uri.parse(
-        "$serverUrl${media == UploadMedia.profile ? "upload_profile" : "upload_document"}");
-    var request = http.MultipartRequest("POST", postUri);
-    final authorization = readStoredAuthorizationHeader();
-    if (authorization == null) {
-      throw Exception('Session expiree : reconnectez-vous pour envoyer un fichier.');
-    }
-    request.headers['Authorization'] = authorization;
-    request.files.add(await http.MultipartFile.fromPath('file', path));
-    final streamedResponse = await request.send();
-    var response = await http.Response.fromStream(streamedResponse);
-    // Le statut n'etait pas verifie : sur 401/413/415/500 le `jsonDecode` puis
-    // `Fragment$DriverMedia.fromJson` levaient sur une reponse d'erreur, en
-    // masquant la cause reelle.
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(
-          'Echec de l\'envoi du fichier (HTTP ${response.statusCode}).');
-    }
-    var json = jsonDecode(response.body);
+    // Envoi partagé avec « Mes documents » (p2-kyc K3), qui pose aussi le
+    // type MIME (sans lui, le backend refusait le fichier en 415).
+    final file = await uploadDriverFile(path, media);
     widget.onUploaded();
-    return Fragment$DriverMedia.fromJson(json);
+    return file;
   }
 }
-
-enum UploadMedia { profile, document }

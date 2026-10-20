@@ -139,6 +139,11 @@
       "Custom3": "Icon 3",
       "Custom4": "Icon 4",
       "Custom5": "Icon 5"
+    },
+    "vehicleType": {
+      "Motorcycle": "Motorbike",
+      "Car": "Taxi or car",
+      "Van": "Van"
     }
   },
   "branding": {
@@ -165,7 +170,9 @@
     "driver": {
       "pendingVerification": "Pending Verification",
       "all": "View All",
-      "header": "Kasimen"
+      "header": "Kasimen",
+      "expiringDocuments": "Expiring documents",
+      "documentSuspended": "Suspended (documents)"
     },
     "marketing": {
       "coupons": "Coupons",
@@ -209,12 +216,15 @@
       "paymentGateways": "Payment Gateways",
       "settings": "Settings",
       "header": "Management",
-      "mapSettings": "Map Settings"
+      "mapSettings": "Map Settings",
+      "documentTypes": "Document types"
     },
     "drivers": {
       "header": "Kasimen",
       "subtitle": "List of all Kasimen registered."
-    }
+    },
+    "requestsAll": "All requests",
+    "unservedDemands": "Unserved demand"
   },
   "overview": {
     "switch": {
@@ -1400,5 +1410,132 @@
     "alertNotBelowLimit": "The alert threshold must be below the limit.",
     "noPolicy": "No limit in this currency: saving creates one.",
     "saved": "Limit saved."
+  },
+  "dispatch": {
+    "attemptsTab": "Offers",
+    "attemptsEmpty": "No offer recorded: this request did not go through wave dispatch.",
+    "wave": "Wave",
+    "rank": "Rank",
+    "driver": "Kasiman",
+    "distance": "Distance",
+    "duration": "Duration",
+    "airDistance": "straight line",
+    "routingSource": "Ranking source",
+    "outcome": "Outcome",
+    "times": "Times",
+    "source": {
+      "mapbox": "Mapbox",
+      "osrm": "OSRM",
+      "haversine": "Straight line"
+    },
+    "outcomes": {
+      "Pending": "Pending",
+      "Accepted": "Accepted",
+      "Rejected": "Rejected",
+      "Expired": "Expired",
+      "NoAnswer": "No answer"
+    },
+    "unservedTitle": "Unserved demand",
+    "unservedSubtitle": "Requests left without a Kasiman after every wave (last 7 days)",
+    "unservedEmpty": "No unserved demand over the period.",
+    "service": "Service",
+    "point": "Pickup point",
+    "driversSolicited": "Kasimen offered",
+    "alert": "Alert sent",
+    "alertSent": "Sent to {{count}} Kasimen",
+    "alertNone": "Not sent",
+    "loadError": "Could not load the dispatch log."
+  },
+  "kyc": {
+    "suspendedOnly": "Suspended (expired document)",
+    "suspendedTitle": "Kasiman suspended: required document expired",
+    "suspendedDesc": "The suspension is lifted (offline) once every expired required document has an approved replacement.",
+    "required": "Required",
+    "withExpiry": "With expiry date",
+    "disabled": "Disabled",
+    "noDocument": "No document sent for this type.",
+    "file": "File",
+    "number": "Number",
+    "expiresAt": "Expires on",
+    "status": "State",
+    "type": "Document type",
+    "expiresAtHint": "Valid until this day included.",
+    "daysLeft": "{{days}} days left",
+    "expiredSince": "Expired {{days}} days ago",
+    "noExpiry": "No expiry",
+    "reason": "Reason",
+    "state": {
+      "Pending": "Pending",
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "Expired": "Expired",
+      "Replaced": "Replaced"
+    },
+    "approve": "Approve",
+    "approveConfirm": "Approve this document?",
+    "reject": "Reject",
+    "rejectTitle": "Reject the document",
+    "rejectDesc": "The reason is shown to the Kasiman.",
+    "reasonPlaceholder": "E.g. unreadable photo, document in someone else's name",
+    "approved": "Document approved.",
+    "rejected": "Document rejected.",
+    "typed": "File typed and approved.",
+    "reinstated": "The Kasiman is no longer suspended: offline and free to go online.",
+    "expiryRequired": "This document type requires an expiry date.",
+    "legacyTitle": "Files sent by the former app",
+    "legacyDesc": "These files have no type. Type them so they count as approved documents.",
+    "legacyEmpty": "All sent files are typed.",
+    "typeFile": "Type",
+    "typeSection": {
+      "title": "Type a file",
+      "desc": "Pick the type, number and expiry read on the document. It is approved right away."
+    },
+    "typeAndApprove": "Type and approve",
+    "yes": "Yes",
+    "no": "No",
+    "expiring": {
+      "title": "Documents expiring soon",
+      "subtitle": "Approved documents reaching their expiry: remind the Kasimen before suspension.",
+      "within": "Within {{days}} days",
+      "empty": "No document expires in this period.",
+      "kasiman": "Kasiman",
+      "remaining": "Left"
+    },
+    "types": {
+      "title": "Document types",
+      "subtitle": "Catalogue of documents required from Kasimen.",
+      "titleField": "Title",
+      "code": "Code",
+      "codeHint": "2 to 32 characters a-z, 0-9, _; cannot be changed later.",
+      "description": "Description",
+      "sortOrder": "Order",
+      "enabled": "Active",
+      "enabledHint": "A disabled type is no longer requested; its documents remain visible.",
+      "active": "Active",
+      "newTitle": "New type",
+      "editTitle": "Edit type",
+      "identityDesc": "How the document is shown to operators and Kasimen.",
+      "rulesTitle": "Rules",
+      "rulesDesc": "What suspends the Kasiman and when they are reminded.",
+      "requiredHint": "Its expiry suspends the Kasiman.",
+      "reminderDays": "Reminders (days before expiry)",
+      "reminderDaysHint": "Comma-separated numbers, e.g. 30, 14, 7, 3, 1.",
+      "saved": "Document type saved."
+    }
+  },
+  "vehicle": {
+    "type": "Vehicle type",
+    "allowed": "Allowed vehicles",
+    "all": "All vehicles",
+    "serviceHint": "Empty: all vehicles. Otherwise, only Kasimen with these vehicles receive this service's requests.",
+    "requiredFor": "Required for",
+    "documentHint": "Empty: required for all vehicles.",
+    "notSet": "Vehicle not set",
+    "driverHint": "Determines the offered services and the required documents. Mandatory to approve a new Kasiman.",
+    "serviceNotAllowed": "vehicle not allowed",
+    "saved": "Kasiman saved.",
+    "approvalBlocked": "This Kasiman cannot be approved yet",
+    "approvalNoType": "Vehicle type not set.",
+    "approvalMissing": "Missing or unapproved mandatory documents: {{list}}."
   }
 }

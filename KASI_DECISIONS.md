@@ -8,6 +8,435 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-20 — `p1-sentry` : suivi des erreurs des API, repris de BetterSuite ; fiche `p2-momo`
+
+**Tranché par la session principale, à revoir par l'utilisateur.** Points : `p1-sentry`
+(`lot-qualite`), `bs-stack-monitoring`, `p2-momo`. Local, non committé.
+
+**Sentry, repris de BetterSuite 5.3.2 et corrigé selon la fiche**
+(`docs/fiche-suivi-des-erreurs.md` §2 et §4) :
+- `@sentry/nestjs` **10.76.0** épinglé : branche 10 de BetterSuite, la 11 n'a qu'un mois.
+- `libs/database/src/lib/monitoring/` (alias `@kasi/monitoring/*`) :
+  - `init-monitoring.ts` : `initMonitoring(api)`, appelé par `apps/*/src/instrument.ts`,
+    lui-même premier import de chaque `main.ts`, sans NestJS ni la lib : l'instrumentation de
+    `@nestjs/schedule` et de BullMQ n'agit que sur les modules chargés après ;
+  - `scrub.ts` : filtrage des données personnelles ;
+  - `monitoring.filter.ts` : `KasiMonitoringFilter` en `APP_FILTER`.
+- **Sans DSN, rien n'est envoyé** (dev local, banc d'intégration). Le DSN n'est jamais
+  journalisé, et il n'y a aucune route de test publique.
+- **Réglages** : `sendDefaultPii: false`, pas de traces ni de profilage. Variables :
+  `SENTRY_DSN_ADMIN_API`, `SENTRY_DSN_DRIVER_API`, `SENTRY_DSN_RIDER_API`,
+  `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` (deux fichiers compose et `.env.example`, sans valeur).
+- **Ce qui n'est jamais envoyé** : corps et variables GraphQL, en-têtes sauf user-agent et
+  content-type, cookies, paramètres d'URL, nom de machine. Dans les textes : numéros +221 et
+  mobiles à 9 chiffres, JWT, Bearer, jetons FCM, coordonnées. Champs connus remplacés (téléphone,
+  noms, adresses, points, jetons, `connectionParams`). Journaux exclus du fil d'Ariane.
+  L'utilisateur est réduit à son identifiant interne.
+- **Décision, filtre** : le `SentryGlobalFilter` de BetterSuite journalise en erreur, avec la
+  pile, chaque exception GraphQL qui n'est pas une `HttpException`. Chaque refus métier
+  (`Already Taken`, `QUOTE_EXPIRED`…) serait devenu un incident. `KasiMonitoringFilter` relance
+  donc tels quels les refus attendus : erreur GraphQL à code métier, ou `HttpException` < 500.
+  Le reste passe par le filtre de Sentry. En GraphQL, l'exception est toujours relancée telle
+  quelle : **la forme des erreurs vue par les apps ne change pas**.
+- **Hygiène des journaux** : plus de jeton de connexion WebSocket (admin-api, rider-api), plus
+  de jetons FCM (`driver-notification.service.ts`). Rotation des journaux Docker des 3 API :
+  10 Mo × 5.
+
+**Vérification sur la vraie stack** (images reconstruites, faux serveur Sentry local) :
+- sans DSN, chaque API annonce « inactif » ; avec DSN, « actif », sans afficher le DSN ;
+- connexion refusée (`FORBIDDEN`) et `me` non authentifié (`UNAUTHENTICATED`) : aucun envoi,
+  aucune pile dans les journaux ;
+- erreur inattendue (`QueryFailedError`, nom d'utilisateur contenant un caractère nul, un numéro
+  et un prénom, avec un jeton `Bearer`) : un seul événement, sans corps, variables, numéro,
+  prénom, jeton ni `Authorization` ; étiquettes `service` et `environment` ;
+- réponses GraphQL inchangées.
+
+Tests unitaires : `libs/database/src/lib/monitoring/scrub.spec.ts`, 9 tests.
+
+**Constat hors lot (`socle-securite`)** : `NODE_ENV` n'est défini nulle part. Apollo renvoie
+donc aux apps la pile d'appels de chaque erreur (`extensions.stacktrace`), avec les chemins
+internes, probablement aussi en production. Correctif d'une ligne par module GraphQL
+(`includeStacktraceInErrorResponses: false`), sans effet sur les apps qui ne lisent que
+`message` et `code`. Non fait : point à ouvrir.
+
+**Reste pour `p1-sentry`** :
+- volet mobile : Crashlytics à compléter (`kasi-mobile-apps`, fiche §5) ;
+- les 4 décisions de la fiche §6 : données hors du Sénégal, hébergement de GlitchTip, canal
+  d'alerte, durée de conservation ;
+- puis le déploiement de GlitchTip (chantier de déploiement).
+
+**`p2-momo`** : fiche rendue, `docs/fiche-paiement-mobile.md`. Côté Kasi par
+`kasi-integrations-auditor` ; documentation Bictorys lue par la session principale. Constats :
+- le paiement en ligne hérité est mort : le serveur de passerelle Ridy n'existe nulle part et ses
+  variables manquent ;
+- les apps installées sont prêtes, puisque `topUpWallet` renvoie déjà une URL ;
+- **les webhooks Bictorys ne sont pas signés** (secret en clair dans `X-Secret-Key`) : chaque
+  transaction doit être revérifiée par `gettransactiondetails` avant crédit ;
+- un seul webhook par compte ;
+- en test, aucune redirection pour le mobile money ;
+- `processPrePay` a sa condition inversée (chemin mort, à corriger avec le lot).
+
+Recommandation : module Bictorys dans les API (option A). Sept décisions et les démarches
+humaines longues (compte marchand, KYC, clés de test) attendent l'utilisateur (§7).
+
+---
+
+## 2026-10-20 — Critère de sortie de la phase 1 : banc des 50 courses du pilote, 2 défauts corrigés
+
+**Tranché par la session principale, à revoir par l'utilisateur.** Points : `p1-tests`,
+`p1-transitions`, `p1-resync`, `p1-unicite`, `p2-dispatch`, `p2-argent`, `bug-timeout`.
+Local, non committé.
+
+**Pourquoi** : le test « 50 courses » de `driver-order-transitions.int-spec.ts`
+(29 septembre) insère les courses en SQL, en `legacy`, espèces seulement. Il ne prouvait
+ni l'absence d'offre perdue ni le cycle que vivront les Kasimen en `waves`.
+
+**Banc** : `apps/driver-api/src/app/dispatch/cycle-pilote.int-spec.ts`. 50 courses d'affilée
+en `waves`, graine fixe (`KASI_PILOT_SEED`, `KASI_PILOT_COURSES`), 7 scénarios mêlés
+(24 espèces, 6 portefeuille, 6 refus, 4 annulations client avant et 4 après acceptation,
+3 annulations Kasiman, 3 « aucun Kasiman »). Chaîne réelle : `getFare`, `createOrder`
+(renvoyé pendant ou après le traitement), vagues pas à pas avec jobs rejoués, relecture
+`availableOrders` par chaque Kasiman après chaque vague (coupure réseau), acceptations
+concurrentes, chaque étape doublée puis rejouée. Un Kasiman bloqué pour dette est toujours
+le plus proche. À la fin : courses closes, aucun Kasiman « en course », aucune activité en
+double, une acceptation par course, portefeuilles égaux au calcul attendu, grand livre
+conforme (`ledgerIntegrityReport`), une notification client par événement.
+
+**Résultat** : vert sur les graines 20261020, 1, 2, 3 et 5 (50 courses, environ 80 s) et sur
+200 courses (graine 4, environ 5 min). Banc complet : 156/156. Le critère de sortie de la
+phase 1 est atteint **sur le banc**. Restent la production et le téléphone réel.
+
+**Défaut 1, trouvé à la course 29 : client en négatif, course en espèces bloquée.** Un client
+qui a payé des frais d'annulation a un solde de −500. La fin de course comptait ce solde
+négatif : espèces au prix exact + (−500) < prix, donc la course restait en
+`WaitingForPostPay`. La driver-app installée envoie toujours `prix + pourboire − déjà payé`.
+Le Kasiman n'avait donc aucune issue et restait « en course », sans plus recevoir d'offre.
+À Dakar, chaque annulation tardive aurait bloqué toutes les courses suivantes de ce client.
+**Décision** : seul un crédit positif paie la course (`Math.max(0, crédit)` dans
+`finishInTransaction`). La dette du client reste due et se solde à sa prochaine recharge
+(fiche argent §5.5) ; le Kasiman ne la recouvre pas en espèces. Test ciblé dans
+`driver-order-transitions.int-spec.ts`.
+
+**Défaut 2 (`bug-timeout`) : commande en double par la rider-app installée.** Sans
+`quoteId`, une commande renvoyée après le timeout de 20 s ne retrouvait plus de devis libre.
+Elle en recalculait un et créait une **seconde course**, avec un second dispatch. Deux envois
+simultanés avec le même devis renvoyaient `QUOTE_ALREADY_USED` alors que la course existait.
+**Décision** : un même devis donne toujours la même course. C'est la règle d'unicité déjà
+appliquée à l'argent (`dira-r-unicite`). La course déjà créée est renvoyée, sans nouvelle
+course ni nouveau dispatch, dans trois cas :
+- même devis, renvoyé à la suite ou en même temps ;
+- app installée : même client, même service, mêmes points, mêmes options, moins de 2 min
+  après (`ORDER_RESEND_WINDOW_SECONDS`) ;
+- dans les deux cas, seulement si la course est encore en cours.
+
+Après une annulation ou une fin, la même commande crée bien une nouvelle course.
+`QUOTE_ALREADY_USED` ne sort plus que pour le devis d'une course close. La nouvelle
+rider-app reçoit donc sa course au lieu du message « commande déjà enregistrée ». Le contrat
+mobile ne change pas : même mutation, même forme de réponse.
+
+**Limites du banc** : courses l'une après l'autre (pas deux courses qui se disputent le même
+Kasiman au même instant) ; délais BullMQ non attendus (couverts par `dispatch-waves`) ;
+diffusion, push et itinéraire simulés ; pas de livraison (colis).
+
+---
+
+## 2026-10-20 — `p2-vehicules` : type de véhicule du Kasiman, K4, push en français, débordements
+
+**Tranché par l'agent `kasi-product-vision`, à revoir.** Points : `p2-vehicules`
+(`lot-vehicules`), `p2-kyc` (K4), `bug-push-anglais`, `bug-debordements`, `sc-kasiman`,
+`sc-flotte`. Fiche : `docs/fiche-vehicules.md`. Local, non committé, `DISPATCH_MODE=legacy`.
+`d-nom-app` non touché : l'app garde son nom actuel.
+
+**Lecture vision** : écart de vision corrigé, pas seulement technique. L'inscription
+supposait une voiture (« Modèle de voiture ») : un livreur à moto ou un conducteur de
+camionnette ne s'y reconnaissait pas (pilier 3, digitaliser l'existant). Le type de
+véhicule est un attribut du Kasiman, jamais une seconde identité : même app, même badge,
+même réputation, même portefeuille (piliers 1 et 5).
+
+**Décisions** (Q1 à Q7 de la fiche) :
+1. Énumération `VehicleType` : `Motorcycle`, `Car` (taxi et voiture), `Van`. Une seule
+   énumération PostgreSQL `vehicle_type_enum` pour `car`, `driver`, `service`,
+   `driver_document_type`.
+2. Le type vit sur le Kasiman (`driver.vehicleType`) ; le modèle (`car.vehicleType`) ne
+   sert qu'à filtrer la liste à l'inscription.
+3. `service.vehicleTypes` vide = tous les véhicules ; Kasiman sans type = accepté
+   partout. Le déploiement ne retire d'offre à personne.
+4. Le Kasiman choisit son type à l'inscription, ou une fois au profil s'il n'en a pas ;
+   actif et typé, il ne le change plus lui-même (ignoré, comme un statut refusé).
+5. K4 : `driver_document_type.vehicleTypes` (vide = tous). Suspension et catalogue de
+   l'app limités aux documents exigés pour son véhicule. L'approbation d'un nouveau
+   Kasiman (`waiting documents`/`pending approval` vers `offline`/`online`) exige un
+   type et tous ses documents obligatoires validés (`AdminDriverQueryService`).
+   Kasimen déjà actifs non concernés. SMS de K4 non fait.
+6. Push : textes français envoyés par le serveur (`push-texts.ts`), clés de traduction
+   abandonnées : seule voie qui corrige les apps déjà installées. Erreurs anglaises
+   restantes (coupons, crédit, modèle SMS) laissées : la rider-app installée compare
+   les messages de coupon mot pour mot.
+7. driver-app : barre d'accueil refaite (le libellé de `FloatingActionButton.extended`
+   ne rétrécit jamais et chevauchait le solde) ; « FCFA » partout ; « véhicule » au
+   lieu de « voiture » dans l'inscription et le profil.
+
+**Migration** : `VehicleTypes1792493301332`, additive, vérifiée sur `kasi_test` (run,
+revert, run, `check` conforme) puis appliquée à `kasi` par le service `migrate`
+(sauvegarde `../archive/sauvegardes/kasi-avant-vehicules-20261020.dump`).
+
+**Tests** : `apps/driver-api/src/app/driver/vehicle-types.int-spec.ts`, 6 tests ; banc
+complet 152/152.
+
+**Reste** : paramétrage réel des modèles et des services (`p2-parametrage`), SMS K4,
+validation sur téléphone réel, autres débordements relevés (paiement, pourboire,
+unités).
+
+---
+
+## 2026-10-20 — `p2-kyc` K1 : documents typés, expiration, suspension (backend)
+
+**Tranché par la session principale (CTO délégué), à revoir par l'utilisateur.**
+Points : `p2-kyc` (`lot-kyc`), `bs-mod-kyc`, `bs-act-kyc`, `sc-kyc`. Fiche :
+`docs/fiche-kyc.md` (12 questions, recommandations appliquées). Backend seulement, non
+committé.
+
+**Hypothèse juridique à confirmer (Q1)** : faute de liste légale vérifiée pour le
+Sénégal, l'hypothèse la plus prudente est retenue : permis, carte grise, assurance,
+pièce d'identité **et visite technique** (ajoutée par prudence, absente de la demande),
+tous obligatoires pour moto, taxi et camionnette ; date d'expiration exigée sauf pour la
+carte grise. Le catalogue se corrige sans déploiement (`updateDriverDocumentType`).
+
+**Décisions** :
+1. Modèle : `driver_document_type` (catalogue) et `driver_document` (états `pending`,
+   `approved`, `rejected`, `expired`, `replaced`), un seul en attente et un seul validé
+   par Kasiman et type (index uniques partiels, verrou de la ligne `driver`). Pas de
+   portée par véhicule tant que `p2-vehicules` n'existe pas (Q2).
+2. Seule l'**expiration d'un document obligatoire fourni** suspend (Q3) : un document
+   manquant ne suspend pas, sinon toute la flotte actuelle le serait. Un renouvellement
+   en attente ne protège pas (Q5).
+3. Suspension = `soft reject` + note + `documentsSuspendedAt` (écran déjà géré par
+   l'app installée), retrait de la position Redis, push texte (Q4). Réactivation à
+   `offline` quand l'opérateur valide le dernier document bloquant (Q8).
+4. Contrôle `kyc-check` sur la file BullMQ existante `kasi-dispatch` (driver-api,
+   préfixe `kasi-bull`), toutes les heures (Q7, Q12) ; rappels par push à J-30, 14, 7,
+   3, 1, une fois par seuil, entre 8 h et 21 h (Q6). SMS reporté en K4 (Q10).
+5. **Faille corrigée (Q9)** : le filtre des statuts que le Kasiman se pose lui-même
+   (`DriverQueryService.updateOne`) comparait `DriverStatus[status]`, toujours
+   `undefined`, et laissait tout passer (un Kasiman refusé ou bloqué pouvait se remettre
+   `online`). Désormais `online`/`offline` seulement depuis `online`, `offline`,
+   `in service`, et jamais `online` avec un document obligatoire expiré ; `pending
+   approval` reste permis (inscription de l'app installée).
+6. Fichiers de l'ancienne app : l'opérateur les type (`createDriverDocument`, validé
+   d'emblée) en attendant l'écran typé de la driver-app (Q11).
+
+**Migration** : `DriverDocuments1792479894071`, additive (2 tables, catalogue semé,
+colonne nullable), vérifiée sur `kasi_test` (up, down, up, `check`) puis sur `kasi`
+(sauvegarde `../archive/sauvegardes/kasi-avant-kyc-20261020.dump`).
+
+**Contrat mobile** : ajouts seuls dans driver-api (`driverDocumentTypes`,
+`driverDocuments`, `submitDriverDocument`, types `DriverDocumentType`, `DriverDocument`,
+`DriverDocumentStatus`). Rien de renommé ni retiré. Comportement changé : un
+`updateOneDriver(status: Online)` refusé est ignoré (le vrai statut est renvoyé).
+admin-api : `driverDocumentTypes`, `driverDocuments`, `expiringDriverDocuments`,
+`create/updateDriverDocumentType`, `createDriverDocument`, `reviewDriverDocument`
+(`Drivers_View` / `Drivers_Edit`).
+
+**Tests** : `apps/driver-api/src/app/kyc/kyc.int-spec.ts`, 9 tests.
+
+**Reste** : K2 (panel), K3 (driver-app, téléphone réel), K4 (SMS, documents manquants
+bloquants à l'approbation, portée par véhicule).
+
+---
+
+## 2026-10-20 — `p2-dispatch` D7 : essai de bout en bout, Q9 révisée
+
+**Tranché par la session principale (CTO délégué), à revoir par l'utilisateur.** Les
+5 scénarios de D7 passent en `waves` sur la stack locale, avec un Kasiman sur l'émulateur :
+
+| Scénario | Résultat |
+|---|---|
+| Kasiman à 0,8 km | Offre à la vague 1 en 0,1 s |
+| Kasiman à 2,5 km | Offre à la vague 3, à 60 s |
+| Refus | Refus enregistré, puis expiration avancée |
+| Aucun Kasiman | Course expirée à 3 min 30, une seule push client, alerte de demande non servie à la 3e demande |
+| Kasiman bloqué pour dette | Jamais sollicité |
+
+Deux défauts trouvés et corrigés :
+- `availableOrders` en `waves` filtrait encore par le rayon personnel du Kasiman ;
+- l'alerte de demande non servie visait aussi les Kasimen bloqués.
+
+**Q9 révisée** : réserver la 1re vague aux Kasimen qui n'ont que le service commandé
+l'écarte de la quasi-totalité de la flotte, qui est polyvalente. Kasi Moto, taxi et
+livraison sont le même Kasiman (`vision-kasiman`). Le mode commandé devient une **priorité
+de classement** à l'intérieur de chaque anneau, et plus une exclusion.
+Appliquée le jour même : tri (mode commandé, puis distance) avant la matrice, et
+(mode commandé, puis durée routière) après ; réglage renommé
+`DISPATCH_PREFER_SINGLE_SERVICE` (vrai par défaut, remplace
+`DISPATCH_FIRST_WAVE_SINGLE_SERVICE`). Test ajouté (polyvalent en 1re vague s'il reste
+de la place, réglage coupé) : banc à 136. Commentaire de `KASI_REDIS_DB` corrigé : la
+file BullMQ est en base 2, mais positions, clés de vague et pub/sub des API sont en
+base 0 (`RedisModule.forRoot` ignore `commonOptions.db` avec une config unique).
+
+Reste pour clore `p2-dispatch`, au chantier de déploiement ou avec l'utilisateur :
+téléphone réel, cohabitation avec les anciennes versions des apps, essai d'une
+livraison, bascule `DISPATCH_MODE=waves`.
+
+---
+
+## 2026-10-20 — `p2-dispatch` D4-D6 : journal des sollicitations, refus, classement par la route, demande non servie
+
+**Points** : `p2-dispatch` (`lot-dispatch`), incréments D4, D5 et D6 de
+`docs/fiche-portage-dispatch.md` ; `dira-r-journal`, `dira-r-nonservi`. Arbitrages Q7,
+Q9, Q12 et Q13 appliqués. Backend seulement, non committé. Tout ce qui suit ne joue
+qu'en `DISPATCH_MODE=waves` : en `legacy` (défaut), rien n'est écrit ni changé.
+
+**Décision 1 : journal `dispatch_attempt` (D4).** Une ligne par (course, Kasiman),
+unique : vague, rang, distance à vol d'oiseau, distance et durée routières, source du
+routage, `offeredAt`, `respondedAt`, issue. Issues : `pending`, `accepted`, `rejected`,
+`expired` (« aucun Kasiman » sans réponse) et `no_answer` (course prise par un autre ou
+annulée sans réponse ; les `revoked` et `taken_by_other` de la fiche y sont regroupés).
+L'insertion conditionnelle (`ON CONFLICT DO NOTHING`) décide de la push : deux vagues
+ou deux refus concurrents ne sollicitent jamais deux fois. Pas de clé étrangère (table
+de journal, comme `fare_quote`).
+
+**Décision 2 : refus explicite (Q13).** Mutation driver-api `rejectOrder(orderId: ID!):
+Boolean!` (nom de la demande ; la fiche disait `rejectOrderOffer`). Le Kasiman passe
+`rejected`, ne revoit plus l'offre (ensemble Redis `request-rejected:<id>`, une heure :
+ni republication, ni `availableOrders`), et le suivant de l'anneau courant est
+sollicité. Si plus personne n'attend, la vague suivante (ou l'expiration) est avancée
+(`job.promote()`). Rejeu : vrai, sans effet. Sans offre ouverte, ou en `legacy` : faux,
+sans effet.
+
+**Décision 3 : classement par la route (D5, Q7).** La matrice n'est appelée que si
+l'anneau compte plus de candidats que de places (sinon l'ordre ne change pas qui est
+sollicité) : au plus un appel par vague et par refus. Les 10 plus proches à vol
+d'oiseau sont classés par durée routière : matrice Mapbox (jeton `map_setting`, celui
+de `RoutingService`, délai 5 s), repli table OSRM, puis vol d'oiseau × 1,3. Un trajet
+sans itinéraire passe après les autres. Q9 inchangée : 1re vague aux mono-service.
+
+**Décision 4 : demande non servie (D6, Q12).** Table `unserved_demand` : une ligne par
+course dispatchée par vagues puis expirée (le prépaiement expiré n'en est pas une),
+avec son point (gist). 3 demandes à moins de 1 km en 15 min déclenchent une push texte
+aux Kasimen `online` à moins de 5 km, tous services ; plus d'alerte pendant une heure à
+moins de 1 km d'une demande alertée. Décision sous verrou consultatif (deux expirations
+simultanées = une push). Réglages `DISPATCH_UNSERVED_*` (`.env.example`).
+
+**Lecture admin-api** : `dispatchAttempts(requestId)` et `unservedDemands(since, limit)`,
+permission `Requests_View` (aucune valeur d'énumération nouvelle). Nouveaux types
+GraphQL `DispatchAttempt`, `UnservedDemand`, `DispatchAttemptOutcome` (panel seulement).
+
+**Migration** : `DispatchAttempt1792471583975`, additive (deux tables neuves), vérifiée
+sur `kasi_test` (up, down, up, `check` sans écart) puis sur la base locale `kasi`.
+
+**Contrat mobile** : un seul ajout, la mutation `rejectOrder` (facultative). Rien de
+renommé ni retiré ; `getCloseByDistance` renvoie en plus la position (interne).
+
+**Tests** : `dispatch-journal.int-spec.ts`, 12 tests. Banc : 135 au vert.
+
+**Reste** : D7 (E2E, bascule), bouton « Refuser » de la driver-app, écrans du panel.
+
+---
+
+## 2026-10-20 — `p2-dispatch` D2-D3 : vagues, expiration par course, client prévenu
+
+**Points** : `p2-dispatch` (`lot-dispatch`), incréments D2 et D3 de
+`docs/fiche-portage-dispatch.md` ; `bs-mod-dispatch`, `bs-act-dispatch`,
+`dira-r-vagues`, `bug-aucun-kasiman`, `bug-offre-perdue` (en partie). Arbitrages
+Q1 à Q11 de l'entrée ci-dessous appliqués. Non committé.
+
+**Décision 1 : bascule par `DISPATCH_MODE`** (`legacy` par défaut, `waves`), lue à
+chaque appel sur les 3 API (`docker-compose.yml`, `.env.example`). En `legacy`, rien
+ne change (testé : diffusion unique, `availableOrders`, cron et sa relance). Réglages
+fins en variables (`DISPATCH_WAVE_RADII_M`, `_WAVE_INTERVAL_MS`, `_WAVE_SIZE`,
+`_EXPIRE_AFTER_MS`, `_BOOKING_LEAD_MS`, `_FIRST_WAVE_SINGLE_SERVICE`), défauts = Q2 à Q4, Q9.
+
+**Décision 2 : producteur léger, consommateur unique (Q1).** `SharedOrderService`
+(`createOrder`, `processPrePay`) pose le job `wave` n°1 via `DispatchProducer`
+(`libs/database`, file `kasi-dispatch` ouverte au premier envoi seulement), différé
+pour une réservation à l'heure prévue moins 15 min. File injoignable : repli sur la
+diffusion d'aujourd'hui. Le consommateur reste `DispatchTickProcessor` (driver-api,
+concurrence 5), qui délègue à `DispatchWaveService`.
+
+**Décision 3 : une vague** = Kasimen du rayon (`GEORADIUS ... ASC`, vol d'oiseau en
+attendant D5), pas encore sollicités, filtrés par `getOnlineDriversWithServiceId`
+(dette I3 comprise, à chaque vague), mono-service seulement en 1re vague (Q9), 5 au
+plus. Offre cumulative : `orderCreated` republié aux Kasimen déjà sollicités et encore
+éligibles (driver-app déduplique par `id`), push aux seuls nouveaux. Rayons : 1, 2,
+3 km puis `service.searchRadius`, sans vague en double si le rayon du service est
+plus petit. Rejeu d'un job : marqueur Redis `dispatch-wave-done:<course>:<vague>`,
+ni Kasiman ni push de plus. Course plus à prendre : arrêt, rien de replanifié.
+
+**Décision 4 : « aucun Kasiman » (D3)**, job `expire` 2 min après la dernière vague :
+`expireOrders` (transition conditionnelle existante), puis pour les seules courses
+réellement expirées `orderUpdated` (statut `Expired` : la rider-app installée revient
+à l'accueil, `main_bloc.dart`), `orderRemoved` aux Kasimen et push texte Q11
+(`IRiderNotificationService.plainText`, ajoutée). Le cron reste le filet : en mode
+`waves`, ses expirations préviennent aussi le client (une seule push au total), et
+sa relance à 10 km est coupée (elle contournerait l'ordre des vagues).
+
+**Décision 5 : `availableOrders` et `updateDriversLocationNew` (Q6)** ne renvoient en
+mode `waves` que les offres adressées au Kasiman (`request-drivers:<id>`).
+
+**Contrat mobile** : aucun champ, type, argument ni valeur d'énumération ajouté ou
+changé ; même souscription `orderCreated` (même payload). Changement de contenu
+seulement en `waves` (moins d'offres visibles), à valider sur téléphone en D7.
+
+**Tests** : `dispatch-waves.int-spec.ts`, 9 tests (vraie file BullMQ à durées
+réduites, Q9 et taille de vague, Q6, rejeu, dette entre deux vagues, acceptation en
+vague 2, expiration rejouée + cron = une push, expiration contre acceptation,
+`legacy` inchangé, réservation). Banc : 123 tests au vert.
+
+**Reste** : D4 (journal `dispatch_attempt`, refus), D5 (classement par la route),
+D6, D7 (E2E, bascule). Q9 à confirmer côté produit.
+
+---
+
+## 2026-10-20 — `p2-dispatch` : arbitrage des 13 questions de la fiche de portage
+
+**Tranché par la session principale (rôle de CTO délégué par l'utilisateur), à revoir par
+l'utilisateur.** Fiche : `docs/fiche-portage-dispatch.md` §7. Les 13 recommandations sont
+retenues telles quelles :
+
+- consommateur BullMQ dans driver-api (Q1) ;
+- vagues à 1, 2 puis 3 km, puis une 4e au rayon de recherche du service (Q2) ;
+- 30 s entre deux vagues, 5 Kasimen au plus par vague (Q3) ;
+- « aucun Kasiman » 2 min après la dernière vague, et réservations dispatchées 15 min avant l'heure (Q4) ;
+- offre cumulative : un Kasiman d'une vague précédente peut encore accepter (Q5) ;
+- `availableOrders` limité aux offres adressées au Kasiman une fois les vagues actives (Q6) ;
+- classement par la route avec la matrice Mapbox, repli OSRM puis vol d'oiseau, quota à suivre (Q7) ;
+- pas de mode séquentiel au pilote (Q8) ;
+- 1re vague réservée aux Kasimen dont le seul service activé est celui commandé (Q9, **provisoire, à confirmer côté produit**) ;
+- réglages en variables d'environnement, `DISPATCH_MODE=legacy` par défaut (Q10) ;
+- texte de la push client de la fiche (Q11) ;
+- seuil de demande non servie : 3 demandes à moins de 1 km en 15 min (Q12) ;
+- bouton « Refuser » facultatif dans la prochaine driver-app (Q13).
+
+**Ordre** : D2 et D3 ensemble (vagues et expiration avec client prévenu), puis D4 (journal et refus, avec le bouton côté driver-app), D5, D6, D7.
+
+---
+
+## 2026-10-20 — `p2-dispatch` D1 : BullMQ dans driver-api (`bs-act-bullmq`)
+
+**Point** : `p2-dispatch` (`lot-dispatch`), incrément D1 de
+`docs/fiche-portage-dispatch.md` ; `bs-act-bullmq`, `bug-offre-perdue`.
+
+**Décision 1 : BullMQ dans driver-api seulement**, sur le Redis existant (base 2),
+clés sous le préfixe `kasi-bull`, file `kasi-dispatch`. `@nestjs/bullmq` 11.0.5 +
+`bullmq` 5.81.5 (majeures de BetterSuite). rider-api et admin-api n'importent pas
+BullMQ en D1 ; ils deviendront producteurs en D2 si Q1 de la fiche est retenue.
+
+**Décision 2 : le battement du cron passe par la file** (planificateur
+`dispatch-tick`, toutes les 5 min) au lieu de `@Interval(300_000)` : une exécution
+par battement quel que soit le nombre d'instances. Écart assumé : premier battement
+au démarrage (balayage idempotent).
+
+**Décision 3 : correctif `getRequestIdsInTimeRage`** (lecture par score). La relance
+du cron, qui ne partait jamais, tourne : elle ne vise que les courses sans Kasiman,
+applique les filtres de la création (livraison, flotte, dette), inscrit les Kasimen
+relancés (une push par Kasiman et par course) et isole les erreurs par course.
+
+**Contrat mobile** : aucun changement de schéma.
+
+**Reste** : arbitrage des questions Q1 à Q13 de la fiche avant D2.
+
+---
+
 ## 2026-10-20 — `p2-argent` I4 : devis figé (backend)
 
 **Point** : `p2-argent` (`lot-argent`), incrément I4 de `docs/fiche-conception-argent.md`

@@ -201,6 +201,9 @@ class SId extends S {
   String get available_order_action_accept => 'Terima Pesanan';
 
   @override
+  String get available_order_action_reject => 'Decline';
+
+  @override
   String get order_status_action_received_cash => 'Pembayaran Tunai diterima';
 
   @override
@@ -864,4 +867,179 @@ class SId extends S {
 
   @override
   String get debt_blocked_see_statement => 'See my statement';
+
+  @override
+  String get menu_documents => 'My documents';
+
+  @override
+  String get documents_title => 'My documents';
+
+  @override
+  String get documents_subtitle =>
+      'Keep your documents up to date: an expired required document suspends your rides.';
+
+  @override
+  String get documents_required => 'Required';
+
+  @override
+  String get documents_status_missing => 'Missing';
+
+  @override
+  String get documents_status_pending => 'Pending';
+
+  @override
+  String get documents_status_approved => 'Approved';
+
+  @override
+  String get documents_status_rejected => 'Rejected';
+
+  @override
+  String get documents_status_expiring_soon => 'Expires soon';
+
+  @override
+  String get documents_status_expired => 'Expired';
+
+  @override
+  String documents_valid_until(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String documents_expired_on(String date) {
+    return 'Expired on $date';
+  }
+
+  @override
+  String documents_days_left(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Expires in $count days',
+      one: 'Expires tomorrow',
+      zero: 'Last day of validity',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String documents_number(String number) {
+    return 'No. $number';
+  }
+
+  @override
+  String documents_rejection_reason(String reason) {
+    return 'Rejection reason: $reason';
+  }
+
+  @override
+  String documents_pending_note(String date) {
+    return 'Sent on $date, being reviewed by Kasi.';
+  }
+
+  @override
+  String get documents_action_send => 'Send';
+
+  @override
+  String get documents_action_replace => 'Replace';
+
+  @override
+  String get documents_action_renew => 'Renew';
+
+  @override
+  String get documents_pick_photo => 'Photo';
+
+  @override
+  String get documents_pick_file => 'PDF file';
+
+  @override
+  String documents_file_selected(String name) {
+    return 'Selected file: $name';
+  }
+
+  @override
+  String get documents_number_label => 'Document number (optional)';
+
+  @override
+  String get documents_expiry_label => 'Expiry date';
+
+  @override
+  String get documents_expiry_pick => 'Choose the expiry date';
+
+  @override
+  String get documents_submit => 'Submit for review';
+
+  @override
+  String get documents_submitted =>
+      'Document sent. Kasi will review it and keep you posted.';
+
+  @override
+  String get documents_missing_file => 'Choose a photo or a file first.';
+
+  @override
+  String get documents_missing_expiry => 'Enter the document\'s expiry date.';
+
+  @override
+  String get documents_empty => 'No document is required for now.';
+
+  @override
+  String get documents_load_error => 'Unable to load your documents.';
+
+  @override
+  String get documents_retry => 'Retry';
+
+  @override
+  String documents_expiring_banner(String titles) {
+    return 'Renew soon: $titles. Tap to send the new version.';
+  }
+
+  @override
+  String documents_expired_banner(String titles) {
+    return 'Expired document: $titles. Send the new version to avoid suspension.';
+  }
+
+  @override
+  String get documents_suspended_title => 'Rides suspended';
+
+  @override
+  String documents_suspended_body(String titles) {
+    return 'Expired document: $titles. Send the up-to-date version from \"My documents\". As soon as a Kasi operator approves it, your account is reactivated and you can go online again.';
+  }
+
+  @override
+  String get documents_suspended_pending =>
+      'Your new document is being reviewed: you will be reactivated once it is approved.';
+
+  @override
+  String get documents_open => 'Open my documents';
+
+  @override
+  String get vehicle_type_title => 'Vehicle type';
+
+  @override
+  String get vehicle_type_motorcycle => 'Motorbike';
+
+  @override
+  String get vehicle_type_car => 'Taxi or car';
+
+  @override
+  String get vehicle_type_van => 'Van';
+
+  @override
+  String get vehicle_type_not_set => 'Not set';
+
+  @override
+  String get vehicle_type_hint =>
+      'Choose the vehicle you drive. It sets the requests you receive and the documents we ask for.';
+
+  @override
+  String get vehicle_type_required => 'Choose your vehicle type.';
+
+  @override
+  String get vehicle_type_choose => 'Choose';
+
+  @override
+  String get vehicle_type_locked => 'To change vehicle, contact Kasi support.';
+
+  @override
+  String get vehicle_type_save => 'Save';
 }

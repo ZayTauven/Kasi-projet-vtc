@@ -35,7 +35,7 @@ Mis en place le 2026-09-28. Décision : `KASI_DECISIONS.md`, entrée du 2026-09-
 | `libs/database/src/lib/migration/postgres/1790629154960-Baseline.ts` | Migration de référence (ne jamais la modifier) |
 | `libs/database/src/lib/migration/postgres/baseline-tables.ts` | Les 59 tables qu'elle crée (contrôle de `mark-baseline`) |
 | `libs/database/src/lib/migration/migrate.ts` | Exécutable : `run`, `show`, `check`, `mark-baseline`, `revert`, et pour le grand livre `ledger-open`, `ledger-check` |
-| `libs/database/src/lib/migration/all-entities.ts` | Les 55 entités (union des trois API ; dont les 3 du grand livre et `money_policy` depuis le 2026-10-19, `fare_quote` depuis le 2026-10-20) |
+| `libs/database/src/lib/migration/all-entities.ts` | Les 59 entités (union des trois API ; dont les 3 du grand livre et `money_policy` depuis le 2026-10-19, `fare_quote`, `dispatch_attempt` et `unserved_demand` depuis le 2026-10-20, `driver_document_type` et `driver_document` depuis `p2-kyc` K1) |
 | `libs/database/src/lib/order/ledger-open.ts`, `ledger-integrity.ts` | Ouverture du grand livre et contrôle d'intégrité (appelés par `migrate.js`) |
 | `libs/database/src/lib/migration/connection-options.ts` | Connexion lue dans `DB_*`, partagée par API, exécutable et CLI |
 | `libs/database/src/lib/migration/data-source.cli.ts` | DataSource de la CLI TypeORM (poste de dev) |
@@ -142,6 +142,31 @@ Migrations après la référence, dans l'ordre :
    `../archive/sauvegardes/kasi-avant-devis-20261019.dump`, `ledger-check` à zéro écart
    ensuite). Rien à lancer après elle. Les devis non consommés de plus de 24 h sont
    purgés chaque jour par admin-api (`FareQuotePurgeJob`).
+5. `DispatchAttempt1792471583975` (2026-10-20, `p2-dispatch` D4 et D6) : deux tables
+   neuves et vides, sans clé étrangère. `dispatch_attempt` (journal des sollicitations :
+   `requestId`, `driverId`, `wave`, `rank`, `airDistanceM`, `roadDistanceM`,
+   `roadDurationS`, `routingSource`, `outcome` à `pending` par défaut, `offeredAt`,
+   `respondedAt` ; index unique `requestId, driverId`, index `driverId, offeredAt`) et
+   `unserved_demand` (demande non servie : `requestId` à index unique, `serviceId`,
+   `point` `Point` 4326 à index gist, `driversSolicited`, `createdAt` indexé,
+   `alertedAt`, `alertedDrivers`). Additive, réversible, vérifiée sur `kasi_test` (up,
+   down, up, `check` sans écart) puis sur la base locale `kasi` par le service `migrate`
+   (sauvegarde `../archive/sauvegardes/kasi-avant-journal-dispatch-20261020.dump`). Rien
+   à lancer après elle ; rien n'y est écrit en `DISPATCH_MODE=legacy`.
+6. `DriverDocuments1792479894071` (2026-10-20, `p2-kyc` K1) : tables
+   `driver_document_type` (catalogue : `code` à index unique, `title`, `description`,
+   `isEnabled`, `isRequired`, `hasExpiryDate`, `reminderDays` `int[]` à `{30,14,7,3,1}`,
+   `sortOrder`) semée de 5 types (permis, carte grise, assurance, pièce d'identité,
+   visite technique ; `ON CONFLICT DO NOTHING`) et `driver_document` (vide : Kasiman,
+   type, `mediaId`, `number`, `expiresAt` `date`, `status` à `pending`, revue,
+   `lastReminderDays` ; index uniques partiels « un en attente » et « un validé » par
+   Kasiman et type ; clés étrangères vers `driver` en cascade, vers le type en
+   `RESTRICT`, vers `media` en `SET NULL`), plus la colonne nullable
+   `driver.documentsSuspendedAt`. Additive, réversible, vérifiée sur `kasi_test` (up,
+   down, up, `check` sans écart) puis sur la base locale `kasi` par le service `migrate`
+   (sauvegarde `../archive/sauvegardes/kasi-avant-kyc-20261020.dump`). Rien à lancer
+   après elle. Aucun Kasiman n'est suspendu par elle : seule l'expiration d'un
+   document typé fourni suspend.
 
 ## 4. Faire évoluer le schéma (développeur)
 

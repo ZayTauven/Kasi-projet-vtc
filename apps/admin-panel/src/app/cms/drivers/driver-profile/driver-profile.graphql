@@ -21,6 +21,7 @@ query ViewDriver($id: ID!) {
     email
     canDeliver
     maxPackageSize
+    vehicleType
 
     feedbacks {
       nodes {
@@ -61,7 +62,9 @@ query ViewDriver($id: ID!) {
   services {
     id
     name
+    vehicleTypes
   }
+  missingDriverDocuments(driverId: $id)
   fleets {
     nodes {
       id
@@ -77,6 +80,7 @@ query ViewDriver($id: ID!) {
     nodes {
       id
       name
+      vehicleType
     }
   }
   carColors {

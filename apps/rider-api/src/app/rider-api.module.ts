@@ -1,4 +1,4 @@
-﻿import { Logger, Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule, entities, RedisPubSubProvider } from '@kasi/database';
@@ -26,9 +26,14 @@ import { ConfigModule } from '@nestjs/config';
 import { SOSModule } from './sos/sos.module';
 import { GeoModule } from './geo/geo.module';
 import { MapSettingModule } from './map-setting/map-setting.module';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryModule } from '@sentry/nestjs/setup';
+import { KasiMonitoringFilter } from '@kasi/monitoring/monitoring.filter';
 
 @Module({
   imports: [
+    // p1-sentry : erreurs des API vers le suivi des erreurs (sans DSN : aucun envoi).
+    SentryModule.forRoot(),
     DatabaseModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -59,7 +64,6 @@ import { MapSettingModule } from './map-setting/map-setting.module';
         'subscriptions-transport-ws': {
           keepAlive: 5000,
           onConnect: async (connectionParams: any) => {
-            Logger.log('connectionParams', connectionParams);
             if (connectionParams.authToken) {
               return validateToken(connectionParams.authToken);
             }
@@ -124,7 +128,11 @@ import { MapSettingModule } from './map-setting/map-setting.module';
     }),
     ChatModule,
   ],
-  providers: [CryptoService, RedisPubSubProvider.provider()],
+  providers: [
+    CryptoService,
+    RedisPubSubProvider.provider(),
+    { provide: APP_FILTER, useClass: KasiMonitoringFilter },
+  ],
   controllers: [RiderAPIController],
 })
 export class RiderAPIModule {}

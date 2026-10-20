@@ -7,6 +7,9 @@ import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/schema.gql.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kasi_driver/documents/driver_documents_cubit.dart';
+import 'package:kasi_driver/documents/driver_documents_view.dart';
 
 class UnregisteredDriverMessagesView extends StatelessWidget {
   final Fragment$BasicProfile? driver;
@@ -89,10 +92,29 @@ class UnregisteredDriverMessagesView extends StatelessWidget {
                 Center(
                     child: RegistrationSubmittedUnregisteredView(
                         refetch: refetch)),
+              // p2-kyc K3 : un « soft reject » pose par le controle des
+              // echeances (document obligatoire expire) n'est pas un refus
+              // d'inscription : on explique la suspension et on mene a
+              // « Mes documents » plutot qu'au parcours d'inscription.
               if (driver?.status == Enum$DriverStatus.SoftReject)
-                Center(
-                  child: SoftRejectUnregisteredView(
-                      rejectionNote: driver?.softRejectionNote),
+                BlocBuilder<DriverDocumentsCubit, DriverDocumentsState>(
+                  builder: (context, documents) => documents.blocking.isEmpty
+                      ? Center(
+                          child: SoftRejectUnregisteredView(
+                              rejectionNote: driver?.softRejectionNote),
+                        )
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                          child: SafeArea(
+                            top: false,
+                            child: DocumentsSuspendedPanel(
+                                state: documents,
+                                showOpenButton: true,
+                                onRefreshStatus: refetch == null
+                                    ? null
+                                    : () => refetch!()),
+                          ),
+                        ),
                 ),
               if (driver?.status == Enum$DriverStatus.HardReject)
                 const Center(

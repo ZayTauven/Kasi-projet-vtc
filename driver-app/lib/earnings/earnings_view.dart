@@ -1,3 +1,4 @@
+import 'package:kasi_driver/money_format.dart';
 import 'dart:math';
 
 import 'package:client_shared/components/back_button.dart';
@@ -201,7 +202,7 @@ class _EarningsViewState extends State<EarningsView> {
     final totalDistance = dataset.fold<double>(0, (s, d) => s + d.distance);
     final totalTime = dataset.fold<double>(0, (s, d) => s + d.time);
 
-    final currencyFormat = NumberFormat.simpleCurrency(name: currency);
+    final currencyFormat = kasiCurrencyFormat(currency);
 
     // Indice de la barre "courante" (mise en avant orange).
     // En mode mois, `name == current` identifie le mois en cours (même format).

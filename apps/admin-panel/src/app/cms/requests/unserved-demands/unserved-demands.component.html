@@ -1,0 +1,61 @@
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'dispatch.unservedTitle' | translate }}</h1>
+    <p>{{ 'dispatch.unservedSubtitle' | translate }}</p>
+  </div>
+</div>
+
+<div class="kasi-card">
+  @if (query | async; as result) {
+    @if (result.data?.unservedDemands; as demands) {
+      @if (demands.length === 0) {
+        <div class="kasi-card__body">
+          <nz-empty class="empty-state" [nzNotFoundContent]="'dispatch.unservedEmpty' | translate"></nz-empty>
+        </div>
+      } @else {
+        <div class="kasi-card__body kasi-card__body--flush">
+          <nz-table #table [nzData]="demands" [nzPageSize]="25" nzShowSizeChanger>
+            <thead>
+              <tr>
+                <th>{{ 'profile.dateTime' | translate }}</th>
+                <th>{{ 'dispatch.service' | translate }}</th>
+                <th>{{ 'dispatch.point' | translate }}</th>
+                <th>{{ 'dispatch.driversSolicited' | translate }}</th>
+                <th>{{ 'dispatch.alert' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of table.data; track d.id) {
+                <tr [routerLink]="'/requests/view/' + d.requestId" class="group cursor-pointer">
+                  <td [nz-tooltip]="d.createdAt | date: 'medium'">{{ d.createdAt | date: 'short' }} · #{{ d.requestId }}</td>
+                  <td>{{ serviceName(result.data, d.serviceId) }}</td>
+                  <td>
+                    <a [href]="'https://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.lng + '#map=17/' + d.lat + '/' + d.lng"
+                      target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                      {{ d.lat | number: '1.5-5' }}, {{ d.lng | number: '1.5-5' }}
+                    </a>
+                  </td>
+                  <td>{{ d.driversSolicited }}</td>
+                  <td>
+                    @if (d.alertedAt) {
+                      <nz-tag nzColor="orange">{{ 'dispatch.alertSent' | translate: { count: d.alertedDrivers ?? 0 } }}</nz-tag>
+                      <span class="text-gray-400">{{ d.alertedAt | date: 'HH:mm' }}</span>
+                    } @else {
+                      <nz-tag>{{ 'dispatch.alertNone' | translate }}</nz-tag>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </div>
+      }
+    } @else if (result.error) {
+      <div class="kasi-card__body">
+        <nz-empty class="empty-state" [nzNotFoundContent]="'dispatch.loadError' | translate"></nz-empty>
+      </div>
+    }
+  } @else {
+    <div class="kasi-card__body"><nz-skeleton [nzActive]="true"></nz-skeleton></div>
+  }
+</div>

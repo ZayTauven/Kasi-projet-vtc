@@ -6,6 +6,7 @@ import { Point } from '@kasi/database';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { packageSizeRank } from '@kasi/database/enums/package-size.enum';
+import { vehicleTypeAllowed } from '@kasi/database/enums/vehicle-type.enum';
 import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
 import { PaymentStatus } from '@kasi/database/enums/payment-status.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
@@ -29,6 +30,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
 import { In, Repository } from 'typeorm';
 import { blockedDebtCurrencies } from '@kasi/order/debt-limit';
+import { isWavesMode } from '@kasi/order/dispatch-config';
 
 @Injectable()
 export class OrderService {
@@ -230,9 +232,24 @@ export class OrderService {
       },
     });
     Logger.log(`getting orders for driver ${JSON.stringify(driver)}`);
-    const orderIds = (
-      await this.orderRedisService.getForDriver(driverId, driver.searchDistance)
+    // p2-dispatch D7 (2026-10-20) : en mode waves, c'est la vague qui decide
+    // qui voit l'offre (jusqu'au rayon du service). Le rayon personnel du
+    // Kasiman (`searchDistance`, 1 km par defaut dans l'app) retirait a la
+    // relecture suivante une offre recue a la vague 3 ou 4 (essai D7 : offre
+    // a 2,5 km affichee puis effacee 2 s plus tard par p1-resync). On lit donc
+    // au rayon maximal de ses services, puis on garde les offres adressees.
+    let orderIds = (
+      await this.orderRedisService.getForDriver(
+        driverId,
+        isWavesMode() ? undefined : driver.searchDistance,
+      )
     ).map((id) => parseInt(id));
+    // p2-dispatch D2 (Q6) : en mode waves, seules les offres adressees a ce
+    // Kasiman par une vague (sinon un Kasiman a 3 km verrait la course des la
+    // premiere seconde). Meme requete, meme forme de reponse.
+    if (isWavesMode()) {
+      orderIds = await this.orderRedisService.filterNotifiedTo(orderIds, driverId);
+    }
     Logger.log(`got order ids ${JSON.stringify(orderIds)}`);
     let orders = await this.orderRepository.find({
       where: {
@@ -251,10 +268,12 @@ export class OrderService {
     Logger.log(`got orders ${JSON.stringify(orders)}`);
     orders = orders.filter(
       (order) =>
-        order.service.orderType !== ServiceOrderType.Delivery ||
-        (driver.canDeliver &&
-          packageSizeRank(driver.maxPackageSize) >=
-            packageSizeRank(order.packageSize)),
+        (order.service.orderType !== ServiceOrderType.Delivery ||
+          (driver.canDeliver &&
+            packageSizeRank(driver.maxPackageSize) >=
+              packageSizeRank(order.packageSize))) &&
+        // p2-vehicules (2026-10-20) : meme regle que le dispatch.
+        vehicleTypeAllowed(order.service.vehicleTypes, driver.vehicleType),
     );
     for (let order of orders) {
       const fleetIds = await this.sharedFleetService.getFleetIdsInPoint(

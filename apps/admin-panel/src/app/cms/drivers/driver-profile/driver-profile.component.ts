@@ -11,6 +11,7 @@ import {
   debtStatusOf,
   debtTagColor,
   DebtStatus,
+  financialErrorMessage,
 } from "@kasi/admin-panel/src/app/@services/debt-status";
 import { TagColorService } from "@kasi/admin-panel/src/app/@services/tag-color/tag-color.service";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
@@ -60,8 +61,19 @@ export class DriverProfileComponent implements OnInit {
 
   async changeStatus(status: DriverStatus) {
     const id = this.route.snapshot.params.id ?? 0;
-    await firstValueFrom(this.updateGQL.mutate({ variables: { id, status } }));
+    try {
+      await firstValueFrom(this.updateGQL.mutate({ variables: { id, status } }));
+    } catch (error: any) {
+      // p2-kyc K4 : approbation refusee (type de vehicule ou documents manquants).
+      this.message.error(financialErrorMessage(error, this.translate));
+      return;
+    }
     this.routerHelper.refresh(this.route);
+  }
+
+  /** p2-kyc K4 : un nouveau Kasiman, pas encore approuve. */
+  awaitingApproval(status: DriverStatus): boolean {
+    return status === DriverStatus.PendingApproval || status === DriverStatus.WaitingDocuments;
   }
 
   deleteDriver(id: string) {

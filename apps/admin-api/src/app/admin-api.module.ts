@@ -41,6 +41,11 @@ import { RetentionPolicyModule } from './retention-policy/retention-policy.modul
 import { MapSettingModule } from './map-setting/map-setting.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { MoneyPolicyModule } from './money-policy/money-policy.module';
+import { DispatchJournalModule } from './dispatch/dispatch-journal.module';
+import { KycModule } from './kyc/kyc.module';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryModule } from '@sentry/nestjs/setup';
+import { KasiMonitoringFilter } from '@kasi/monitoring/monitoring.filter';
 
 @Module({})
 export class AdminAPIModule {
@@ -64,6 +69,8 @@ export class AdminAPIModule {
         return {
           module: AdminAPIModule,
           imports: [
+            // p1-sentry : erreurs vers le suivi des erreurs (sans DSN : aucun envoi).
+            SentryModule.forRoot(),
             DatabaseModule,
             GraphQLModule.forRoot<ApolloDriverConfig>({
               driver: ApolloDriver,
@@ -82,15 +89,13 @@ export class AdminAPIModule {
                   onConnect: async (context: WSContext) => {
                     const { connectionParams, extra } = context;
                     if (connectionParams.authToken) {
-                      Logger.log(
-                        `connection established with token ${connectionParams.authToken}`,
-                        'GraphQL',
-                      );
                       const userObject = await validateToken(
                         connectionParams!.authToken as string,
                       );
+                      // p1-sentry (hygiene des journaux) : ni jeton ni
+                      // contenu du jeton, l'identifiant de l'operateur suffit.
                       Logger.log(
-                        `userObject: ${JSON.stringify(userObject)}`,
+                        `connexion WebSocket de l'operateur ${(userObject as { id?: number })?.id ?? '?'}`,
                         'GraphQL',
                       );
                       extra['user'] = userObject;
@@ -140,6 +145,10 @@ export class AdminAPIModule {
             // p2-argent I2 (2026-10-19) : ledgerIntegrityReport et balayage quotidien.
             LedgerModule,
             MoneyPolicyModule,
+            // p2-dispatch D4 et D6 (2026-10-20) : journal du dispatch, demande non servie.
+            DispatchJournalModule,
+            // p2-kyc K1 (2026-10-20) : documents types du Kasiman.
+            KycModule,
             ConfigurationModule,
             HttpModule,
             RedisModule.forRoot({
@@ -152,7 +161,10 @@ export class AdminAPIModule {
               },
             }),
           ],
-          providers: [UploadService],
+          providers: [
+            UploadService,
+            { provide: APP_FILTER, useClass: KasiMonitoringFilter },
+          ],
           controllers: [AppController],
         };
       }
@@ -160,6 +172,7 @@ export class AdminAPIModule {
     return {
       module: AdminAPIModule,
       imports: [
+        SentryModule.forRoot(),
         HttpModule,
         GraphQLModule.forRoot<ApolloDriverConfig>({
           driver: ApolloDriver,
@@ -169,6 +182,7 @@ export class AdminAPIModule {
         }),
         ConfigurationModule,
       ],
+      providers: [{ provide: APP_FILTER, useClass: KasiMonitoringFilter }],
     };
   }
 }

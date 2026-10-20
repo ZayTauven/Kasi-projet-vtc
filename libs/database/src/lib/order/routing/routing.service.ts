@@ -22,6 +22,23 @@ export interface RouteMetrics {
   source: RouteSource;
 }
 
+/**
+ * p2-dispatch D5 (2026-10-20, Q7) : un trajet de la matrice (candidat vers le
+ * point de depart). `null` : aucun itineraire trouve par le fournisseur.
+ */
+export interface MatrixLeg {
+  distance: number | null; // metres
+  duration: number | null; // secondes
+}
+
+export interface MatrixResult {
+  legs: MatrixLeg[];
+  source: 'mapbox' | 'osrm' | 'haversine';
+}
+
+/** Q7 : au plus 10 candidats par appel de matrice (quota Mapbox). */
+export const MATRIX_MAX_ORIGINS = 10;
+
 /** Vrai calcul routier (Mapbox, Google, OSRM), et non une estimation. */
 export function isRealRoute(source: RouteSource | undefined | null): boolean {
   return source === 'mapbox' || source === 'google' || source === 'osrm';
@@ -109,6 +126,91 @@ export class RoutingService {
 
     // OpenStreetMap explicite, ou repli d'un Mapbox indisponible.
     return this.fallback(points);
+  }
+
+  /**
+   * p2-dispatch D5 (2026-10-20, Q7) : distance et duree routieres de chaque
+   * origine (Kasiman) vers `destination` (point de depart), pour classer une
+   * vague. Matrice Mapbox avec le meme jeton que les itineraires
+   * (`map_setting.mapboxToken`), au plus 10 origines par appel, repli sur la
+   * table OSRM puis sur l'estimation a vol d'oiseau. Ne leve jamais : le
+   * dispatch ne doit pas s'arreter faute de routage.
+   */
+  async getDurationsTo(origins: Point[], destination: Point): Promise<MatrixResult> {
+    if (origins.length === 0) return { legs: [], source: 'haversine' };
+    if (origins.length > MATRIX_MAX_ORIGINS) {
+      // Decoupage en appels de 10 : la source retenue est la moins bonne.
+      const parts: MatrixResult[] = [];
+      for (let i = 0; i < origins.length; i += MATRIX_MAX_ORIGINS) {
+        parts.push(await this.getDurationsTo(origins.slice(i, i + MATRIX_MAX_ORIGINS), destination));
+      }
+      const order = ['mapbox', 'osrm', 'haversine'];
+      return {
+        legs: parts.flatMap((p) => p.legs),
+        source: parts.map((p) => p.source).sort((a, b) => order.indexOf(b) - order.indexOf(a))[0],
+      };
+    }
+    let setting: MapSettingEntity | null = null;
+    try {
+      setting = await this.getSetting();
+    } catch (error) {
+      this.logger.warn(`map_setting illisible, matrice en repli : ${error}`);
+    }
+    const coords = [...origins, destination].map((p) => `${p.lng},${p.lat}`).join(';');
+    const params = {
+      sources: origins.map((_, i) => i).join(';'),
+      destinations: String(origins.length),
+      annotations: 'distance,duration',
+    };
+    if (this.resolveProvider(setting) === MapTileProvider.Mapbox && setting?.mapboxToken) {
+      const legs = await this.tryMatrix(
+        `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${coords}`,
+        { ...params, access_token: setting.mapboxToken },
+        origins.length,
+        'Mapbox Matrix',
+      );
+      if (legs != null) return { legs, source: 'mapbox' };
+    }
+    const legs = await this.tryMatrix(
+      `https://router.project-osrm.org/table/v1/driving/${coords}`,
+      params,
+      origins.length,
+      'OSRM table',
+    );
+    if (legs != null) return { legs, source: 'osrm' };
+    return {
+      legs: origins.map((origin) => {
+        const distance = Math.round(this.haversine(origin, destination) * RoutingService.ROUTE_DETOUR_FACTOR);
+        return { distance, duration: Math.round(distance / RoutingService.FALLBACK_SPEED_MPS) };
+      }),
+      source: 'haversine',
+    };
+  }
+
+  /** Matrice Mapbox ou table OSRM (meme format de reponse). Null si en echec. */
+  private async tryMatrix(
+    url: string,
+    params: Record<string, string>,
+    count: number,
+    label: string,
+  ): Promise<MatrixLeg[] | null> {
+    try {
+      const result = await firstValueFrom(this.httpService.get(url, { params, timeout: 5_000 }));
+      const durations: Array<Array<number | null>> | undefined = result.data?.durations;
+      const distances: Array<Array<number | null>> | undefined = result.data?.distances;
+      if (result.data?.code !== 'Ok' || !Array.isArray(durations) || durations.length !== count) {
+        this.logger.warn(`${label} sans resultat (code=${result.data?.code})`);
+        return null;
+      }
+      const round = (x: number | null | undefined) => (x == null ? null : Math.round(x));
+      return durations.map((row, i) => ({
+        duration: round(row?.[0]),
+        distance: round(distances?.[i]?.[0]),
+      }));
+    } catch (error) {
+      this.logger.warn(`${label} en echec, repli : ${error}`);
+      return null;
+    }
   }
 
   // Directions Mapbox : un seul appel pour tout le trajet ordonne (plus

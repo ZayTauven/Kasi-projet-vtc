@@ -35,10 +35,12 @@ query GetDriver {
     certificateNumber
     carColorId
     carId
+    vehicleType
   }
   carModels {
     id
     name
+    vehicleType
   }
   carColors {
     id

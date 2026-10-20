@@ -1,4 +1,5 @@
 ﻿import { Field, ID, InputType, Int } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import { FilterableField } from '@ptc-org/nestjs-query-graphql';
 import { TimeMultiplier, DistanceMultiplier } from '@kasi/database';
 import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
@@ -25,6 +26,9 @@ export class ServiceInput {
   searchRadius!: number;
   paymentMethod!: ServicePaymentMethod;
   orderType?: ServiceOrderType;
+  /** p2-vehicules : vehicules admis (vide = tous). */
+  @Field(() => [VehicleType], { nullable: true })
+  vehicleTypes?: VehicleType[];
   cancellationTotalFee!: number;
   cancellationDriverShare!: number;
   @Field(() => Int)

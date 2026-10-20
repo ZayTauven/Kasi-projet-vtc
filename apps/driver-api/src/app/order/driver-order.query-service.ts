@@ -20,6 +20,7 @@ import {
   transitionOrder,
 } from '@kasi/order/order-transition';
 import { debtLimitError, kasimanDebtStatus } from '@kasi/order/debt-limit';
+import { isWavesMode } from '@kasi/order/dispatch-config';
 import { RoutingService } from '@kasi/order/routing/routing.service';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
@@ -30,6 +31,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { EntityManager, Repository } from 'typeorm';
 
 import { UserContext } from '../auth/authenticated-user';
+import { DispatchAttemptJournal } from '../dispatch/dispatch-attempt.journal';
 import { UpdateOrderInput } from './dto/update-order.input';
 import { OrderService } from './order.service';
 
@@ -55,6 +57,7 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     private pubSub: RedisPubSub,
     @Inject(CONTEXT) private context: UserContext,
     @Inject(RIDER_NOTIFICATION_SERVICE) private readonly riderNotificationService: IRiderNotificationService,
+    private readonly dispatchJournal: DispatchAttemptJournal,
   ) {
     super(orderRepository);
   }
@@ -155,6 +158,19 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
       throw new ForbiddenError(ALREADY_TAKEN);
     }
     await this.orderRedisService.expire([orderId]);
+    // p2-dispatch D4 (2026-10-20) : journal des sollicitations (mode waves
+    // seulement ; en legacy rien n'y est ecrit). Le gagnant `accepted`, les
+    // autres offres ouvertes `no_answer`. Sans effet sur l'acceptation.
+    if (isWavesMode()) {
+      try {
+        await this.dispatchJournal.accepted(orderId, driverId);
+      } catch (error) {
+        Logger.warn(
+          `journal de dispatch non mis a jour pour la course ${orderId} : ${(error as Error).message}`,
+          'DriverOrderQueryService',
+        );
+      }
+    }
     // Heure d'arrivee au point de depart : calculee APRES l'attribution, par
     // RoutingService (provider de map_setting, replis OSRM / haversine). Une
     // erreur ici ne remet pas en cause l'acceptation deja enregistree.

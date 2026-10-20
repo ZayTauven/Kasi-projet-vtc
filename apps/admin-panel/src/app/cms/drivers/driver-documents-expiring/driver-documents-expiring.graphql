@@ -1,0 +1,12 @@
+# p2-kyc K2 : documents valides qui expirent bientot.
+query ExpiringDriverDocuments($withinDays: Int) {
+  expiringDriverDocuments(withinDays: $withinDays) {
+    id
+    driverId
+    driverName
+    typeId
+    title
+    expiresAt
+    daysLeft
+  }
+}

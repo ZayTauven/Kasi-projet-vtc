@@ -35,6 +35,8 @@
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.driver(driver.status)">{{('enum.driver.status.' + toCamelCase(driver.status)) |
         translate}}</nz-tag>
+        <!-- p2-vehicules : un seul Kasiman, quel que soit le vehicule. -->
+        <nz-tag>{{ driver.vehicleType ? ('enum.vehicleType.' + driver.vehicleType | translate) : ('vehicle.notSet' | translate) }}</nz-tag>
         @let debt = debtOf(driver.wallet, (query | async)?.data?.moneyPolicies);
         @if (debt != null) {
           <nz-tag [nzColor]="debtTagColor(debt.level)">{{ 'debt.label' | translate }} :
@@ -85,6 +87,11 @@
       </nz-dropdown-menu>
     </div>
   </div>
+  @let missing = (query | async)?.data?.missingDriverDocuments ?? [];
+  @if (awaitingApproval(driver.status) && (missing.length > 0 || !driver.vehicleType)) {
+    <nz-alert class="mb-4" nzType="warning" nzShowIcon [nzMessage]="'vehicle.approvalBlocked' | translate"
+      [nzDescription]="(!driver.vehicleType ? ('vehicle.approvalNoType' | translate) + ' ' : '') + (missing.length > 0 ? ('vehicle.approvalMissing' | translate: { list: missing.join(', ') }) : '')"></nz-alert>
+  }
   <div class="kasi-tabs">
     <nz-tabs [nzLinkExact]="false" nzLinkRouter>
       <nz-tab>

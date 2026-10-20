@@ -45,6 +45,14 @@ const routes: Routes = [
         (x) => x.ManagementShiftRulesModule
       ),
   },
+  // p2-kyc K2 : catalogue des documents du Kasiman.
+  {
+    path: 'document-types',
+    loadChildren: () =>
+      import('./management-document-types/management-document-types.module').then(
+        (x) => x.ManagementDocumentTypesModule
+      ),
+  },
   {
     path: 'retention',
     loadChildren: () =>

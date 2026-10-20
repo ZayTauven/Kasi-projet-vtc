@@ -139,6 +139,11 @@
       "Custom3": "Icône 3",
       "Custom4": "Icône 4",
       "Custom5": "Icône 5"
+    },
+    "vehicleType": {
+      "Motorcycle": "Moto",
+      "Car": "Taxi ou voiture",
+      "Van": "Camionnette"
     }
   },
   "branding": {
@@ -165,7 +170,9 @@
     "driver": {
       "pendingVerification": "En attente de vérification",
       "all": "Voir tout",
-      "header": "Kasimen"
+      "header": "Kasimen",
+      "expiringDocuments": "Documents qui expirent",
+      "documentSuspended": "Suspendus (documents)"
     },
     "marketing": {
       "coupons": "Coupons",
@@ -209,12 +216,15 @@
       "paymentGateways": "Passerelles de paiement",
       "settings": "Paramètres",
       "header": "Gestion",
-      "mapSettings": "Cartographie"
+      "mapSettings": "Cartographie",
+      "documentTypes": "Types de documents"
     },
     "drivers": {
       "header": "Kasimen",
       "subtitle": "Liste de tous les Kasimen inscrits."
-    }
+    },
+    "requestsAll": "Toutes les demandes",
+    "unservedDemands": "Demande non servie"
   },
   "overview": {
     "switch": {
@@ -1400,5 +1410,132 @@
     "alertNotBelowLimit": "Le seuil d'alerte doit être inférieur au plafond.",
     "noPolicy": "Aucun plafond dans cette devise : l'enregistrement en crée un.",
     "saved": "Plafond enregistré."
+  },
+  "dispatch": {
+    "attemptsTab": "Sollicitations",
+    "attemptsEmpty": "Aucune sollicitation enregistrée : cette course n’est pas passée par le dispatch par vagues.",
+    "wave": "Vague",
+    "rank": "Rang",
+    "driver": "Kasiman",
+    "distance": "Distance",
+    "duration": "Durée",
+    "airDistance": "à vol d’oiseau",
+    "routingSource": "Source du classement",
+    "outcome": "Issue",
+    "times": "Horaires",
+    "source": {
+      "mapbox": "Mapbox",
+      "osrm": "OSRM",
+      "haversine": "Vol d’oiseau"
+    },
+    "outcomes": {
+      "Pending": "En attente",
+      "Accepted": "Acceptée",
+      "Rejected": "Refusée",
+      "Expired": "Expirée",
+      "NoAnswer": "Sans réponse"
+    },
+    "unservedTitle": "Demande non servie",
+    "unservedSubtitle": "Courses restées sans Kasiman après toutes les vagues (7 derniers jours)",
+    "unservedEmpty": "Aucune demande non servie sur la période.",
+    "service": "Service",
+    "point": "Point de départ",
+    "driversSolicited": "Kasimen sollicités",
+    "alert": "Alerte envoyée",
+    "alertSent": "Envoyée à {{count}} Kasimen",
+    "alertNone": "Non envoyée",
+    "loadError": "Impossible de charger le journal du dispatch."
+  },
+  "kyc": {
+    "suspendedOnly": "Suspendus (document expiré)",
+    "suspendedTitle": "Kasiman suspendu : document obligatoire expiré",
+    "suspendedDesc": "Il sortira de la suspension (hors ligne) dès que chaque document obligatoire expiré a un remplaçant validé.",
+    "required": "Obligatoire",
+    "withExpiry": "Avec date d'expiration",
+    "disabled": "Désactivé",
+    "noDocument": "Aucun document envoyé pour ce type.",
+    "file": "Fichier",
+    "number": "Numéro",
+    "expiresAt": "Expire le",
+    "status": "État",
+    "type": "Type de document",
+    "expiresAtHint": "Valable jusqu'à ce jour inclus.",
+    "daysLeft": "{{days}} j restants",
+    "expiredSince": "Expiré depuis {{days}} j",
+    "noExpiry": "Sans échéance",
+    "reason": "Motif",
+    "state": {
+      "Pending": "En attente",
+      "Approved": "Validé",
+      "Rejected": "Refusé",
+      "Expired": "Expiré",
+      "Replaced": "Remplacé"
+    },
+    "approve": "Valider",
+    "approveConfirm": "Valider ce document ?",
+    "reject": "Refuser",
+    "rejectTitle": "Refuser le document",
+    "rejectDesc": "Le motif est visible par le Kasiman.",
+    "reasonPlaceholder": "Ex. : photo illisible, document au nom d'un tiers",
+    "approved": "Document validé.",
+    "rejected": "Document refusé.",
+    "typed": "Fichier typé et validé.",
+    "reinstated": "Le Kasiman sort de la suspension : il est hors ligne et peut se remettre en ligne.",
+    "expiryRequired": "Ce type de document exige une date d'expiration.",
+    "legacyTitle": "Fichiers envoyés par l'ancienne app",
+    "legacyDesc": "Ces fichiers n'ont pas de type. Typez-les pour qu'ils comptent comme documents validés.",
+    "legacyEmpty": "Tous les fichiers envoyés sont typés.",
+    "typeFile": "Typer",
+    "typeSection": {
+      "title": "Typer un fichier",
+      "desc": "Choisissez le type, le numéro et l'échéance lus sur le document. Il est validé d'emblée."
+    },
+    "typeAndApprove": "Typer et valider",
+    "yes": "Oui",
+    "no": "Non",
+    "expiring": {
+      "title": "Documents qui expirent bientôt",
+      "subtitle": "Documents validés arrivant à échéance : relancez les Kasimen avant la suspension.",
+      "within": "Sous {{days}} jours",
+      "empty": "Aucun document n'expire sur cette période.",
+      "kasiman": "Kasiman",
+      "remaining": "Reste"
+    },
+    "types": {
+      "title": "Types de documents",
+      "subtitle": "Catalogue des documents demandés aux Kasimen.",
+      "titleField": "Titre",
+      "code": "Code",
+      "codeHint": "2 à 32 caractères a-z, 0-9, _ ; non modifiable ensuite.",
+      "description": "Description",
+      "sortOrder": "Ordre",
+      "enabled": "Actif",
+      "enabledHint": "Un type désactivé n'est plus demandé ; ses documents restent visibles.",
+      "active": "Actif",
+      "newTitle": "Nouveau type",
+      "editTitle": "Modifier le type",
+      "identityDesc": "Comment le document est présenté aux opérateurs et aux Kasimen.",
+      "rulesTitle": "Règles",
+      "rulesDesc": "Ce qui suspend le Kasiman et quand il est prévenu.",
+      "requiredHint": "Son expiration suspend le Kasiman.",
+      "reminderDays": "Rappels (jours avant l'échéance)",
+      "reminderDaysHint": "Nombres séparés par des virgules, ex. 30, 14, 7, 3, 1.",
+      "saved": "Type de document enregistré."
+    }
+  },
+  "vehicle": {
+    "type": "Type de véhicule",
+    "allowed": "Véhicules admis",
+    "all": "Tous les véhicules",
+    "serviceHint": "Vide : tous les véhicules. Sinon, seuls les Kasimen de ces véhicules reçoivent les demandes de ce service.",
+    "requiredFor": "Exigé pour",
+    "documentHint": "Vide : exigé pour tous les véhicules.",
+    "notSet": "Véhicule non renseigné",
+    "driverHint": "Conditionne les services proposés et les documents exigés. Obligatoire pour approuver un nouveau Kasiman.",
+    "serviceNotAllowed": "véhicule non admis",
+    "saved": "Kasiman enregistré.",
+    "approvalBlocked": "Ce Kasiman ne peut pas encore être approuvé",
+    "approvalNoType": "Type de véhicule non renseigné.",
+    "approvalMissing": "Documents obligatoires manquants ou non validés : {{list}}."
   }
 }

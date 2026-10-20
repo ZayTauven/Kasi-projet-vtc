@@ -67,11 +67,22 @@
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
+            <!-- p2-vehicules : type du vehicule, conditionne services et documents. -->
+            <nz-form-item>
+              <nz-form-label nzFor="vehicleType">{{ 'vehicle.type' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'vehicle.driverHint' | translate">
+                <nz-select id="vehicleType" formControlName="vehicleType" [nzPlaceHolder]="'vehicle.notSet' | translate">
+                  @for (vehicleType of vehicleTypes; track vehicleType) {
+                    <nz-option [nzValue]="vehicleType" [nzLabel]="'enum.vehicleType.' + vehicleType | translate"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="carId">{{'profile.carModel' | translate}}</nz-form-label>
               <nz-form-control>
                 <nz-select id="carId" formControlName="carId">
-                  @for (car of data.carModels.nodes; track car) {
+                  @for (car of modelsFor(data.carModels.nodes); track car) {
                     <nz-option [nzValue]="car.id" [nzLabel]="car.name"></nz-option>
                   }
                 </nz-select>
@@ -174,11 +185,16 @@
               </nz-form-label>
               <nz-form-control>
                 @for (service of data.services; track service) {
-                  <nz-tag nzMode="checkable"
-                    [nzChecked]="form.value.enabledServices.indexOf(service.id) > -1"
-                    (nzCheckedChange)="handleServiceCheckChange($event, service)">
-                    {{ service.name }}
-                  </nz-tag>
+                  @if (serviceAllowed(service) || form.value.enabledServices.indexOf(service.id) > -1) {
+                    <nz-tag nzMode="checkable"
+                      [nzChecked]="form.value.enabledServices.indexOf(service.id) > -1"
+                      (nzCheckedChange)="handleServiceCheckChange($event, service)">
+                      {{ service.name }}
+                      @if (!serviceAllowed(service)) {
+                        · {{ 'vehicle.serviceNotAllowed' | translate }}
+                      }
+                    </nz-tag>
+                  }
                 }
               </nz-form-control>
             </nz-form-item>

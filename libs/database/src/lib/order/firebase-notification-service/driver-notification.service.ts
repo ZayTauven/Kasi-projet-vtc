@@ -3,6 +3,7 @@ import { DriverEntity } from '../../entities/driver.entity';
 import { OrderMessageEntity } from '../../entities/request-message.entity';
 import { messaging } from 'firebase-admin';
 import { IDriverNotificationService } from '../interfaces/driver-notification.interface';
+import { DRIVER_PUSH } from './push-texts';
 
 @Injectable()
 export class FirebaseDriverNotificationService implements IDriverNotificationService {
@@ -13,15 +14,16 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
       .filter((_driver) => (_driver.notificationPlayerId?.length ?? 0) > 0)
       .map((x) => x.notificationPlayerId) as unknown as string[];
     if (tokens.length < 1) return;
-    Logger.log(`Sending notification to: ${JSON.stringify(tokens)}`);
+    // p1-sentry (hygiene des journaux) : le nombre d'appareils, pas leurs jetons.
+    Logger.log(`Sending notification to ${tokens.length} device(s)`);
     try {
       const notificationResult = await messaging().sendMulticast({
         tokens: tokens,
         android: {
           notification: {
             sound: 'default',
-            titleLocKey: 'notification_new_request_title',
-            bodyLocKey: 'notification_new_request_body',
+            title: DRIVER_PUSH.newRequest.title,
+            body: DRIVER_PUSH.newRequest.body,
             channelId: 'request',
             icon: 'notification_icon',
             priority: 'high',
@@ -38,8 +40,8 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
               badge: 1,
               contentAvailable: true,
               alert: {
-                titleLocKey: 'notification_new_request_title',
-                subtitleLocKey: 'notification_new_request_body',
+                title: DRIVER_PUSH.newRequest.title,
+                body: DRIVER_PUSH.newRequest.body,
               },
             },
           },
@@ -52,11 +54,7 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
   }
 
   canceled(driver: DriverEntity) {
-    this.sendNotification(
-      driver,
-      'notification_cancel_title',
-      'notification_cancel_body',
-    );
+    this.sendNotification(driver, DRIVER_PUSH.canceled.title, DRIVER_PUSH.canceled.body);
   }
 
   message(driver: DriverEntity, message: OrderMessageEntity) {
@@ -67,7 +65,7 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
         android: {
           notification: {
             sound: 'default',
-            titleLocKey: 'notification_new_message_title',
+            title: DRIVER_PUSH.newMessageTitle,
             body: message.content,
             channelId: 'message',
             icon: 'notification_icon',
@@ -80,8 +78,8 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
               badge: 1,
               contentAvailable: true,
               alert: {
-                titleLocKey: 'notification_new_message_title',
-                subtitle: message.content,
+                title: DRIVER_PUSH.newMessageTitle,
+                body: message.content,
               },
             },
           },
@@ -91,28 +89,16 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
   }
 
   paid(driver: DriverEntity) {
-    this.sendNotification(
-      driver,
-      'notification_paid_title',
-      'notification_paid_body',
-    );
+    this.sendNotification(driver, DRIVER_PUSH.paid.title, DRIVER_PUSH.paid.body);
   }
 
   assigned(driver: DriverEntity, time: string, from: string, to: string) {
-    this.sendNotification(
-      driver,
-      'notification_assigned_title',
-      'notification_assigned_body',
-      [time, from, to],
-    );
+    const text = DRIVER_PUSH.assigned(time, from, to);
+    this.sendNotification(driver, text.title, text.body);
   }
 
   upcomingBooking(driver: DriverEntity) {
-    this.sendNotification(
-      driver,
-      'notification_upcoming_ride_title',
-      'notification_upcoming_ride_body',
-    );
+    this.sendNotification(driver, DRIVER_PUSH.upcomingBooking.title, DRIVER_PUSH.upcomingBooking.body);
   }
 
   /**
@@ -149,11 +135,11 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
     }
   }
 
+  /** Push en texte francais (bug-push-anglais) : plus de cle de traduction. */
   private sendNotification(
     driver: DriverEntity,
-    titleLocKey: string,
-    bodyLocKey: string,
-    bodyLocArgs: string[] = [],
+    title: string,
+    body: string,
     sound: string = 'default',
     channelId: string = 'tripEvents',
   ) {
@@ -162,15 +148,15 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
       process.env['NODE_ENV'] === 'dev'
     )
       return;
-    try {
-      messaging().send({
+    messaging()
+      .send({
         token: driver.notificationPlayerId,
+        notification: { title, body },
         android: {
           notification: {
             sound,
-            titleLocKey,
-            bodyLocKey,
-            bodyLocArgs,
+            title,
+            body,
             channelId,
             icon: 'notification_icon',
           },
@@ -179,15 +165,11 @@ export class FirebaseDriverNotificationService implements IDriverNotificationSer
           payload: {
             aps: {
               sound,
-              alert: {
-                titleLocKey,
-                subtitleLocKey: bodyLocKey,
-                subtitleLocArgs: bodyLocArgs,
-              },
+              alert: { title, body },
             },
           },
         },
-      });
-    } catch (error) {}
+      })
+      .catch((error) => Logger.warn(`Push non envoyee au Kasiman ${driver.id} : ${(error as Error).message}`));
   }
 }

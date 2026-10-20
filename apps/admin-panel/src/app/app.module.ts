@@ -105,6 +105,11 @@ import {
   // Icônes des pages détail/view/settings (Lot 0)
   DownOutline,
   CheckOutline,
+  // p2-kyc K2 : documents du Kasiman.
+  CloseOutline,
+  FilePdfOutline,
+  FileExclamationOutline,
+  FileDoneOutline,
 } from "@ant-design/icons-angular/icons";
 import { IconDefinition } from "@ant-design/icons-angular";
 import {
@@ -179,6 +184,10 @@ const icons: IconDefinition[] = [
   ArrowRightOutline,
   DownOutline,
   CheckOutline,
+  CloseOutline,
+  FilePdfOutline,
+  FileExclamationOutline,
+  FileDoneOutline,
 ];
 // La console est francaise par defaut : sans `registerLocaleData(fr)` NI
 // `LOCALE_ID`, les pipes Angular (`date`, `currency`, `number`) retombaient sur

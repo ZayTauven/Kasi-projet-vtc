@@ -119,6 +119,21 @@ class DrawerView extends StatelessWidget {
             Navigator.pushNamed(context, 'statement');
           },
         ),
+        // p2-kyc K3 : documents types, echeances et envoi.
+        ListTile(
+          iconColor: CustomTheme.primaryColors.shade800,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          leading: const Icon(Ionicons.documents),
+          minLeadingWidth: 20.0,
+          title: Text(
+            S.of(context).menu_documents,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          onTap: () {
+            Navigator.pushNamed(context, 'documents');
+          },
+        ),
         if (driver?.isWalletHidden == false)
           ListTile(
             iconColor: CustomTheme.primaryColors.shade800,

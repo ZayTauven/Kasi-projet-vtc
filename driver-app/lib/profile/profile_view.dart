@@ -10,6 +10,8 @@ import 'package:kasi_driver/profile/profile.graphql.dart';
 import 'package:kasi_driver/profile/profile_info_card.dart';
 import 'package:kasi_driver/profile/payout_methods_view.dart';
 import 'package:kasi_driver/unit_of_measurement.dart';
+import 'package:kasi_driver/vehicle/vehicle_type_picker.dart';
+import 'package:kasi_driver/vehicle/vehicle_type_sheet.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:collection/collection.dart';
 import 'package:client_shared/components/kasi_network_image.dart';
@@ -217,11 +219,14 @@ class _ProfileViewState extends State<ProfileView> {
                                     );
                                   },
                                   body: VehicleInformationTableView(
-                                      driver: driver))
+                                      driver: driver,
+                                      onChanged: () => refetch?.call()))
                             ],
                             expansionCallback: (panelIndex, isExpanded) {
+                              // Depuis Flutter 3.13, `isExpanded` est le NOUVEL
+                              // etat : `!isExpanded` laissait le panneau ferme.
                               setState(() {
-                                _isOpen[1] = !isExpanded;
+                                _isOpen[1] = isExpanded;
                               });
                             }),
                       ),
@@ -306,15 +311,50 @@ class BankInformationTableView extends StatelessWidget {
 
 class VehicleInformationTableView extends StatelessWidget {
   final Query$GetProfile$driver driver;
-  const VehicleInformationTableView({Key? key, required this.driver})
+  final VoidCallback onChanged;
+  const VehicleInformationTableView(
+      {Key? key, required this.driver, required this.onChanged})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final type = kVehicleTypes.contains(driver.vehicleType)
+        ? driver.vehicleType
+        : null;
     return Container(
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
+          // p2-vehicules : choisi une fois s'il manque (inscrit avant le
+          // catalogue des vehicules), ensuite modifie par le support.
+          Row(
+            children: [
+              Icon(vehicleTypeIcon(type),
+                  size: 18, color: CustomTheme.neutralColors.shade700),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  S.of(context).vehicle_type_title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: CustomTheme.neutralColors.shade700),
+                ),
+              ),
+              if (type == null)
+                TextButton(
+                    key: const ValueKey('vehicle-type-choose'),
+                    onPressed: () async {
+                      final saved = await showVehicleTypeSheet(context);
+                      if (saved == true) onChanged();
+                    },
+                    child: Text(S.of(context).vehicle_type_choose))
+              else
+                Text(vehicleTypeLabel(context, type),
+                    style: Theme.of(context).textTheme.labelMedium),
+            ],
+          ),
+          const Divider(),
           ProfileInformationRow(
               title: S.of(context).car_model, content: driver.car?.name ?? "-"),
           const Divider(),

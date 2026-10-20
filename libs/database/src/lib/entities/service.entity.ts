@@ -21,6 +21,7 @@ import { DriverEntity } from './driver.entity';
 import { ServiceDistanceFeeMode } from './enums/service-distance-fee-mode.enum';
 import { ServiceOrderType } from './enums/service-order-type.enum';
 import { ServicePaymentMethod } from './enums/service-payment-method.enum';
+import { VEHICLE_TYPE_ENUM_NAME, VehicleType } from './enums/vehicle-type.enum';
 import { MediaEntity } from './media.entity';
 import { RequestEntity } from './request.entity';
 import { RegionEntity } from './region.entity';
@@ -111,6 +112,16 @@ export class ServiceEntity {
     default: ServiceOrderType.Ride,
   })
   orderType!: ServiceOrderType;
+
+  // p2-vehicules (2026-10-20) : vehicules admis pour ce service. Vide = tous
+  // (services existants inchanges).
+  @Column('enum', {
+    enum: VehicleType,
+    enumName: VEHICLE_TYPE_ENUM_NAME,
+    array: true,
+    default: '{}',
+  })
+  vehicleTypes!: VehicleType[];
 
   @Column('enum', {
     enum: ServiceDistanceFeeMode,

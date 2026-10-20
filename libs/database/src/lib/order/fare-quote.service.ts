@@ -55,6 +55,8 @@ import { SharedRiderService } from './shared-rider.service';
 
 export const FARE_QUOTE_TTL_SECONDS = 120;
 export const FARE_QUOTE_INSTALLED_APP_SECONDS = 600;
+/** bug-timeout : delai pendant lequel une commande identique est un renvoi. */
+export const ORDER_RESEND_WINDOW_SECONDS = 120;
 /** Purge des devis non consommes plus vieux que cela (fiche §5.2). */
 export const FARE_QUOTE_PURGE_AFTER_HOURS = 24;
 /** Ecart tolere entre la prise en charge du devis et celle de la commande. */
@@ -312,6 +314,33 @@ export class FareQuoteService {
       qb.andWhere('q.couponId = :couponId', { couponId: input.couponId });
     }
     return qb.orderBy('q.createdAt', 'DESC').getOne();
+  }
+
+  /**
+   * bug-timeout (banc pilote, 2026-10-20) : course creee il y a moins de
+   * 2 minutes pour ce client et ce trajet (meme service, points, options,
+   * aller-retour). Une commande identique dans ce delai est un renvoi de l'app,
+   * pas une nouvelle course ; l'appelant verifie qu'elle est encore en cours.
+   */
+  async findResentOrderId(input: {
+    riderId: number;
+    serviceId: number;
+    points: Point[];
+    optionIds: string[];
+    twoWay: boolean;
+  }): Promise<number | null> {
+    const quote = await this.quoteRepository
+      .createQueryBuilder('q')
+      .where('q.riderId = :riderId', { riderId: input.riderId })
+      .andWhere('q.serviceId = :serviceId', { serviceId: input.serviceId })
+      .andWhere('q.pointsHash = :hash', { hash: hashPoints(input.points) })
+      .andWhere('q.optionIds = :options', { options: input.optionIds.join(',') })
+      .andWhere('q.twoWay = :twoWay', { twoWay: input.twoWay })
+      .andWhere('q.requestId IS NOT NULL')
+      .andWhere(`q.consumedAt > now() - make_interval(secs => ${ORDER_RESEND_WINDOW_SECONDS})`)
+      .orderBy('q.consumedAt', 'DESC')
+      .getOne();
+    return quote?.requestId ?? null;
   }
 
   /**

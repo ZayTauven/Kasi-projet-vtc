@@ -6,8 +6,10 @@ import {
   Gender,
   PackageSize,
   UpdateDriverProfileGQL,
+  VehicleType,
   ViewDriverQuery,
 } from "@kasi/admin-panel/generated/graphql";
+import { financialErrorMessage } from "@kasi/admin-panel/src/app/@services/debt-status";
 import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 import { environment } from "@kasi/admin-panel/src/environments/environment";
 import { camelCase } from "camel-case";
@@ -44,6 +46,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
     mediaId: [null],
     canDeliver: [false],
     maxPackageSize: [null],
+    vehicleType: [null],
     enabledServices: [null, Validators.required],
   });
   root: string = environment.root;
@@ -52,6 +55,7 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
   genders = Object.values(Gender);
   public gender = Gender;
   packageSizes = Object.values(PackageSize);
+  vehicleTypes = Object.values(VehicleType);
   public camelCase = camelCase;
   jwt = localStorage.getItem("kasi_admin_token");
   loadingUpload = false;
@@ -101,6 +105,20 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** p2-vehicules : modeles du type choisi (et les modeles non classes). */
+  modelsFor<T extends { id: string; vehicleType?: VehicleType | null }>(models: T[]): T[] {
+    const type: VehicleType | null = this.form.value.vehicleType;
+    return models.filter(
+      (model) => type == null || model.vehicleType == null || model.vehicleType === type || model.id === this.form.value.carId,
+    );
+  }
+
+  /** p2-vehicules : le service admet-il le vehicule du Kasiman ? (vide = tous) */
+  serviceAllowed(service: { vehicleTypes: VehicleType[] }): boolean {
+    const type: VehicleType | null = this.form.value.vehicleType;
+    return type == null || service.vehicleTypes.length === 0 || service.vehicleTypes.includes(type);
+  }
+
   cancel() {
     if (this.originalValue) {
       this.form.reset(this.originalValue);
@@ -114,14 +132,19 @@ export class DriverProfileDetailsComponent implements OnInit, OnDestroy {
 
   async onSubmit() {
     const { id, mobileNumber, enabledServices, ...update } = this.form.value;
-    await firstValueFrom(
-      this.updateGQL.mutate({ variables: {
-        id,
-        update,
-        serviceIds: enabledServices,
-      } }),
-    );
-    this.msg.success("Updated!");
+    try {
+      await firstValueFrom(
+        this.updateGQL.mutate({ variables: {
+          id,
+          update,
+          serviceIds: enabledServices,
+        } }),
+      );
+    } catch (error: any) {
+      this.msg.error(financialErrorMessage(error, this.translate));
+      return;
+    }
+    this.msg.success(this.translate.instant("vehicle.saved"));
     this.routerHelper.refresh(this.route);
   }
 

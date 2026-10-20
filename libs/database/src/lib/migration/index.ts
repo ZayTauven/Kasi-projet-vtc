@@ -5,6 +5,9 @@ import { MoneyIdempotencyKey1790647094992 } from './postgres/1790647094992-Money
 import { LedgerTables1792421211893 } from './postgres/1792421211893-LedgerTables';
 import { MoneyPolicy1792434023914 } from './postgres/1792434023914-MoneyPolicy';
 import { FareQuote1792452456288 } from './postgres/1792452456288-FareQuote';
+import { DispatchAttempt1792471583975 } from './postgres/1792471583975-DispatchAttempt';
+import { DriverDocuments1792479894071 } from './postgres/1792479894071-DriverDocuments';
+import { VehicleTypes1792493301332 } from './postgres/1792493301332-VehicleTypes';
 
 /**
  * Liste ORDONNEE et EXPLICITE des migrations PostgreSQL de Kasi.
@@ -30,6 +33,18 @@ export const kasiMigrations: Array<new () => MigrationInterface> = [
   // p2-argent I4 (2026-10-20) : devis fige (table fare_quote, colonne
   // request.quoteId). Rien a lancer apres elle.
   FareQuote1792452456288,
+  // p2-dispatch D4 et D6 (2026-10-20) : tables dispatch_attempt (journal des
+  // sollicitations) et unserved_demand (demande non servie). Rien a lancer
+  // apres elle.
+  DispatchAttempt1792471583975,
+  // p2-kyc K1 (2026-10-20) : documents types du Kasiman (tables
+  // driver_document_type, semee, et driver_document ; colonne
+  // driver.documentsSuspendedAt). Rien a lancer apres elle.
+  DriverDocuments1792479894071,
+  // p2-vehicules et p2-kyc K4 (2026-10-20) : type de vehicule (enumeration
+  // vehicle_type_enum ; car, driver, service, driver_document_type). Rien a
+  // lancer apres elle.
+  VehicleTypes1792493301332,
 ];
 
 /**

@@ -120,12 +120,6 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
       queryParams: { sort: "id|DESC" },
     },
     {
-      labelKey: "menu.requests",
-      route: "/requests",
-      icon: "container",
-      queryParams: { sort: "id|DESC" },
-    },
-    {
       labelKey: "menu.sos",
       route: "/sos",
       icon: "alert",
@@ -174,6 +168,38 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           route: "/drivers",
           icon: "idcard",
           queryParams: { sort: "id|DESC" },
+        },
+        // p2-kyc K2 : echeances des documents et Kasimen suspendus.
+        {
+          labelKey: "menu.driver.expiringDocuments",
+          route: "/drivers/expiring-documents",
+          icon: "file-exclamation",
+        },
+        {
+          labelKey: "menu.driver.documentSuspended",
+          route: "/drivers",
+          icon: "stop",
+          queryParams: { documents: "suspended" },
+        },
+      ],
+    },
+    {
+      // p2-dispatch D6 : les courses deviennent un groupe pour accueillir
+      // « Demande non servie ».
+      key: "requests",
+      labelKey: "menu.requests",
+      icon: "container",
+      children: [
+        {
+          labelKey: "menu.requestsAll",
+          route: "/requests",
+          icon: "folder-open",
+          queryParams: { sort: "id|DESC" },
+        },
+        {
+          labelKey: "menu.unservedDemands",
+          route: "/unserved-demands",
+          icon: "stop",
         },
       ],
     },
@@ -299,6 +325,11 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           icon: "clock-circle",
         },
         {
+          labelKey: "menu.management.documentTypes",
+          route: "/management/document-types",
+          icon: "file-done",
+        },
+        {
           labelKey: "menu.management.retention",
           route: "/management/retention",
           icon: "file-protect",
@@ -335,13 +366,15 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Groupes affichés en tête du rail (avant les liens plats). */
   get navGroupsTop(): NavGroup[] {
     return this.navGroups.filter(
-      (g) => g.key === "home" || g.key === "drivers",
+      (g) => ["home", "drivers", "requests"].includes(g.key),
     );
   }
 
   /** Groupes affichés après les liens plats (opérations & configuration). */
   get navGroupsBottom(): NavGroup[] {
-    return this.navGroups.filter((g) => !["home", "drivers"].includes(g.key));
+    return this.navGroups.filter(
+      (g) => !["home", "drivers", "requests"].includes(g.key),
+    );
   }
 
   constructor(

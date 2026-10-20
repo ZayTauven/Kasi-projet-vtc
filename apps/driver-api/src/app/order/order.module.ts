@@ -47,9 +47,20 @@ import { ServiceOptionEntity } from '@kasi/database/service-option.entity';
 import { CommonCouponModule } from '@kasi/coupon/common-coupon.module';
 import { ZonePriceEntity } from '@kasi/database/zone-price.entity';
 import { HttpModule } from '@nestjs/axios';
+import { BullModule } from '@nestjs/bullmq';
+import { dispatchQueueOptions } from '../dispatch/dispatch-queue';
+import { DispatchTickProcessor } from '../dispatch/dispatch-tick.processor';
+import { DispatchWaveService } from '../dispatch/dispatch-wave.service';
+import { DispatchAttemptJournal } from '../dispatch/dispatch-attempt.journal';
+import { UnservedDemandService } from '../dispatch/unserved-demand.service';
+import { DispatchProducer } from '@kasi/order/dispatch-producer.service';
+import { DriverDocumentService } from '@kasi/order/driver-document.service';
+import { KycCheckService } from '../kyc/kyc-check.service';
 
 @Module({
   imports: [
+    // p2-dispatch D1 : file kasi-dispatch (battement du cron, puis vagues en D2).
+    BullModule.registerQueue(dispatchQueueOptions),
     RedisHelpersModule,
     DriverModule,
     CommonCouponModule,
@@ -117,6 +128,17 @@ import { HttpModule } from '@nestjs/axios';
     FareQuoteService,
     RedisPubSubProvider.provider(),
     CronJobService,
+    DispatchTickProcessor,
+    // p2-dispatch D2-D3 : vagues et expiration par course (consommateur),
+    // producteur requis par SharedOrderService.
+    DispatchWaveService,
+    DispatchProducer,
+    // p2-dispatch D4-D6 : journal des sollicitations, demande non servie.
+    DispatchAttemptJournal,
+    UnservedDemandService,
+    // p2-kyc K1 : controle des documents (job kyc-check du meme consommateur).
+    DriverDocumentService,
+    KycCheckService,
   ],
   exports: [DriverOrderQueryService, SharedDriverService],
 })

@@ -6,6 +6,7 @@ import { RequestViewActivitiesComponent } from './request-view-activities/reques
 import { RequestViewAssignComponent } from './request-view-assign/request-view-assign.component';
 import { RequestViewAssignResolver } from './request-view-assign/request-view-assign.resolver';
 import { RequestViewChatsComponent } from './request-view-chats/request-view-chats.component';
+import { RequestViewDispatchComponent } from './request-view-dispatch/request-view-dispatch.component';
 import { RequestViewComplaintsComponent } from './request-view-complaints/request-view-complaints.component';
 import { RequestViewFinancialsComponent } from './request-view-financials/request-view-financials.component';
 import { RequestViewInfoComponent } from './request-view-info/request-view-info.component';
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: 'complaints', component: RequestViewComplaintsComponent },
       { path: 'financials', component: RequestViewFinancialsComponent },
       { path: 'chats', component: RequestViewChatsComponent },
+      { path: 'dispatch', component: RequestViewDispatchComponent },
       { path: 'assign', component: RequestViewAssignComponent, resolve: { availableDrivers: RequestViewAssignResolver } },
     ]
   }

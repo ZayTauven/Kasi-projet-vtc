@@ -292,14 +292,49 @@ describe('p2-argent I4 : devis fige', () => {
     expect(quote.requestId).toBe(created.id);
   });
 
-  it('deux createOrder simultanes sur le meme devis = une seule commande', async () => {
+  it('app installee : commande renvoyee apres le timeout de 20 s (bug-timeout) = la meme course', async () => {
+    await fare();
+    // Renvoi apres coup : la 1re commande est enregistree, son devis consomme.
+    const first = await order(); // sans quoteId, comme l'app installee
+    const again = await order();
+    expect(Number(again.id)).toBe(Number(first.id));
+    expect(await countRows(ds, 'request')).toBe(1);
+    // Renvoi pendant que la 1re commande est encore en cours.
+    await ds.query(`UPDATE request SET status = 'RiderCanceled'`);
+    await fare();
+    const both = await concurrently(2, () => order());
+    expect(both.every((r) => r.status === 'fulfilled')).toBe(true);
+    const ids = both.map((r) => Number((r as PromiseFulfilledResult<{ id: number }>).value.id));
+    expect(ids[0]).toBe(ids[1]);
+    expect(await countRows(ds, 'request')).toBe(2);
+  });
+
+  it('nouvelle course voulue apres annulation : pas confondue avec un renvoi', async () => {
+    await fare();
+    const first = await order();
+    await ds.query(`UPDATE request SET status = 'RiderCanceled' WHERE id = $1`, [first.id]);
+    const second = await order(); // meme trajet, sans nouvel apercu
+    expect(Number(second.id)).not.toBe(Number(first.id));
+    expect(await countRows(ds, 'request')).toBe(2);
+  });
+
+  it('deux createOrder simultanes sur le meme devis = une seule commande, rendue aux deux', async () => {
     const shown = await fare();
     const results = await concurrently(2, () => order({ quoteId: shown.quoteId }));
-    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
-    const rejected = results.find((r) => r.status === 'rejected') as PromiseRejectedResult;
-    expect((rejected.reason as Error).message).toBe(FareQuoteRefusal.AlreadyUsed.message);
+    // bug-timeout (banc pilote) : le second envoi recoit la course du premier.
+    // Avant : refus QUOTE_ALREADY_USED alors que la course existait.
+    expect(results.every((r) => r.status === 'fulfilled')).toBe(true);
+    const ids = results.map((r) => Number((r as PromiseFulfilledResult<{ id: number }>).value.id));
+    expect(ids[0]).toBe(ids[1]);
     expect(await countRows(ds, 'request')).toBe(1);
     expect(await countRows(ds, 'fare_quote', '"requestId" IS NOT NULL')).toBe(1);
+    // Devis d'une course close : refus, pas de seconde course.
+    await ds.query(`UPDATE request SET status = 'RiderCanceled'`);
+    expect(await refusal(order({ quoteId: shown.quoteId }))).toEqual({
+      message: FareQuoteRefusal.AlreadyUsed.message,
+      code: 'QUOTE_ALREADY_USED',
+    });
+    expect(await countRows(ds, 'request')).toBe(1);
   });
 
   // -------------------------------------------------------------------------

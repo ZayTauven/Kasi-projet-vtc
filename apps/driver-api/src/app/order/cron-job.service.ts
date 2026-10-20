@@ -1,6 +1,5 @@
 ﻿import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Interval } from '@nestjs/schedule';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { ShiftRuleEntity } from '@kasi/database/shift-rule.entity';
@@ -19,6 +18,9 @@ import { Redis } from 'ioredis';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { Between, In, IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { SharedFleetService } from '@kasi/order/shared-fleet.service';
+import { UNASSIGNED_STATUSES } from '@kasi/order/order-transition';
+import { isWavesMode } from '@kasi/order/dispatch-config';
+import { DispatchWaveService } from '../dispatch/dispatch-wave.service';
 
 @Injectable()
 export class CronJobService {
@@ -31,10 +33,13 @@ export class CronJobService {
         @Inject(DRIVER_NOTIFICATION_SERVICE) private readonly driverNotificationService: IDriverNotificationService,
         private sharedDriverService: SharedDriverService,
         private sharedFleetService: SharedFleetService,
-        @InjectRepository(ShiftRuleEntity) private shiftRuleRepository: Repository<ShiftRuleEntity>
+        @InjectRepository(ShiftRuleEntity) private shiftRuleRepository: Repository<ShiftRuleEntity>,
+        // p2-dispatch D3 : client prevenu des expirations du filet de securite (mode waves).
+        private dispatchWaveService?: DispatchWaveService,
     ) {}
 
-    @Interval(300_000)
+    // p2-dispatch D1 (2026-10-20) : declenche par la file BullMQ `kasi-dispatch`
+    // (DispatchTickProcessor, toutes les 5 min) au lieu de `@Interval(300_000)`.
     async cronTask() {
         const logger = new Logger(CronJobService.name);
         logger.debug('Running expiration validation cron task.');
@@ -53,28 +58,33 @@ export class CronJobService {
             this.driverService.expireDriverStatus(drivers);
         }
         // Expiring requests with expired timestamp (10 minutes ago by default)
+        // p2-dispatch D3 : en mode waves, ce balayage est le filet de securite de
+        // l'expiration par course (file indisponible) ; le client est prevenu une
+        // seule fois (transition conditionnelle). Legacy : inchange.
+        const waves = isWavesMode();
         if(expiredRequests.length > 0) {
-            await this.orderService.expireOrders(expiredRequests);
+            const expiredIds = await this.orderService.expireOrders(expiredRequests);
+            if (waves) {
+                await this.dispatchWaveService?.notifyExpired(expiredIds);
+            }
         }
 
         // Notifying drivers of an unaccepted orders
         const waitingMinTime = ts - (10 * 60000);
         const waitingMaxTime = ts + (30 * 60000);
-        const waitingRequestIds = (await this.orderRedisService.getRequestIdsInTimeRage(waitingMinTime, waitingMaxTime)).map(id => parseInt(id));
+        // p2-dispatch D1 (2026-10-20, bug-offre-perdue) : cette relance ne partait
+        // jamais (getRequestIdsInTimeRage lisait par rang). Maintenant qu'elle
+        // tourne : courses encore sans Kasiman seulement, memes regles qu'a la
+        // creation (livraison, flotte, dette), Kasiman relance une seule fois, et
+        // une course en defaut n'interrompt plus la boucle.
+        // p2-dispatch D2 : en mode waves, les vagues sont la relance (10 km d'un coup
+        // contournerait leur ordre) : pas de relance du cron.
+        const waitingRequestIds = waves ? [] : (await this.orderRedisService.getRequestIdsInTimeRage(waitingMinTime, waitingMaxTime)).map(id => parseInt(id));
         for (const waitingRequest of waitingRequestIds) {
-            const driversNotified = await this.orderRedisService.getDriversNotified(waitingRequest);
-            const requestLocation = await this.redisService.geopos('request', waitingRequest.toString());
-            let closeDrivers = await this.driverRedisService.getClose({lat: parseFloat(requestLocation[0][1]), lng: parseFloat(requestLocation[0][0])},10000);
-            closeDrivers = closeDrivers.filter(x => {
-                return !(driversNotified.includes(x.driverId));
-            });
-            if(closeDrivers.length > 0) {
-                let driverIds = closeDrivers.map(x=>x.driverId);
-                const order = await this.orderService.orderRepository.findOneBy({id: waitingRequest});
-                const fleetIds = await this.sharedFleetService.getFleetIdsInPoint(order.points[0]);
-                const drivers = await this.sharedDriverService.getOnlineDriversWithServiceId(driverIds, order.serviceId, fleetIds, undefined, order.currency);
-                // p2-argent I3 : Kasimen au-dela du plafond de dette exclus (fiche argent §4.2).
-                this.driverNotificationService.requests(drivers);
+            try {
+                await this.remindWaitingRequest(waitingRequest);
+            } catch (error) {
+                logger.warn(`Relance de la course ${waitingRequest} ignoree : ${error}`);
             }
         }
 
@@ -90,6 +100,44 @@ export class CronJobService {
 
         // P6.3 Shift Rules — avertissement SOFT non bloquant (jamais d'offline forcé).
         await this.enforceShiftRulesSoft();
+    }
+
+    /** Relance d'une course en attente auprès des Kasimen proches pas encore prévenus. */
+    private async remindWaitingRequest(orderId: number): Promise<void> {
+        const requestLocation = await this.redisService.geopos('request', orderId.toString());
+        if (requestLocation[0] == null) {
+            return;
+        }
+        const driversNotified = await this.orderRedisService.getDriversNotified(orderId);
+        const closeDrivers = (await this.driverRedisService.getClose(
+            { lat: parseFloat(requestLocation[0][1]), lng: parseFloat(requestLocation[0][0]) },
+            10000,
+        )).filter(x => !driversNotified.includes(x.driverId));
+        if (closeDrivers.length === 0) {
+            return;
+        }
+        const order = await this.orderService.orderRepository.findOne({
+            where: { id: orderId },
+            relations: { service: true },
+        });
+        // Course acceptee, annulee ou en attente de prepaiement : pas de relance.
+        if (order == null || !UNASSIGNED_STATUSES.includes(order.status)) {
+            return;
+        }
+        const fleetIds = await this.sharedFleetService.getFleetIdsInPoint(order.points[0]);
+        // p2-argent I3 : Kasimen au-dela du plafond de dette exclus (fiche argent §4.2).
+        const drivers = await this.sharedDriverService.getOnlineDriversWithServiceId(
+            closeDrivers.map(x => x.driverId),
+            order.serviceId,
+            fleetIds,
+            { service: order.service, packageSize: order.packageSize },
+            order.currency,
+        );
+        if (drivers.length === 0) {
+            return;
+        }
+        await this.orderRedisService.driverNotified(orderId, drivers);
+        this.driverNotificationService.requests(drivers);
     }
 
     /**

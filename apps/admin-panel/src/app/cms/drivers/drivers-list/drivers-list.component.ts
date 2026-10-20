@@ -58,11 +58,24 @@ export class DriversListComponent implements OnInit {
     return this.route.snapshot.queryParams["debt"] === "blocked";
   }
 
+  get suspendedOnly(): boolean {
+    return this.route.snapshot.queryParams["documents"] === "suspended";
+  }
+
+  /** p2-kyc K2 : filtre « suspendus » (document expire), `documents=suspended`. */
+  setSuspendedOnly(value: boolean) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { documents: value ? "suspended" : undefined, debt: undefined, pageIndex: 1 },
+      queryParamsHandling: "merge",
+    });
+  }
+
   /** Filtre « bloques » : parametre d'URL `debt=blocked`, retour en page 1. */
   setBlockedOnly(value: boolean) {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { debt: value ? "blocked" : undefined, pageIndex: 1 },
+      queryParams: { debt: value ? "blocked" : undefined, documents: undefined, pageIndex: 1 },
       queryParamsHandling: "merge",
     });
   }

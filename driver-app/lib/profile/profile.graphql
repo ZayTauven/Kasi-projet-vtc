@@ -20,6 +20,7 @@ query GetProfile {
       address
     }
     carPlate
+    vehicleType
     enabledServices {
       name
     }

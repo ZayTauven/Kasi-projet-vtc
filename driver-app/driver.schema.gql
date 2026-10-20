@@ -2,7 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-
 input AddDocumentsToDriverInput {
   """The id of the record."""
   id: ID!
@@ -91,6 +90,7 @@ enum CarColorSortFields {
 type CarModel {
   id: ID!
   name: String!
+  vehicleType: VehicleType
 }
 
 input CarModelFilter {
@@ -277,6 +277,7 @@ type Driver {
   searchDistance: Int
   softRejectionNote: String
   status: DriverStatus!
+  vehicleType: VehicleType
   wallet(
     """Specify to filter the records returned."""
     filter: DriverWalletFilter! = {}
@@ -290,6 +291,37 @@ enum DriverDeductTransactionType {
   Commission
   Correction
   Withdraw
+}
+
+type DriverDocument {
+  createdAt: Timestamp!
+  expiresAt: String
+  id: ID!
+  media: Media
+  mediaId: ID
+  number: String
+  reviewNote: String
+  status: DriverDocumentStatus!
+  type: DriverDocumentType!
+  typeId: ID!
+}
+
+enum DriverDocumentStatus {
+  Approved
+  Expired
+  Pending
+  Rejected
+  Replaced
+}
+
+type DriverDocumentType {
+  code: String!
+  description: String
+  hasExpiryDate: Boolean!
+  id: ID!
+  isRequired: Boolean!
+  title: String!
+  vehicleTypes: [VehicleType!]!
 }
 
 type DriverEdge {
@@ -622,10 +654,12 @@ type Mutation {
   createOneOrderMessage(input: CreateOneOrderMessageInput!): OrderMessage!
   deleteUser: Driver!
   login(input: LoginInput!): Login!
+  rejectOrder(orderId: ID!): Boolean!
   requestMaskedCall(orderId: ID!): MaskedCallDTO!
   setDocumentsOnDriver(input: SetDocumentsOnDriverInput!): Driver!
   skipVerification(mobileNumber: String!): Login!
   sosSignal(location: PointInput, orderId: ID!): SOS!
+  submitDriverDocument(input: SubmitDriverDocumentInput!): DriverDocument!
   topUpWallet(input: TopUpWalletInput!): TopUpWalletResponse!
   updateDriversLocationNew(point: PointInput!): [Order!]!
   updateLastSeenMessagesAt(orderId: ID!): Boolean!
@@ -1125,6 +1159,8 @@ type Query {
     """The id of the record to find."""
     id: ID!
   ): Driver!
+  driverDocumentTypes: [DriverDocumentType!]!
+  driverDocuments: [DriverDocument!]!
   driverPayouts: [Payout!]!
   driverTransacions(
     """Specify to filter the records returned."""
@@ -1257,6 +1293,7 @@ type Service {
   name: String!
   orderType: ServiceOrderType!
   paymentMethod: ServicePaymentMethod!
+  vehicleTypes: [VehicleType!]!
 }
 
 type ServiceEdge {
@@ -1435,6 +1472,13 @@ type StatisticsResult {
   dataset: [Datapoint!]!
 }
 
+input SubmitDriverDocumentInput {
+  expiresAt: String
+  mediaId: ID!
+  number: String
+  typeId: ID!
+}
+
 type Subscription {
   newMessageReceived: OrderMessage!
   orderCreated: Order!
@@ -1500,6 +1544,7 @@ input UpdateDriverInput {
   payoutMethodId: ID
   searchDistance: Int
   status: DriverStatus
+  vehicleType: VehicleType
 }
 
 input UpdateOneDriverInput {
@@ -1522,6 +1567,12 @@ input UpdateOrderInput {
   destinationArrivedTo: Int
   paidAmount: Float
   status: OrderStatus
+}
+
+enum VehicleType {
+  Car
+  Motorcycle
+  Van
 }
 
 enum VersionStatus {

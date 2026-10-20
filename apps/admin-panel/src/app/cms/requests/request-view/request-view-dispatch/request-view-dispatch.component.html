@@ -1,0 +1,57 @@
+<div class="kasi-card">
+  @if (query | async; as result) {
+    @if (result.data?.dispatchAttempts; as attempts) {
+      @if (attempts.length === 0) {
+        <div class="kasi-card__body">
+          <nz-empty class="empty-state" [nzNotFoundContent]="'dispatch.attemptsEmpty' | translate"></nz-empty>
+        </div>
+      } @else {
+        <div class="kasi-card__body kasi-card__body--flush">
+          <nz-table #table [nzData]="attempts" [nzPageSize]="50" [nzHideOnSinglePage]="true">
+            <thead>
+              <tr>
+                <th>{{ 'dispatch.wave' | translate }}</th>
+                <th>{{ 'dispatch.rank' | translate }}</th>
+                <th>{{ 'dispatch.driver' | translate }}</th>
+                <th>{{ 'dispatch.distance' | translate }}</th>
+                <th>{{ 'dispatch.duration' | translate }}</th>
+                <th>{{ 'dispatch.routingSource' | translate }}</th>
+                <th>{{ 'dispatch.outcome' | translate }}</th>
+                <th>{{ 'dispatch.times' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of table.data; track a.id) {
+                <tr>
+                  <td>{{ a.wave }}</td>
+                  <td>{{ a.rank }}</td>
+                  <td><a [routerLink]="'/drivers/view/' + a.driverId">{{ a.driverName || ('#' + a.driverId) }}</a></td>
+                  <td>
+                    @if (a.roadDistanceM != null) {
+                      {{ (a.roadDistanceM / 1000) | number: '1.1-1' }} km
+                    } @else {
+                      <span class="text-gray-400">{{ (a.airDistanceM / 1000) | number: '1.1-1' }} km ({{ 'dispatch.airDistance' | translate }})</span>
+                    }
+                  </td>
+                  <td>{{ a.roadDurationS != null ? ((a.roadDurationS / 60) | number: '1.0-0') + ' min' : '-' }}</td>
+                  <td>{{ a.routingSource ? ('dispatch.source.' + a.routingSource | translate) : '-' }}</td>
+                  <td><nz-tag [nzColor]="outcomeColor(a.outcome)">{{ 'dispatch.outcomes.' + a.outcome | translate }}</nz-tag></td>
+                  <td>
+                    {{ a.offeredAt | date: 'HH:mm:ss' }}
+                    @if (a.respondedAt) { → {{ a.respondedAt | date: 'HH:mm:ss' }} }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </div>
+      }
+    } @else if (result.error) {
+      <div class="kasi-card__body">
+        <nz-empty class="empty-state" [nzNotFoundContent]="'dispatch.loadError' | translate"></nz-empty>
+      </div>
+    }
+  } @else {
+    <div class="kasi-card__body"><nz-skeleton [nzActive]="true"></nz-skeleton></div>
+  }
+</div>

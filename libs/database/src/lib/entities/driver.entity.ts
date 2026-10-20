@@ -19,6 +19,7 @@ import { DriverWalletEntity } from './driver-wallet.entity';
 import { DriverStatus } from './enums/driver-status.enum';
 import { Gender } from './enums/gender.enum';
 import { PackageSize } from './enums/package-size.enum';
+import { VEHICLE_TYPE_ENUM_NAME, VehicleType } from './enums/vehicle-type.enum';
 import { FeedbackEntity } from './feedback.entity';
 import { FleetTransactionEntity } from './fleet-transaction.entity';
 import { FleetEntity } from './fleet.entity';
@@ -57,6 +58,12 @@ export class DriverEntity {
         nullable: true
     })
     email?: string;
+
+    // p2-vehicules (2026-10-20) : type de vehicule porte par le Kasiman. Il
+    // conditionne les services (dispatch) et les documents exiges (KYC K4),
+    // pas l'identite. Null = inscrit avant p2-vehicules (accepte partout).
+    @Column('enum', { enum: VehicleType, enumName: VEHICLE_TYPE_ENUM_NAME, nullable: true })
+    vehicleType?: VehicleType | null;
 
     @ManyToOne(() => CarModelEntity, car => car.drivers, { onDelete: 'SET NULL' })
     car?: CarModelEntity;
@@ -168,6 +175,12 @@ export class DriverEntity {
 
     @Column({ nullable: true, name: 'documentsNote' })
     softRejectionNote?: string;
+
+    // p2-kyc K1 (2026-10-20) : suspendu (soft reject) pour un document
+    // obligatoire expire ; remis a offline par la validation du dernier
+    // document bloquant. Null sinon.
+    @Column('timestamp', { nullable: true })
+    documentsSuspendedAt?: Date | null;
 
     @DeleteDateColumn()
     deletedAt?: Date;

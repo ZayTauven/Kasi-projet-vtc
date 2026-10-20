@@ -9,6 +9,7 @@ import {
   DeleteCarModelGQL,
   UpdateCarColorGQL,
   UpdateCarModelGQL,
+  VehicleType,
 } from "@kasi/admin-panel/generated/graphql";
 import { RouterHelperService } from "@kasi/admin-panel/src/app/@services/router-helper.service";
 import { TableService } from "@kasi/admin-panel/src/app/@services/table-service";
@@ -24,6 +25,7 @@ export class ManagementCarsListComponent implements OnInit {
   query?: Observable<ApolloClient.QueryResult<CarsListQuery>>;
   editId?: string;
   editColorId?: string;
+  vehicleTypes = Object.values(VehicleType);
 
   constructor(
     private route: ActivatedRoute,
@@ -47,11 +49,17 @@ export class ManagementCarsListComponent implements OnInit {
     this.editId = id;
   }
 
-  async onSubmitEditModel(id: string, name: string) {
+  async onSubmitEditModel(id: string, name: string, vehicleType?: VehicleType | null) {
     const res = await firstValueFrom(
-      this.updateCarModelGQL.mutate({ variables: { id, input: { name } } }),
+      this.updateCarModelGQL.mutate({ variables: { id, input: { name, vehicleType } } }),
     );
     this.editId = undefined;
+  }
+
+  /** p2-vehicules : classe le modele (moto, taxi/voiture, camionnette). */
+  async onVehicleTypeChange(model: { id: string; name: string }, vehicleType: VehicleType | null) {
+    await this.onSubmitEditModel(model.id, model.name, vehicleType);
+    this.routerHelper.refresh(this.route);
   }
 
   async onAddModel() {

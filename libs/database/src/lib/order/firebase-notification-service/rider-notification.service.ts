@@ -1,8 +1,9 @@
-﻿import { Injectable } from '@nestjs/common';
+﻿import { Injectable, Logger } from '@nestjs/common';
 import { OrderMessageEntity } from '@kasi/database/request-message.entity';
 import { RiderEntity } from '@kasi/database/rider-entity';
 import { messaging } from 'firebase-admin';
 import { IRiderNotificationService } from '../interfaces/rider-notification.interface';
+import { PushText, RIDER_PUSH } from './push-texts';
 
 @Injectable()
 export class FirebaseRiderNotificationService implements IRiderNotificationService {
@@ -16,7 +17,7 @@ export class FirebaseRiderNotificationService implements IRiderNotificationServi
         android: {
           notification: {
             sound: 'default',
-            titleLocKey: 'notification_new_message_title',
+            title: RIDER_PUSH.newMessageTitle,
             body: message.content,
             channelId: 'message',
             icon: 'notification_icon',
@@ -28,8 +29,8 @@ export class FirebaseRiderNotificationService implements IRiderNotificationServi
               sound: 'default',
               badge: 1,
               alert: {
-                titleLocKey: 'notification_new_message_title',
-                subtitle: message.content,
+                title: RIDER_PUSH.newMessageTitle,
+                body: message.content,
               },
             },
           },
@@ -39,83 +40,76 @@ export class FirebaseRiderNotificationService implements IRiderNotificationServi
   }
 
   canceled(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_cancel_title',
-      'notification_cancel_body',
-      'Canceled',
-      'Your trip has been canceled',
-    );
+    this.sendNotification(rider, RIDER_PUSH.canceled);
   }
 
   accepted(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_found_title',
-      'notification_found_body',
-      'Accepted',
-      'A driver has accepted your requet',
-    );
+    this.sendNotification(rider, RIDER_PUSH.accepted);
   }
 
   bookingAssigned(rider: RiderEntity, time: string) {
-    this.sendNotification(
-      rider,
-      'notification_booking_assigned_title',
-      'notification_booking_assigned_body',
-      'Assigned',
-      'A driver has been assigned to your trip',
-      [time],
-    );
+    this.sendNotification(rider, RIDER_PUSH.bookingAssigned(time));
   }
 
   arrived(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_arrived_title',
-      'notification_arrived_body',
-      'Arrived',
-      'Driver has arrived to your location',
-    );
+    this.sendNotification(rider, RIDER_PUSH.arrived);
   }
 
   started(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_started_title',
-      'notification_started_body',
-      'Started',
-      'Trip has been started',
-    );
+    this.sendNotification(rider, RIDER_PUSH.started);
   }
 
   waitingForPostPay(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_waiting_for_pay_title',
-      'notification_waiting_for_pay_body',
-      'Finished',
-      'Waiting for post-pay',
-    );
+    this.sendNotification(rider, RIDER_PUSH.waitingForPostPay);
   }
 
   finished(rider: RiderEntity) {
-    this.sendNotification(
-      rider,
-      'notification_finished_title',
-      'notification_finished_body',
-      'Finished',
-      'Trip has been finished.',
-    );
+    this.sendNotification(rider, RIDER_PUSH.finished);
   }
 
+  /**
+   * p2-dispatch D3 (2026-10-20) : push en texte direct, sans cle de traduction
+   * cote app (meme forme que la push texte du Kasiman, p2-argent I3). Sert a
+   * « aucun Kasiman disponible » (Q11 de la fiche de portage du dispatch).
+   */
+  async plainText(rider: RiderEntity, title: string, body: string): Promise<void> {
+    if (
+      rider?.notificationPlayerId == null ||
+      rider.notificationPlayerId.length < 5 ||
+      process.env.NODE_ENV === 'dev'
+    )
+      return;
+    try {
+      await messaging().send({
+        token: rider.notificationPlayerId,
+        notification: { title, body },
+        android: {
+          notification: {
+            sound: 'default',
+            title,
+            body,
+            channelId: 'tripEvents',
+            icon: 'notification_icon',
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+              alert: { title, body },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      Logger.warn(`Push texte non envoyee au client ${rider.id} : ${(error as Error).message}`);
+    }
+  }
+
+  /** Push en texte francais (bug-push-anglais) : plus de cle de traduction. */
   private sendNotification(
     rider: RiderEntity,
-    titleLocKey: string,
-    bodyLocKey: string,
-    titleDefault: string,
-    bodyDefault: string,
-    bodyLocArgs: string[] = [],
+    text: PushText,
     sound: string = 'default',
     channelId: string = 'tripEvents',
   ) {
@@ -125,15 +119,16 @@ export class FirebaseRiderNotificationService implements IRiderNotificationServi
       process.env.NODE_ENV === 'dev'
     )
       return;
-    try {
-      messaging().send({
+    const { title, body } = text;
+    messaging()
+      .send({
         token: rider.notificationPlayerId,
+        notification: { title, body },
         android: {
           notification: {
             sound,
-            titleLocKey,
-            bodyLocKey,
-            bodyLocArgs,
+            title,
+            body,
             channelId,
             icon: 'notification_icon',
           },
@@ -142,21 +137,14 @@ export class FirebaseRiderNotificationService implements IRiderNotificationServi
           payload: {
             aps: {
               sound,
-              alert: {
-                titleLocKey,
-                subtitleLocKey: bodyLocKey,
-                subtitleLocArgs: bodyLocArgs,
-              },
+              alert: { title, body },
             },
           },
         },
         webpush: {
-          notification: {
-            title: titleDefault,
-            body: bodyDefault,
-          },
+          notification: { title, body },
         },
-      });
-    } catch (error) {}
+      })
+      .catch((error) => Logger.warn(`Push non envoyee au client ${rider.id} : ${(error as Error).message}`));
   }
 }

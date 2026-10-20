@@ -47,23 +47,21 @@ class OrdersCarouselView extends StatelessWidget {
             return Mutation$UpdateOrderStatus$Widget(
                 options: WidgetOptions$Mutation$UpdateOrderStatus(
                     onCompleted: (result, parsedData) {
-                      if (parsedData == null) return;
-                      mainBloc
-                          .add(CurrentOrderUpdated(parsedData.updateOneOrder));
-                    },
-                    onError: (error) {
-                      // p2-argent I3 : refus au-delà du plafond de dette
-                      // (`KASIMAN_DEBT_LIMIT`) -> écran de blocage avec le
-                      // montant dû et la marche à suivre, au lieu d'un
-                      // simple message.
-                      final debtCubit = context.read<KasimanAccountCubit>();
-                      if (debtCubit.applyDebtLimitError(error)) {
-                        debtCubit.refresh(GraphQLProvider.of(context).value);
-                        DebtBlockedView.open(context);
-                        return;
-                      }
-                      showOperationErrorMessage(context, error);
-                    }),
+                  if (parsedData == null) return;
+                  mainBloc.add(CurrentOrderUpdated(parsedData.updateOneOrder));
+                }, onError: (error) {
+                  // p2-argent I3 : refus au-delà du plafond de dette
+                  // (`KASIMAN_DEBT_LIMIT`) -> écran de blocage avec le
+                  // montant dû et la marche à suivre, au lieu d'un
+                  // simple message.
+                  final debtCubit = context.read<KasimanAccountCubit>();
+                  if (debtCubit.applyDebtLimitError(error)) {
+                    debtCubit.refresh(GraphQLProvider.of(context).value);
+                    DebtBlockedView.open(context);
+                    return;
+                  }
+                  showOperationErrorMessage(context, error);
+                }),
                 builder: (runMutation, result) =>
                     BlocBuilder<MainBloc, MainState>(builder: (context, state) {
                       // À l'acceptation d'une course l'état devient
@@ -90,11 +88,32 @@ class OrdersCarouselView extends StatelessWidget {
                                           status:
                                               Enum$OrderStatus.DriverAccepted));
                                 },
+                                onRejectCallback: (String orderId) =>
+                                    _rejectOrder(context, orderId),
                               ));
                     }));
           });
         });
       }),
     );
+  }
+
+  /// p2-dispatch D4 : l'offre quitte l'écran tout de suite ; l'appel part
+  /// ensuite sans rien attendre. Faux (mode `legacy`, offre déjà fermée) ou
+  /// erreur réseau ne changent rien pour le Kasiman : aucun message bloquant.
+  void _rejectOrder(BuildContext context, String orderId) {
+    context.read<MainBloc>().add(AvailableOrderRejected(orderId));
+    final client = GraphQLProvider.of(context).value;
+    () async {
+      try {
+        final result = await client.mutate$RejectOrder(
+            Options$Mutation$RejectOrder(
+                variables: Variables$Mutation$RejectOrder(orderId: orderId)));
+        debugPrint('[p2-dispatch] rejectOrder($orderId) -> '
+            '${result.hasException ? result.exception : result.parsedData?.rejectOrder}');
+      } catch (e) {
+        debugPrint('[p2-dispatch] rejectOrder($orderId) a échoué : $e');
+      }
+    }();
   }
 }

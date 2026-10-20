@@ -35,6 +35,7 @@ import { SharedFleetService } from './shared-fleet.service';
 import { SharedOrderService } from './shared-order.service';
 import { SharedProviderService } from './shared-provider.service';
 import { SharedRiderService } from './shared-rider.service';
+import { DispatchProducer } from './dispatch-producer.service';
 
 @Module({
   imports: [
@@ -78,6 +79,8 @@ import { SharedRiderService } from './shared-rider.service';
     SharedRiderService,
     SharedConfigurationService,
     FareQuoteService,
+    // p2-dispatch D2 : producteur des vagues (file kasi-dispatch, ouverte en mode waves).
+    DispatchProducer,
   ],
   exports: [
     SharedDriverService,

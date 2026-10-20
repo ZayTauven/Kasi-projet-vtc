@@ -1,0 +1,27 @@
+# p2-kyc K2 (fiche KYC §3.1) : catalogue des documents du Kasiman.
+query DriverDocumentTypes {
+  driverDocumentTypes {
+    id
+    code
+    title
+    description
+    isEnabled
+    isRequired
+    hasExpiryDate
+    reminderDays
+    sortOrder
+    vehicleTypes
+  }
+}
+
+mutation CreateDriverDocumentType($input: DriverDocumentTypeInput!) {
+  createDriverDocumentType(input: $input) {
+    id
+  }
+}
+
+mutation UpdateDriverDocumentType($id: ID!, $input: DriverDocumentTypeInput!) {
+  updateDriverDocumentType(id: $id, input: $input) {
+    id
+  }
+}

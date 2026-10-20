@@ -15,6 +15,10 @@
       <nz-switch [ngModel]="blockedOnly" (ngModelChange)="setBlockedOnly($event)"></nz-switch>
       <span>{{ 'debt.blockedOnly' | translate }}</span>
     </label>
+    <label class="flex items-center gap-2">
+      <nz-switch [ngModel]="suspendedOnly" (ngModelChange)="setSuspendedOnly($event)"></nz-switch>
+      <span>{{ 'kyc.suspendedOnly' | translate }}</span>
+    </label>
     <button class="kasi-btn kasi-btn--primary" routerLink="new">
       <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
     </button>

@@ -55,6 +55,34 @@ export class DriverRedisService {
     }));
   }
 
+  /**
+   * p2-dispatch D2 (2026-10-20) : Kasimen dans le rayon, du plus proche au plus
+   * loin (vol d'oiseau, distance en metres). Le classement par la route est D5.
+   */
+  async getCloseByDistance(
+    point: Point,
+    distance: number
+  ): Promise<Array<{ driverId: number; distanceM: number; point: Point }>> {
+    // p2-dispatch D5 (2026-10-20) : position comprise (WITHCOORD), pour la
+    // matrice routiere du classement d'une vague.
+    const bare = (await this.redisService.call(
+      'GEORADIUS',
+      RedisKeys.Driver,
+      point.lng,
+      point.lat,
+      distance,
+      'm',
+      'WITHDIST',
+      'WITHCOORD',
+      'ASC'
+    )) as Array<[string, string, [string, string]]>;
+    return bare.map((item) => ({
+      driverId: parseInt(item[0]),
+      distanceM: parseFloat(item[1]),
+      point: { lng: parseFloat(item[2][0]), lat: parseFloat(item[2][1]) },
+    }));
+  }
+
   async getCloseWithoutIds(point: Point, distance: number): Promise<Point[]> {
     const bare = (await this.redisService.call(
       'GEORADIUS',

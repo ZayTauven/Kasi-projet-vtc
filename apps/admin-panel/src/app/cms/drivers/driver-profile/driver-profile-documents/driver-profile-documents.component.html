@@ -1,25 +1,187 @@
-@if ((query | async)?.data?.driver; as driver) {
-  <div class="kasi-card">
-    <div class="kasi-card__body" style="overflow: auto;">
-      <nz-upload nzListType="picture-card" [nzFileList]="files" [nzShowButton]="false" [nzPreview]="handlePreview"
-        [nzShowUploadList]="{showRemoveIcon: false, showPreviewIcon: true, showDownloadIcon: true}">
-        <div>
-          <span nz-icon nzType="plus"></span>
-          <div style="margin-top: 8px">{{ 'profile.upload' | translate }}</div>
+<!-- p2-kyc K2 : documents types du Kasiman (fiche KYC §3, Q11). -->
+@if (loading && types.length === 0) {
+  <nz-skeleton [nzActive]="true"></nz-skeleton>
+}
+@if (!loading || types.length > 0) {
+  <div class="flex flex-col gap-4">
+    @if (suspended) {
+      <nz-alert nzType="error" nzShowIcon [nzMessage]="'kyc.suspendedTitle' | translate"
+        [nzDescription]="'kyc.suspendedDesc' | translate"></nz-alert>
+    }
+
+    @for (type of shownTypes; track type.id) {
+      <div class="kasi-card">
+        <div class="kasi-card__head">
+          <h2 class="kasi-card__title">{{ type.title }}</h2>
+          <div>
+            @if (type.isRequired) {
+              <nz-tag nzColor="orange">{{ 'kyc.required' | translate }}</nz-tag>
+            }
+            @if (type.hasExpiryDate) {
+              <nz-tag>{{ 'kyc.withExpiry' | translate }}</nz-tag>
+            }
+            @if (!type.isEnabled) {
+              <nz-tag>{{ 'kyc.disabled' | translate }}</nz-tag>
+            }
+          </div>
         </div>
-      </nz-upload>
-      <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null"
-        (nzOnCancel)="previewVisible = false">
-        <ng-template #modalContent>
-          <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
-        </ng-template>
-      </nz-modal>
+        <div class="kasi-card__body kasi-card__body--flush">
+          @if (documentsOf(type.id).length === 0) {
+            <p class="table-second-line px-4 py-3">{{ 'kyc.noDocument' | translate }}</p>
+          } @else {
+            <nz-table [nzData]="documentsOf(type.id)" [nzShowPagination]="false" nzSize="middle" [nzFrontPagination]="false">
+              <thead>
+                <tr>
+                  <th nzWidth="96px">{{ 'kyc.file' | translate }}</th>
+                  <th>{{ 'kyc.number' | translate }}</th>
+                  <th>{{ 'kyc.expiresAt' | translate }}</th>
+                  <th>{{ 'kyc.status' | translate }}</th>
+                  <th nzAlign="right"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (doc of documentsOf(type.id); track doc.id) {
+                  <tr>
+                    <td>
+                      @if (doc.media?.address; as address) {
+                        @if (isPdf(address)) {
+                          <button nz-button nzType="link" (click)="open(address)"><i nz-icon nzType="file-pdf"></i>PDF</button>
+                        } @else {
+                          <img [src]="root + address" (click)="open(address)" alt=""
+                            class="h-14 w-20 cursor-pointer rounded object-cover" />
+                        }
+                      } @else {
+                        <span class="table-second-line">—</span>
+                      }
+                    </td>
+                    <td>{{ doc.number || '—' }}</td>
+                    <td>
+                      @if (doc.expiresAt) {
+                        @let left = daysUntil(doc.expiresAt);
+                        <div class="table-first-line">{{ doc.expiresAt | date: 'dd/MM/yyyy' }}</div>
+                        <div class="table-second-line" [class.text-red-600]="left !== null && left < 0">
+                          {{ (left !== null && left < 0 ? 'kyc.expiredSince' : 'kyc.daysLeft') | translate: { days: left !== null && left < 0 ? -left : left } }}
+                        </div>
+                      } @else {
+                        <span class="table-second-line">{{ 'kyc.noExpiry' | translate }}</span>
+                      }
+                    </td>
+                    <td>
+                      <nz-tag [nzColor]="statusColor(doc.status)">{{ ('kyc.state.' + doc.status) | translate }}</nz-tag>
+                      @if (doc.reviewNote) {
+                        <div class="table-second-line">{{ 'kyc.reason' | translate }} : {{ doc.reviewNote }}</div>
+                      }
+                    </td>
+                    <td nzAlign="right">
+                      @if (doc.status === pending) {
+                        <button nz-button nzType="primary" nzSize="small" class="mr-2" [disabled]="busy"
+                          nz-popconfirm [nzPopconfirmTitle]="'kyc.approveConfirm' | translate" (nzOnConfirm)="approve(doc)">
+                          <i nz-icon nzType="check"></i>{{ 'kyc.approve' | translate }}
+                        </button>
+                        <button nz-button nzDanger nzSize="small" [disabled]="busy" (click)="startReject(doc)">
+                          <i nz-icon nzType="close"></i>{{ 'kyc.reject' | translate }}
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </nz-table>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Fichiers de l'ancienne app, sans type (Q11). -->
+    <div class="kasi-card">
+      <div class="kasi-card__head">
+        <h2 class="kasi-card__title">{{ 'kyc.legacyTitle' | translate }}</h2>
+      </div>
+      <div class="kasi-card__body">
+        <p class="table-second-line mb-3">{{ 'kyc.legacyDesc' | translate }}</p>
+        @if (legacyFiles.length === 0) {
+          <p class="table-second-line">{{ 'kyc.legacyEmpty' | translate }}</p>
+        }
+        <div class="flex flex-wrap gap-3">
+          @for (file of legacyFiles; track file.id) {
+            <div class="flex flex-col items-center gap-2 rounded border p-2" [class.border-orange-400]="typing?.id === file.id">
+              @if (isPdf(file.address)) {
+                <button nz-button nzType="link" (click)="open(file.address)"><i nz-icon nzType="file-pdf"></i>PDF</button>
+              } @else {
+                <img [src]="root + file.address" (click)="open(file.address)" alt=""
+                  class="h-24 w-32 cursor-pointer rounded object-cover" />
+              }
+              <button nz-button nzSize="small" (click)="startTyping(file)">
+                <i nz-icon nzType="tag"></i>{{ 'kyc.typeFile' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
     </div>
+
+    @if (typing) {
+      <form nz-form [formGroup]="form" (ngSubmit)="submitTyping()">
+        <div class="kasi-form-sections">
+          <section class="kasi-form-section">
+            <div class="kasi-form-section__aside">
+              <h2 class="kasi-form-section__title">{{ 'kyc.typeSection.title' | translate }}</h2>
+              <p class="kasi-form-section__desc">{{ 'kyc.typeSection.desc' | translate }}</p>
+              @if (!isPdf(typing.address)) {
+                <img [src]="root + typing.address" alt="" class="mt-3 max-h-40 rounded" />
+              }
+            </div>
+            <div class="kasi-form-section__body">
+              <div class="kasi-form kasi-form--grid">
+                <nz-form-item>
+                  <nz-form-label nzRequired nzFor="typeId">{{ 'kyc.type' | translate }}</nz-form-label>
+                  <nz-form-control>
+                    <nz-select id="typeId" formControlName="typeId">
+                      @for (type of enabledTypes; track type.id) {
+                        <nz-option [nzLabel]="type.title" [nzValue]="type.id"></nz-option>
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzFor="number">{{ 'kyc.number' | translate }}</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input id="number" formControlName="number" maxlength="64" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label [nzRequired]="selectedType()?.hasExpiryDate ?? false" nzFor="expiresAt">{{ 'kyc.expiresAt' | translate }}</nz-form-label>
+                  <nz-form-control [nzExtra]="'kyc.expiresAtHint' | translate">
+                    <nz-date-picker id="expiresAt" formControlName="expiresAt" nzFormat="dd/MM/yyyy"
+                      [nzDisabledDate]="disabledPast" class="w-full"></nz-date-picker>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="kasi-form-page-actions">
+          <button nz-button nzType="default" type="button" (click)="typing = null">{{ 'form.cancel' | translate }}</button>
+          <button nz-button nzType="primary" type="submit" [nzLoading]="busy" [disabled]="form.invalid || busy">
+            {{ 'kyc.typeAndApprove' | translate }}</button>
+        </div>
+      </form>
+    }
   </div>
 }
-<!-- <div *ngIf="(query | async)?.data?.driver?.documents as documents">
-<div *ngFor="let document of documents">
-  <a href="{{root + document.address}}" target="_blank"><img src="{{root + document.address}}"
-  style="width: 90%; margin: 10px;"></a>
-</div>
-</div> -->
+
+<nz-modal [nzVisible]="previewUrl != null" [nzFooter]="null" nzWidth="720px" (nzOnCancel)="previewUrl = null">
+  <ng-container *nzModalContent>
+    <img [src]="previewUrl" alt="" class="w-full" />
+  </ng-container>
+</nz-modal>
+
+<nz-modal [nzVisible]="rejecting != null" [nzTitle]="'kyc.rejectTitle' | translate" (nzOnCancel)="rejecting = null"
+  (nzOnOk)="confirmReject()" [nzOkText]="'kyc.reject' | translate" [nzOkDanger]="true"
+  [nzOkDisabled]="!rejectNote.trim() || busy" [nzOkLoading]="busy">
+  <ng-container *nzModalContent>
+    <p class="mb-2">{{ 'kyc.rejectDesc' | translate }}</p>
+    <textarea nz-input rows="3" maxlength="500" [(ngModel)]="rejectNote"
+      [placeholder]="'kyc.reasonPlaceholder' | translate"></textarea>
+  </ng-container>
+</nz-modal>

@@ -1,3 +1,4 @@
+import 'package:kasi_driver/money_format.dart';
 import 'package:client_shared/components/kasi_sheet_view.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -13,17 +14,18 @@ import 'package:kasi_driver/schema.gql.dart';
 import 'package:kasi_driver/unit_of_measurement.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kasi_driver/l10n/messages.dart';
-import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 
 class OrderItemView extends StatelessWidget {
   final Fragment$AvailableOrder order;
   final OrderAcceptedCallback onAcceptCallback;
+  final OrderAcceptedCallback onRejectCallback;
   final bool isActionActive;
   const OrderItemView(
       {Key? key,
       required this.order,
       required this.onAcceptCallback,
+      required this.onRejectCallback,
       required this.isActionActive})
       : super(key: key);
 
@@ -75,7 +77,7 @@ class OrderItemView extends StatelessWidget {
                         color: CustomTheme.primaryColors.shade200,
                         borderRadius: BorderRadius.circular(12)),
                     child: Text(
-                      NumberFormat.simpleCurrency(name: order.currency)
+                      kasiCurrencyFormat(order.currency)
                           .format(order.costBest - order.providerShare),
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
@@ -141,13 +143,36 @@ class OrderItemView extends StatelessWidget {
                           ))
                       .toList()),
               const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                    onPressed: !isActionActive
-                        ? null
-                        : () => onAcceptCallback(order.id),
-                    child: Text(S.of(context).available_order_action_accept)),
+              // p2-dispatch D4 : « Refuser » à côté de « Accepter ». Les
+              // libellés tiennent sur une ligne et se réduisent au besoin
+              // (petits écrans, textes français plus longs).
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                        onPressed: !isActionActive
+                            ? null
+                            : () => onRejectCallback(order.id),
+                        child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                                S.of(context).available_order_action_reject,
+                                maxLines: 1))),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                        onPressed: !isActionActive
+                            ? null
+                            : () => onAcceptCallback(order.id),
+                        child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                                S.of(context).available_order_action_accept,
+                                maxLines: 1))),
+                  ),
+                ],
               )
             ],
           ),

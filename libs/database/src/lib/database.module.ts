@@ -54,6 +54,10 @@ import { LedgerEntryEntity } from './entities/ledger-entry.entity';
 import { LedgerLineEntity } from './entities/ledger-line.entity';
 import { MoneyPolicyEntity } from './entities/money-policy.entity';
 import { FareQuoteEntity } from './entities/fare-quote.entity';
+import { DispatchAttemptEntity } from './entities/dispatch-attempt.entity';
+import { UnservedDemandEntity } from './entities/unserved-demand.entity';
+import { DriverDocumentTypeEntity } from './entities/driver-document-type.entity';
+import { DriverDocumentEntity } from './entities/driver-document.entity';
 import { kasiConnectionOptions, MIGRATIONS_TABLE_NAME } from './migration/connection-options';
 import { kasiMigrations } from './migration/index';
 
@@ -190,4 +194,11 @@ export const entities = [
   MoneyPolicyEntity,
   // p2-argent I4 (2026-10-20) : devis fige (migration FareQuote).
   FareQuoteEntity,
+  // p2-dispatch D4 et D6 (2026-10-20) : journal des sollicitations et demande
+  // non servie (migrations DispatchAttempt et UnservedDemand).
+  DispatchAttemptEntity,
+  UnservedDemandEntity,
+  // p2-kyc K1 (2026-10-20) : documents types du Kasiman (migration DriverDocuments).
+  DriverDocumentTypeEntity,
+  DriverDocumentEntity,
 ];

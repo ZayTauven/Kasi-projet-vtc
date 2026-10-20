@@ -258,6 +258,12 @@ class _RegisterViewState extends State<RegisterView> {
 
                                   case 3:
                                     return RegisterRideDetailsView(
+                                      vehicleType: driver?.vehicleType,
+                                      carId: driver?.carId,
+                                      carColorId: driver?.carColorId,
+                                      carPlate: driver?.carPlate,
+                                      carProductionYear:
+                                          driver?.carProductionYear,
                                       models:
                                           result.parsedData?.carModels ?? [],
                                       colors:

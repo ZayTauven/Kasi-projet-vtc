@@ -1,9 +1,9 @@
+import 'package:kasi_driver/money_format.dart';
 import 'package:client_shared/components/kasi_sheet_view.dart';
 import 'package:client_shared/components/sheet_title_view.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kasi_driver/config.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
@@ -58,7 +58,7 @@ class OrderInvoiceView extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodySmall),
                     const Spacer(),
                     Text(
-                        NumberFormat.simpleCurrency(name: order.currency)
+                        kasiCurrencyFormat(order.currency)
                             .format(order.costAfterCoupon),
                         style: Theme.of(context).textTheme.bodySmall)
                   ],
@@ -71,7 +71,7 @@ class OrderInvoiceView extends StatelessWidget {
                 //         style: Theme.of(context).textTheme.bodySmall),
                 //     const Spacer(),
                 //     Text(
-                //         NumberFormat.simpleCurrency(name: order.currency)
+                //         kasiCurrencyFormat(order.currency)
                 //             .format(order.costAfterCoupon - order.costBest),
                 //         style: Theme.of(context).textTheme.bodySmall)
                 //   ]),
@@ -82,7 +82,7 @@ class OrderInvoiceView extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodySmall),
                     const Spacer(),
                     Text(
-                        "+${NumberFormat.simpleCurrency(name: order.currency).format(order.tipAmount)}",
+                        "+${kasiCurrencyFormat(order.currency).format(order.tipAmount)}",
                         style: Theme.of(context).textTheme.bodySmall)
                   ],
                 ),
@@ -95,7 +95,7 @@ class OrderInvoiceView extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineMedium),
                     const Spacer(),
                     Text(
-                        NumberFormat.simpleCurrency(name: order.currency)
+                        kasiCurrencyFormat(order.currency)
                             .format(order.costAfterCoupon + order.tipAmount),
                         style: Theme.of(context).textTheme.headlineMedium)
                   ],

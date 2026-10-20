@@ -45,6 +45,17 @@ class AvailableOrderRemoved extends MainEvent {
   AvailableOrderRemoved(this.order);
 }
 
+/// Offre refusée par le Kasiman (p2-dispatch D4). Elle quitte le carrousel
+/// tout de suite, quelle que soit la réponse de `rejectOrder`, et n'y revient
+/// plus pendant la session (relecture p1-resync ou souscription comprises) :
+/// en mode `legacy` le serveur la propose encore, et en cas d'erreur réseau le
+/// refus n'a peut-être pas été enregistré.
+class AvailableOrderRejected extends MainEvent {
+  final String orderId;
+
+  AvailableOrderRejected(this.orderId);
+}
+
 class SelectedOrderChanged extends MainEvent {
   int index;
 
@@ -186,6 +197,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   int get subscriptionRevision => _subscriptionRevision;
   int _subscriptionRevision = 0;
 
+  /// Offres refusées pendant la session (voir `AvailableOrderRejected`).
+  final Set<String> _rejectedOrderIds = {};
+
   @override
   void onEvent(MainEvent event) {
     // `onEvent` est appelé de façon synchrone dans `add`, avant le traitement.
@@ -238,7 +252,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         return;
       }
       final current = state as StatusOnline;
-      final List<Fragment$AvailableOrder> orders = event.orders;
+      final List<Fragment$AvailableOrder> orders =
+          event.orders.where((e) => !_rejectedOrderIds.contains(e.id)).toList();
       // Comparaison réelle des ENSEMBLES d'IDs. L'ancienne détection par somme
       // des IDs laissait passer les échanges où les sommes coïncident
       // (ex. {2,5} -> {3,4}), donnant une liste de courses périmée au chauffeur.
@@ -267,6 +282,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<AvailabledOrderAdded>((event, emit) {
+      if (_rejectedOrderIds.contains(event.order.id)) return;
       if (state is StatusOnline &&
           (state as StatusOnline).orders.firstWhereOrNull(
                   (element) => element.id == event.order.id) ==
@@ -306,6 +322,21 @@ class MainBloc extends Bloc<MainEvent, MainState> {
                 ? newOrders.firstOrNull
                 : current.selectedOrder));
       }
+    });
+
+    on<AvailableOrderRejected>((event, emit) {
+      _rejectedOrderIds.add(event.orderId);
+      final current = state;
+      if (current is! StatusOnline) return;
+      if (current.orders.every((e) => e.id != event.orderId)) return;
+      final newOrders =
+          current.orders.where((e) => e.id != event.orderId).toList();
+      emit(StatusOnline(
+          driver: current.driver,
+          orders: newOrders,
+          selectedOrder: current.selectedOrder?.id == event.orderId
+              ? newOrders.firstOrNull
+              : current.selectedOrder));
     });
 
     on<SelectedOrderChanged>((event, emit) {

@@ -9,6 +9,7 @@ import { RequestViewInfoComponent } from './request-view-info/request-view-info.
 import { RequestViewRoutingModule } from './request-view-routing.module';
 import { RequestViewComponent } from './request-view.component';
 import { RequestViewAssignComponent } from './request-view-assign/request-view-assign.component';
+import { RequestViewDispatchComponent } from './request-view-dispatch/request-view-dispatch.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { RequestViewAssignComponent } from './request-view-assign/request-view-a
     RequestViewActivitiesComponent,
     
     RequestViewAssignComponent,
+    RequestViewDispatchComponent,
   ],
   imports: [RequestViewRoutingModule, SharedModule]
 })

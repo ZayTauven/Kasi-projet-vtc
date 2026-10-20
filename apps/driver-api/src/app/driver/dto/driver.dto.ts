@@ -1,4 +1,5 @@
 ﻿import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import {
   Authorize,
   BeforeFindOne,
@@ -120,6 +121,9 @@ export class DriverDTO {
   searchDistance?: number;
   canDeliver!: boolean;
   maxPackageSize?: PackageSize;
+  /** p2-vehicules : type de vehicule du Kasiman (null = pas encore choisi). */
+  @Field(() => VehicleType, { nullable: true })
+  vehicleType?: VehicleType | null;
   rating?: number;
   @Field(() => Boolean, {
     middleware: [

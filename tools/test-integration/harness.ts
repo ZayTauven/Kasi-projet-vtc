@@ -15,6 +15,9 @@
  *   google, osrm, haversine = estimation a vol d'oiseau), distance et duree.
  * - Passerelle de paiement (HTTP) : repond en erreur ; le code doit la tolerer.
  * - Appels masques : sans effet.
+ * - p2-dispatch D2 : producteur des vagues (d.dispatch) et file BullMQ du
+ *   consommateur (RecordingQueue) : enregistreurs. Les tests de bout en bout
+ *   de la file utilisent une vraie file sur la base Redis du banc.
  * Rien d'autre n'est simule : transactions, verrous et contraintes sont ceux
  * de PostgreSQL.
  */
@@ -63,6 +66,9 @@ import { DriverRedisService } from '../../libs/database/src/lib/redis/driver-red
 import { DriverOrderQueryService } from '../../apps/driver-api/src/app/order/driver-order.query-service';
 import { OrderService as DriverApiOrderService } from '../../apps/driver-api/src/app/order/order.service';
 import { DriverAPIController } from '../../apps/driver-api/src/app/driver-api.controller';
+import { DispatchWaveService } from '../../apps/driver-api/src/app/dispatch/dispatch-wave.service';
+import { DispatchAttemptJournal } from '../../apps/driver-api/src/app/dispatch/dispatch-attempt.journal';
+import { UnservedDemandService } from '../../apps/driver-api/src/app/dispatch/unserved-demand.service';
 import { RiderOrderService } from '../../apps/rider-api/src/app/order/rider-order.service';
 import { RiderOrderQueryService } from '../../apps/rider-api/src/app/order/rider-order.query-service';
 import { RiderAPIController } from '../../apps/rider-api/src/app/rider-api.controller';
@@ -79,7 +85,7 @@ import { FareQuoteEntity } from '../../libs/database/src/lib/entities/fare-quote
 import { RegionService } from '../../libs/database/src/lib/order/region/region.service';
 import { ServiceService } from '../../libs/database/src/lib/order/service.service';
 import { FareQuoteService } from '../../libs/database/src/lib/order/fare-quote.service';
-import type { RouteMetrics, RouteSource } from '../../libs/database/src/lib/order/routing/routing.service';
+import type { MatrixResult, RouteMetrics, RouteSource } from '../../libs/database/src/lib/order/routing/routing.service';
 import type { Point } from '../../libs/database/src/lib/interfaces/point';
 import {
   ledgerIntegrityReport,
@@ -163,22 +169,55 @@ export class RecordingPubSub {
 
 export type Spy = Record<string, (...args: unknown[]) => unknown> & {
   calls: string[];
+  /** p2-dispatch D3 : arguments de chaque appel, dans l'ordre. */
+  args: Array<{ method: string; args: unknown[] }>;
   count(name: string): number;
 };
 
 function makeSpy(methods: string[]): Spy {
   const spy = {
     calls: [] as string[],
+    args: [] as Array<{ method: string; args: unknown[] }>,
     count(name: string) {
       return spy.calls.filter((c) => c === name).length;
     },
   } as Spy;
   for (const method of methods) {
-    spy[method] = async () => {
+    spy[method] = async (...args: unknown[]) => {
       spy.calls.push(method);
+      spy.args.push({ method, args });
     };
   }
   return spy;
+}
+
+/** p2-dispatch D2 : producteur des vagues, enregistreur (aucune file). */
+export class RecordingDispatchProducer {
+  readonly dispatched: Array<{ orderId: number; delayMs: number }> = [];
+  async dispatchOrder(orderId: number, delayMs = 0): Promise<void> {
+    this.dispatched.push({ orderId, delayMs });
+  }
+}
+
+/** p2-dispatch D2 : file du consommateur, enregistreur des jobs planifies. */
+export class RecordingQueue {
+  readonly jobs: Array<{ name: string; data: Record<string, number>; opts: { jobId?: string; delay?: number } }> = [];
+  /** p2-dispatch D4 : jobs differes avances (refus de tous les sollicites). */
+  readonly promoted: string[] = [];
+  async add(name: string, data: Record<string, number>, opts: { jobId?: string; delay?: number } = {}) {
+    this.jobs.push({ name, data, opts });
+    return { id: opts.jobId };
+  }
+  async getJob(jobId: string) {
+    const job = this.jobs.find((j) => j.opts.jobId === jobId);
+    if (job == null) return undefined;
+    return {
+      isDelayed: async () => (job.opts.delay ?? 0) > 0 && !this.promoted.includes(jobId),
+      promote: async () => {
+        this.promoted.push(jobId);
+      },
+    };
+  }
 }
 
 export function spyRiderNotifications(): Spy {
@@ -191,6 +230,8 @@ export function spyRiderNotifications(): Spy {
     'started',
     'waitingForPostPay',
     'finished',
+    // p2-dispatch D3 : push texte « aucun Kasiman ».
+    'plainText',
   ]);
 }
 
@@ -233,6 +274,21 @@ export class RoutingDouble {
     this.distance = distance;
     this.duration = duration;
     return this;
+  }
+
+  /**
+   * p2-dispatch D5 : matrice simulee, a vol d'oiseau (meme ordre que la
+   * distance GEO). Le classement par la route se teste avec le vrai
+   * RoutingService et un faux HttpService (dispatch-journal.int-spec.ts).
+   */
+  readonly matrixCalls: Array<{ origins: Point[]; destination: Point }> = [];
+  async getDurationsTo(origins: Point[], destination: Point): Promise<MatrixResult> {
+    this.matrixCalls.push({ origins, destination });
+    const air = (a: Point, b: Point) => Math.hypot((a.lat - b.lat) * 111_000, (a.lng - b.lng) * 107_000);
+    return {
+      legs: origins.map((o) => ({ distance: Math.round(air(o, destination) * 1.3), duration: Math.round(air(o, destination) / 8) })),
+      source: 'haversine',
+    };
   }
 
   async getSumDistanceAndDuration(points: Point[]): Promise<RouteMetrics> {
@@ -694,6 +750,8 @@ export interface Doubles {
   riderNotifications: Spy;
   driverNotifications: Spy;
   gateway: GatewayStub;
+  /** p2-dispatch D2 : producteur des vagues (createOrder, processPrePay). */
+  dispatch: RecordingDispatchProducer;
   /** p2-argent I4 : itineraire simule (source, distance, duree). */
   routing: RoutingDouble;
 }
@@ -705,6 +763,7 @@ export function makeDoubles(): Doubles {
     driverNotifications: spyDriverNotifications(),
     gateway: new GatewayStub(),
     routing: new RoutingDouble(),
+    dispatch: new RecordingDispatchProducer(),
   };
 }
 
@@ -777,6 +836,7 @@ export function buildShared(ds: DataSource, redis: Redis, d: Doubles) {
     d.riderNotifications as never,
     d.gateway as never,
     fareQuote,
+    (d.dispatch ?? new RecordingDispatchProducer()) as never,
   );
   return {
     sharedDriver,
@@ -822,6 +882,7 @@ export function buildDriverApi(
     d.pubSub as never,
     { req: { user: { id: driverId } } } as never,
     d.riderNotifications as never,
+    new DispatchAttemptJournal(ds),
   );
   const controller = new DriverAPIController(
     ds.getRepository(MediaEntity),
@@ -838,6 +899,41 @@ export function buildDriverApi(
     update: (orderId: number, update: Record<string, unknown>) =>
       queryService.updateOne(orderId, update as never),
   };
+}
+
+/**
+ * p2-dispatch D2-D3 : consommateur des vagues de driver-api (vrai
+ * DispatchWaveService). `queue` : RecordingQueue par defaut (jobs planifies
+ * enregistres, rien n'est execute), ou une vraie file BullMQ.
+ */
+export function buildDispatchWaves(
+  ds: DataSource,
+  redis: Redis,
+  d: Doubles,
+  queue: unknown = new RecordingQueue(),
+  /** p2-dispatch D5 : classement par la route (`d.routing` par defaut). */
+  routing: unknown = d.routing,
+) {
+  const api = buildDriverApi(ds, redis, d, 0);
+  // p2-dispatch D4-D6 : journal et demande non servie reels.
+  const journal = new DispatchAttemptJournal(ds);
+  const unserved = new UnservedDemandService(ds, api.driverRedis, d.driverNotifications as never);
+  const waves = new DispatchWaveService(
+    api.orderService,
+    api.driverRedis,
+    api.orderRedis,
+    api.sharedDriver,
+    api.sharedFleet,
+    redis as never,
+    d.pubSub as never,
+    d.driverNotifications as never,
+    d.riderNotifications as never,
+    queue as never,
+    routing as never,
+    journal,
+    unserved,
+  );
+  return { ...api, waves, queue, journal, unserved };
 }
 
 /** rider-api : annulation, avis, retour de passerelle. */

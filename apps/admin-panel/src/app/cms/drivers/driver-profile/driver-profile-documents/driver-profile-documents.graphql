@@ -1,0 +1,55 @@
+# p2-kyc K2 (fiche KYC §4) : documents types du Kasiman, revue par l'operateur.
+query DriverKycDocuments($driverId: ID!) {
+  driver(id: $driverId) {
+    id
+    status
+    documents {
+      id
+      address
+    }
+  }
+  driverDocuments(driverId: $driverId) {
+    id
+    typeId
+    mediaId
+    media {
+      id
+      address
+    }
+    number
+    expiresAt
+    status
+    reviewNote
+    reviewedAt
+    createdAt
+  }
+  driverDocumentTypes {
+    id
+    title
+    isEnabled
+    isRequired
+    hasExpiryDate
+    sortOrder
+  }
+  documentSuspendedDriverIds
+}
+
+mutation ReviewDriverDocument($id: ID!, $approve: Boolean!, $note: String) {
+  reviewDriverDocument(id: $id, approve: $approve, note: $note) {
+    reinstated
+    document {
+      id
+      status
+    }
+  }
+}
+
+mutation CreateDriverDocument($input: CreateDriverDocumentInput!) {
+  createDriverDocument(input: $input) {
+    reinstated
+    document {
+      id
+      status
+    }
+  }
+}

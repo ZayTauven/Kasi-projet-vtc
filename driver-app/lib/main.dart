@@ -41,8 +41,11 @@ import 'orders_resync.dart';
 import 'query_result_view.dart';
 import 'session_token.dart';
 import 'trip-history/trip_history_list_view.dart';
+import 'documents/driver_documents_cubit.dart';
+import 'documents/driver_documents_view.dart';
 import 'wallet/kasiman_account_cubit.dart';
 import 'wallet/kasiman_debt_views.dart';
+import 'top_bar_pill.dart';
 import 'wallet/kasiman_statement_view.dart';
 import 'wallet/wallet_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +53,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 
 import 'graphql_provider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -142,7 +144,10 @@ class MyApp extends StatelessWidget {
                 lazy: false, create: (context) => CurrentLocationCubit()),
             // p2-argent I3 : dette, plafond et blocage du Kasiman.
             BlocProvider<KasimanAccountCubit>(
-                create: (context) => KasimanAccountCubit())
+                create: (context) => KasimanAccountCubit()),
+            // p2-kyc K3 : documents types, echeances et suspension.
+            BlocProvider<DriverDocumentsCubit>(
+                create: (context) => DriverDocumentsCubit())
           ],
           child: MyGraphqlProvider(
             uri: "${serverUrl}graphql",
@@ -174,6 +179,8 @@ class MyApp extends StatelessWidget {
                         'wallet': (context) => const WalletView(),
                         'statement': (context) =>
                             const KasimanStatementView(),
+                        'documents': (context) =>
+                            const DriverDocumentsView(),
                         'settings': (context) => const SettingsPage()
                       },
                       theme: CustomTheme.theme1,
@@ -260,6 +267,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               // profil (retour au premier plan notamment).
               return OrdersResyncScope(
                   child: KasimanAccountWatcher(
+                  child: DriverDocumentsWatcher(
                   child: LifecycleWrapper(
                   onLifecycleEvent: (event) {
                     if (event == LifecycleEvent.active) {
@@ -438,18 +446,21 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                           CrossAxisAlignment.start,
                                       children: [
                                         _getMenuButton(),
-                                        const Spacer(),
-                                        Flexible(
-                                            child: _getWalletButton(
-                                                context, state)),
-                                        // Etait un second `Spacer` : il
-                                        // reclamait de l'espace flexible au
-                                        // meme titre que les boutons, alors
-                                        // qu'un simple ecart suffit.
                                         const SizedBox(width: 8),
-                                        Flexible(
-                                            child: _getOnlineOfflineButton(
-                                                context, state))
+                                        // bug-debordements : l'action (en
+                                        // ligne / hors ligne) garde toute sa
+                                        // largeur ; le solde prend le reste
+                                        // et se reduit au besoin, sans jamais
+                                        // passer sous le bouton voisin.
+                                        Expanded(
+                                            child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: _getWalletButton(
+                                                    context, state))),
+                                        const SizedBox(width: 8),
+                                        _getOnlineOfflineButton(
+                                            context, state)
                                       ],
                                     ),
                                     if (account != null &&
@@ -462,6 +473,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                         child:
                                             DebtAlertBanner(account: account),
                                       ),
+                                    // p2-kyc K3 : document a renouveler.
+                                    if (state is StatusOffline ||
+                                        state is StatusOnline)
+                                      const HomeDocumentExpiryBanner(
+                                          key: ValueKey('documents-banner')),
                                       ],
                                     ),
                                   ),
@@ -538,7 +554,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 });
                               });
                             });
-                      }))));
+                      })))));
             }));
   }
 
@@ -572,81 +588,47 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           onError: (error) => showOperationErrorMessage(context, error),
         ),
         builder: (runMutation, result) {
-          return Container(
-            decoration: const BoxDecoration(boxShadow: [
-              BoxShadow(
-                  color: Color(0x14000000),
-                  offset: Offset(0, 3),
-                  blurRadius: 15)
-            ]),
-            child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: (state is StatusOffline)
-                    ? FloatingActionButton.extended(
-                        key: const Key('offline'),
-                        heroTag: 'fabOffline',
-                        // 36 de chaque cote, soit 72 px consommes par le seul
-                        // rembourrage de ce bouton — la cause reelle du
-                        // debordement de la barre superieure, que les libelles
-                        // francais (« Aller en ligne ») et un solde a cinq
-                        // chiffres faisaient basculer.
-                        extendedPadding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                        elevation: 0,
-                        backgroundColor: CustomTheme.primaryColors,
-                        foregroundColor: Colors.white,
-                        onPressed: (result?.isLoading ?? false)
-                            ? null
-                            : () async {
-                                // Le chauffeur passe en ligne : c'est le moment
-                                // de solliciter la localisation en arrière-plan,
-                                // SÉPARÉMENT de la permission de premier plan
-                                // (contrainte Android 10+). Non bloquant : un
-                                // refus n'empêche pas de se mettre en ligne.
-                                unawaited(requestBackgroundLocationPermission());
-                                final fcmId = await getFcmId(context);
-                                runMutation(
-                                    Variables$Mutation$UpdateDriverStatus(
-                                        status: Enum$DriverStatus.Online,
-                                        fcmId: fcmId));
-                              },
-                        label: Text(S.of(context).statusOffline,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            // `headlineSmall` etait trop large : les deux
-                            // boutons etendus de la barre superieure ne
-                            // tenaient pas cote a cote avec des libelles
-                            // francais et un solde a cinq chiffres.
-                            style: Theme.of(context).textTheme.titleMedium),
-                        icon: const Icon(Ionicons.car_sport),
-                      )
-                    : ((state is StatusOnline)
-                        ? FloatingActionButton.extended(
-                            key: const Key('online'),
-                            heroTag: 'fabOnline',
-                            elevation: 0,
-                            onPressed: (result?.isLoading ?? false)
-                                ? null
-                                : () {
-                                    runMutation(
-                                        Variables$Mutation$UpdateDriverStatus(
-                                            status: Enum$DriverStatus.Offline));
-                                  },
-                            label: Text(S.of(context).statusOnline,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                        color: CustomTheme
-                                            .primaryColors.shade600)),
-                            backgroundColor: CustomTheme.primaryColors.shade200,
-                            foregroundColor: CustomTheme.primaryColors.shade600,
-                            icon: const Icon(Ionicons.power),
-                          )
-                        : const SizedBox())),
-          );
+          final busy = result?.isLoading ?? false;
+          return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: (state is StatusOffline)
+                  ? TopBarPill(
+                      key: const Key('offline'),
+                      icon: Ionicons.power,
+                      label: S.of(context).statusOffline,
+                      backgroundColor: CustomTheme.primaryColors,
+                      foregroundColor: Colors.white,
+                      onPressed: busy
+                          ? null
+                          : () async {
+                              // Le chauffeur passe en ligne : c'est le moment
+                              // de solliciter la localisation en arrière-plan,
+                              // SÉPARÉMENT de la permission de premier plan
+                              // (contrainte Android 10+). Non bloquant : un
+                              // refus n'empêche pas de se mettre en ligne.
+                              unawaited(requestBackgroundLocationPermission());
+                              final fcmId = await getFcmId(context);
+                              runMutation(Variables$Mutation$UpdateDriverStatus(
+                                  status: Enum$DriverStatus.Online,
+                                  fcmId: fcmId));
+                            },
+                    )
+                  : ((state is StatusOnline)
+                      ? TopBarPill(
+                          key: const Key('online'),
+                          icon: Ionicons.power,
+                          label: S.of(context).statusOnline,
+                          backgroundColor: CustomTheme.primaryColors.shade200,
+                          foregroundColor: CustomTheme.primaryColors.shade600,
+                          onPressed: busy
+                              ? null
+                              : () {
+                                  runMutation(
+                                      Variables$Mutation$UpdateDriverStatus(
+                                          status: Enum$DriverStatus.Offline));
+                                },
+                        )
+                      : const SizedBox()));
         });
   }
 
@@ -672,30 +654,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Widget _getWalletButton(BuildContext context, MainState state) {
-    return Container(
-      decoration: const BoxDecoration(boxShadow: [
-        BoxShadow(
-            color: Color(0x14000000), offset: Offset(0, 3), blurRadius: 15)
-      ]),
-      child: FloatingActionButton.extended(
-          heroTag: 'fabIncome',
-          onPressed: () => Navigator.pushNamed(context, 'earnings'),
-          backgroundColor: CustomTheme.primaryColors.shade50,
-          foregroundColor: CustomTheme.primaryColors,
-          icon: const Icon(Ionicons.wallet),
-          elevation: 0,
-          label: Text(
-              (state.driver?.wallet.length ?? 0) > 0
-                  ? NumberFormat.simpleCurrency(
-                          name: state.driver!.wallet.first.currency)
-                      .format(state.driver!.wallet.first.balance)
-                  : "-",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(color: CustomTheme.primaryColors))),
+    final wallet = state.driver?.wallet.firstOrNull;
+    return TopBarPill(
+      icon: Ionicons.wallet,
+      // bug-debordements : « FCFA » et non « CFA » (NumberFormat.simpleCurrency).
+      label: wallet == null
+          ? "-"
+          : formatKasiMoney(wallet.balance.toDouble(), wallet.currency),
+      backgroundColor: CustomTheme.primaryColors.shade50,
+      foregroundColor: CustomTheme.primaryColors,
+      scaleDown: true,
+      onPressed: () => Navigator.pushNamed(context, 'earnings'),
     );
   }
 

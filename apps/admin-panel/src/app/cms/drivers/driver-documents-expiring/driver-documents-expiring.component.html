@@ -1,0 +1,38 @@
+<!-- p2-kyc K2 : documents qui expirent bientot. -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'kyc.expiring.title' | translate }}</h1>
+    <p>{{ 'kyc.expiring.subtitle' | translate }}</p>
+  </div>
+  <nz-select [(ngModel)]="withinDays" (ngModelChange)="load()" class="w-44">
+    @for (days of windows; track days) {
+      <nz-option [nzValue]="days" [nzLabel]="'kyc.expiring.within' | translate: { days: days }"></nz-option>
+    }
+  </nz-select>
+</div>
+<div class="kasi-card">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table [nzData]="rows" [nzLoading]="loading" [nzPageSize]="50" [nzNoResult]="'kyc.expiring.empty' | translate">
+      <thead>
+        <tr>
+          <th>{{ 'kyc.expiring.kasiman' | translate }}</th>
+          <th>{{ 'kyc.type' | translate }}</th>
+          <th>{{ 'kyc.expiresAt' | translate }}</th>
+          <th>{{ 'kyc.expiring.remaining' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of table.data; track row.id) {
+          <tr [routerLink]="['/drivers/view', row.driverId, 'documents']" class="cursor-pointer">
+            <td>
+              <div class="table-first-line">{{ row.driverName || ('#' + row.driverId) }}</div>
+            </td>
+            <td>{{ row.title }}</td>
+            <td>{{ row.expiresAt | date: 'dd/MM/yyyy' }}</td>
+            <td><nz-tag [nzColor]="color(row.daysLeft)">{{ 'kyc.daysLeft' | translate: { days: row.daysLeft } }}</nz-tag></td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</div>

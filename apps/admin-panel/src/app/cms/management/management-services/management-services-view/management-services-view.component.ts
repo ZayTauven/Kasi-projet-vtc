@@ -9,6 +9,7 @@ import {
   NewServiceQuery,
   ServiceOrderType,
   ServicePaymentMethod,
+  VehicleType,
   SetOptionsOnServiceGQL,
   SetRegionsOnServiceGQL,
   UpdateServiceGQL,
@@ -56,6 +57,8 @@ export class ManagementServicesViewComponent implements OnInit {
     maximumDestinationDistance: [0, Validators.required],
     paymentMethod: ["CashCredit", Validators.required],
     orderType: ["Ride", Validators.required],
+    // p2-vehicules : vehicules admis (vide = tous).
+    vehicleTypes: [[]],
     cancellationTotalFee: [0, Validators.required],
     cancellationDriverShare: [0, Validators.required],
     providerSharePercent: [0, Validators.required],
@@ -117,6 +120,7 @@ export class ManagementServicesViewComponent implements OnInit {
   avatarUrl?: string;
   paymentMethods = Object.values(ServicePaymentMethod);
   orderTypes = Object.values(ServiceOrderType);
+  vehicleTypes = Object.values(VehicleType);
   beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =

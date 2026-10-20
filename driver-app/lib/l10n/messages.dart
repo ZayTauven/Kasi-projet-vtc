@@ -385,13 +385,13 @@ abstract class S {
   /// No description provided for @car_model.
   ///
   /// In en, this message translates to:
-  /// **'Car Model'**
+  /// **'Vehicle model'**
   String get car_model;
 
   /// No description provided for @car_color.
   ///
   /// In en, this message translates to:
-  /// **'Car Color'**
+  /// **'Vehicle colour'**
   String get car_color;
 
   /// No description provided for @driver_register_step_payout_details_title.
@@ -495,6 +495,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Accept Order'**
   String get available_order_action_accept;
+
+  /// No description provided for @available_order_action_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get available_order_action_reject;
 
   /// No description provided for @order_status_action_received_cash.
   ///
@@ -1099,7 +1105,7 @@ abstract class S {
   /// No description provided for @register_ride_details_title.
   ///
   /// In en, this message translates to:
-  /// **'Enter your ride details'**
+  /// **'Your vehicle'**
   String get register_ride_details_title;
 
   /// No description provided for @register_profile_photo_title.
@@ -1677,6 +1683,294 @@ abstract class S {
   /// In en, this message translates to:
   /// **'See my statement'**
   String get debt_blocked_see_statement;
+
+  /// No description provided for @menu_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'My documents'**
+  String get menu_documents;
+
+  /// No description provided for @documents_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My documents'**
+  String get documents_title;
+
+  /// No description provided for @documents_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your documents up to date: an expired required document suspends your rides.'**
+  String get documents_subtitle;
+
+  /// No description provided for @documents_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get documents_required;
+
+  /// No description provided for @documents_status_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get documents_status_missing;
+
+  /// No description provided for @documents_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get documents_status_pending;
+
+  /// No description provided for @documents_status_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get documents_status_approved;
+
+  /// No description provided for @documents_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get documents_status_rejected;
+
+  /// No description provided for @documents_status_expiring_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires soon'**
+  String get documents_status_expiring_soon;
+
+  /// No description provided for @documents_status_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get documents_status_expired;
+
+  /// No description provided for @documents_valid_until.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until {date}'**
+  String documents_valid_until(String date);
+
+  /// No description provided for @documents_expired_on.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired on {date}'**
+  String documents_expired_on(String date);
+
+  /// No description provided for @documents_days_left.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Last day of validity} =1{Expires tomorrow} other{Expires in {count} days}}'**
+  String documents_days_left(int count);
+
+  /// No description provided for @documents_number.
+  ///
+  /// In en, this message translates to:
+  /// **'No. {number}'**
+  String documents_number(String number);
+
+  /// No description provided for @documents_rejection_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason: {reason}'**
+  String documents_rejection_reason(String reason);
+
+  /// No description provided for @documents_pending_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent on {date}, being reviewed by Kasi.'**
+  String documents_pending_note(String date);
+
+  /// No description provided for @documents_action_send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get documents_action_send;
+
+  /// No description provided for @documents_action_replace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get documents_action_replace;
+
+  /// No description provided for @documents_action_renew.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew'**
+  String get documents_action_renew;
+
+  /// No description provided for @documents_pick_photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get documents_pick_photo;
+
+  /// No description provided for @documents_pick_file.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF file'**
+  String get documents_pick_file;
+
+  /// No description provided for @documents_file_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected file: {name}'**
+  String documents_file_selected(String name);
+
+  /// No description provided for @documents_number_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Document number (optional)'**
+  String get documents_number_label;
+
+  /// No description provided for @documents_expiry_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry date'**
+  String get documents_expiry_label;
+
+  /// No description provided for @documents_expiry_pick.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the expiry date'**
+  String get documents_expiry_pick;
+
+  /// No description provided for @documents_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for review'**
+  String get documents_submit;
+
+  /// No description provided for @documents_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Document sent. Kasi will review it and keep you posted.'**
+  String get documents_submitted;
+
+  /// No description provided for @documents_missing_file.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo or a file first.'**
+  String get documents_missing_file;
+
+  /// No description provided for @documents_missing_expiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the document\'s expiry date.'**
+  String get documents_missing_expiry;
+
+  /// No description provided for @documents_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No document is required for now.'**
+  String get documents_empty;
+
+  /// No description provided for @documents_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load your documents.'**
+  String get documents_load_error;
+
+  /// No description provided for @documents_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get documents_retry;
+
+  /// No description provided for @documents_expiring_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew soon: {titles}. Tap to send the new version.'**
+  String documents_expiring_banner(String titles);
+
+  /// No description provided for @documents_expired_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired document: {titles}. Send the new version to avoid suspension.'**
+  String documents_expired_banner(String titles);
+
+  /// No description provided for @documents_suspended_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rides suspended'**
+  String get documents_suspended_title;
+
+  /// No description provided for @documents_suspended_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired document: {titles}. Send the up-to-date version from \"My documents\". As soon as a Kasi operator approves it, your account is reactivated and you can go online again.'**
+  String documents_suspended_body(String titles);
+
+  /// No description provided for @documents_suspended_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your new document is being reviewed: you will be reactivated once it is approved.'**
+  String get documents_suspended_pending;
+
+  /// No description provided for @documents_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open my documents'**
+  String get documents_open;
+
+  /// No description provided for @vehicle_type_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle type'**
+  String get vehicle_type_title;
+
+  /// No description provided for @vehicle_type_motorcycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorbike'**
+  String get vehicle_type_motorcycle;
+
+  /// No description provided for @vehicle_type_car.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi or car'**
+  String get vehicle_type_car;
+
+  /// No description provided for @vehicle_type_van.
+  ///
+  /// In en, this message translates to:
+  /// **'Van'**
+  String get vehicle_type_van;
+
+  /// No description provided for @vehicle_type_not_set.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get vehicle_type_not_set;
+
+  /// No description provided for @vehicle_type_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the vehicle you drive. It sets the requests you receive and the documents we ask for.'**
+  String get vehicle_type_hint;
+
+  /// No description provided for @vehicle_type_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your vehicle type.'**
+  String get vehicle_type_required;
+
+  /// No description provided for @vehicle_type_choose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get vehicle_type_choose;
+
+  /// No description provided for @vehicle_type_locked.
+  ///
+  /// In en, this message translates to:
+  /// **'To change vehicle, contact Kasi support.'**
+  String get vehicle_type_locked;
+
+  /// No description provided for @vehicle_type_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get vehicle_type_save;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -22,6 +22,7 @@
       "@kasi/database": ["libs/database/src/index.ts"],
       "@kasi/database/*": ["libs/database/src/lib/entities/*"],
       "@kasi/geo/*": ["libs/database/src/lib/geo/*"],
+      "@kasi/monitoring/*": ["libs/database/src/lib/monitoring/*"],
       "@kasi/order/*": [
         "libs/database/src/lib/order/*",
         "libs/database/src/lib/order/region/*",

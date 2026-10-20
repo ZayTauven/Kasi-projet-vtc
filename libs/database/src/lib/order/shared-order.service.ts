@@ -73,6 +73,28 @@ import {
   roundFcfa,
   splitCommission,
 } from './ledger';
+import { firstWaveDelayMs, isWavesMode } from './dispatch-config';
+import { DispatchProducer } from './dispatch-producer.service';
+
+/**
+ * bug-timeout : la course existe deja (envoi simultane de la meme commande) ;
+ * leve dans la transaction pour l'annuler, capte juste apres.
+ */
+class ResentOrder extends Error {
+  constructor(readonly orderId: number) {
+    super('RESENT_ORDER');
+  }
+}
+
+/** Course close : une commande identique est une nouvelle course, pas un renvoi. */
+const CLOSED_ORDER_STATUSES: OrderStatus[] = [
+  OrderStatus.RiderCanceled,
+  OrderStatus.DriverCanceled,
+  OrderStatus.Expired,
+  OrderStatus.NotFound,
+  OrderStatus.WaitingForReview,
+  OrderStatus.Finished,
+];
 
 @Injectable()
 export class SharedOrderService {
@@ -107,7 +129,51 @@ export class SharedOrderService {
     private httpService: HttpService,
     // p2-argent I4 (2026-10-20) : devis fige, seul calcul de prix.
     private fareQuoteService: FareQuoteService,
+    // p2-dispatch D2 (2026-10-20) : vagues produites ici, consommees par driver-api.
+    private dispatchProducer: DispatchProducer,
   ) {}
+
+  /**
+   * bug-timeout : la course `requestId` si la commande est un renvoi de ce
+   * client (meme course, encore en cours) ; null sinon.
+   */
+  private async resentOrder(
+    requestId: number | null | undefined,
+    riderId: number | null | undefined,
+  ): Promise<RequestEntity | null> {
+    if (requestId == null || riderId == null) return null;
+    const order = await this.orderRepository.findOneBy({ id: Number(requestId) });
+    if (
+      order == null ||
+      Number(order.riderId) !== Number(riderId) ||
+      CLOSED_ORDER_STATUSES.includes(order.status)
+    ) {
+      return null;
+    }
+    Logger.log(`commande renvoyee : course ${order.id} rendue (client ${riderId})`, 'FareQuote');
+    return order;
+  }
+
+  /**
+   * p2-dispatch D2 : en `DISPATCH_MODE=waves`, la course part en vagues (job
+   * BullMQ, consommateur driver-api) au lieu d'etre diffusee d'un coup. File
+   * injoignable : repli sur la diffusion d'aujourd'hui (renvoie `false`).
+   */
+  private async dispatchInWaves(
+    orderId: number,
+    pickupAt: Date | null | undefined,
+  ): Promise<boolean> {
+    try {
+      await this.dispatchProducer.dispatchOrder(orderId, firstWaveDelayMs(pickupAt));
+      return true;
+    } catch (error) {
+      Logger.error(
+        `Course ${orderId} : file de dispatch injoignable, diffusion classique (${(error as Error).message}).`,
+        SharedOrderService.name,
+      );
+      return false;
+    }
+  }
 
   /**
    * Apercu du prix (getFare et calculateFare de rider-api, calculateFare du
@@ -171,6 +237,10 @@ export class SharedOrderService {
    *   mesure « devis recalcule ») ;
    * - back-office : devis calcule a la commande.
    * `costBest` = prix avant coupon, `costAfterCoupon` = prix du devis.
+   * Renvoi de la meme commande par l'app (timeout de 20 s, bug-timeout) :
+   * meme devis, ou meme trajet moins de 2 min apres pour l'app installee, et
+   * course encore en cours = cette course est renvoyee telle quelle, sans
+   * nouvelle course ni nouveau dispatch (banc pilote, 2026-10-20).
    */
   async createOrder(input: {
     riderId?: number;
@@ -227,6 +297,9 @@ export class SharedOrderService {
         throw fareQuoteError(FareQuoteRefusal.Expired);
       }
       if (quote.consumedAt != null) {
+        // bug-timeout : le meme devis renvoye par le meme client = la meme course.
+        const resent = await this.resentOrder(quote.requestId, input.riderId);
+        if (resent != null) return resent;
         throw fareQuoteError(FareQuoteRefusal.AlreadyUsed);
       }
       const pickupGap = Math.abs(new Date(quote.pickupAt).getTime() - eta.getTime());
@@ -262,6 +335,19 @@ export class SharedOrderService {
       });
       if (quote != null) {
         mode = 'installed-app';
+      } else {
+        // bug-timeout (banc pilote, 2026-10-20) : l'app installee renvoie la
+        // commande quand la reponse tarde (20 s). Son devis etant consomme, le
+        // renvoi en recalculait un et creait une seconde course.
+        const resentId = await this.fareQuoteService.findResentOrderId({
+          riderId: rider.id,
+          serviceId: input.serviceId,
+          points: rawPoints,
+          optionIds,
+          twoWay,
+        });
+        const resent = await this.resentOrder(resentId, rider.id);
+        if (resent != null) return resent;
       }
     }
     if (quote == null) {
@@ -353,71 +439,90 @@ export class SharedOrderService {
           : RequestActivityType.RequestedByOperator;
     }
     const finalQuote = quote;
-    const order: RequestEntity = await this.orderRepository.manager.transaction(
-      async (manager) => {
-        if (mode === 'new') {
-          await this.fareQuoteService.insertQuotes(manager, [finalQuote]);
-        }
-        const saved = await manager.getRepository(RequestEntity).save({
-          serviceId: input.serviceId,
-          currency,
-          riderId: input.riderId,
-          points: routePoints,
-          addresses: input.addresses.map((address) => address.replace(', ', '-')),
-          distanceBest: finalQuote.distance,
-          durationBest: finalQuote.duration,
-          directions: directions ?? [],
-          status: shouldPrePay
-            ? OrderStatus.WaitingForPrePay
-            : input.intervalMinutes > 30
-              ? OrderStatus.Booked
-              : driversWithService.length < 1
-                ? OrderStatus.NoCloseFound
-                : OrderStatus.Requested,
-          paidAmount: 0,
-          costBest: finalQuote.totalBeforeCoupon,
-          costAfterCoupon: finalQuote.total,
-          couponId: finalQuote.couponId ?? undefined,
-          quoteId: finalQuote.id,
-          expectedTimestamp: eta,
-          operatorId: input.operatorId,
-          fleetId: input.fleetId,
-          providerShare:
-            service.providerShareFlat +
-            (service.providerSharePercent * finalQuote.totalBeforeCoupon) / 100,
-          options,
-          packageSize: input.packageSize,
-          recipientName: input.recipientName,
-          recipientMobileNumber: input.recipientMobileNumber,
-          deliveryInstructions: input.deliveryInstructions,
-        } as RequestEntity);
-        const consumed = await this.fareQuoteService.consume(
-          manager,
-          finalQuote.id,
-          saved.id,
-          mode === 'installed-app' ? 'installed-app' : 'quote',
-        );
-        if (!consumed) {
-          const current = await manager
-            .getRepository(FareQuoteEntity)
-            .findOneBy({ id: finalQuote.id });
-          throw fareQuoteError(
-            current?.consumedAt != null
-              ? FareQuoteRefusal.AlreadyUsed
-              : FareQuoteRefusal.Expired,
+    let order: RequestEntity;
+    try {
+      order = await this.orderRepository.manager.transaction(
+        async (manager) => {
+          if (mode === 'new') {
+            await this.fareQuoteService.insertQuotes(manager, [finalQuote]);
+          }
+          const saved = await manager.getRepository(RequestEntity).save({
+            serviceId: input.serviceId,
+            currency,
+            riderId: input.riderId,
+            points: routePoints,
+            addresses: input.addresses.map((address) => address.replace(', ', '-')),
+            distanceBest: finalQuote.distance,
+            durationBest: finalQuote.duration,
+            directions: directions ?? [],
+            status: shouldPrePay
+              ? OrderStatus.WaitingForPrePay
+              : input.intervalMinutes > 30
+                ? OrderStatus.Booked
+                : driversWithService.length < 1
+                  ? OrderStatus.NoCloseFound
+                  : OrderStatus.Requested,
+            paidAmount: 0,
+            costBest: finalQuote.totalBeforeCoupon,
+            costAfterCoupon: finalQuote.total,
+            couponId: finalQuote.couponId ?? undefined,
+            quoteId: finalQuote.id,
+            expectedTimestamp: eta,
+            operatorId: input.operatorId,
+            fleetId: input.fleetId,
+            providerShare:
+              service.providerShareFlat +
+              (service.providerSharePercent * finalQuote.totalBeforeCoupon) / 100,
+            options,
+            packageSize: input.packageSize,
+            recipientName: input.recipientName,
+            recipientMobileNumber: input.recipientMobileNumber,
+            deliveryInstructions: input.deliveryInstructions,
+          } as RequestEntity);
+          const consumed = await this.fareQuoteService.consume(
+            manager,
+            finalQuote.id,
+            saved.id,
+            mode === 'installed-app' ? 'installed-app' : 'quote',
           );
-        }
-        await manager.insert(RequestActivityEntity, {
-          requestId: saved.id,
-          type: activityType,
-        });
-        return saved;
-      },
-    );
+          if (!consumed) {
+            const current = await manager
+              .getRepository(FareQuoteEntity)
+              .findOneBy({ id: finalQuote.id });
+            // bug-timeout : deux envois simultanes de la meme commande. Le
+            // second attendait le verrou du devis puis echouait alors que la
+            // course existait : il renvoie maintenant la course du premier.
+            if (current?.consumedAt != null && current.requestId != null) {
+              throw new ResentOrder(Number(current.requestId));
+            }
+            throw fareQuoteError(
+              current?.consumedAt != null
+                ? FareQuoteRefusal.AlreadyUsed
+                : FareQuoteRefusal.Expired,
+            );
+          }
+          await manager.insert(RequestActivityEntity, {
+            requestId: saved.id,
+            type: activityType,
+          });
+          return saved;
+        },
+      );
+    } catch (error) {
+      if (error instanceof ResentOrder) {
+        const resent = await this.resentOrder(error.orderId, input.riderId);
+        if (resent != null) return resent;
+        throw fareQuoteError(FareQuoteRefusal.AlreadyUsed);
+      }
+      throw error;
+    }
     await this.orderRedisService.add(
       { ...order, fleetIds: fleetIdsInPoint },
       input.intervalMinutes | 0,
     );
+    if (!shouldPrePay && isWavesMode() && (await this.dispatchInWaves(order.id, eta))) {
+      return order;
+    }
     if ((input.intervalMinutes ?? 0) < 30 && !shouldPrePay) {
       this.orderRedisService.driverNotified(order.id, driversWithService);
       this.pubSub.publish('orderCreated', {
@@ -462,6 +567,12 @@ export class SharedOrderService {
       to: OrderStatus.Requested,
     });
     if (!changed) {
+      return this.orderRepository.findOneOrFail({
+        where: { id: orderId },
+        relations: { service: true, driver: { fleet: true }, rider: true },
+      });
+    }
+    if (isWavesMode() && (await this.dispatchInWaves(order.id, order.expectedTimestamp))) {
       return this.orderRepository.findOneOrFail({
         where: { id: orderId },
         relations: { service: true, driver: { fleet: true }, rider: true },
@@ -606,13 +717,22 @@ export class SharedOrderService {
       // jamais le portefeuille du client (A4) ; son credit n'entre pas dans la
       // decision. Avant : un client avec du credit etait debite meme sur
       // OnlyCash.
+      // Banc pilote (2026-10-20) : seul un credit POSITIF paie la course. Un
+      // solde negatif (frais d'annulation dus) bloquait la fin d'une course
+      // payee en especes au prix exact : la driver-app envoie prix + pourboire,
+      // le serveur restait en WaitingForPostPay et le Kasiman, sans issue,
+      // restait « en course ». La dette du client se solde a sa prochaine
+      // recharge (fiche argent §5.5), pas en especes aupres du Kasiman.
       const riderCredit =
         order.service.paymentMethod == ServicePaymentMethod.OnlyCash
           ? 0
-          : await this.riderService.getRiderCreditInCurrency(
-              order.riderId,
-              order.currency,
-              manager,
+          : Math.max(
+              0,
+              await this.riderService.getRiderCreditInCurrency(
+                order.riderId,
+                order.currency,
+                manager,
+              ),
             );
       const providerPercent =
         order.rider.isResident === false

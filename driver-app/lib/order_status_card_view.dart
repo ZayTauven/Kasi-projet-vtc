@@ -1,10 +1,10 @@
+import 'package:kasi_driver/money_format.dart';
 import 'package:client_shared/components/light_colored_button.dart';
 import 'package:client_shared/components/kasi_banner.dart';
 import 'package:client_shared/components/kasi_sheet_view.dart';
 import 'package:client_shared/components/kasi_swipe_button.dart';
 import 'package:client_shared/components/rounded_button.dart';
 import 'package:client_shared/theme/theme.dart';
-import 'package:intl/intl.dart';
 import 'package:client_shared/components/sheet_title_view.dart';
 import 'package:client_shared/components/user_avatar_view.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
@@ -411,7 +411,7 @@ class OrderStatusCardView extends StatelessWidget {
   /// Bandeau de tête mettant en avant le service et le prix (fond dégradé
   /// pétrole → pétrole foncé, prix en gros Bricolage).
   Widget _buildServiceBanner(BuildContext context) {
-    final price = NumberFormat.simpleCurrency(name: order.currency)
+    final price = kasiCurrencyFormat(order.currency)
         .format(order.costAfterCoupon);
     return Container(
       width: double.infinity,

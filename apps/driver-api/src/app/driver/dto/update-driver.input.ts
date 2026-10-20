@@ -1,4 +1,5 @@
 ﻿import { Field, ID, InputType, Int } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { Gender } from '@kasi/database/enums/gender.enum';
 
@@ -32,4 +33,10 @@ export class UpdateDriverInput {
   notificationPlayerId?: string;
   @Field(() => Int)
   searchDistance?: number;
+  /**
+   * p2-vehicules : choisi a l'inscription, ou une fois depuis le profil si
+   * absent. Un Kasiman actif ne le change plus lui-meme (ignore).
+   */
+  @Field(() => VehicleType, { nullable: true })
+  vehicleType?: VehicleType;
 }

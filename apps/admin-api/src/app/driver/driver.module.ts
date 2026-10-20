@@ -10,6 +10,7 @@ import { DriverEntity } from '@kasi/database/driver.entity';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { RedisHelpersModule } from '@kasi/redis/redis-helper.module';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminDriverQueryService } from './driver-query.service';
 import { DriverResolver } from './driver.resolver';
 import { DriverService } from './driver.service';
 import { DriverTransactionDTO } from './dto/driver-transaction.dto';
@@ -30,10 +31,13 @@ import { OperatorEntity } from '@kasi/database/operator.entity';
           OperatorEntity,
         ]),
       ],
+      services: [AdminDriverQueryService],
       resolvers: [
         {
           EntityClass: DriverEntity,
           DTOClass: DriverDTO,
+          // p2-kyc K4 (2026-10-20) : approbation conditionnee aux documents.
+          ServiceClass: AdminDriverQueryService,
           UpdateDTOClass: UpdateDriverInput,
           CreateDTOClass: UpdateDriverInput,
           create: { many: { disabled: true } },

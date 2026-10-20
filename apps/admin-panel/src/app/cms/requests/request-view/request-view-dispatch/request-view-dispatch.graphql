@@ -1,0 +1,17 @@
+# p2-dispatch D4 : sollicitations du dispatch par vagues pour une course.
+query DispatchAttempts($requestId: ID!) {
+  dispatchAttempts(requestId: $requestId) {
+    id
+    driverId
+    driverName
+    wave
+    rank
+    airDistanceM
+    roadDistanceM
+    roadDurationS
+    routingSource
+    outcome
+    offeredAt
+    respondedAt
+  }
+}

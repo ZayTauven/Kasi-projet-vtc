@@ -1,3 +1,5 @@
+// p1-sentry : premier import, avant NestJS (voir instrument.ts).
+import './instrument';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {

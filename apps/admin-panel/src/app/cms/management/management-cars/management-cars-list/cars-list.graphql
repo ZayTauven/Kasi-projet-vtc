@@ -3,6 +3,7 @@ query CarsList {
     nodes {
       id
       name
+      vehicleType
     }
   }
   carColors {

@@ -7,6 +7,7 @@ import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { UserContext } from '../auth/authenticated-user';
 import { GqlAuthGuard } from '../auth/jwt-gql-auth.guard';
+import { DispatchWaveService } from '../dispatch/dispatch-wave.service';
 import { DriverOrderQueryService } from './driver-order.query-service';
 import { AvailableOrderDTO } from './dto/available-order.dto';
 import { OrderDTO } from './dto/order.dto';
@@ -29,6 +30,7 @@ export class OrderResolver extends CRUDResolver(OrderDTO, {
     private driverRedisService: DriverRedisService,
     @InjectPubSub()
     private redisPubSub: RedisPubSub,
+    private dispatchWaveService: DispatchWaveService,
   ) {
     super(driverOrderService as any);
   }
@@ -52,6 +54,23 @@ export class OrderResolver extends CRUDResolver(OrderDTO, {
     return this.orderService.requestMaskedCall(
       this.context.req.user.id,
       Number(orderId),
+    );
+  }
+
+  /**
+   * p2-dispatch D4 (2026-10-20, Q13) : refus explicite d'une offre. Ajout
+   * facultatif : les driver-app installees ne l'appellent pas (leurs offres
+   * finissent `no_answer` dans le journal). Vrai si le refus est enregistre
+   * (rejeu compris) ; faux sans offre ouverte pour ce Kasiman ou en
+   * `DISPATCH_MODE=legacy` (aucun effet). Le Kasiman suivant est sollicite.
+   */
+  @Mutation(() => Boolean)
+  async rejectOrder(
+    @Args('orderId', { type: () => ID }) orderId: number,
+  ): Promise<boolean> {
+    return this.dispatchWaveService.reject(
+      Number(orderId),
+      this.context.req.user.id,
     );
   }
 

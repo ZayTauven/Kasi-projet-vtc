@@ -91,6 +91,39 @@ export class OrderRedisService {
     return driverIds.map((x: string) => parseInt(x));
   }
 
+  /**
+   * p2-dispatch D2 (2026-10-20, Q6) : parmi `requestIds`, les offres adressees
+   * a ce Kasiman (inscrit dans `request-drivers:<id>` par une vague).
+   */
+  async filterNotifiedTo(requestIds: number[], driverId: number): Promise<number[]> {
+    if (requestIds.length === 0) return [];
+    const pipeline = this.redisService.pipeline();
+    for (const requestId of requestIds) {
+      pipeline.sismember(`${RedisKeys.RequestDrivers}:${requestId}`, driverId);
+      // p2-dispatch D4 : une offre refusee n'est plus proposee a ce Kasiman.
+      pipeline.sismember(`${RedisKeys.RequestRejected}:${requestId}`, driverId);
+    }
+    const results = (await pipeline.exec()) ?? [];
+    return requestIds.filter(
+      (_, i) => Number(results[2 * i]?.[1]) === 1 && Number(results[2 * i + 1]?.[1]) !== 1,
+    );
+  }
+
+  /**
+   * p2-dispatch D4 (2026-10-20, Q13) : refus explicite. Le Kasiman reste dans
+   * `request-drivers` (aucune vague ne le resollicite) mais ne revoit plus
+   * l'offre (ni republication, ni `availableOrders`). Garde une heure.
+   */
+  async driverRejected(requestId: number, driverId: number): Promise<void> {
+    const key = `${RedisKeys.RequestRejected}:${requestId}`;
+    await this.redisService.multi().sadd(key, driverId).expire(key, 3600).exec();
+  }
+
+  async getDriversRejected(requestId: number): Promise<number[]> {
+    const ids = await this.redisService.smembers(`${RedisKeys.RequestRejected}:${requestId}`);
+    return ids.map((x: string) => parseInt(x));
+  }
+
   async expire(requestIds: number[]) {
     for (const requestId of requestIds) {
       await this.redisService.zrem(RedisKeys.Request, requestId);
@@ -108,16 +141,26 @@ export class OrderRedisService {
   }
 
   async getAll(): Promise<string[]> {
-    return this.getRequestsInTimeRange(0, -1);
+    // Toutes les offres, par rang (0..-1) : ne pas passer par la lecture par
+    // score ci-dessous, ou -1 voudrait dire « avant 1970 ».
+    return this.redisService.zrange(RedisKeys.RequestTime, 0, -1);
   }
 
-  async getRequestIdsInTimeRage(min: number, max: number) {
-    return await this.redisService.zrange(RedisKeys.RequestTime, min, max);
+  /**
+   * Offres dont l'heure de prise en charge (score de `request-time`, en ms
+   * depuis l'epoque, voir `add`) est comprise entre `min` et `max` inclus.
+   *
+   * bug-offre-perdue / p2-dispatch D1 (2026-10-20) : lisait par RANG
+   * (`zrange`) avec des bornes en millisecondes, donc ne renvoyait jamais rien
+   * et la relance du cron ne partait pas. Lecture par SCORE desormais.
+   * (Nom conserve tel quel, faute de frappe comprise : API publique du module.)
+   */
+  async getRequestIdsInTimeRage(min: number, max: number): Promise<string[]> {
+    return this.redisService.zrangebyscore(RedisKeys.RequestTime, min, max);
   }
 
   async getRequestsInTimeRange(min: number, max: number): Promise<string[]> {
-    const _requestIds = await this.getRequestIdsInTimeRage(min, max);
-    return _requestIds;
+    return this.getRequestIdsInTimeRage(min, max);
     // const result: RequestRedisDTO[] = []
     // for(const requestId of _requestIds) {
     //     const request = await this.getOne(requestId);
@@ -141,6 +184,7 @@ enum RedisKeys {
   Request = 'request',
   RequestDrivers = 'request-drivers',
   RequestTime = 'request-time',
+  RequestRejected = 'request-rejected',
 }
 
 export type RequestRedisDTO = Pick<

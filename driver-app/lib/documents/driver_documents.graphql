@@ -1,0 +1,39 @@
+# p2-kyc K3 : documents typés du Kasiman (catalogue, état, envoi).
+
+fragment DriverDocumentTypeItem on DriverDocumentType {
+  id
+  code
+  title
+  description
+  isRequired
+  hasExpiryDate
+}
+
+fragment DriverDocumentItem on DriverDocument {
+  id
+  typeId
+  number
+  expiresAt
+  status
+  reviewNote
+  createdAt
+  media {
+    id
+    address
+  }
+}
+
+query MyDriverDocuments {
+  driverDocumentTypes {
+    ...DriverDocumentTypeItem
+  }
+  driverDocuments {
+    ...DriverDocumentItem
+  }
+}
+
+mutation SubmitDriverDocument($input: SubmitDriverDocumentInput!) {
+  submitDriverDocument(input: $input) {
+    ...DriverDocumentItem
+  }
+}

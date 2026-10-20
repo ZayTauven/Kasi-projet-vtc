@@ -1,0 +1,143 @@
+<!-- p2-kyc K2 : catalogue des documents du Kasiman. -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'kyc.types.title' | translate }}</h1>
+    <p>{{ 'kyc.types.subtitle' | translate }}</p>
+  </div>
+  <button class="kasi-btn kasi-btn--primary" (click)="create()">
+    <i nz-icon nzType="plus"></i>{{ 'profile.add' | translate }}
+  </button>
+</div>
+
+<div class="kasi-card mb-4">
+  <div class="kasi-card__body kasi-card__body--flush">
+    <nz-table #table [nzData]="types" [nzLoading]="loading" [nzShowPagination]="false" [nzPageSize]="100">
+      <thead>
+        <tr>
+          <th>{{ 'kyc.types.titleField' | translate }}</th>
+          <th>{{ 'kyc.types.code' | translate }}</th>
+          <th>{{ 'kyc.required' | translate }}</th>
+          <th>{{ 'vehicle.requiredFor' | translate }}</th>
+          <th>{{ 'kyc.withExpiry' | translate }}</th>
+          <th>{{ 'kyc.types.reminderDays' | translate }}</th>
+          <th>{{ 'kyc.types.enabled' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (type of table.data; track type.id) {
+          <tr (click)="edit(type)" class="cursor-pointer">
+            <td>
+              <div class="table-first-line">{{ type.title }}</div>
+              @if (type.description) {
+                <div class="table-second-line">{{ type.description }}</div>
+              }
+            </td>
+            <td><code>{{ type.code }}</code></td>
+            <td><nz-tag [nzColor]="type.isRequired ? 'orange' : 'default'">{{ (type.isRequired ? 'kyc.yes' : 'kyc.no') | translate }}</nz-tag></td>
+            <td>
+              @for (vehicleType of type.vehicleTypes; track vehicleType) {
+                <nz-tag>{{ 'enum.vehicleType.' + vehicleType | translate }}</nz-tag>
+              } @empty {
+                {{ 'vehicle.all' | translate }}
+              }
+            </td>
+            <td>{{ (type.hasExpiryDate ? 'kyc.yes' : 'kyc.no') | translate }}</td>
+            <td>{{ type.hasExpiryDate ? type.reminderDays.join(', ') : '—' }}</td>
+            <td><nz-tag [nzColor]="type.isEnabled ? 'success' : 'default'">{{ (type.isEnabled ? 'kyc.types.active' : 'kyc.disabled') | translate }}</nz-tag></td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+
+@if (editing != null) {
+  <form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+    <div class="kasi-form-sections">
+      <section class="kasi-form-section">
+        <div class="kasi-form-section__aside">
+          <h2 class="kasi-form-section__title">{{ (editing === 'new' ? 'kyc.types.newTitle' : 'kyc.types.editTitle') | translate }}</h2>
+          <p class="kasi-form-section__desc">{{ 'kyc.types.identityDesc' | translate }}</p>
+        </div>
+        <div class="kasi-form-section__body">
+          <div class="kasi-form kasi-form--grid">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="title">{{ 'kyc.types.titleField' | translate }}</nz-form-label>
+              <nz-form-control>
+                <input nz-input id="title" formControlName="title" maxlength="120" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="code">{{ 'kyc.types.code' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'kyc.types.codeHint' | translate" [nzErrorTip]="'kyc.types.codeHint' | translate">
+                <input nz-input id="code" formControlName="code" maxlength="32" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="kasi-form__full">
+              <nz-form-label nzFor="description">{{ 'kyc.types.description' | translate }}</nz-form-label>
+              <nz-form-control>
+                <textarea nz-input id="description" formControlName="description" rows="2"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="sortOrder">{{ 'kyc.types.sortOrder' | translate }}</nz-form-label>
+              <nz-form-control>
+                <nz-input-number id="sortOrder" formControlName="sortOrder" [nzMin]="0" [nzMax]="999" [nzPrecision]="0" class="w-full"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="isEnabled">{{ 'kyc.types.enabled' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'kyc.types.enabledHint' | translate">
+                <nz-switch id="isEnabled" formControlName="isEnabled"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </section>
+      <section class="kasi-form-section">
+        <div class="kasi-form-section__aside">
+          <h2 class="kasi-form-section__title">{{ 'kyc.types.rulesTitle' | translate }}</h2>
+          <p class="kasi-form-section__desc">{{ 'kyc.types.rulesDesc' | translate }}</p>
+        </div>
+        <div class="kasi-form-section__body">
+          <div class="kasi-form kasi-form--grid">
+            <nz-form-item>
+              <nz-form-label nzFor="isRequired">{{ 'kyc.required' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'kyc.types.requiredHint' | translate">
+                <nz-switch id="isRequired" formControlName="isRequired"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="hasExpiryDate">{{ 'kyc.withExpiry' | translate }}</nz-form-label>
+              <nz-form-control>
+                <nz-switch id="hasExpiryDate" formControlName="hasExpiryDate"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="kasi-form__full">
+              <nz-form-label nzFor="reminderDays">{{ 'kyc.types.reminderDays' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'kyc.types.reminderDaysHint' | translate" [nzErrorTip]="'kyc.types.reminderDaysHint' | translate">
+                <input nz-input id="reminderDays" formControlName="reminderDays" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="kasi-form__full">
+              <nz-form-label nzFor="vehicleTypes">{{ 'vehicle.requiredFor' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'vehicle.documentHint' | translate">
+                <nz-select id="vehicleTypes" formControlName="vehicleTypes" nzMode="multiple"
+                  [nzPlaceHolder]="'vehicle.all' | translate">
+                  @for (vehicleType of vehicleTypes; track vehicleType) {
+                    <nz-option [nzValue]="vehicleType" [nzLabel]="'enum.vehicleType.' + vehicleType | translate"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="kasi-form-page-actions">
+      <button nz-button nzType="default" type="button" (click)="editing = null">{{ 'form.cancel' | translate }}</button>
+      <button nz-button nzType="primary" type="submit" [nzLoading]="saving" [disabled]="form.invalid || saving">
+        {{ 'profile.save' | translate }}</button>
+    </div>
+  </form>
+}

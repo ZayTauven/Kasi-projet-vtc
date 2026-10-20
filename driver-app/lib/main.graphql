@@ -199,6 +199,11 @@ mutation UpdateOrderStatus(
   }
 }
 
+# p2-dispatch D4 : refus explicite d'une offre (mode waves). Faux en legacy.
+mutation RejectOrder($orderId: ID!) {
+  rejectOrder(orderId: $orderId)
+}
+
 mutation RequestMaskedCall($orderId: ID!) {
   requestMaskedCall(orderId: $orderId) {
     proxyNumber

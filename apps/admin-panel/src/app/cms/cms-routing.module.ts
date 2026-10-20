@@ -63,6 +63,14 @@ const routes: Routes = [
           import('./requests/requests.module').then((m) => m.RequestsModule),
       },
       {
+        // p2-dispatch D6 : demande non servie (menu des courses).
+        path: 'unserved-demands',
+        loadChildren: () =>
+          import('./requests/unserved-demands/unserved-demands.module').then(
+            (m) => m.UnservedDemandsModule,
+          ),
+      },
+      {
         path: 'complaints',
         loadChildren: () =>
           import('./complaints/complaints.module').then(

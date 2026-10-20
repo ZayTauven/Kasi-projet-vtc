@@ -26,3 +26,7 @@ query DriversList($paging: OffsetPaging, $filter: DriverFilter, $sorting: [Drive
 query DebtBlockedDriverIds {
     debtBlockedDriverIds
 }
+# p2-kyc K2 : Kasimen suspendus pour document expire (filtre « suspendus »).
+query DocumentSuspendedDriverIds {
+    documentSuspendedDriverIds
+}

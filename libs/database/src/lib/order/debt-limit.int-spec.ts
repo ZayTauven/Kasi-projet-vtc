@@ -220,16 +220,12 @@ describe('p2-argent I3 : dette especes et plafond', () => {
     });
 
     it('relance du cron : le Kasiman bloque n est pas relance', async () => {
-      const orderId = await openOffer();
+      await openOffer();
       const sent: number[][] = [];
       const shared = api();
-      // Anomalie preexistante, hors I3 (p2-dispatch, bug-offre-perdue) :
-      // OrderRedisService.getRequestIdsInTimeRage lit `request-time` par RANG
-      // (zrange) avec des bornes en millisecondes, et ne renvoie donc jamais
-      // rien : la relance du cron ne part pas. On fournit ici la course en
-      // attente pour eprouver le filtre de dette de la relance.
-      const orderRedis = Object.create(shared.orderRedis);
-      orderRedis.getRequestIdsInTimeRage = async () => [String(orderId)];
+      // p2-dispatch D1 (2026-10-20) : getRequestIdsInTimeRage lit desormais par
+      // score ; la relance trouve la course sans substitut (avant : bouchon).
+      const orderRedis = shared.orderRedis;
       const cron = new CronJobService(
         shared.orderService,
         { findByIds: async () => [], expireDriverStatus: async () => undefined } as never,

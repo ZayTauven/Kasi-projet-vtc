@@ -1,4 +1,5 @@
 ﻿import { Field, ID, InputType, Int } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { Gender } from '@kasi/database/enums/gender.enum';
 import { PackageSize } from '@kasi/database/enums/package-size.enum';
@@ -23,6 +24,8 @@ export class UpdateDriverInput {
   gender?: Gender;
   canDeliver?: boolean;
   maxPackageSize?: PackageSize;
+  @Field(() => VehicleType, { nullable: true })
+  vehicleType?: VehicleType | null;
   accountNumber?: string;
   bankName?: string;
   bankRoutingNumber?: string;

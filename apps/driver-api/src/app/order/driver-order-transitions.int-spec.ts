@@ -411,6 +411,28 @@ describe('p1-transitions : updateOneOrder de driver-api', () => {
         await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
       ).toBe(-200);
     });
+
+    it('client en negatif (frais d annulation dus) : especes au prix exact = course payee (banc pilote)', async () => {
+      // Trouve par cycle-pilote.int-spec.ts : la course restait en
+      // WaitingForPostPay, le Kasiman « en course » sans issue dans l'app.
+      await ds.query(
+        `INSERT INTO rider_wallet (amount, currency, "riderId") VALUES (-500, 'XOF', $1)`,
+        [world.riderId],
+      );
+      const orderId = await orderAt(OrderStatus.Started);
+      await api(0).update(orderId, { status: OrderStatus.Finished });
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForPostPay);
+      // Ce qu'envoie la driver-app installee : prix + pourboire - deja paye.
+      await api(0).update(orderId, { status: OrderStatus.Finished, paidAmount: 2000 });
+      expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.WaitingForReview);
+      expect(await driverStatus(ds, world.driverIds[0])).toBe(DriverStatus.Online);
+      // La dette du client reste due (soldee a sa prochaine recharge).
+      expect(await walletBalance(ds, 'rider_wallet', { riderId: world.riderId })).toBe(-500);
+      expect(await riderTransactions(orderId)).toBe(0);
+      expect(
+        await walletBalance(ds, 'driver_wallet', { driverId: world.driverIds[0] }),
+      ).toBe(-200);
+    });
   });
 
   describe('50 courses d affilee avec concurrence et rejeux (critere de sortie phase 1)', () => {

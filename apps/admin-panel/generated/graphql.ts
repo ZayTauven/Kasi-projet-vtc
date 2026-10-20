@@ -309,6 +309,7 @@ export type CarModel = {
   __typename?: 'CarModel';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  vehicleType?: Maybe<VehicleType>;
 };
 
 export type CarModelConnection = {
@@ -325,16 +326,19 @@ export type CarModelDeleteResponse = {
   __typename?: 'CarModelDeleteResponse';
   id?: Maybe<Scalars['ID']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  vehicleType?: Maybe<VehicleType>;
 };
 
 export type CarModelFilter = {
   and?: InputMaybe<Array<CarModelFilter>>;
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<CarModelFilter>>;
+  vehicleType?: InputMaybe<VehicleTypeFilterComparison>;
 };
 
 export type CarModelInput = {
   name: Scalars['String']['input'];
+  vehicleType?: InputMaybe<VehicleType>;
 };
 
 export type CarModelSort = {
@@ -344,7 +348,8 @@ export type CarModelSort = {
 };
 
 export enum CarModelSortFields {
-  Id = 'id'
+  Id = 'id',
+  VehicleType = 'vehicleType'
 }
 
 export enum ChartTimeframe {
@@ -670,6 +675,14 @@ export type CreateComplaintActivity = {
   complaintId: Scalars['ID']['input'];
   id: Scalars['ID']['input'];
   type: ComplaintActivityType;
+};
+
+export type CreateDriverDocumentInput = {
+  driverId: Scalars['ID']['input'];
+  expiresAt?: InputMaybe<Scalars['String']['input']>;
+  mediaId?: InputMaybe<Scalars['ID']['input']>;
+  number?: InputMaybe<Scalars['String']['input']>;
+  typeId: Scalars['ID']['input'];
 };
 
 export type CreateGiftBatchInput = {
@@ -1022,6 +1035,31 @@ export type DeleteOneZonePriceInput = {
   id: Scalars['ID']['input'];
 };
 
+export type DispatchAttempt = {
+  __typename?: 'DispatchAttempt';
+  airDistanceM: Scalars['Int']['output'];
+  driverId: Scalars['ID']['output'];
+  driverName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  offeredAt: Scalars['DateTime']['output'];
+  outcome: DispatchAttemptOutcome;
+  rank: Scalars['Int']['output'];
+  requestId: Scalars['ID']['output'];
+  respondedAt?: Maybe<Scalars['DateTime']['output']>;
+  roadDistanceM?: Maybe<Scalars['Int']['output']>;
+  roadDurationS?: Maybe<Scalars['Int']['output']>;
+  routingSource?: Maybe<Scalars['String']['output']>;
+  wave: Scalars['Int']['output'];
+};
+
+export enum DispatchAttemptOutcome {
+  Accepted = 'Accepted',
+  Expired = 'Expired',
+  NoAnswer = 'NoAnswer',
+  Pending = 'Pending',
+  Rejected = 'Rejected'
+}
+
 export type DistanceMultiplier = {
   __typename?: 'DistanceMultiplier';
   distanceFrom: Scalars['Float']['output'];
@@ -1219,6 +1257,7 @@ export type Driver = {
   status: DriverStatus;
   transactions: DriverTransactionsConnection;
   transactionsAggregate: Array<DriverTransactionsAggregateResponse>;
+  vehicleType?: Maybe<VehicleType>;
   wallet: Array<DriverWallet>;
   walletAggregate: Array<DriverWalletAggregateResponse>;
 };
@@ -1301,6 +1340,7 @@ export type DriverAggregateFilter = {
   mobileNumber?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<DriverAggregateFilter>>;
   status?: InputMaybe<DriverStatusFilterComparison>;
+  vehicleType?: InputMaybe<VehicleTypeFilterComparison>;
 };
 
 export type DriverAggregateGroupBy = {
@@ -1311,6 +1351,7 @@ export type DriverAggregateGroupBy = {
   lastName?: Maybe<Scalars['String']['output']>;
   mobileNumber?: Maybe<Scalars['String']['output']>;
   status?: Maybe<DriverStatus>;
+  vehicleType?: Maybe<VehicleType>;
 };
 
 export type DriverAggregateResponse = {
@@ -1347,6 +1388,7 @@ export type DriverCountAggregate = {
   lastName?: Maybe<Scalars['Int']['output']>;
   mobileNumber?: Maybe<Scalars['Int']['output']>;
   status?: Maybe<Scalars['Int']['output']>;
+  vehicleType?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum DriverDeductTransactionType {
@@ -1354,6 +1396,63 @@ export enum DriverDeductTransactionType {
   Correction = 'Correction',
   Withdraw = 'Withdraw'
 }
+
+export type DriverDocument = {
+  __typename?: 'DriverDocument';
+  createdAt: Scalars['DateTime']['output'];
+  driverId: Scalars['ID']['output'];
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  media?: Maybe<Media>;
+  mediaId?: Maybe<Scalars['ID']['output']>;
+  number?: Maybe<Scalars['String']['output']>;
+  reviewNote?: Maybe<Scalars['String']['output']>;
+  reviewedAt?: Maybe<Scalars['DateTime']['output']>;
+  reviewedByOperatorId?: Maybe<Scalars['ID']['output']>;
+  status: DriverDocumentStatus;
+  type: DriverDocumentType;
+  typeId: Scalars['ID']['output'];
+};
+
+export type DriverDocumentReview = {
+  __typename?: 'DriverDocumentReview';
+  document: DriverDocument;
+  reinstated: Scalars['Boolean']['output'];
+};
+
+export enum DriverDocumentStatus {
+  Approved = 'Approved',
+  Expired = 'Expired',
+  Pending = 'Pending',
+  Rejected = 'Rejected',
+  Replaced = 'Replaced'
+}
+
+export type DriverDocumentType = {
+  __typename?: 'DriverDocumentType';
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  hasExpiryDate: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  isEnabled: Scalars['Boolean']['output'];
+  isRequired: Scalars['Boolean']['output'];
+  reminderDays: Array<Scalars['Int']['output']>;
+  sortOrder: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  vehicleTypes: Array<VehicleType>;
+};
+
+export type DriverDocumentTypeInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  hasExpiryDate?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  isRequired?: InputMaybe<Scalars['Boolean']['input']>;
+  reminderDays?: InputMaybe<Array<Scalars['Int']['input']>>;
+  sortOrder?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  vehicleTypes?: InputMaybe<Array<VehicleType>>;
+};
 
 export type DriverDocumentsAggregateGroupBy = {
   __typename?: 'DriverDocumentsAggregateGroupBy';
@@ -1512,6 +1611,7 @@ export type DriverFilter = {
   mobileNumber?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<DriverFilter>>;
   status?: InputMaybe<DriverStatusFilterComparison>;
+  vehicleType?: InputMaybe<VehicleTypeFilterComparison>;
 };
 
 export type DriverMaxAggregate = {
@@ -1521,6 +1621,7 @@ export type DriverMaxAggregate = {
   lastName?: Maybe<Scalars['String']['output']>;
   mobileNumber?: Maybe<Scalars['String']['output']>;
   status?: Maybe<DriverStatus>;
+  vehicleType?: Maybe<VehicleType>;
 };
 
 export type DriverMinAggregate = {
@@ -1530,6 +1631,7 @@ export type DriverMinAggregate = {
   lastName?: Maybe<Scalars['String']['output']>;
   mobileNumber?: Maybe<Scalars['String']['output']>;
   status?: Maybe<DriverStatus>;
+  vehicleType?: Maybe<VehicleType>;
 };
 
 export type DriverOrdersAggregateGroupBy = {
@@ -1621,7 +1723,8 @@ export enum DriverSortFields {
   Id = 'id',
   LastName = 'lastName',
   MobileNumber = 'mobileNumber',
-  Status = 'status'
+  Status = 'status',
+  VehicleType = 'vehicleType'
 }
 
 export enum DriverStatus {
@@ -1982,6 +2085,17 @@ export type EmailProviderTypeFilterComparison = {
   notILike?: InputMaybe<EmailProviderType>;
   notIn?: InputMaybe<Array<EmailProviderType>>;
   notLike?: InputMaybe<EmailProviderType>;
+};
+
+export type ExpiringDriverDocument = {
+  __typename?: 'ExpiringDriverDocument';
+  daysLeft: Scalars['Int']['output'];
+  driverId: Scalars['ID']['output'];
+  driverName?: Maybe<Scalars['String']['output']>;
+  expiresAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  title: Scalars['String']['output'];
+  typeId: Scalars['ID']['output'];
 };
 
 export type ExportArgs = {
@@ -2704,6 +2818,8 @@ export type Mutation = {
   cancelOrder: Order;
   cancelPayout: Payout;
   cancelPayoutSession: PayoutSession;
+  createDriverDocument: DriverDocumentReview;
+  createDriverDocumentType: DriverDocumentType;
   createDriverTransaction: DriverWallet;
   createFleetTransaction: FleetWallet;
   createGiftBatch: GiftBatch;
@@ -2761,6 +2877,7 @@ export type Mutation = {
   disablePreviousServer: UpdateConfigResult;
   processPayout: Payout;
   processPayoutSession: PayoutSession;
+  reviewDriverDocument: DriverDocumentReview;
   runRetentionPolicyDryRun: Scalars['Boolean']['output'];
   sendTestEmail: Scalars['Boolean']['output'];
   sendTestSms: Scalars['Boolean']['output'];
@@ -2774,6 +2891,7 @@ export type Mutation = {
   setServicesOnZonePrice: ZonePrice;
   settleDriverDebt: DriverWallet;
   testMaskedCall: Scalars['Boolean']['output'];
+  updateDriverDocumentType: DriverDocumentType;
   updateFirebase: UpdateConfigResult;
   updateManyRiderAddresses: UpdateManyResponse;
   updateMapSetting: MapSetting;
@@ -2854,6 +2972,16 @@ export type MutationCancelPayoutArgs = {
 
 export type MutationCancelPayoutSessionArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateDriverDocumentArgs = {
+  input: CreateDriverDocumentInput;
+};
+
+
+export type MutationCreateDriverDocumentTypeArgs = {
+  input: DriverDocumentTypeInput;
 };
 
 
@@ -3142,6 +3270,13 @@ export type MutationProcessPayoutSessionArgs = {
 };
 
 
+export type MutationReviewDriverDocumentArgs = {
+  approve: Scalars['Boolean']['input'];
+  id: Scalars['ID']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationSendTestEmailArgs = {
   providerId?: InputMaybe<Scalars['ID']['input']>;
   to: Scalars['String']['input'];
@@ -3202,6 +3337,12 @@ export type MutationSettleDriverDebtArgs = {
 export type MutationTestMaskedCallArgs = {
   number: Scalars['String']['input'];
   providerId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationUpdateDriverDocumentTypeArgs = {
+  id: Scalars['ID']['input'];
+  input: DriverDocumentTypeInput;
 };
 
 
@@ -4680,11 +4821,15 @@ export type Query = {
   coupons: CouponConnection;
   currentConfiguration: CurrentConfiguration;
   debtBlockedDriverIds: Array<Scalars['ID']['output']>;
+  dispatchAttempts: Array<DispatchAttempt>;
   distressSignal: DistressSignal;
   distressSignalAggregate: Array<DistressSignalAggregateResponse>;
   distressSignals: DistressSignalConnection;
+  documentSuspendedDriverIds: Array<Scalars['ID']['output']>;
   driver: Driver;
   driverAggregate: Array<DriverAggregateResponse>;
+  driverDocumentTypes: Array<DriverDocumentType>;
+  driverDocuments: Array<DriverDocument>;
   driverFeedbackParametersSummary: Array<FeedbackParameterAggregate>;
   driverRegistrations: Array<RegistrationResultItem>;
   driverTransaction: DriverTransaction;
@@ -4694,6 +4839,7 @@ export type Query = {
   drivers: DriverConnection;
   emailProvider: EmailProvider;
   emailProviders: EmailProviderConnection;
+  expiringDriverDocuments: Array<ExpiringDriverDocument>;
   export: ExportResult;
   feedback: Feedback;
   feedbackParameter: FeedbackParameter;
@@ -4716,6 +4862,7 @@ export type Query = {
   login: TokenObject;
   mapSetting: MapSetting;
   me: Operator;
+  missingDriverDocuments: Array<Scalars['String']['output']>;
   moneyPolicies: Array<MoneyPolicy>;
   operator: Operator;
   operatorRole: OperatorRole;
@@ -4766,6 +4913,7 @@ export type Query = {
   shiftRules: ShiftRuleConnection;
   smsProvider: SmsProvider;
   smsProviders: SmsProviderConnection;
+  unservedDemands: Array<UnservedDemand>;
   zonePrice: ZonePrice;
   zonePrices: ZonePriceConnection;
 };
@@ -4875,6 +5023,11 @@ export type QueryCouponsArgs = {
 };
 
 
+export type QueryDispatchAttemptsArgs = {
+  requestId: Scalars['ID']['input'];
+};
+
+
 export type QueryDistressSignalArgs = {
   id: Scalars['ID']['input'];
 };
@@ -4899,6 +5052,11 @@ export type QueryDriverArgs = {
 
 export type QueryDriverAggregateArgs = {
   filter?: InputMaybe<DriverAggregateFilter>;
+};
+
+
+export type QueryDriverDocumentsArgs = {
+  driverId: Scalars['ID']['input'];
 };
 
 
@@ -4952,6 +5110,11 @@ export type QueryEmailProvidersArgs = {
   filter?: EmailProviderFilter;
   paging?: OffsetPaging;
   sorting?: Array<EmailProviderSort>;
+};
+
+
+export type QueryExpiringDriverDocumentsArgs = {
+  withinDays?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -5063,6 +5226,11 @@ export type QueryIncomeChartArgs = {
 export type QueryLoginArgs = {
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type QueryMissingDriverDocumentsArgs = {
+  driverId: Scalars['ID']['input'];
 };
 
 
@@ -5347,6 +5515,12 @@ export type QuerySmsProvidersArgs = {
   filter?: SmsProviderFilter;
   paging?: OffsetPaging;
   sorting?: Array<SmsProviderSort>;
+};
+
+
+export type QueryUnservedDemandsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  since?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -6068,6 +6242,7 @@ export type Service = {
   searchRadius: Scalars['Int']['output'];
   timeMultipliers: Array<TimeMultiplier>;
   twoWayAvailable: Scalars['Boolean']['output'];
+  vehicleTypes: Array<VehicleType>;
   weekdayMultipliers: Array<WeekdayMultiplier>;
 };
 
@@ -6164,6 +6339,7 @@ export type ServiceDeleteResponse = {
   searchRadius?: Maybe<Scalars['Int']['output']>;
   timeMultipliers?: Maybe<Array<TimeMultiplier>>;
   twoWayAvailable?: Maybe<Scalars['Boolean']['output']>;
+  vehicleTypes?: Maybe<Array<VehicleType>>;
   weekdayMultipliers?: Maybe<Array<WeekdayMultiplier>>;
 };
 
@@ -6199,6 +6375,7 @@ export type ServiceInput = {
   searchRadius: Scalars['Int']['input'];
   timeMultipliers: Array<TimeMultiplierInput>;
   twoWayAvailable: Scalars['Boolean']['input'];
+  vehicleTypes?: InputMaybe<Array<VehicleType>>;
   weekdayMultipliers: Array<WeekdayMultiplierInput>;
 };
 
@@ -6586,6 +6763,19 @@ export enum TransactionStatus {
   Rejected = 'Rejected'
 }
 
+export type UnservedDemand = {
+  __typename?: 'UnservedDemand';
+  alertedAt?: Maybe<Scalars['DateTime']['output']>;
+  alertedDrivers?: Maybe<Scalars['Int']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  driversSolicited: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  lat: Scalars['Float']['output'];
+  lng: Scalars['Float']['output'];
+  requestId: Scalars['ID']['output'];
+  serviceId: Scalars['ID']['output'];
+};
+
 export type UpdateComplaint = {
   content?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -6631,6 +6821,7 @@ export type UpdateDriverInput = {
   payoutMethodId?: InputMaybe<Scalars['ID']['input']>;
   softRejectionNote?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<DriverStatus>;
+  vehicleType?: InputMaybe<VehicleType>;
 };
 
 export type UpdateFeedback = {
@@ -6923,6 +7114,29 @@ export type UpdateRiderAddress = {
   type?: InputMaybe<RiderAddressType>;
 };
 
+export enum VehicleType {
+  Car = 'Car',
+  Motorcycle = 'Motorcycle',
+  Van = 'Van'
+}
+
+export type VehicleTypeFilterComparison = {
+  eq?: InputMaybe<VehicleType>;
+  gt?: InputMaybe<VehicleType>;
+  gte?: InputMaybe<VehicleType>;
+  iLike?: InputMaybe<VehicleType>;
+  in?: InputMaybe<Array<VehicleType>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<VehicleType>;
+  lt?: InputMaybe<VehicleType>;
+  lte?: InputMaybe<VehicleType>;
+  neq?: InputMaybe<VehicleType>;
+  notILike?: InputMaybe<VehicleType>;
+  notIn?: InputMaybe<Array<VehicleType>>;
+  notLike?: InputMaybe<VehicleType>;
+};
+
 export enum Weekday {
   Friday = 'Friday',
   Monday = 'Monday',
@@ -7049,6 +7263,13 @@ export type ComplaintsListQueryVariables = Exact<{
 
 export type ComplaintsListQuery = { __typename?: 'Query', complaints: { __typename?: 'ComplaintConnection', totalCount: number, nodes: Array<{ __typename?: 'Complaint', id: string, inscriptionTimestamp: any, subject: string, status: ComplaintStatus, content?: string | null }> } };
 
+export type ExpiringDriverDocumentsQueryVariables = Exact<{
+  withinDays?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type ExpiringDriverDocumentsQuery = { __typename?: 'Query', expiringDriverDocuments: Array<{ __typename?: 'ExpiringDriverDocument', id: string, driverId: string, driverName?: string | null, typeId: string, title: string, expiresAt: string, daysLeft: number }> };
+
 export type CreateDriverMutationVariables = Exact<{
   input: UpdateDriverInput;
 }>;
@@ -7056,12 +7277,35 @@ export type CreateDriverMutationVariables = Exact<{
 
 export type CreateDriverMutation = { __typename?: 'Mutation', createOneDriver: { __typename?: 'Driver', id: string } };
 
+export type DriverKycDocumentsQueryVariables = Exact<{
+  driverId: Scalars['ID']['input'];
+}>;
+
+
+export type DriverKycDocumentsQuery = { __typename?: 'Query', documentSuspendedDriverIds: Array<string>, driver: { __typename?: 'Driver', id: string, status: DriverStatus, documents: Array<{ __typename?: 'Media', id: string, address: string }> }, driverDocuments: Array<{ __typename?: 'DriverDocument', id: string, typeId: string, mediaId?: string | null, number?: string | null, expiresAt?: string | null, status: DriverDocumentStatus, reviewNote?: string | null, reviewedAt?: any | null, createdAt: any, media?: { __typename?: 'Media', id: string, address: string } | null }>, driverDocumentTypes: Array<{ __typename?: 'DriverDocumentType', id: string, title: string, isEnabled: boolean, isRequired: boolean, hasExpiryDate: boolean, sortOrder: number }> };
+
+export type ReviewDriverDocumentMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  approve: Scalars['Boolean']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ReviewDriverDocumentMutation = { __typename?: 'Mutation', reviewDriverDocument: { __typename?: 'DriverDocumentReview', reinstated: boolean, document: { __typename?: 'DriverDocument', id: string, status: DriverDocumentStatus } } };
+
+export type CreateDriverDocumentMutationVariables = Exact<{
+  input: CreateDriverDocumentInput;
+}>;
+
+
+export type CreateDriverDocumentMutation = { __typename?: 'Mutation', createDriverDocument: { __typename?: 'DriverDocumentReview', reinstated: boolean, document: { __typename?: 'DriverDocument', id: string, status: DriverDocumentStatus } } };
+
 export type ViewDriverQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type ViewDriverQuery = { __typename?: 'Query', driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, canDeliver?: boolean | null, maxPackageSize?: PackageSize | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, moneyPolicies: Array<{ __typename?: 'MoneyPolicy', currency: string, debtLimit: number, debtAlertThreshold: number }>, services: Array<{ __typename?: 'Service', id: string, name: string }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
+export type ViewDriverQuery = { __typename?: 'Query', missingDriverDocuments: Array<string>, driver: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, lastSeenTimestamp?: any | null, status: DriverStatus, gender?: Gender | null, carId?: string | null, carColorId?: string | null, fleetId?: string | null, carProductionYear?: number | null, carPlate?: string | null, accountNumber?: string | null, bankName?: string | null, bankRoutingNumber?: string | null, bankSwift?: string | null, address?: string | null, email?: string | null, canDeliver?: boolean | null, maxPackageSize?: PackageSize | null, vehicleType?: VehicleType | null, mediaId?: string | null, rating?: number | null, reviewCount: number, feedbacks: { __typename?: 'DriverFeedbacksConnection', nodes: Array<{ __typename?: 'Feedback', parametersAggregate: Array<{ __typename?: 'FeedbackParametersAggregateResponse', groupBy?: { __typename?: 'FeedbackParametersAggregateGroupBy', title?: string | null, isGood?: boolean | null } | null, count?: { __typename?: 'FeedbackParametersCountAggregate', id?: number | null } | null }> }> }, enabledServices: Array<{ __typename?: 'Service', id: string }>, documents: Array<{ __typename?: 'Media', id: string, address: string }>, media?: { __typename?: 'Media', address: string } | null, wallet: Array<{ __typename?: 'DriverWallet', balance: number, currency: string }> }, moneyPolicies: Array<{ __typename?: 'MoneyPolicy', currency: string, debtLimit: number, debtAlertThreshold: number }>, services: Array<{ __typename?: 'Service', id: string, name: string, vehicleTypes: Array<VehicleType> }>, fleets: { __typename?: 'FleetConnection', nodes: Array<{ __typename?: 'Fleet', id: string, name: string }> }, driverFeedbackParametersSummary: Array<{ __typename?: 'FeedbackParameterAggregate', title: string, isGood: boolean, count: string }>, carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string, vehicleType?: VehicleType | null }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
 
 export type UpdateDriverProfileMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -7142,6 +7386,11 @@ export type DebtBlockedDriverIdsQueryVariables = Exact<{ [key: string]: never; }
 
 
 export type DebtBlockedDriverIdsQuery = { __typename?: 'Query', debtBlockedDriverIds: Array<string> };
+
+export type DocumentSuspendedDriverIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DocumentSuspendedDriverIdsQuery = { __typename?: 'Query', documentSuspendedDriverIds: Array<string> };
 
 export type ProviderWalletsListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -7302,7 +7551,7 @@ export type TestMaskedCallMutation = { __typename?: 'Mutation', testMaskedCall: 
 export type CarsListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CarsListQuery = { __typename?: 'Query', carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
+export type CarsListQuery = { __typename?: 'Query', carModels: { __typename?: 'CarModelConnection', nodes: Array<{ __typename?: 'CarModel', id: string, name: string, vehicleType?: VehicleType | null }> }, carColors: Array<{ __typename?: 'CarColor', id: string, name: string }> };
 
 export type DeleteCarModelMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -7347,6 +7596,26 @@ export type UpdateCarColorMutationVariables = Exact<{
 
 
 export type UpdateCarColorMutation = { __typename?: 'Mutation', updateOneCarColor: { __typename?: 'CarColor', id: string } };
+
+export type DriverDocumentTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DriverDocumentTypesQuery = { __typename?: 'Query', driverDocumentTypes: Array<{ __typename?: 'DriverDocumentType', id: string, code: string, title: string, description?: string | null, isEnabled: boolean, isRequired: boolean, hasExpiryDate: boolean, reminderDays: Array<number>, sortOrder: number, vehicleTypes: Array<VehicleType> }> };
+
+export type CreateDriverDocumentTypeMutationVariables = Exact<{
+  input: DriverDocumentTypeInput;
+}>;
+
+
+export type CreateDriverDocumentTypeMutation = { __typename?: 'Mutation', createDriverDocumentType: { __typename?: 'DriverDocumentType', id: string } };
+
+export type UpdateDriverDocumentTypeMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: DriverDocumentTypeInput;
+}>;
+
+
+export type UpdateDriverDocumentTypeMutation = { __typename?: 'Mutation', updateDriverDocumentType: { __typename?: 'DriverDocumentType', id: string } };
 
 export type EmailProviderListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -7729,7 +7998,7 @@ export type ViewServiceQueryVariables = Exact<{
 }>;
 
 
-export type ViewServiceQuery = { __typename?: 'Query', service: { __typename?: 'Service', id: string, name: string, categoryId: string, baseFare: number, perHundredMeters: number, perMinuteDrive: number, perMinuteWait: number, minimumFee: number, searchRadius: number, maximumDestinationDistance: number, paymentMethod: ServicePaymentMethod, orderType: ServiceOrderType, cancellationTotalFee: number, cancellationDriverShare: number, providerShareFlat: number, providerSharePercent: number, prepayPercent: number, mediaId: string, description?: string | null, personCapacity?: number | null, roundingFactor?: number | null, media: { __typename?: 'Media', address: string }, timeMultipliers: Array<{ __typename?: 'TimeMultiplier', startTime: string, endTime: string, multiply: number }>, distanceMultipliers: Array<{ __typename?: 'DistanceMultiplier', distanceFrom: number, distanceTo: number, multiply: number }>, weekdayMultipliers: Array<{ __typename?: 'WeekdayMultiplier', weekday: Weekday, multiply: number }>, dateRangeMultipliers: Array<{ __typename?: 'DateRangeMultiplier', startDate: number, endDate: number, multiply: number }>, options: Array<{ __typename?: 'ServiceOption', id: string, name: string, type: ServiceOptionType, additionalFee?: number | null, icon: ServiceOptionIcon }>, regions: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, serviceCategories: Array<{ __typename?: 'ServiceCategory', id: string, name: string }>, serviceOptions: Array<{ __typename?: 'ServiceOption', id: string, name: string, icon: ServiceOptionIcon, type: ServiceOptionType, additionalFee?: number | null }> };
+export type ViewServiceQuery = { __typename?: 'Query', service: { __typename?: 'Service', id: string, name: string, categoryId: string, baseFare: number, perHundredMeters: number, perMinuteDrive: number, perMinuteWait: number, minimumFee: number, searchRadius: number, maximumDestinationDistance: number, paymentMethod: ServicePaymentMethod, orderType: ServiceOrderType, vehicleTypes: Array<VehicleType>, cancellationTotalFee: number, cancellationDriverShare: number, providerShareFlat: number, providerSharePercent: number, prepayPercent: number, mediaId: string, description?: string | null, personCapacity?: number | null, roundingFactor?: number | null, media: { __typename?: 'Media', address: string }, timeMultipliers: Array<{ __typename?: 'TimeMultiplier', startTime: string, endTime: string, multiply: number }>, distanceMultipliers: Array<{ __typename?: 'DistanceMultiplier', distanceFrom: number, distanceTo: number, multiply: number }>, weekdayMultipliers: Array<{ __typename?: 'WeekdayMultiplier', weekday: Weekday, multiply: number }>, dateRangeMultipliers: Array<{ __typename?: 'DateRangeMultiplier', startDate: number, endDate: number, multiply: number }>, options: Array<{ __typename?: 'ServiceOption', id: string, name: string, type: ServiceOptionType, additionalFee?: number | null, icon: ServiceOptionIcon }>, regions: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, regions: { __typename?: 'RegionConnection', nodes: Array<{ __typename?: 'Region', id: string, name: string, currency: string }> }, serviceCategories: Array<{ __typename?: 'ServiceCategory', id: string, name: string }>, serviceOptions: Array<{ __typename?: 'ServiceOption', id: string, name: string, icon: ServiceOptionIcon, type: ServiceOptionType, additionalFee?: number | null }> };
 
 export type NewServiceQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8184,6 +8453,13 @@ export type AssignDriverToOrderMutationVariables = Exact<{
 
 export type AssignDriverToOrderMutation = { __typename?: 'Mutation', assignDriverToOrder: { __typename?: 'Order', id: string } };
 
+export type DispatchAttemptsQueryVariables = Exact<{
+  requestId: Scalars['ID']['input'];
+}>;
+
+
+export type DispatchAttemptsQuery = { __typename?: 'Query', dispatchAttempts: Array<{ __typename?: 'DispatchAttempt', id: string, driverId: string, driverName?: string | null, wave: number, rank: number, airDistanceM: number, roadDistanceM?: number | null, roadDurationS?: number | null, routingSource?: string | null, outcome: DispatchAttemptOutcome, offeredAt: any, respondedAt?: any | null }> };
+
 export type ViewOrderQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -8199,6 +8475,14 @@ export type OrdersListQueryVariables = Exact<{
 
 
 export type OrdersListQuery = { __typename?: 'Query', orders: { __typename?: 'OrderConnection', totalCount: number, nodes: Array<{ __typename?: 'Order', id: string, status: OrderStatus, createdOn: any, expectedTimestamp?: any | null, costAfterCoupon: number, currency: string }> } };
+
+export type UnservedDemandsQueryVariables = Exact<{
+  since?: InputMaybe<Scalars['DateTime']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type UnservedDemandsQuery = { __typename?: 'Query', unservedDemands: Array<{ __typename?: 'UnservedDemand', id: string, requestId: string, serviceId: string, lat: number, lng: number, driversSolicited: number, createdAt: any, alertedAt?: any | null, alertedDrivers?: number | null }>, services: Array<{ __typename?: 'Service', id: string, name: string }> };
 
 export type CreateRiderMutationVariables = Exact<{
   input: RiderInput;
@@ -8515,6 +8799,30 @@ export const ComplaintsListDocument = gql`
       super(apollo);
     }
   }
+export const ExpiringDriverDocumentsDocument = gql`
+    query ExpiringDriverDocuments($withinDays: Int) {
+  expiringDriverDocuments(withinDays: $withinDays) {
+    id
+    driverId
+    driverName
+    typeId
+    title
+    expiresAt
+    daysLeft
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ExpiringDriverDocumentsGQL extends Apollo.Query<ExpiringDriverDocumentsQuery, ExpiringDriverDocumentsQueryVariables> {
+    document = ExpiringDriverDocumentsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const CreateDriverDocument = gql`
     mutation CreateDriver($input: UpdateDriverInput!) {
   createOneDriver(input: {driver: $input}) {
@@ -8528,6 +8836,97 @@ export const CreateDriverDocument = gql`
   })
   export class CreateDriverGQL extends Apollo.Mutation<CreateDriverMutation, CreateDriverMutationVariables> {
     document = CreateDriverDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DriverKycDocumentsDocument = gql`
+    query DriverKycDocuments($driverId: ID!) {
+  driver(id: $driverId) {
+    id
+    status
+    documents {
+      id
+      address
+    }
+  }
+  driverDocuments(driverId: $driverId) {
+    id
+    typeId
+    mediaId
+    media {
+      id
+      address
+    }
+    number
+    expiresAt
+    status
+    reviewNote
+    reviewedAt
+    createdAt
+  }
+  driverDocumentTypes {
+    id
+    title
+    isEnabled
+    isRequired
+    hasExpiryDate
+    sortOrder
+  }
+  documentSuspendedDriverIds
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DriverKycDocumentsGQL extends Apollo.Query<DriverKycDocumentsQuery, DriverKycDocumentsQueryVariables> {
+    document = DriverKycDocumentsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ReviewDriverDocumentDocument = gql`
+    mutation ReviewDriverDocument($id: ID!, $approve: Boolean!, $note: String) {
+  reviewDriverDocument(id: $id, approve: $approve, note: $note) {
+    reinstated
+    document {
+      id
+      status
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ReviewDriverDocumentGQL extends Apollo.Mutation<ReviewDriverDocumentMutation, ReviewDriverDocumentMutationVariables> {
+    document = ReviewDriverDocumentDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateDriverDocumentDocument = gql`
+    mutation CreateDriverDocument($input: CreateDriverDocumentInput!) {
+  createDriverDocument(input: $input) {
+    reinstated
+    document {
+      id
+      status
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateDriverDocumentGQL extends Apollo.Mutation<CreateDriverDocumentMutation, CreateDriverDocumentMutationVariables> {
+    document = CreateDriverDocumentDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -8557,6 +8956,7 @@ export const ViewDriverDocument = gql`
     email
     canDeliver
     maxPackageSize
+    vehicleType
     feedbacks {
       nodes {
         parametersAggregate {
@@ -8596,7 +8996,9 @@ export const ViewDriverDocument = gql`
   services {
     id
     name
+    vehicleTypes
   }
+  missingDriverDocuments(driverId: $id)
   fleets {
     nodes {
       id
@@ -8612,6 +9014,7 @@ export const ViewDriverDocument = gql`
     nodes {
       id
       name
+      vehicleType
     }
   }
   carColors {
@@ -8885,6 +9288,22 @@ export const DebtBlockedDriverIdsDocument = gql`
   })
   export class DebtBlockedDriverIdsGQL extends Apollo.Query<DebtBlockedDriverIdsQuery, DebtBlockedDriverIdsQueryVariables> {
     document = DebtBlockedDriverIdsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DocumentSuspendedDriverIdsDocument = gql`
+    query DocumentSuspendedDriverIds {
+  documentSuspendedDriverIds
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DocumentSuspendedDriverIdsGQL extends Apollo.Query<DocumentSuspendedDriverIdsQuery, DocumentSuspendedDriverIdsQueryVariables> {
+    document = DocumentSuspendedDriverIdsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -9402,6 +9821,7 @@ export const CarsListDocument = gql`
     nodes {
       id
       name
+      vehicleType
     }
   }
   carColors {
@@ -9524,6 +9944,69 @@ export const UpdateCarColorDocument = gql`
   })
   export class UpdateCarColorGQL extends Apollo.Mutation<UpdateCarColorMutation, UpdateCarColorMutationVariables> {
     document = UpdateCarColorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DriverDocumentTypesDocument = gql`
+    query DriverDocumentTypes {
+  driverDocumentTypes {
+    id
+    code
+    title
+    description
+    isEnabled
+    isRequired
+    hasExpiryDate
+    reminderDays
+    sortOrder
+    vehicleTypes
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DriverDocumentTypesGQL extends Apollo.Query<DriverDocumentTypesQuery, DriverDocumentTypesQueryVariables> {
+    document = DriverDocumentTypesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateDriverDocumentTypeDocument = gql`
+    mutation CreateDriverDocumentType($input: DriverDocumentTypeInput!) {
+  createDriverDocumentType(input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateDriverDocumentTypeGQL extends Apollo.Mutation<CreateDriverDocumentTypeMutation, CreateDriverDocumentTypeMutationVariables> {
+    document = CreateDriverDocumentTypeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateDriverDocumentTypeDocument = gql`
+    mutation UpdateDriverDocumentType($id: ID!, $input: DriverDocumentTypeInput!) {
+  updateDriverDocumentType(id: $id, input: $input) {
+    id
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateDriverDocumentTypeGQL extends Apollo.Mutation<UpdateDriverDocumentTypeMutation, UpdateDriverDocumentTypeMutationVariables> {
+    document = UpdateDriverDocumentTypeDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -10679,6 +11162,7 @@ export const ViewServiceDocument = gql`
     maximumDestinationDistance
     paymentMethod
     orderType
+    vehicleTypes
     cancellationTotalFee
     cancellationDriverShare
     providerShareFlat
@@ -12168,6 +12652,35 @@ export const AssignDriverToOrderDocument = gql`
       super(apollo);
     }
   }
+export const DispatchAttemptsDocument = gql`
+    query DispatchAttempts($requestId: ID!) {
+  dispatchAttempts(requestId: $requestId) {
+    id
+    driverId
+    driverName
+    wave
+    rank
+    airDistanceM
+    roadDistanceM
+    roadDurationS
+    routingSource
+    outcome
+    offeredAt
+    respondedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DispatchAttemptsGQL extends Apollo.Query<DispatchAttemptsQuery, DispatchAttemptsQueryVariables> {
+    document = DispatchAttemptsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const ViewOrderDocument = gql`
     query ViewOrder($id: ID!) {
   order(id: $id) {
@@ -12306,6 +12819,36 @@ export const OrdersListDocument = gql`
   })
   export class OrdersListGQL extends Apollo.Query<OrdersListQuery, OrdersListQueryVariables> {
     document = OrdersListDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UnservedDemandsDocument = gql`
+    query UnservedDemands($since: DateTime, $limit: Int) {
+  unservedDemands(since: $since, limit: $limit) {
+    id
+    requestId
+    serviceId
+    lat
+    lng
+    driversSolicited
+    createdAt
+    alertedAt
+    alertedDrivers
+  }
+  services {
+    id
+    name
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UnservedDemandsGQL extends Apollo.Query<UnservedDemandsQuery, UnservedDemandsQueryVariables> {
+    document = UnservedDemandsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -145,10 +145,10 @@ class SFr extends S {
   String get car_production_year => 'Année de production';
 
   @override
-  String get car_model => 'Modèle de voiture';
+  String get car_model => 'Modèle du véhicule';
 
   @override
-  String get car_color => 'Couleur de la voiture';
+  String get car_color => 'Couleur du véhicule';
 
   @override
   String get driver_register_step_payout_details_title => 'Détails du paiement';
@@ -202,6 +202,9 @@ class SFr extends S {
 
   @override
   String get available_order_action_accept => 'Accepter la commande';
+
+  @override
+  String get available_order_action_reject => 'Refuser';
 
   @override
   String get order_status_action_received_cash => 'Paiement en espèces reçu';
@@ -539,8 +542,7 @@ class SFr extends S {
   String get register_payout_details_title => 'Entrez vos détails de paiement';
 
   @override
-  String get register_ride_details_title =>
-      'Entrez les détails de votre course';
+  String get register_ride_details_title => 'Votre véhicule';
 
   @override
   String get register_profile_photo_title => 'Télécharger une photo de profil';
@@ -875,4 +877,182 @@ class SFr extends S {
 
   @override
   String get debt_blocked_see_statement => 'Voir mon relevé';
+
+  @override
+  String get menu_documents => 'Mes documents';
+
+  @override
+  String get documents_title => 'Mes documents';
+
+  @override
+  String get documents_subtitle =>
+      'Gardez vos documents à jour : un document obligatoire expiré suspend vos courses.';
+
+  @override
+  String get documents_required => 'Obligatoire';
+
+  @override
+  String get documents_status_missing => 'Manquant';
+
+  @override
+  String get documents_status_pending => 'En attente';
+
+  @override
+  String get documents_status_approved => 'Validé';
+
+  @override
+  String get documents_status_rejected => 'Refusé';
+
+  @override
+  String get documents_status_expiring_soon => 'Expire bientôt';
+
+  @override
+  String get documents_status_expired => 'Expiré';
+
+  @override
+  String documents_valid_until(String date) {
+    return 'Valable jusqu’au $date';
+  }
+
+  @override
+  String documents_expired_on(String date) {
+    return 'Expiré le $date';
+  }
+
+  @override
+  String documents_days_left(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Expire dans $count jours',
+      one: 'Expire demain',
+      zero: 'Dernier jour de validité',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String documents_number(String number) {
+    return 'N° $number';
+  }
+
+  @override
+  String documents_rejection_reason(String reason) {
+    return 'Motif du refus : $reason';
+  }
+
+  @override
+  String documents_pending_note(String date) {
+    return 'Envoyé le $date, en cours de vérification par Kasi.';
+  }
+
+  @override
+  String get documents_action_send => 'Envoyer';
+
+  @override
+  String get documents_action_replace => 'Remplacer';
+
+  @override
+  String get documents_action_renew => 'Renouveler';
+
+  @override
+  String get documents_pick_photo => 'Photo';
+
+  @override
+  String get documents_pick_file => 'Fichier PDF';
+
+  @override
+  String documents_file_selected(String name) {
+    return 'Fichier choisi : $name';
+  }
+
+  @override
+  String get documents_number_label => 'Numéro du document (facultatif)';
+
+  @override
+  String get documents_expiry_label => 'Date d’expiration';
+
+  @override
+  String get documents_expiry_pick => 'Choisir la date d’expiration';
+
+  @override
+  String get documents_submit => 'Envoyer pour vérification';
+
+  @override
+  String get documents_submitted =>
+      'Document envoyé. Kasi le vérifie et vous tient informé.';
+
+  @override
+  String get documents_missing_file =>
+      'Choisissez d’abord une photo ou un fichier.';
+
+  @override
+  String get documents_missing_expiry =>
+      'Indiquez la date d’expiration du document.';
+
+  @override
+  String get documents_empty => 'Aucun document n’est demandé pour le moment.';
+
+  @override
+  String get documents_load_error => 'Impossible de charger vos documents.';
+
+  @override
+  String get documents_retry => 'Réessayer';
+
+  @override
+  String documents_expiring_banner(String titles) {
+    return 'À renouveler bientôt : $titles. Touchez pour envoyer la nouvelle version.';
+  }
+
+  @override
+  String documents_expired_banner(String titles) {
+    return 'Document expiré : $titles. Envoyez la nouvelle version pour ne pas être suspendu.';
+  }
+
+  @override
+  String get documents_suspended_title => 'Courses suspendues';
+
+  @override
+  String documents_suspended_body(String titles) {
+    return 'Document expiré : $titles. Envoyez la version à jour depuis « Mes documents ». Dès qu’un opérateur Kasi l’a validée, votre compte est réactivé et vous pouvez repasser en ligne.';
+  }
+
+  @override
+  String get documents_suspended_pending =>
+      'Votre nouveau document est en cours de vérification : vous serez réactivé dès sa validation.';
+
+  @override
+  String get documents_open => 'Ouvrir mes documents';
+
+  @override
+  String get vehicle_type_title => 'Type de véhicule';
+
+  @override
+  String get vehicle_type_motorcycle => 'Moto';
+
+  @override
+  String get vehicle_type_car => 'Taxi ou voiture';
+
+  @override
+  String get vehicle_type_van => 'Camionnette';
+
+  @override
+  String get vehicle_type_not_set => 'Non renseigné';
+
+  @override
+  String get vehicle_type_hint =>
+      'Choisissez le véhicule avec lequel vous roulez. Il détermine les demandes que vous recevez et les documents demandés.';
+
+  @override
+  String get vehicle_type_required => 'Choisissez votre type de véhicule.';
+
+  @override
+  String get vehicle_type_choose => 'Choisir';
+
+  @override
+  String get vehicle_type_locked =>
+      'Pour changer de véhicule, contactez le support Kasi.';
+
+  @override
+  String get vehicle_type_save => 'Enregistrer';
 }

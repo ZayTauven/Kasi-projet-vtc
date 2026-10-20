@@ -36,4 +36,8 @@ export class NoOpRiderNotificationService implements IRiderNotificationService {
   finished(rider: any): void {
     console.warn('Firebase not configured: rider notification skipped', rider);
   }
+
+  async plainText(rider: any, title: string, body: string): Promise<void> {
+    console.warn('Firebase not configured: rider notification skipped', rider?.id, title, body);
+  }
 }

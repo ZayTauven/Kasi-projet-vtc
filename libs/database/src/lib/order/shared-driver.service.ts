@@ -11,6 +11,7 @@ import {
   packageSizeRank,
 } from '../entities/enums/package-size.enum';
 import { ServiceOrderType } from '../entities/enums/service-order-type.enum';
+import { vehicleTypeAllowed } from '../entities/enums/vehicle-type.enum';
 import { ServiceEntity } from '../entities/service.entity';
 import { blockedForDebtDriverIds } from './debt-limit';
 
@@ -84,6 +85,23 @@ export class SharedDriverService {
     driversWithService = driversWithService.filter((x) =>
       x.enabledServices.map((y) => y.id).includes(serviceId),
     );
+    // p2-vehicules (2026-10-20) : le service n'est propose qu'aux vehicules
+    // qu'il admet (liste vide = tous ; Kasiman sans type = accepte).
+    if (driversWithService.length > 0) {
+      const allowed =
+        delivery?.service?.id === serviceId && delivery.service.vehicleTypes != null
+          ? delivery.service.vehicleTypes
+          : (
+              await this.driverRepo.manager.getRepository(ServiceEntity).findOne({
+                where: { id: serviceId },
+                select: { id: true, vehicleTypes: true },
+                withDeleted: true,
+              })
+            )?.vehicleTypes;
+      driversWithService = driversWithService.filter((x) =>
+        vehicleTypeAllowed(allowed, x.vehicleType),
+      );
+    }
     if (delivery?.service?.orderType === ServiceOrderType.Delivery) {
       driversWithService = driversWithService.filter(
         (x) =>

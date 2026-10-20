@@ -224,6 +224,18 @@
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
+            <!-- p2-vehicules : vehicules admis pour ce service (vide = tous). -->
+            <nz-form-item>
+              <nz-form-label nzFor="vehicleTypes">{{ 'vehicle.allowed' | translate }}</nz-form-label>
+              <nz-form-control [nzExtra]="'vehicle.serviceHint' | translate">
+                <nz-select formControlName="vehicleTypes" id="vehicleTypes" nzMode="multiple"
+                  [nzPlaceHolder]="'vehicle.all' | translate">
+                  @for (vehicleType of vehicleTypes; track vehicleType) {
+                    <nz-option [nzValue]="vehicleType" [nzLabel]="'enum.vehicleType.' + vehicleType | translate"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="twoWayAvailable" nzRequired>{{ 'service.twoWayAvailable' | translate }}</nz-form-label>
               <nz-form-control>

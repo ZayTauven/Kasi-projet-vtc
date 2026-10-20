@@ -23,7 +23,8 @@
         <nz-table #ajaxTable [nzData]="carModels" [nzShowPagination]="false">
           <thead>
             <tr>
-              <th nzWidth="80%">{{ 'profile.name' | translate }}</th>
+              <th nzWidth="50%">{{ 'profile.name' | translate }}</th>
+              <th nzWidth="30%">{{ 'vehicle.type' | translate }}</th>
               <th>{{ 'profile.actions' | translate }}</th>
             </tr>
           </thead>
@@ -38,8 +39,17 @@
                       </div>
                     </div>
                   } @else {
-                    <input nz-input [(ngModel)]="data.name" (keyup.enter)="onSubmitEditModel(data.id, data.name)" />
+                    <input nz-input [(ngModel)]="data.name" (keyup.enter)="onSubmitEditModel(data.id, data.name, data.vehicleType)" />
                   }
+                </td>
+                <!-- p2-vehicules : type du modele, filtre la liste a l'inscription. -->
+                <td (click)="$event.stopPropagation()">
+                  <nz-select class="w-full" nzAllowClear [ngModel]="data.vehicleType"
+                    (ngModelChange)="onVehicleTypeChange(data, $event)" [nzPlaceHolder]="'vehicle.notSet' | translate">
+                    @for (vehicleType of vehicleTypes; track vehicleType) {
+                      <nz-option [nzValue]="vehicleType" [nzLabel]="'enum.vehicleType.' + vehicleType | translate"></nz-option>
+                    }
+                  </nz-select>
                 </td>
                 <td>
                   <a nz-popconfirm nzPopconfirmTitle="{{ 'message.areYouSure' | translate }}"

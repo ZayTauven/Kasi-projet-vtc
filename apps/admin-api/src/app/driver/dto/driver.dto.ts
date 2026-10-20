@@ -6,6 +6,7 @@
   UnPagedRelation,
 } from '@ptc-org/nestjs-query-graphql';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { VehicleType } from '@kasi/database/enums/vehicle-type.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { Gender } from '@kasi/database/enums/gender.enum';
 import { PackageSize } from '@kasi/database/enums/package-size.enum';
@@ -52,6 +53,9 @@ export class DriverDTO {
   @FilterableField(() => Boolean, { nullable: true })
   canDeliver!: boolean;
   maxPackageSize?: PackageSize;
+  /** p2-vehicules : type de vehicule du Kasiman (null = pas encore choisi). */
+  @FilterableField(() => VehicleType, { nullable: true })
+  vehicleType?: VehicleType | null;
   rating?: number;
   reviewCount: number;
   registrationTimestamp!: Date;
