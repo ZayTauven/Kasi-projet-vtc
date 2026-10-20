@@ -90,6 +90,7 @@ enum CalculateFareError {
 
 input CalculateFareInput {
   couponCode: String
+  intervalMinutes: Int
   points: [PointInput!]!
   selectedOptionIds: [String!]
   twoWay: Boolean
@@ -199,6 +200,7 @@ input CreateOrderInput {
   optionIds: [String!]
   packageSize: PackageSize
   points: [PointInput!]!
+  quoteId: ID
   recipientMobileNumber: String
   recipientName: String
   serviceId: Int!
@@ -1027,6 +1029,8 @@ type Service {
   paymentMethod: ServicePaymentMethod!
   personCapacity: Int
   prepayPercent: Int!
+  quoteExpiresAt: Timestamp
+  quoteId: ID
   twoWayAvailable: Boolean!
 }
 

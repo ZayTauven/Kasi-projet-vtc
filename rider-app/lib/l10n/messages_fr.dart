@@ -740,4 +740,25 @@ class SFr extends S {
 
   @override
   String get login_success_subtitle => 'Inscription terminée !';
+
+  @override
+  String fare_price_updated(String price) {
+    return 'Le prix a été mis à jour : $price.';
+  }
+
+  @override
+  String get fare_price_changed_title => 'Le prix a changé';
+
+  @override
+  String fare_price_changed_message(String oldPrice, String newPrice) {
+    return 'Le prix de cette course est passé de $oldPrice à $newPrice. Voulez-vous continuer ?';
+  }
+
+  @override
+  String get fare_route_unavailable =>
+      'Impossible de calculer l\'itinéraire pour le moment. Réessayez dans un instant.';
+
+  @override
+  String get fare_order_already_registered =>
+      'Cette commande est déjà enregistrée.';
 }

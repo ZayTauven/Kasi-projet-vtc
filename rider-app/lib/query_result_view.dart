@@ -92,7 +92,15 @@ void showOperationErrorMessage(
 
 String getErrorMessage(BuildContext context, OperationException? exception) {
   if (exception?.graphqlErrors.isNotEmpty ?? false) {
-    final message = exception!.graphqlErrors.first.message;
+    // p2-argent I4 : refus du devis, message traduit à partir du code stable.
+    final code = exception!.graphqlErrors.first.extensions?['code'];
+    if (code == 'ROUTE_UNAVAILABLE') {
+      return S.of(context).fare_route_unavailable;
+    }
+    if (code == 'QUOTE_ALREADY_USED') {
+      return S.of(context).fare_order_already_registered;
+    }
+    final message = exception.graphqlErrors.first.message;
     // Messages techniques d'authentification du backend → message convivial
     // (ex. le garde NestJS renvoie "GqlAuthGuard" quand la session est absente/expirée).
     final lower = message.toLowerCase();

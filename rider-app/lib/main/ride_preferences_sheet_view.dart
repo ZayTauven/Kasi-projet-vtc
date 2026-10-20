@@ -22,7 +22,12 @@ class RidePreferencesSheetView extends StatefulWidget {
 }
 
 class _RidePreferencesSheetViewState extends State<RidePreferencesSheetView> {
-  late List<String> selectedOptions = widget.defaultSelectedOptions;
+  // p2-argent I4 : copie de la liste. Partager celle de l'aperçu la modifiait
+  // en place, si bien que `listEquals` comparait la liste à elle-même :
+  // la feuille se fermait sans résultat et l'aperçu ne recalculait jamais le
+  // prix avec les options.
+  late final List<String> selectedOptions =
+      List.of(widget.defaultSelectedOptions);
 
   @override
   Widget build(BuildContext context) {

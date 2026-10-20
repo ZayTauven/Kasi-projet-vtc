@@ -1135,11 +1135,13 @@ class _CopyWithStubImpl$Input$BooleanFieldComparison<TRes>
 class Input$CalculateFareInput {
   factory Input$CalculateFareInput({
     String? couponCode,
+    int? intervalMinutes,
     required List<Input$PointInput> points,
     List<String>? selectedOptionIds,
     bool? twoWay,
   }) => Input$CalculateFareInput._({
     if (couponCode != null) r'couponCode': couponCode,
+    if (intervalMinutes != null) r'intervalMinutes': intervalMinutes,
     r'points': points,
     if (selectedOptionIds != null) r'selectedOptionIds': selectedOptionIds,
     if (twoWay != null) r'twoWay': twoWay,
@@ -1152,6 +1154,10 @@ class Input$CalculateFareInput {
     if (data.containsKey('couponCode')) {
       final l$couponCode = data['couponCode'];
       result$data['couponCode'] = (l$couponCode as String?);
+    }
+    if (data.containsKey('intervalMinutes')) {
+      final l$intervalMinutes = data['intervalMinutes'];
+      result$data['intervalMinutes'] = (l$intervalMinutes as int?);
     }
     final l$points = data['points'];
     result$data['points'] = (l$points as List<dynamic>)
@@ -1174,6 +1180,8 @@ class Input$CalculateFareInput {
 
   String? get couponCode => (_$data['couponCode'] as String?);
 
+  int? get intervalMinutes => (_$data['intervalMinutes'] as int?);
+
   List<Input$PointInput> get points =>
       (_$data['points'] as List<Input$PointInput>);
 
@@ -1187,6 +1195,10 @@ class Input$CalculateFareInput {
     if (_$data.containsKey('couponCode')) {
       final l$couponCode = couponCode;
       result$data['couponCode'] = l$couponCode;
+    }
+    if (_$data.containsKey('intervalMinutes')) {
+      final l$intervalMinutes = intervalMinutes;
+      result$data['intervalMinutes'] = l$intervalMinutes;
     }
     final l$points = points;
     result$data['points'] = l$points.map((e) => e.toJson()).toList();
@@ -1222,6 +1234,15 @@ class Input$CalculateFareInput {
       return false;
     }
     if (l$couponCode != lOther$couponCode) {
+      return false;
+    }
+    final l$intervalMinutes = intervalMinutes;
+    final lOther$intervalMinutes = other.intervalMinutes;
+    if (_$data.containsKey('intervalMinutes') !=
+        other._$data.containsKey('intervalMinutes')) {
+      return false;
+    }
+    if (l$intervalMinutes != lOther$intervalMinutes) {
       return false;
     }
     final l$points = points;
@@ -1270,11 +1291,13 @@ class Input$CalculateFareInput {
   @override
   int get hashCode {
     final l$couponCode = couponCode;
+    final l$intervalMinutes = intervalMinutes;
     final l$points = points;
     final l$selectedOptionIds = selectedOptionIds;
     final l$twoWay = twoWay;
     return Object.hashAll([
       _$data.containsKey('couponCode') ? l$couponCode : const {},
+      _$data.containsKey('intervalMinutes') ? l$intervalMinutes : const {},
       Object.hashAll(l$points.map((v) => v)),
       _$data.containsKey('selectedOptionIds')
           ? l$selectedOptionIds == null
@@ -1297,6 +1320,7 @@ abstract class CopyWith$Input$CalculateFareInput<TRes> {
 
   TRes call({
     String? couponCode,
+    int? intervalMinutes,
     List<Input$PointInput>? points,
     List<String>? selectedOptionIds,
     bool? twoWay,
@@ -1321,6 +1345,7 @@ class _CopyWithImpl$Input$CalculateFareInput<TRes>
 
   TRes call({
     Object? couponCode = _undefined,
+    Object? intervalMinutes = _undefined,
     Object? points = _undefined,
     Object? selectedOptionIds = _undefined,
     Object? twoWay = _undefined,
@@ -1328,6 +1353,8 @@ class _CopyWithImpl$Input$CalculateFareInput<TRes>
     Input$CalculateFareInput._({
       ..._instance._$data,
       if (couponCode != _undefined) 'couponCode': (couponCode as String?),
+      if (intervalMinutes != _undefined)
+        'intervalMinutes': (intervalMinutes as int?),
       if (points != _undefined && points != null)
         'points': (points as List<Input$PointInput>),
       if (selectedOptionIds != _undefined)
@@ -1356,6 +1383,7 @@ class _CopyWithStubImpl$Input$CalculateFareInput<TRes>
 
   call({
     String? couponCode,
+    int? intervalMinutes,
     List<Input$PointInput>? points,
     List<String>? selectedOptionIds,
     bool? twoWay,
@@ -2270,6 +2298,7 @@ class Input$CreateOrderInput {
     List<String>? optionIds,
     Enum$PackageSize? packageSize,
     required List<Input$PointInput> points,
+    String? quoteId,
     String? recipientMobileNumber,
     String? recipientName,
     required int serviceId,
@@ -2283,6 +2312,7 @@ class Input$CreateOrderInput {
     if (optionIds != null) r'optionIds': optionIds,
     if (packageSize != null) r'packageSize': packageSize,
     r'points': points,
+    if (quoteId != null) r'quoteId': quoteId,
     if (recipientMobileNumber != null)
       r'recipientMobileNumber': recipientMobileNumber,
     if (recipientName != null) r'recipientName': recipientName,
@@ -2324,6 +2354,10 @@ class Input$CreateOrderInput {
     result$data['points'] = (l$points as List<dynamic>)
         .map((e) => Input$PointInput.fromJson((e as Map<String, dynamic>)))
         .toList();
+    if (data.containsKey('quoteId')) {
+      final l$quoteId = data['quoteId'];
+      result$data['quoteId'] = (l$quoteId as String?);
+    }
     if (data.containsKey('recipientMobileNumber')) {
       final l$recipientMobileNumber = data['recipientMobileNumber'];
       result$data['recipientMobileNumber'] =
@@ -2361,6 +2395,8 @@ class Input$CreateOrderInput {
   List<Input$PointInput> get points =>
       (_$data['points'] as List<Input$PointInput>);
 
+  String? get quoteId => (_$data['quoteId'] as String?);
+
   String? get recipientMobileNumber =>
       (_$data['recipientMobileNumber'] as String?);
 
@@ -2396,6 +2432,10 @@ class Input$CreateOrderInput {
     }
     final l$points = points;
     result$data['points'] = l$points.map((e) => e.toJson()).toList();
+    if (_$data.containsKey('quoteId')) {
+      final l$quoteId = quoteId;
+      result$data['quoteId'] = l$quoteId;
+    }
     if (_$data.containsKey('recipientMobileNumber')) {
       final l$recipientMobileNumber = recipientMobileNumber;
       result$data['recipientMobileNumber'] = l$recipientMobileNumber;
@@ -2500,6 +2540,14 @@ class Input$CreateOrderInput {
         return false;
       }
     }
+    final l$quoteId = quoteId;
+    final lOther$quoteId = other.quoteId;
+    if (_$data.containsKey('quoteId') != other._$data.containsKey('quoteId')) {
+      return false;
+    }
+    if (l$quoteId != lOther$quoteId) {
+      return false;
+    }
     final l$recipientMobileNumber = recipientMobileNumber;
     final lOther$recipientMobileNumber = other.recipientMobileNumber;
     if (_$data.containsKey('recipientMobileNumber') !=
@@ -2543,6 +2591,7 @@ class Input$CreateOrderInput {
     final l$optionIds = optionIds;
     final l$packageSize = packageSize;
     final l$points = points;
+    final l$quoteId = quoteId;
     final l$recipientMobileNumber = recipientMobileNumber;
     final l$recipientName = recipientName;
     final l$serviceId = serviceId;
@@ -2561,6 +2610,7 @@ class Input$CreateOrderInput {
           : const {},
       _$data.containsKey('packageSize') ? l$packageSize : const {},
       Object.hashAll(l$points.map((v) => v)),
+      _$data.containsKey('quoteId') ? l$quoteId : const {},
       _$data.containsKey('recipientMobileNumber')
           ? l$recipientMobileNumber
           : const {},
@@ -2588,6 +2638,7 @@ abstract class CopyWith$Input$CreateOrderInput<TRes> {
     List<String>? optionIds,
     Enum$PackageSize? packageSize,
     List<Input$PointInput>? points,
+    String? quoteId,
     String? recipientMobileNumber,
     String? recipientName,
     int? serviceId,
@@ -2619,6 +2670,7 @@ class _CopyWithImpl$Input$CreateOrderInput<TRes>
     Object? optionIds = _undefined,
     Object? packageSize = _undefined,
     Object? points = _undefined,
+    Object? quoteId = _undefined,
     Object? recipientMobileNumber = _undefined,
     Object? recipientName = _undefined,
     Object? serviceId = _undefined,
@@ -2638,6 +2690,7 @@ class _CopyWithImpl$Input$CreateOrderInput<TRes>
         'packageSize': (packageSize as Enum$PackageSize?),
       if (points != _undefined && points != null)
         'points': (points as List<Input$PointInput>),
+      if (quoteId != _undefined) 'quoteId': (quoteId as String?),
       if (recipientMobileNumber != _undefined)
         'recipientMobileNumber': (recipientMobileNumber as String?),
       if (recipientName != _undefined)
@@ -2674,6 +2727,7 @@ class _CopyWithStubImpl$Input$CreateOrderInput<TRes>
     List<String>? optionIds,
     Enum$PackageSize? packageSize,
     List<Input$PointInput>? points,
+    String? quoteId,
     String? recipientMobileNumber,
     String? recipientName,
     int? serviceId,

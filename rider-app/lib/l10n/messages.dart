@@ -1449,6 +1449,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Sign up completed!'**
   String get login_success_subtitle;
+
+  /// No description provided for @fare_price_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Price updated: {price}.'**
+  String fare_price_updated(String price);
+
+  /// No description provided for @fare_price_changed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'The price has changed'**
+  String get fare_price_changed_title;
+
+  /// No description provided for @fare_price_changed_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The price of this ride went from {oldPrice} to {newPrice}. Do you want to continue?'**
+  String fare_price_changed_message(String oldPrice, String newPrice);
+
+  /// No description provided for @fare_route_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to calculate the route right now. Try again in a moment.'**
+  String get fare_route_unavailable;
+
+  /// No description provided for @fare_order_already_registered.
+  ///
+  /// In en, this message translates to:
+  /// **'This order is already registered.'**
+  String get fare_order_already_registered;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

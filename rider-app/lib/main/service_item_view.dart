@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config.dart';
-import 'package:intl/intl.dart';
+import 'fare_quote.dart';
 
 import 'package:client_shared/theme/theme.dart';
 
@@ -48,40 +48,40 @@ class ServiceItemView extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          service.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      if (service.personCapacity != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Icon(
-                            Icons.person,
-                            size: 16,
-                            color: CustomTheme.neutralColors.shade600,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            service.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
-                      if (service.personCapacity != null)
-                        Text(service.personCapacity.toString(),
-                            style: Theme.of(context).textTheme.labelSmall)
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  if (service.description?.isNotEmpty ?? false)
-                    Text(
-                      service.description ?? "",
-                      style: Theme.of(context).textTheme.labelMedium,
-                    )
-                ],
+                        const SizedBox(width: 4),
+                        if (service.personCapacity != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Icon(
+                              Icons.person,
+                              size: 16,
+                              color: CustomTheme.neutralColors.shade600,
+                            ),
+                          ),
+                        if (service.personCapacity != null)
+                          Text(service.personCapacity.toString(),
+                              style: Theme.of(context).textTheme.labelSmall)
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    if (service.description?.isNotEmpty ?? false)
+                      Text(
+                        service.description ?? "",
+                        style: Theme.of(context).textTheme.labelMedium,
+                      )
+                  ],
                 ),
               ),
             ),
@@ -91,8 +91,7 @@ class ServiceItemView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    NumberFormat.simpleCurrency(name: currency)
-                        .format(service.cost),
+                    formatFare(service.cost, currency),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         decoration: (service.costAfterCoupon != null &&
                                 service.cost != service.costAfterCoupon)
@@ -107,12 +106,11 @@ class ServiceItemView extends StatelessWidget {
                   if (service.costAfterCoupon != null &&
                       service.cost != service.costAfterCoupon)
                     Text(
-                      NumberFormat.simpleCurrency(name: currency)
-                          .format(service.costAfterCoupon),
+                      formatFare(service.costAfterCoupon!, currency),
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
-                          ?.copyWith(color: const Color(0xff108910)),
+                          ?.copyWith(color: CustomTheme.primaryColors.shade700),
                     )
                 ],
               ),

@@ -309,5 +309,12 @@
   "login_firstname_empty": "Enter your first name",
   "login_lastname_empty": "Enter your last name",
   "login_success_congrats": "Congrats",
-  "login_success_subtitle": "Sign up completed!"
+  "login_success_subtitle": "Sign up completed!",
+  "fare_price_updated": "Price updated: {price}.",
+  "fare_price_changed_title": "The price has changed",
+  "fare_price_changed_message": "The price of this ride went from {oldPrice} to {newPrice}. Do you want to continue?",
+  "fare_route_unavailable": "Unable to calculate the route right now. Try again in a moment.",
+  "fare_order_already_registered": "This order is already registered.",
+  "@fare_price_updated": {"placeholders": {"price": {"type": "String"}}},
+  "@fare_price_changed_message": {"placeholders": {"oldPrice": {"type": "String"}, "newPrice": {"type": "String"}}}
 }

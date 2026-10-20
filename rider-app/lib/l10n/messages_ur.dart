@@ -732,4 +732,25 @@ class SUr extends S {
 
   @override
   String get login_success_subtitle => 'Sign up completed!';
+
+  @override
+  String fare_price_updated(String price) {
+    return 'Price updated: $price.';
+  }
+
+  @override
+  String get fare_price_changed_title => 'The price has changed';
+
+  @override
+  String fare_price_changed_message(String oldPrice, String newPrice) {
+    return 'The price of this ride went from $oldPrice to $newPrice. Do you want to continue?';
+  }
+
+  @override
+  String get fare_route_unavailable =>
+      'Unable to calculate the route right now. Try again in a moment.';
+
+  @override
+  String get fare_order_already_registered =>
+      'This order is already registered.';
 }

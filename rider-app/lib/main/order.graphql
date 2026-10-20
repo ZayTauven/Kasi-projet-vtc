@@ -241,12 +241,14 @@ query GetFare(
   $points: [PointInput!]!
   $couponCode: String
   $selectedOptionIds: [String!]
+  $intervalMinutes: Int
 ) {
   getFare(
     input: {
       points: $points
       couponCode: $couponCode
       selectedOptionIds: $selectedOptionIds
+      intervalMinutes: $intervalMinutes
     }
   ) {
     distance
@@ -280,6 +282,8 @@ query GetFare(
         }
         cost
         costAfterCoupon
+        quoteId
+        quoteExpiresAt
       }
     }
     error
