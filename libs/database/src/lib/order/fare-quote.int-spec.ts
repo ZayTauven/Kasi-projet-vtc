@@ -309,6 +309,17 @@ describe('p2-argent I4 : devis fige', () => {
     expect(await countRows(ds, 'request')).toBe(2);
   });
 
+  it('app installee, prix consulte deux fois : le renvoi rend la course, pas une seconde sur l ancien apercu', async () => {
+    // Trouve par le banc pilote : un apercu plus ancien du meme trajet, reste
+    // libre, servait a creer une seconde course au renvoi.
+    await fare();
+    await fare();
+    const first = await order();
+    const again = await order();
+    expect(Number(again.id)).toBe(Number(first.id));
+    expect(await countRows(ds, 'request')).toBe(1);
+  });
+
   it('nouvelle course voulue apres annulation : pas confondue avec un renvoi', async () => {
     await fare();
     const first = await order();

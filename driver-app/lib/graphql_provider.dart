@@ -1,5 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:kasi_driver/monitoring/crash_reporting.dart';
+import 'package:kasi_driver/monitoring/graphql_error_reporting_link.dart';
 
 /*String get host {
   if (Platform.isAndroid) {
@@ -57,8 +59,12 @@ ValueNotifier<GraphQLClient> clientFor(
   final HttpLink httpLink = jwtToken != null
       ? HttpLink(uri, defaultHeaders: {"Authorization": "Bearer $jwtToken"})
       : HttpLink(uri);
-  final Link link =
-      Link.split((request) => request.isSubscription, websocketLink, httpLink);
+  // p1-sentry : lien passif en tete de chaine, qui remonte les incidents
+  // GraphQL a Crashlytics sans toucher aux requetes ni aux reponses.
+  final Link link = Link.from([
+    GraphQLErrorReportingLink(errorReporter),
+    Link.split((request) => request.isSubscription, websocketLink, httpLink),
+  ]);
   final GraphQLCache cache = GraphQLCache(store: HiveStore());
   return ValueNotifier<GraphQLClient>(
     GraphQLClient(

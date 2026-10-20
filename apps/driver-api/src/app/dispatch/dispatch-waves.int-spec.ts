@@ -98,7 +98,7 @@ describe('p2-dispatch D2-D3 : vagues et client prevenu', () => {
     world = await createWorld(ds, { drivers });
     await ds.query(`UPDATE service SET "searchRadius" = $1 WHERE id = $2`, [searchRadius, world.serviceId]);
     for (const driverId of world.driverIds) {
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         driverId,
         world.serviceId,
       ]);
@@ -198,7 +198,14 @@ describe('p2-dispatch D2-D3 : vagues et client prevenu', () => {
         if (Date.now() > deadline) throw new Error('course jamais expiree');
         await new Promise((r) => setTimeout(r, 50));
       }
-      await new Promise((r) => setTimeout(r, 200));
+      // Les notifications suivent l'ecriture du statut : sous la charge du banc
+      // complet, 200 ms fixes ne suffisaient pas (echec intermittent). On les
+      // attend, puis on laisse le temps a un eventuel doublon d'arriver.
+      while (d.riderNotifications.count('plainText') < 1 || expiredUpdates() < 1 || d.pubSub.count('orderRemoved') < 1) {
+        if (Date.now() > deadline) break;
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      await new Promise((r) => setTimeout(r, 500));
 
       // Offre cumulative : chaque vague republie aux Kasimen deja sollicites.
       expect(offers()).toEqual([
@@ -235,7 +242,7 @@ describe('p2-dispatch D2-D3 : vagues et client prevenu', () => {
         )
       )[0].id;
       // k0, le plus proche, est polyvalent : classe apres les 6 mono-service de l'anneau.
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         k(0),
         otherService,
       ]);
@@ -285,7 +292,7 @@ describe('p2-dispatch D2-D3 : vagues et client prevenu', () => {
          SELECT "categoryId", 'Autre', $2 FROM service WHERE id = $1 RETURNING id`,
         [world.serviceId, mediaId],
       );
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         k(0),
         otherService,
       ]);

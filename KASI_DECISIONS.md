@@ -8,6 +8,83 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-20 — `p2-dispatch` : livraison au banc pilote, acceptation réservée au Kasiman apte
+
+**Tranché par la session principale, à revoir par l'utilisateur.** Points : `p2-dispatch`
+(reste « essai d'une livraison »), `p2-vehicules`, `p3-b2b`. Local, non committé.
+
+**Livraison** : `cycle-pilote.int-spec.ts` ajoute un service Kasi Moto (`orderType`
+`Delivery`) servi par la même flotte. 5 Kasimen livrent (petit, moyen, grand colis), 2 taxis
+non. 6 livraisons sur 50, payées en espèces, avec une taille de colis tirée au hasard. Résultat :
+aucun Kasiman inapte n'est sollicité (contrôle SQL de fin de banc), et la taille et le
+destinataire sont enregistrés.
+
+**Faille trouvée en écrivant le scénario** : à l'acceptation, la dette était le seul contrôle
+(`DriverOrderQueryService.accept`). Les numéros de course se suivent : n'importe quel Kasiman
+authentifié pouvait accepter une course qui ne lui était pas offerte, donc un service qu'il n'a
+pas, un véhicule refusé par le service, ou un colis qu'il ne peut pas porter (un taxi sur un
+gros colis).
+
+**Décision** : à l'acceptation, la même règle que celle des offres :
+- service activé ;
+- véhicule admis (`vehicleTypeAllowed`) ;
+- pour une livraison, `canCarryPackage`, désormais partagée avec
+  `getOnlineDriversWithServiceId`.
+
+Le refus prend le texte `Already Taken`, que les apps installées affichent déjà : aucun texte
+nouveau, aucune version à publier. Le rejeu du gagnant n'est pas contrôlé, pour rester
+idempotent.
+
+**Non couvert** : les zones d'exclusivité de flotte, et en `waves` une course pas encore offerte
+à ce Kasiman (il pourrait la prendre avant son tour). À traiter si le pilote le montre.
+
+**Banc** : `createWorld` active désormais le service pour chaque Kasiman, comme en vrai. Les
+activations manuelles des tests deviennent idempotentes (`ON CONFLICT DO NOTHING`). Test ciblé
+dans `driver-order-transitions.int-spec.ts`.
+
+**Correctif de `bug-timeout`, révélé par la livraison (graine 1, course 18)** : pour l'app
+installée, le devis libre était cherché avant le renvoi. Un aperçu plus ancien du même trajet,
+resté libre (prix consulté deux fois, ou devis « taxi » d'une course précédente passée en
+livraison), servait alors à créer une seconde course au renvoi. Le renvoi est désormais cherché
+en premier. Test ciblé dans `fare-quote.int-spec.ts` (prix consulté deux fois).
+
+**Test intermittent stabilisé** : `dispatch-waves.int-spec.ts` (vraie file BullMQ) comptait les
+notifications 200 ms après le passage en `Expired`. Sous la charge du banc complet, la
+notification arrivait parfois plus tard. Le test les attend désormais, dans une limite, puis
+laisse 500 ms à un éventuel doublon.
+
+**Relevé en passant, fausse alerte** : le « Pointe » (pour « Tip ») vient de
+`driver-app/lib/generated/intl/`, une ancienne génération de traductions que l'app n'importe
+plus. La facture lit `lib/l10n/messages.dart`, qui affiche bien « Pourboire ».
+`lib/generated/` est du code mort, à archiver.
+
+---
+
+## 2026-10-20 — `p2-momo` mis en attente : encaissement en espèces seulement pour l'instant
+
+**Décision de l'utilisateur.** Points : `p2-momo`, `lot-momo`, `sc-momo`.
+
+L'intégration Bictorys est mise de côté : l'équipe envisage de changer de fournisseur. Les
+encaissements se testent d'abord en espèces. Cela revient sur la décision du 10 juillet
+(« passerelle de paiement = Bictorys ») : le fournisseur n'est plus arrêté.
+
+**Ce qui reste valable** dans `docs/fiche-paiement-mobile.md`, quel que soit le fournisseur :
+- le paiement en ligne hérité est mort : le serveur de passerelle Ridy n'existe nulle part ;
+- les apps installées sont prêtes, puisque `topUpWallet` renvoie une URL ;
+- l'option A, un module dans les API derrière une interface `PaymentProvider` ;
+- le crédit par webhook revérifié auprès du fournisseur, puis le rapprochement ;
+- la correction de `processPrePay`.
+
+La §8 (Bictorys) sera à refaire pour le nouveau fournisseur, qui passera par la fiche de
+l'auditeur avant tout code.
+
+**Conséquence sur la feuille de route** : le critère de sortie de la phase 2 (« une fois en
+espèces, une fois par Wave ») ne peut plus être rempli en entier tant qu'aucun fournisseur n'est
+choisi. Le volet espèces est couvert sur le banc (`cycle-pilote.int-spec.ts`). Le pilote peut
+démarrer en espèces seules si l'équipe l'accepte : décision à porter au référentiel.
+
+---
+
 ## 2026-10-20 — `p1-sentry` : suivi des erreurs des API, repris de BetterSuite ; fiche `p2-momo`
 
 **Tranché par la session principale, à revoir par l'utilisateur.** Points : `p1-sentry`
@@ -59,8 +136,34 @@ internes, probablement aussi en production. Correctif d'une ligne par module Gra
 (`includeStacktraceInErrorResponses: false`), sans effet sur les apps qui ne lisent que
 `message` et `code`. Non fait : point à ouvrir.
 
+**Volet mobile, fait le même jour par `kasi-mobile-apps`** :
+- Crashlytics est branché en entier dans les deux apps (`lib/monitoring/`) :
+  `FlutterError.onError` et `PlatformDispatcher.onError` en fatal, collecte coupée en debug ;
+- l'utilisateur est réduit à son identifiant interne, lu dans le JWT. Clés `environment`
+  (`--dart-define=KASI_ENV`, sinon déduite de l'adresse du backend) et `build_mode` ;
+- un lien GraphQL passif remonte en non fatal les erreurs sans code, `INTERNAL_SERVER_ERROR` et
+  les erreurs de validation (écart entre l'app installée et le schéma). Il ignore les refus
+  métier et les coupures réseau (même règle que `isExpectedError`). Seul le nom de l'opération
+  part, jamais les variables ;
+- aucune dépendance changée, aucun écran de course ni de paiement touché.
+
+Vérifié sur l'émulateur, en build profil : crash asynchrone provoqué vu en fatal, envoi
+Crashlytics répondant 200, sur 3 lancements ; filtre GraphQL vérifié (2 non fatals attendus sur
+7 erreurs simulées). Provocation retirée.
+
+**Décision de l'agent, acceptée** : les `Bad state: Future already completed` du paquet
+`graphql` 5.2.4 (réponse arrivée après le délai de 20 s, `bug-timeout` côté app) passent en non
+fatal, avec la raison `bug-timeout`. Ils restent visibles sans fausser le taux de sessions sans
+plantage.
+
+**Restent pour le chantier de déploiement** :
+- le téléphone réel, et l'arrivée des rapports dans la console Firebase ;
+- le cache de l'appareil indique `firebase_crashlytics_enabled: false`, alors que l'envoi répond
+  200 : à vérifier dans la console ;
+- iOS rider-app : `ios/firebase_app_id_file.json` est absent, donc l'envoi des symboles échouera,
+  et le `Podfile.lock` est périmé (FirebaseCrashlytics 10.12, à refaire avec `pod install`).
+
 **Reste pour `p1-sentry`** :
-- volet mobile : Crashlytics à compléter (`kasi-mobile-apps`, fiche §5) ;
 - les 4 décisions de la fiche §6 : données hors du Sénégal, hébergement de GlitchTip, canal
   d'alerte, durée de conservation ;
 - puis le déploiement de GlitchTip (chantier de déploiement).

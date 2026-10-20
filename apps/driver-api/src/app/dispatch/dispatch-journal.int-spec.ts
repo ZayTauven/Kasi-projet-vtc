@@ -109,7 +109,7 @@ describe('p2-dispatch D4-D6 : journal, refus, classement par la route, demande n
     world = await createWorld(ds, { drivers });
     await ds.query(`UPDATE service SET "searchRadius" = 5000 WHERE id = $1`, [world.serviceId]);
     for (const driverId of world.driverIds) {
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         driverId,
         world.serviceId,
       ]);
@@ -361,7 +361,7 @@ describe('p2-dispatch D4-D6 : journal, refus, classement par la route, demande n
          SELECT "categoryId", 'Autre', $2 FROM service WHERE id = $1 RETURNING id`,
         [world.serviceId, mediaId],
       );
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         k(0),
         otherService,
       ]);

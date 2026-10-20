@@ -15,7 +15,8 @@
  *   chaque Kasiman sollicite (availableOrders apres une coupure : p1-resync)
  *   -> refus, acceptations concurrentes -> arrivee, demarrage, fin, chaque
  *   etape envoyee deux fois en meme temps puis rejouee -> paiement especes
- *   ou portefeuille, annulations client et Kasiman, « aucun Kasiman ».
+ *   ou portefeuille, annulations client et Kasiman, « aucun Kasiman », et
+ *   livraisons Kasi Moto (taille du colis contre capacite du Kasiman).
  *
  * Melange de 7 scenarios, tire par une graine fixe (rejouable). Un Kasiman
  * bloque pour dette est place au plus pres de chaque course : il ne doit
@@ -77,11 +78,13 @@ type Scenario =
   | 'riderCancelBefore' // le client annule pendant la recherche
   | 'riderCancelAfter' // le client annule apres l'acceptation (frais)
   | 'driverCancel' // le Kasiman annule apres l'acceptation
-  | 'noKasiman'; // personne dans le rayon : « aucun Kasiman »
+  | 'noKasiman' // personne dans le rayon : « aucun Kasiman »
+  | 'delivery'; // colis Kasi Moto (pilote B2B), especes, capacite du Kasiman
 
 /** Repartition pour 50 courses (mise a l'echelle si KASI_PILOT_COURSES change). */
 const MIX: Array<[Scenario, number]> = [
-  ['cash', 24],
+  ['cash', 18],
+  ['delivery', 6],
   ['wallet', 6],
   ['refusal', 6],
   ['riderCancelBefore', 4],
@@ -155,13 +158,42 @@ describe('Phase 1 : 50 courses du pilote de bout en bout (vagues, rejeux, coupur
     });
     await ds.query(`UPDATE service SET "searchRadius" = 5000 WHERE id = $1`, [world.serviceId]);
     for (const driverId of world.driverIds) {
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         driverId,
         world.serviceId,
       ]);
     }
     await createRegion(ds, [world.serviceId]);
     await setServicePricing(ds, world.serviceId); // 500 + 50 / 100 m + 10 / min
+    // Kasi Moto (pilote B2B) : service de livraison servi par la meme flotte
+    // (un Kasiman unique). 5 Kasimen livrent (petit, moyen, grand colis), 2 taxis non.
+    const [{ id: deliveryServiceId }] = await ds.query(
+      `WITH m AS (INSERT INTO media (address) VALUES ('livraison.png') RETURNING id)
+       INSERT INTO service ("categoryId", title, "mediaId", "cancellationTotalFee", "cancellationDriverShare",
+         "providerSharePercent", "providerShareFlat", "paymentMethod", "perMinuteWait", "orderType", "searchRadius")
+       SELECT "categoryId", 'Kasi Moto', (SELECT id FROM m), "cancellationTotalFee", "cancellationDriverShare",
+         "providerSharePercent", "providerShareFlat", "paymentMethod", "perMinuteWait", 'Delivery', 5000
+         FROM service WHERE id = $1 RETURNING id`,
+      [world.serviceId],
+    );
+    await setServicePricing(ds, deliveryServiceId);
+    await ds.query(`INSERT INTO service_regions_region ("serviceId", "regionId") SELECT $1, id FROM region`, [
+      deliveryServiceId,
+    ]);
+    const capacities: Array<'Small' | 'Medium' | 'Large' | null> = ['Small', 'Medium', 'Large', 'Large', 'Medium', null, null];
+    for (const [i, driverId] of world.driverIds.entries()) {
+      const size = i < ELIGIBLE ? capacities[i] : 'Large';
+      await ds.query(
+        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+        [driverId, deliveryServiceId],
+      );
+      await ds.query(`UPDATE driver SET "canDeliver" = $2, "maxPackageSize" = $3 WHERE id = $1`, [
+        driverId,
+        size != null,
+        size,
+      ]);
+    }
+    const taxis = world.driverIds.filter((_, i) => i < ELIGIBLE && capacities[i] == null);
     await ds.query(
       `INSERT INTO money_policy (currency, "debtLimit", "debtAlertThreshold") VALUES ($1, 10000, 7500)`,
       [CURRENCY],
@@ -327,18 +359,24 @@ describe('Phase 1 : 50 courses du pilote de bout en bout (vagues, rejeux, coupur
       d.routing.use('mapbox', rand.int(8, 60) * 100, rand.int(2, 25) * 60);
 
       // 1. Devis puis commande. App recente (quoteId) ou app installee (sans).
+      const delivery = scenario === 'delivery';
+      const serviceId = delivery ? deliveryServiceId : world.serviceId;
+      const packageSize = delivery ? (['Small', 'Medium', 'Large'] as const)[rand.int(0, 2)] : undefined;
       const fare = await riderResolver(riderId).getFare({ points: [PLATEAU, ALMADIES] } as never);
       const shown = fare.services
         .flatMap((c) => c.services)
-        .find((s) => Number(s.id) === world.serviceId) as unknown as { cost: number; quoteId?: string };
+        .find((s) => Number(s.id) === serviceId) as unknown as { cost: number; quoteId?: string };
       expect(shown.quoteId).toBeDefined();
       const oldApp = rand.chance(0.25);
       const input = {
-        serviceId: world.serviceId,
+        serviceId,
         points: [PLATEAU, ALMADIES],
         addresses: ['Plateau', 'Almadies'],
         intervalMinutes: 0,
         quoteId: oldApp ? undefined : shown.quoteId,
+        ...(delivery
+          ? { packageSize, recipientName: 'Destinataire', recipientMobileNumber: '221770000099' }
+          : {}),
       };
       let orderId: number;
       const send = async () => Number((await riderResolver(riderId).createOrder(input as never)).id);
@@ -415,6 +453,14 @@ describe('Phase 1 : 50 courses du pilote de bout en bout (vagues, rejeux, coupur
 
       // 3. Acceptation : deux sollicites en meme temps (ou un seul), puis le
       // gagnant rejoue (timeout). Un seul gagnant, le perdant lit « Already Taken ».
+      if (delivery) {
+        // Un taxi sans capacite de livraison ne prend pas le colis, meme en
+        // connaissant son numero (controle a l'acceptation).
+        expect((await orderRow(ds, orderId)).packageSize).toBe(packageSize);
+        expect(await errorOf(driver(taxis[0]).update(orderId, { status: OrderStatus.DriverAccepted }))).toBe(
+          'Already Taken',
+        );
+      }
       const candidates = (await pending(orderId)).slice(0, 2);
       const accept = await concurrently(candidates.length, (i) =>
         driver(candidates[i]).update(orderId, { status: OrderStatus.DriverAccepted }),
@@ -535,6 +581,17 @@ describe('Phase 1 : 50 courses du pilote de bout en bout (vagues, rejeux, coupur
         `SELECT a."requestId" FROM dispatch_attempt a JOIN request r ON r.id = a."requestId"
           WHERE a.outcome = 'accepted' GROUP BY a."requestId", r."driverId"
          HAVING count(*) > 1 OR bool_or(a."driverId" <> r."driverId")`,
+      ),
+    ).toEqual([]);
+    // Livraison : jamais un Kasiman qui ne livre pas, ou de capacite trop petite.
+    expect(
+      await ds.query(
+        `SELECT a."requestId", a."driverId" FROM dispatch_attempt a
+           JOIN request r ON r.id = a."requestId" JOIN driver dr ON dr.id = a."driverId"
+          WHERE r."serviceId" = $1 AND (NOT dr."canDeliver"
+             OR (CASE dr."maxPackageSize"::text WHEN 'Large' THEN 3 WHEN 'Medium' THEN 2 ELSE 1 END)
+              < (CASE r."packageSize"::text WHEN 'Large' THEN 3 WHEN 'Medium' THEN 2 ELSE 1 END))`,
+        [deliveryServiceId],
       ),
     ).toEqual([]);
     // Le Kasiman bloque pour dette n'a jamais ete sollicite.

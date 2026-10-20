@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:kasi_rider/config.dart';
 import 'package:kasi_rider/main/bloc/jwt_cubit.dart';
+import 'package:kasi_rider/monitoring/crash_reporting.dart';
+import 'package:kasi_rider/monitoring/graphql_error_reporting_link.dart';
 
 ValueNotifier<GraphQLClient> clientFor(
     {required String uri, required String subscriptionUri, String? jwtToken}) {
@@ -16,8 +18,12 @@ ValueNotifier<GraphQLClient> clientFor(
   final HttpLink httpLink = jwtToken != null
       ? HttpLink(uri, defaultHeaders: {"Authorization": "Bearer $jwtToken"})
       : HttpLink(uri);
-  final Link link =
-      Link.split((request) => request.isSubscription, websocketLink, httpLink);
+  // p1-sentry : lien passif en tete de chaine, qui remonte les incidents
+  // GraphQL a Crashlytics sans toucher aux requetes ni aux reponses.
+  final Link link = Link.from([
+    GraphQLErrorReportingLink(errorReporter),
+    Link.split((request) => request.isSubscription, websocketLink, httpLink),
+  ]);
   //final GraphQLCache cache = GraphQLCache(store: HiveStore());
   return ValueNotifier<GraphQLClient>(
     GraphQLClient(

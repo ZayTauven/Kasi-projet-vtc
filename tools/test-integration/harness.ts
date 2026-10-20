@@ -401,6 +401,15 @@ export async function createWorld(
       ),
     );
   }
+  // Banc pilote (2026-10-20) : chaque Kasiman a le service active, comme en
+  // vrai (une offre ne part qu'aux Kasimen du service) : l'acceptation le
+  // verifie desormais. Un test qui veut un Kasiman sans le service retire le lien.
+  for (const driverId of driverIds) {
+    await ds.query(
+      `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [driverId, serviceId],
+    );
+  }
   return { serviceId, riderId, driverIds, fleetId, gatewayId };
 }
 

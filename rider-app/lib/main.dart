@@ -12,7 +12,7 @@ import 'package:kasi_rider/location_selection/location_selection_parent_view.dar
 import 'package:kasi_rider/location_selection/welcome_card/location_history_item.dart';
 import 'package:kasi_rider/login/firebase_auth_repository.dart';
 import 'package:kasi_rider/login/phone_auth_repository.dart';
-import 'package:kasi_rider/monitoring/crashlytics_error_reporter.dart';
+import 'package:kasi_rider/monitoring/crash_reporting.dart';
 import 'package:kasi_rider/security/firebase_app_integrity_checker.dart';
 import 'package:kasi_rider/login/login_page.dart';
 import 'package:kasi_rider/main/bloc/jwt_cubit.dart';
@@ -61,11 +61,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // p1-sentry : Crashlytics branche des que Firebase est pret (erreurs du
+  // framework ET erreurs asynchrones non attrapees, collecte coupee en debug).
+  await setupCrashReporting();
   await FirebaseAppIntegrityChecker().activate();
-  FlutterError.onError = CrashlyticsErrorReporter().fatalErrorHandler;
   Hive.registerAdapter(LocationHistoryItemAdapter());
   await Hive.openBox<List<LocationHistoryItem>>("history2");
   await Hive.openBox("user");
+  bindCrashReportingUser();
   await Hive.openBox('settings');
   if (!kIsWeb) {
     await CountryCodes.init();

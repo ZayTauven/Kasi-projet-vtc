@@ -62,7 +62,7 @@ describe('p2-dispatch D1 : BullMQ et relance des offres', () => {
     world = await createWorld(ds, { drivers: 2 });
     for (const driverId of world.driverIds) {
       await ds.query(
-        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`,
+        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`,
         [driverId, world.serviceId],
       );
     }

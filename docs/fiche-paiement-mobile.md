@@ -4,7 +4,9 @@ Point du référentiel : `p2-momo` (phase 2, `lot-momo`, cible `sc-momo`), branc
 Passerelle choisie par l'utilisateur le 10 juillet 2026 (`KASI_DECISIONS.md`, entrée « passerelle
 de paiement = Bictorys »). Côté Kasi (§1 à §7) : kasi-integrations-auditor, 20 octobre 2026, code
 relu ce jour-là. Documentation Bictorys (§8) : session principale, même jour. Statut : **en
-attente des décisions de la section 7**.
+attente**. Le 20 octobre, l'utilisateur a mis Bictorys de côté : un autre fournisseur est envisagé,
+et l'encaissement se fait en espèces en attendant (`KASI_DECISIONS.md`). Les §1 à §6 restent
+valables pour tout fournisseur ; la §8 serait à refaire.
 
 **En bref** : Kasi n'encaisse aujourd'hui qu'en espèces. Son seul chemin de paiement en ligne passe
 par un serveur externe hérité du template Ridy, qui n'existe nulle part. Recommandation : écrire un

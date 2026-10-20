@@ -124,6 +124,53 @@ describe('p1-transitions : updateOneOrder de driver-api', () => {
       expect(d.riderNotifications.count('accepted')).toBe(1);
     });
 
+    it('seul un Kasiman apte prend la course : service, vehicule, livraison et taille du colis (p2-dispatch)', async () => {
+      // Avant : la dette etait le seul controle a l'acceptation. Les numeros de
+      // course se suivent : n'importe quel Kasiman pouvait en prendre une qui
+      // ne lui etait pas offerte (taxi sans coffre sur un gros colis...).
+      const refused = async (driverIndex: number, orderId: number) => {
+        expect(
+          await errorOf(api(driverIndex).update(orderId, { status: OrderStatus.DriverAccepted })),
+        ).toBe('Already Taken');
+        expect(await activityCount(ds, orderId)).toBe(0);
+        expect((await orderRow(ds, orderId)).status).toBe(OrderStatus.Requested);
+      };
+      const [k0, k1, k2] = world.driverIds;
+
+      // Service non active par le Kasiman.
+      await ds.query(`DELETE FROM driver_services_service WHERE "driverId" = $1`, [k1]);
+      const ride = await createOrder(ds, world);
+      await refused(1, ride);
+      await ds.query(
+        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`,
+        [k1, world.serviceId],
+      );
+
+      // Vehicule refuse par le service (moto seulement, Kasiman en voiture).
+      await ds.query(`UPDATE service SET "vehicleTypes" = '{Motorcycle}' WHERE id = $1`, [world.serviceId]);
+      await ds.query(`UPDATE driver SET "vehicleType" = 'Car' WHERE id = $1`, [k2]);
+      await ds.query(`UPDATE driver SET "vehicleType" = 'Motorcycle' WHERE id IN ($1, $2)`, [k0, k1]);
+      await refused(2, ride);
+
+      // Livraison d'un grand colis : sans capacite de livraison, ou capacite trop petite.
+      await ds.query(`UPDATE service SET "orderType" = 'Delivery' WHERE id = $1`, [world.serviceId]);
+      await ds.query(`UPDATE driver SET "canDeliver" = TRUE, "maxPackageSize" = 'Large' WHERE id = $1`, [k0]);
+      await ds.query(`UPDATE driver SET "canDeliver" = FALSE WHERE id = $1`, [k1]);
+      const parcel = await createOrder(ds, world);
+      await ds.query(`UPDATE request SET "packageSize" = 'Large' WHERE id = $1`, [parcel]);
+      await refused(1, parcel);
+      await ds.query(`UPDATE driver SET "canDeliver" = TRUE, "maxPackageSize" = 'Small' WHERE id = $1`, [k1]);
+      await refused(1, parcel);
+
+      // Le Kasiman apte prend le colis, et son rejeu reste accepte.
+      await api(0).update(parcel, { status: OrderStatus.DriverAccepted });
+      expect((await orderRow(ds, parcel)).driverId).toBe(k0);
+      expect((await api(0).update(parcel, { status: OrderStatus.DriverAccepted })).status).toBe(
+        OrderStatus.DriverAccepted,
+      );
+      expect(await activityCount(ds, parcel, 'DriverAccepted')).toBe(1);
+    });
+
     it('offre deja prise ou annulee : Already Taken, sans activite', async () => {
       const taken = await orderAt(OrderStatus.DriverAccepted, 0);
       expect(

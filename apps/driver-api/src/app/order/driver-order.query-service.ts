@@ -11,6 +11,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DriverEntity } from '@kasi/database/driver.entity';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
+import { ServiceOrderType } from '@kasi/database/enums/service-order-type.enum';
+import { vehicleTypeAllowed } from '@kasi/database/enums/vehicle-type.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
 import { RequestEntity } from '@kasi/database/request.entity';
@@ -22,7 +24,10 @@ import {
 import { debtLimitError, kasimanDebtStatus } from '@kasi/order/debt-limit';
 import { isWavesMode } from '@kasi/order/dispatch-config';
 import { RoutingService } from '@kasi/order/routing/routing.service';
-import { SharedDriverService } from '@kasi/order/shared-driver.service';
+import {
+  canCarryPackage,
+  SharedDriverService,
+} from '@kasi/order/shared-driver.service';
 import { SharedOrderService } from '@kasi/order/shared-order.service';
 import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { OrderRedisService } from '@kasi/redis/order-redis.service';
@@ -129,6 +134,7 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
         // plafond de dette, AVANT l'ecriture conditionnelle. Seul controle
         // qui fait foi (les filtres d'offres ne sont que des filtres).
         await this.assertNotBlockedForDebt(manager, orderId, driverId);
+        await this.assertCanTake(manager, orderId, driverId);
         const changed = await transitionOrder(manager, orderId, {
           from: ACCEPTABLE_STATUSES,
           to: OrderStatus.DriverAccepted,
@@ -235,6 +241,44 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
         debtLimit: status.debtLimit,
         debtAlertThreshold: status.debtAlertThreshold ?? status.debtLimit,
       });
+    }
+  }
+
+  /**
+   * p2-dispatch (banc pilote, 2026-10-20) : le Kasiman peut prendre cette
+   * course. Meme regle que les offres (`getOnlineDriversWithServiceId`) :
+   * service active, vehicule admis par le service, et pour une livraison
+   * capacite de livraison suffisante pour le colis. Avant, la dette etait le
+   * seul controle : les numeros de course se suivent, et n'importe quel
+   * Kasiman pouvait accepter une course qui ne lui etait pas offerte.
+   * Refus = `Already Taken`, deja affiche par les apps installees. Le
+   * rejeu du gagnant n'est pas controle. Non couvert : zones d'exclusivite
+   * de flotte, et en `waves`, course pas encore offerte a ce Kasiman.
+   */
+  private async assertCanTake(
+    manager: EntityManager,
+    orderId: number,
+    driverId: number,
+  ): Promise<void> {
+    const order = await manager.getRepository(RequestEntity).findOne({
+      where: { id: orderId },
+      relations: { service: true },
+    });
+    if (order == null || order.driverId === driverId) {
+      return;
+    }
+    const driver = await manager.getRepository(DriverEntity).findOne({
+      where: { id: driverId },
+      relations: { enabledServices: true },
+    });
+    const allowed =
+      driver != null &&
+      driver.enabledServices.some((s) => s.id === order.serviceId) &&
+      vehicleTypeAllowed(order.service?.vehicleTypes, driver.vehicleType) &&
+      (order.service?.orderType !== ServiceOrderType.Delivery ||
+        canCarryPackage(driver, order.packageSize));
+    if (!allowed) {
+      throw new ForbiddenError(ALREADY_TAKEN);
     }
   }
 

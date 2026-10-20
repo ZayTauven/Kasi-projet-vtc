@@ -325,6 +325,21 @@ export class SharedOrderService {
       }
       mode = 'quote';
     } else if (rider != null && input.operatorId == null) {
+      // bug-timeout (banc pilote, 2026-10-20) : l'app installee renvoie la
+      // commande quand la reponse tarde (20 s). Son devis etant consomme, le
+      // renvoi en recalculait un et creait une seconde course. Le renvoi est
+      // cherche AVANT un devis libre : un apercu plus ancien du meme trajet
+      // (client qui a consulte le prix deux fois) aurait sinon servi a creer
+      // la seconde course.
+      const resentId = await this.fareQuoteService.findResentOrderId({
+        riderId: rider.id,
+        serviceId: input.serviceId,
+        points: rawPoints,
+        optionIds,
+        twoWay,
+      });
+      const resent = await this.resentOrder(resentId, rider.id);
+      if (resent != null) return resent;
       quote = await this.fareQuoteService.findForInstalledApp({
         riderId: rider.id,
         serviceId: input.serviceId,
@@ -335,19 +350,6 @@ export class SharedOrderService {
       });
       if (quote != null) {
         mode = 'installed-app';
-      } else {
-        // bug-timeout (banc pilote, 2026-10-20) : l'app installee renvoie la
-        // commande quand la reponse tarde (20 s). Son devis etant consomme, le
-        // renvoi en recalculait un et creait une seconde course.
-        const resentId = await this.fareQuoteService.findResentOrderId({
-          riderId: rider.id,
-          serviceId: input.serviceId,
-          points: rawPoints,
-          optionIds,
-          twoWay,
-        });
-        const resent = await this.resentOrder(resentId, rider.id);
-        if (resent != null) return resent;
       }
     }
     if (quote == null) {

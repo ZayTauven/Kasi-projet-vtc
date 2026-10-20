@@ -5,7 +5,7 @@ import 'package:client_shared/map_providers.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:country_codes/country_codes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:kasi_driver/monitoring/crashlytics_error_reporter.dart';
+import 'package:kasi_driver/monitoring/crash_reporting.dart';
 import 'package:kasi_driver/notifications/fcm_push_token_provider.dart';
 import 'package:kasi_driver/security/firebase_app_integrity_checker.dart';
 import 'package:flutter/foundation.dart';
@@ -82,9 +82,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // p1-sentry : Crashlytics branche des que Firebase est pret (erreurs du
+  // framework ET erreurs asynchrones non attrapees, collecte coupee en debug).
+  await setupCrashReporting();
   await FirebaseAppIntegrityChecker().activate();
-  FlutterError.onError = CrashlyticsErrorReporter().fatalErrorHandler;
   await Hive.openBox('user');
+  bindCrashReportingUser();
   await Hive.openBox('settings');
   await CountryCodes.init();
   // Voir le commentaire equivalent dans rider-app/lib/main.dart : on affectait

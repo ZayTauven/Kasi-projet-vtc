@@ -84,7 +84,7 @@ describe('p2-argent I3 : dette especes et plafond', () => {
     );
     for (const driverId of world.driverIds) {
       await ds.query(
-        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`,
+        `INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`,
         [driverId, world.serviceId],
       );
     }

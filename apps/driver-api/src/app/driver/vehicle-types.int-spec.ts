@@ -54,7 +54,7 @@ describe('p2-vehicules : type de vehicule du Kasiman', () => {
     driverRedis = new DriverRedisService(redis);
     shared = new SharedDriverService(ds.getRepository(DriverEntity), {} as never, {} as never);
     for (const id of world.driverIds) {
-      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2)`, [
+      await ds.query(`INSERT INTO driver_services_service ("driverId", "serviceId") VALUES ($1, $2) ON CONFLICT DO NOTHING`, [
         id,
         world.serviceId,
       ]);

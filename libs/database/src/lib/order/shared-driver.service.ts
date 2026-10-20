@@ -15,6 +15,21 @@ import { vehicleTypeAllowed } from '../entities/enums/vehicle-type.enum';
 import { ServiceEntity } from '../entities/service.entity';
 import { blockedForDebtDriverIds } from './debt-limit';
 
+/**
+ * Kasi Moto : le Kasiman livre, et sa capacite couvre le colis (sans taille
+ * declaree : le plus petit gabarit). Meme regle pour les offres
+ * (`getOnlineDriversWithServiceId`) et l'acceptation (driver-api, p2-dispatch).
+ */
+export function canCarryPackage(
+  driver: { canDeliver?: boolean | null; maxPackageSize?: PackageSize | null },
+  packageSize?: PackageSize | null,
+): boolean {
+  return (
+    driver.canDeliver === true &&
+    packageSizeRank(driver.maxPackageSize) >= packageSizeRank(packageSize)
+  );
+}
+
 @Injectable()
 export class SharedDriverService {
   constructor(
@@ -103,11 +118,8 @@ export class SharedDriverService {
       );
     }
     if (delivery?.service?.orderType === ServiceOrderType.Delivery) {
-      driversWithService = driversWithService.filter(
-        (x) =>
-          x.canDeliver &&
-          packageSizeRank(x.maxPackageSize) >=
-            packageSizeRank(delivery.packageSize),
+      driversWithService = driversWithService.filter((x) =>
+        canCarryPackage(x, delivery.packageSize),
       );
     }
     if (driversWithService.length > 0) {
