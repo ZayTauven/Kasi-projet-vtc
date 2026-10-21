@@ -134,6 +134,11 @@ class _KasiSwipeButtonState extends State<KasiSwipeButton>
       return Opacity(
         opacity: widget.isLoading && !_confirming ? 0.7 : 1,
         child: Container(
+          // Largeur explicite : sans elle, la piste se réduisait à la largeur
+          // du libellé alors que le seuil se calcule sur `trackWidth`. Avec un
+          // libellé court (« Glisser pour terminer »), la fin visible de la
+          // piste restait sous le seuil et le glisser ne se déclenchait pas.
+          width: trackWidth,
           height: widget.height,
           decoration: BoxDecoration(
             color: color.withOpacity(0.14),

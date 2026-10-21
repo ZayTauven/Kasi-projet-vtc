@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:kasi_rider/main/request_timeout_link.dart';
 import 'error_reporter.dart';
 import 'network_failure_stub.dart'
     if (dart.library.io) 'network_failure_io.dart';
@@ -35,7 +36,9 @@ class GraphQLErrorReportingLink extends Link {
 
   @override
   Stream<Response> request(Request request, [NextLink? forward]) {
-    final operation = request.operation.operationName ?? 'anonyme';
+    // Les options générées ne renseignent pas `operationName` : nom lu dans
+    // le document (voir request_timeout_link.dart).
+    final operation = operationNameOf(request);
     return forward!(request).transform(
       StreamTransformer<Response, Response>.fromHandlers(
         handleData: (response, sink) {

@@ -739,7 +739,7 @@ abstract class S {
   /// No description provided for @order_payment_status_paid.
   ///
   /// In en, this message translates to:
-  /// **'Ride Has been paid'**
+  /// **'Ride has been paid'**
   String get order_payment_status_paid;
 
   /// No description provided for @action_ride_preferences.
@@ -1237,7 +1237,7 @@ abstract class S {
   /// No description provided for @orderStatusCardTitleMultipleDestinations.
   ///
   /// In en, this message translates to:
-  /// **'Heading to {destinationIndex}st destination'**
+  /// **'Heading to destination {destinationIndex}'**
   String orderStatusCardTitleMultipleDestinations(int destinationIndex);
 
   /// No description provided for @actionArrivedToDestination.

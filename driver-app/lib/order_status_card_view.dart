@@ -160,9 +160,18 @@ class OrderStatusCardView extends StatelessWidget {
                                             Enum$OrderStatus.Started ||
                                         order.status ==
                                             Enum$OrderStatus.Arrived)
+                                      // bug-debordements : le libellé
+                                      // (« Le trajet n'a pas encore été
+                                      // payé ») passe à la ligne au lieu de
+                                      // déborder sous les boutons voisins.
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Icon(
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 1),
+                                            child: Icon(
                                             !canPay
                                                 ? Ionicons.close_circle
                                                 : Ionicons.checkmark_circle,
@@ -170,9 +179,10 @@ class OrderStatusCardView extends StatelessWidget {
                                             color: !canPay
                                                 ? const Color(0xffb20d0e)
                                                 : const Color(0xff108910),
-                                          ),
+                                          )),
                                           const SizedBox(width: 2),
-                                          Text(
+                                          Flexible(
+                                              child: Text(
                                             canPay
                                                 ? S
                                                     .of(context)
@@ -189,7 +199,9 @@ class OrderStatusCardView extends StatelessWidget {
                                                             0xffb20d0e)
                                                         : const Color(
                                                             0xff108910)),
-                                          )
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ))
                                         ],
                                       ),
                                   ],
@@ -490,6 +502,19 @@ class OrderStatusCardView extends StatelessWidget {
     );
   }
 
+  // Libellés d'une course démarrée. `addresses` = point de départ puis
+  // destinations ; `destinationArrivedTo` = nombre de destinations déjà
+  // atteintes, la cible courante est donc `addresses[destinationIndex + 1]`.
+  // La dernière étape est `destinationIndex == addresses.length - 2` (même
+  // test que la mutation de fin plus bas). L'ancien test (`length - 1`)
+  // n'était jamais vrai : une course à une seule destination s'affichait
+  // « destination 1 » / « arrêt suivant » alors que le glisser la terminait.
+
+  bool _isMultiStop(List<String> addresses) => addresses.length > 2;
+
+  bool _isLastLeg(List<String> addresses, int destinationIndex) =>
+      destinationIndex >= addresses.length - 2;
+
   String getTitleForStatus(BuildContext context, List<String> addresses,
       Enum$OrderStatus status, int destionationIndex) {
     switch (status) {
@@ -500,10 +525,12 @@ class OrderStatusCardView extends StatelessWidget {
         return S.of(context).order_status_action_arrived;
 
       case Enum$OrderStatus.Started:
-        return destionationIndex == addresses.length - 1
-            ? S.of(context).order_status_card_title_started
-            : S.of(context).orderStatusCardTitleMultipleDestinations(
-                destionationIndex + 1);
+        // Plusieurs arrêts : numérotation conservée, y compris pour le
+        // dernier. Une seule destination : libellé de la destination finale.
+        return _isMultiStop(addresses)
+            ? S.of(context).orderStatusCardTitleMultipleDestinations(
+                destionationIndex + 1)
+            : S.of(context).order_status_card_title_started;
 
       default:
         return "";
@@ -512,16 +539,17 @@ class OrderStatusCardView extends StatelessWidget {
 
   String getFinishedButtonText(
       BuildContext context, List<String> addresses, int destinationIndex) {
-    return destinationIndex == addresses.length - 1
+    return _isLastLeg(addresses, destinationIndex)
         ? S.of(context).order_status_action_finished
         : S.of(context).actionArrivedToDestination(destinationIndex + 1);
   }
 
   /// Libellé du swipe pendant une course démarrée : « terminer » sur la
-  /// dernière destination, sinon « aller à l'arrêt suivant » (multi-arrêts).
+  /// dernière étape (celle que le glisser termine), sinon « aller à l'arrêt
+  /// suivant » (multi-arrêts).
   String getStartedSwipeLabel(
       BuildContext context, List<String> addresses, int destinationIndex) {
-    return destinationIndex == addresses.length - 1
+    return _isLastLeg(addresses, destinationIndex)
         ? S.of(context).swipe_to_finish
         : S.of(context).swipe_to_next_stop;
   }

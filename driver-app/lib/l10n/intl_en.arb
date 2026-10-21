@@ -127,7 +127,7 @@
     }
   },
   "order_payment_status_unpaid": "Ride hasn't been paid yet",
-  "order_payment_status_paid": "Ride Has been paid",
+  "order_payment_status_paid": "Ride has been paid",
   "action_ride_preferences": "Client Preferences",
   "navigation_dialog_title_pickup_point": "Navigate to pickup point",
   "navigation_title_destination_point": "Navigate to drop off point",
@@ -255,7 +255,7 @@
   "settings": "Settings",
   "mapSettings": "Map Settings",
   "languageSettings": "Language Settings",
-  "orderStatusCardTitleMultipleDestinations": "Heading to {destinationIndex}st destination",
+  "orderStatusCardTitleMultipleDestinations": "Heading to destination {destinationIndex}",
   "@orderStatusCardTitleMultipleDestinations": {
     "placeholders": {
       "destinationIndex": {

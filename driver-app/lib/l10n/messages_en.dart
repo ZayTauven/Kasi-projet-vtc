@@ -328,7 +328,7 @@ class SEn extends S {
   String get order_payment_status_unpaid => 'Ride hasn\'t been paid yet';
 
   @override
-  String get order_payment_status_paid => 'Ride Has been paid';
+  String get order_payment_status_paid => 'Ride has been paid';
 
   @override
   String get action_ride_preferences => 'Client Preferences';
@@ -607,7 +607,7 @@ class SEn extends S {
 
   @override
   String orderStatusCardTitleMultipleDestinations(int destinationIndex) {
-    return 'Heading to ${destinationIndex}st destination';
+    return 'Heading to destination $destinationIndex';
   }
 
   @override
