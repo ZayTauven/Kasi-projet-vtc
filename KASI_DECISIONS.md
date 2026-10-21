@@ -8,6 +8,53 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-21 — `bug-rafraichissement`, `bug-timeout` (apps) et piles d'appels masquées
+
+**Tranché par la session principale, à revoir par l'utilisateur.** Points : `bug-rafraichissement`,
+`bug-timeout` (`lot-fiabilite`), `socle-securite`. Committé par l'utilisateur (`b26308b`,
+`89432fa`).
+
+**`bug-timeout`, côté apps (`kasi-mobile-apps`)** :
+- **Cause** : le minuteur du paquet `graphql` 5.2.4 n'annule pas la requête. Une réponse arrivée
+  après 20 s complète le futur une seconde fois (`Bad state: Future already completed`), et
+  l'écran se fige.
+- **Correctif** : un lien `RequestTimeoutLink`, avec le même délai et la même `TimeoutException`,
+  qui coupe l'écoute ; le minuteur du paquet est désactivé. Aucune version de paquet ne change.
+- **Après l'échec d'une action sur la course** : un message bref en français, puis une relecture
+  de l'état réel plutôt qu'un rejeu. Le serveur est rejouable depuis le 20 octobre.
+
+**`bug-rafraichissement`** : `CurrentOrderResyncScope` relit la course (`Me` côté Kasiman,
+`GetCurrentOrder` côté client, aucune requête nouvelle) dans quatre cas :
+- au retour au premier plan ;
+- à la reconnexion du WebSocket ;
+- après l'échec d'une action ;
+- toutes les 5 s tant qu'une relecture échoue.
+
+Une course close ramène à l'accueil.
+
+Validé sur l'émulateur, dans les deux apps :
+- réponse retardée de 25 s : bannière, relecture en 1 s, une seule activité en base, plus de
+  `Future already completed` ;
+- annulation pendant que l'app est en arrière-plan ou hors réseau : retour à l'accueil (l'anomalie
+  avait d'abord été reproduite à l'identique) ;
+- 3 lancements propres par app.
+
+Le téléphone réel reste à faire.
+
+**`socle-securite`** : `includeStacktraceInErrorResponses: false` dans les 4 configurations
+GraphQL. Vérifié sur la stack reconstruite : plus de `extensions.stacktrace` dans les réponses ;
+les refus métier gardent message et code ; les piles restent dans les journaux.
+
+**Relevés par l'agent, non traités** :
+- « RIGHT OVERFLOWED BY 66 PIXELS » sur « Le trajet n'a pas encore été payé » (`bug-debordements`) ;
+- une course à une seule destination affiche « En route vers la destination 1 » et « Glisser vers
+  l'arrêt suivant » ;
+- le lien de remontée des erreurs GraphQL envoie « anonyme » comme nom d'opération ;
+- l'hôte n'avait que 200 à 500 Mo libres pendant les essais, et l'émulateur a redémarré plusieurs
+  fois.
+
+---
+
 ## 2026-10-20 — `p2-kyc` K4 : rappels et suspensions KYC aussi par SMS
 
 **Tranché par la session principale, à revoir par l'utilisateur.** Points : `p2-kyc` (K4),
