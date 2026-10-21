@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kasi_rider/gen/assets.gen.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/main/current_order_resync.dart';
 
 import 'package:kasi_rider/l10n/messages.dart';
-import 'package:kasi_rider/query_result_view.dart';
 import '../../main/bloc/main_bloc.dart';
 
 class LookingSheetView extends StatelessWidget {
@@ -49,8 +49,8 @@ class LookingSheetView extends StatelessWidget {
                     if (parsedData == null) return;
                     mainBloc.add(CurrentOrderUpdated(parsedData.cancelOrder));
                   },
-                  onError: (error) =>
-                      showOperationErrorMessage(context, error)),
+                  // bug-timeout : l'annulation a pu aboutir ; relecture.
+                  onError: (error) => handleOrderActionError(context, error)),
               builder: (runMutation, result) {
                 return SizedBox(
                   width: double.infinity,

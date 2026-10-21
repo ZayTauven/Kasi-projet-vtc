@@ -38,6 +38,7 @@ import 'map_providers/open_street_map_provider.dart';
 import 'order_status_card_view.dart';
 import 'orders_carousel_view.dart';
 import 'orders_resync.dart';
+import 'current_order_resync.dart';
 import 'query_result_view.dart';
 import 'session_token.dart';
 import 'trip-history/trip_history_list_view.dart';
@@ -56,6 +57,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'graphql_provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:kasi_driver/request_timeout_link.dart';
 
 // ignore: avoid_void_async
 void main() async {
@@ -268,7 +270,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               // Relecture des offres (p1-resync) : au-dessus de `Query$Me$Widget`,
               // dont le chargement démonte tout l'écran à chaque relecture du
               // profil (retour au premier plan notamment).
-              return OrdersResyncScope(
+              // Relecture de la course en cours (bug-rafraichissement) :
+              // même emplacement, pour la même raison.
+              return CurrentOrderResyncScope(
+                  child: OrdersResyncScope(
                   child: KasimanAccountWatcher(
                   child: DriverDocumentsWatcher(
                   child: LifecycleWrapper(
@@ -557,7 +562,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 });
                               });
                             });
-                      })))));
+                      }))))));
             }));
   }
 
@@ -719,7 +724,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     Link link = authLink.concat(httpLink);
     final GraphQLClient client = GraphQLClient(
       cache: GraphQLCache(),
-      link: link,
+      // bug-timeout : meme delai de 5 s qu'avant (defaut du paquet), porte par
+      // RequestTimeoutLink, qui ignore la reponse tardive au lieu de lever
+      // « Bad state: Future already completed ».
+      link: Link.from(
+          [RequestTimeoutLink(timeout: const Duration(seconds: 5)), link]),
+      queryRequestTimeout: null,
     );
     final fcmId = await getFcmId(context);
     await client.mutate(Options$Mutation$UpdateDriverFCMId(

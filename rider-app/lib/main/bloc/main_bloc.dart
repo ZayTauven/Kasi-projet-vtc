@@ -266,6 +266,20 @@ class OrderReview extends StateWithActiveOrder {
 }
 
 class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
+  /// Nombre de mises à jour de la course reçues d'une action ou de la
+  /// souscription (`CurrentOrderUpdated`). La relecture de la course
+  /// (bug-rafraichissement) le note au départ : s'il a bougé à l'arrivée, sa
+  /// réponse peut être plus ancienne que l'écran ; elle est écartée et rejouée.
+  int get orderRevision => _orderRevision;
+  int _orderRevision = 0;
+
+  @override
+  void onEvent(MainBlocEvent event) {
+    // Appelé de façon synchrone dans `add`, avant le traitement.
+    if (event is CurrentOrderUpdated) _orderRevision++;
+    super.onEvent(event);
+  }
+
   MainBloc() : super(SelectingPoints(const [], const [], true)) {
     on<VersionStatusEvent>(((event, emit) => emit(RequireUpdateState())));
 

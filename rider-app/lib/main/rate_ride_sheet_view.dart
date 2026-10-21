@@ -7,6 +7,7 @@ import 'package:client_shared/components/sheet_title_view.dart';
 import 'package:kasi_rider/main/bloc/main_bloc.dart';
 import 'package:client_shared/theme/theme.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/main/current_order_resync.dart';
 import 'package:kasi_rider/query_result_view.dart';
 
 import 'package:kasi_rider/l10n/messages.dart';
@@ -169,8 +170,9 @@ class _RateRideSheetViewState extends State<RateRideSheetView> {
                           onCompleted: (data, parsedData) {
                             context.read<MainBloc>().add(ResetState());
                           },
+                          // bug-timeout : la note a pu être enregistrée.
                           onError: (error) =>
-                              showOperationErrorMessage(context, error)),
+                              handleOrderActionError(context, error)),
                       builder: (runMutation, result) {
                         return ElevatedButton(
                             onPressed: () {

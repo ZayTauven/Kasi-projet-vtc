@@ -18,6 +18,7 @@ import '../bloc/main_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kasi_rider/session_token.dart';
+import 'package:kasi_rider/main/request_timeout_link.dart';
 
 class GoogleMapProvider extends StatefulWidget {
   final double bottomSheetHeight;
@@ -147,7 +148,12 @@ class _GoogleMapProviderState extends State<GoogleMapProvider> {
     Link link = authLink.concat(httpLink);
     final GraphQLClient client = GraphQLClient(
       cache: GraphQLCache(),
-      link: link,
+      // bug-timeout : meme delai de 5 s qu'avant (defaut du paquet), porte par
+      // RequestTimeoutLink, qui ignore la reponse tardive au lieu de lever
+      // « Bad state: Future already completed ».
+      link: Link.from(
+          [RequestTimeoutLink(timeout: const Duration(seconds: 5)), link]),
+      queryRequestTimeout: null,
     );
     try {
       // Provider EFFECTIF (config panel) — jamais GOOGLE en dur : sans clé

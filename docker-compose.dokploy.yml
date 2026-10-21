@@ -217,6 +217,10 @@ services:
       SENTRY_DSN_DRIVER_API: ${SENTRY_DSN_DRIVER_API:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
       SENTRY_RELEASE: ${SENTRY_RELEASE:-}
+      # p2-kyc K4 : rappels et suspensions KYC aussi par SMS (fournisseur par
+      # defaut du panel). Desactive par defaut : true seulement une fois le
+      # fournisseur SMS valide (sinon, rappels par push seulement).
+      KYC_SMS_ENABLED: ${KYC_SMS_ENABLED:-false}
     volumes:
       # Meme repertoire partage que admin-api et rider-api (un avatar chauffeur
       # uploade via driver-api doit etre servi par admin-api).

@@ -6,7 +6,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/main.graphql.dart';
-import 'package:kasi_driver/query_result_view.dart';
+import 'package:kasi_driver/current_order_resync.dart';
 import 'package:kasi_driver/schema.gql.dart';
 
 class RideOptionsSheetView extends StatelessWidget {
@@ -43,7 +43,8 @@ class RideOptionsSheetView extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         return;
                       }
-                      showOperationErrorMessage(context, error);
+                      // bug-timeout : l'annulation a pu aboutir ; relecture.
+                      handleOrderActionError(context, error);
                     },
                     onCompleted: (json, data) =>
                         Navigator.pop(context, RideOptionsResult.cancel)),

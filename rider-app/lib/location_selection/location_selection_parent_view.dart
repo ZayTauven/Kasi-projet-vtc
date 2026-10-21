@@ -18,6 +18,7 @@ import 'package:kasi_rider/main/bloc/rider_profile_cubit.dart';
 import 'package:kasi_rider/main/map_providers/google_map_provider.dart';
 import 'package:kasi_rider/main/map_providers/open_street_map_provider.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/main/current_order_resync.dart';
 import 'package:kasi_rider/main/pay_for_ride_sheet_view.dart';
 import 'package:kasi_rider/main/rate_ride_sheet_view.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -32,6 +33,7 @@ import '../main/service_selection_card_view.dart';
 import 'welcome_card/welcome_card_view.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:kasi_rider/session_token.dart';
+import 'package:kasi_rider/main/request_timeout_link.dart';
 
 class LocationSelectionParentView extends StatefulWidget {
   const LocationSelectionParentView({Key? key}) : super(key: key);
@@ -63,7 +65,9 @@ class _LocationSelectionParentViewState
     // chaque deconnexion. `JWTCubit` s'hydrate maintenant lui-meme a la
     // construction (cf. `readStoredJwt` dans `session_token.dart`), donc avant
     // meme la 1re frame.
-    return Scaffold(
+    // Relecture de la course en cours (bug-rafraichissement).
+    return CurrentOrderResyncScope(
+        child: Scaffold(
       key: scaffoldKey,
       drawer: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -218,7 +222,7 @@ class _LocationSelectionParentViewState
           ),
         )
       ]),
-    );
+    ));
   }
 }
 
@@ -278,8 +282,9 @@ class _RiderBottomViewState extends State<RiderBottomView> {
                         mainBloc.add(
                             CurrentOrderUpdated(parsedData.updateOneOrder));
                       },
+                      // bug-timeout : l'annulation a pu aboutir ; relecture.
                       onError: (error) =>
-                          showOperationErrorMessage(context, error)),
+                          handleOrderActionError(context, error)),
                   builder: (runMutation, result) {
                     return PayForRideSheetView(
                       onClosePressed: (widget.mainBlocState as OrderInvoice)
@@ -426,7 +431,12 @@ Future<FullLocation?> getReverseGeocode(
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
     cache: GraphQLCache(),
-    link: link,
+    // bug-timeout : meme delai de 5 s qu'avant (defaut du paquet), porte par
+    // RequestTimeoutLink, qui ignore la reponse tardive au lieu de lever
+    // « Bad state: Future already completed ».
+    link: Link.from(
+        [RequestTimeoutLink(timeout: const Duration(seconds: 5)), link]),
+    queryRequestTimeout: null,
   );
   final result = await client.query(Options$Query$reverseGeocode(
       variables: Variables$Query$reverseGeocode(

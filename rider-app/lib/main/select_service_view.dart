@@ -15,6 +15,7 @@ import 'package:kasi_rider/main/delivery_details_sheet_view.dart';
 import 'package:kasi_rider/main/enter_coupon_code_sheet_view.dart';
 import 'package:kasi_rider/main/fare_quote.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/main/current_order_resync.dart';
 import 'package:kasi_rider/main/reserve_confirmation_sheet_view.dart';
 import 'package:kasi_rider/main/reserve_ride_sheet_view.dart';
 import 'package:kasi_rider/main/ride_preferences_sheet_view.dart';
@@ -345,7 +346,13 @@ class _SelectServiceViewState extends State<SelectServiceView> {
             return;
         }
         if (!mounted) return;
-        showOperationErrorMessage(context, result.exception);
+        if (bookAt == null) {
+          // bug-timeout : la course a pu être créée malgré l'échec ; on la
+          // relit au lieu de laisser recommander à l'aveugle.
+          handleOrderActionError(context, result.exception);
+        } else {
+          showOperationErrorMessage(context, result.exception);
+        }
         return;
       }
     } finally {

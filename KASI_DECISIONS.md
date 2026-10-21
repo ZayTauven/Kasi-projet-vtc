@@ -8,6 +8,35 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-20 — `p2-kyc` K4 : rappels et suspensions KYC aussi par SMS
+
+**Tranché par la session principale, à revoir par l'utilisateur.** Points : `p2-kyc` (K4),
+`sc-kyc`. Fiche : `docs/fiche-kyc.md` (Q10 : SMS reporté en K4). Local, non committé.
+
+**Ce qui est fait** :
+- `SmsService` (Orange SMS, Twilio, LogOnly) passe d'admin-api à la bibliothèque partagée
+  (`libs/database/src/lib/order/sms.service.ts`), sans changement ;
+- nouveau `KasimanSmsService` : il envoie par le fournisseur par défaut du panel, et ne fait
+  jamais échouer l'appelant (sans numéro, sans fournisseur actif ou si l'envoi échoue, il
+  renvoie faux) ;
+- `KycCheckService` envoie le même message que la push, préfixé « Kasi Pro : », pour les
+  rappels (J-30, 14, 7, 3, 1, entre 8 h et 21 h) comme pour la suspension.
+
+**Décisions** :
+- **Désactivé par défaut** (`KYC_SMS_ENABLED=false`, driver-api). La base locale a Orange SMS
+  pour fournisseur par défaut, avec des identifiants renseignés que rien ne permet de dire faux :
+  un contrôle local aurait pu envoyer de vrais SMS aux numéros du jeu de démo. À activer en
+  production une fois le fournisseur validé.
+- **Texte en alphabet GSM** : les guillemets « » deviennent " ", sinon le SMS passe en Unicode,
+  à 70 caractères par segment au lieu de 160. Un rappel tient en un SMS.
+
+**Tests** : `kyc.int-spec.ts`, deux tests de plus (SMS avec ou sans l'option, la nuit, texte,
+suspension ; vrai service avec LogOnly, sans fournisseur, mal configuré) : 11/11.
+
+**Reste pour `p2-kyc`** : la liste légale des documents au Sénégal, et le téléphone réel.
+
+---
+
 ## 2026-10-20 — `p2-parametrage` : une seule région de Dakar, aux limites administratives
 
 **Tranché par la session principale, à revoir par l'équipe produit.** Points : `p2-parametrage`,

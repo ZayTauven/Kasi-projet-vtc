@@ -316,5 +316,7 @@
   "fare_route_unavailable": "Unable to calculate the route right now. Try again in a moment.",
   "fare_order_already_registered": "This order is already registered.",
   "@fare_price_updated": {"placeholders": {"price": {"type": "String"}}},
-  "@fare_price_changed_message": {"placeholders": {"oldPrice": {"type": "String"}, "newPrice": {"type": "String"}}}
+  "@fare_price_changed_message": {"placeholders": {"oldPrice": {"type": "String"}, "newPrice": {"type": "String"}}},
+  "message_request_timeout": "The server is taking too long to respond. Please try again in a moment.",
+  "message_order_action_checking": "The server is slow to respond. Checking the trip status…"
 }

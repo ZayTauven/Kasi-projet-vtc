@@ -1971,6 +1971,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Save'**
   String get vehicle_type_save;
+
+  /// No description provided for @message_request_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is taking too long to respond. Please try again in a moment.'**
+  String get message_request_timeout;
+
+  /// No description provided for @message_order_action_checking.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is slow to respond. Checking the trip status…'**
+  String get message_order_action_checking;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

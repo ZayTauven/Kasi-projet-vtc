@@ -30,6 +30,8 @@ import { AdminDriverDocumentResolver } from '../../../../admin-api/src/app/kyc/d
 import { DriverQueryService } from '../driver/driver-query.service';
 import { DriverDocumentResolver } from './driver-document.resolver';
 import { KycCheckService } from './kyc-check.service';
+import { KasimanSmsService } from '../../../../../libs/database/src/lib/order/kasiman-sms.service';
+import { SmsService } from '../../../../../libs/database/src/lib/order/sms.service';
 
 const DAY = 24 * 3600 * 1000;
 /** Jour UTC decale de `offset` jours, `YYYY-MM-DD`. */
@@ -265,6 +267,62 @@ describe('p2-kyc K1 : documents types et expiration', () => {
       await ds.query(`UPDATE driver_document SET "expiresAt" = $2 WHERE id = $1`, [doc, day(7)]);
       expect((await check.run(todayAt(11))).reminded).toBe(1); // seuil J-7
       expect(pushes()).toHaveLength(2);
+    });
+
+    it('K4 : SMS en plus de la push si KYC_SMS_ENABLED, jamais la nuit, texte en alphabet GSM', async () => {
+      const sent: Array<{ to: unknown; body: string }> = [];
+      const smsDouble = {
+        send: async (to: unknown, body: string) => {
+          sent.push({ to, body });
+          return true;
+        },
+      };
+      const withSms = new KycCheckService(docs, driverRedis, ds, d.driverNotifications as never, smsDouble as never);
+      const saved = process.env.KYC_SMS_ENABLED;
+      try {
+        await approved(k(0), types.driving_license, day(10));
+        delete process.env.KYC_SMS_ENABLED; // par defaut : push seulement
+        expect((await withSms.run(todayAt(9))).reminded).toBe(1);
+        expect(sent).toEqual([]);
+
+        process.env.KYC_SMS_ENABLED = 'true';
+        await ds.query(`UPDATE driver_document SET "expiresAt" = $1 WHERE "driverId" = $2`, [day(7), k(0)]);
+        expect((await withSms.run(todayAt(6))).reminded).toBe(0); // la nuit : ni push ni SMS
+        expect(sent).toEqual([]);
+        expect((await withSms.run(todayAt(10))).reminded).toBe(1); // seuil J-7
+        const [{ mobileNumber }] = await ds.query(`SELECT "mobileNumber" FROM driver WHERE id = $1`, [k(0)]);
+        expect(sent).toHaveLength(1);
+        expect(String(sent[0].to)).toBe(String(mobileNumber));
+        expect(sent[0].body).toBe(
+          `Kasi Pro : Votre document "Permis de conduire" expire le ${day(7).split('-').reverse().join('/')} ` +
+            "(dans 7 jours). Envoyez le nouveau dans l'application pour éviter la suspension.",
+        );
+        expect(sent[0].body).not.toMatch(/[«»]/);
+        expect(sent[0].body.length).toBeLessThanOrEqual(160);
+
+        // Suspension : SMS aussi, meme hors des heures de rappel.
+        await approved(k(1), types.driving_license, day(-1));
+        expect((await withSms.run(todayAt(3))).suspended).toEqual([k(1)]);
+        expect(sent[1].body).toMatch(/^Kasi Pro : Document expiré : Permis de conduire\./);
+      } finally {
+        if (saved == null) delete process.env.KYC_SMS_ENABLED;
+        else process.env.KYC_SMS_ENABLED = saved;
+      }
+    });
+
+    it('K4 : le vrai service passe par le fournisseur par defaut ; sans fournisseur ni numero, rien et pas d erreur', async () => {
+      const sms = new KasimanSmsService(ds, new SmsService({} as never));
+      expect(await sms.send('221780000000', 'test')).toBe(false); // aucun fournisseur
+      await ds.query(
+        `INSERT INTO sms_provider (name, type, "isDefault", enabled, "verificationTemplate")
+         VALUES ('Journal', 'LogOnly', TRUE, TRUE, '%code%')`,
+      );
+      expect(await sms.send('221780000000', 'test')).toBe(true);
+      expect(await sms.send(null, 'test')).toBe(false);
+      expect(await sms.send('  ', 'test')).toBe(false);
+      // Fournisseur mal configure : l'erreur est absorbee.
+      await ds.query(`UPDATE sms_provider SET type = 'Twilio', "accountId" = NULL`);
+      expect(await sms.send('221780000000', 'test')).toBe(false);
     });
   });
 

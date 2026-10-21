@@ -761,4 +761,12 @@ class SFr extends S {
   @override
   String get fare_order_already_registered =>
       'Cette commande est déjà enregistrée.';
+
+  @override
+  String get message_request_timeout =>
+      'Le serveur met trop de temps à répondre. Réessayez dans un instant.';
+
+  @override
+  String get message_order_action_checking =>
+      'Le serveur tarde à répondre. Vérification de l\'état de la course…';
 }

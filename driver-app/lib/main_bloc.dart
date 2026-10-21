@@ -197,6 +197,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   int get subscriptionRevision => _subscriptionRevision;
   int _subscriptionRevision = 0;
 
+  /// Nombre de mises à jour de la course reçues d'une action
+  /// (`CurrentOrderUpdated`). Même principe que [subscriptionRevision] pour la
+  /// relecture de la course en cours (bug-rafraichissement) : une réponse
+  /// partie avant une action réussie ne doit pas ramener l'écran en arrière.
+  int get orderRevision => _orderRevision;
+  int _orderRevision = 0;
+
   /// Offres refusées pendant la session (voir `AvailableOrderRejected`).
   final Set<String> _rejectedOrderIds = {};
 
@@ -206,6 +213,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (event is AvailabledOrderAdded || event is AvailableOrderRemoved) {
       _subscriptionRevision++;
     }
+    if (event is CurrentOrderUpdated) _orderRevision++;
     super.onEvent(event);
   }
 

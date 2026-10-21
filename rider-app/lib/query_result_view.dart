@@ -6,6 +6,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 import 'package:kasi_rider/l10n/messages.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:kasi_rider/main/request_timeout_link.dart';
 
 class QueryResultView extends StatelessWidget {
   final QueryResult queryResult;
@@ -111,6 +112,10 @@ String getErrorMessage(BuildContext context, OperationException? exception) {
       return "Votre session a expiré. Veuillez vous reconnecter.";
     }
     return message;
+  }
+  // bug-timeout : aucune réponse dans le délai de 20 s.
+  if (isRequestTimeout(exception)) {
+    return S.of(context).message_request_timeout;
   }
   if (exception.toString().contains("Connection closed") ||
       exception.toString().contains("Connection reset") ||

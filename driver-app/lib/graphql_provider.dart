@@ -2,6 +2,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:kasi_driver/monitoring/crash_reporting.dart';
 import 'package:kasi_driver/monitoring/graphql_error_reporting_link.dart';
+import 'package:kasi_driver/request_timeout_link.dart';
 
 /*String get host {
   if (Platform.isAndroid) {
@@ -63,6 +64,8 @@ ValueNotifier<GraphQLClient> clientFor(
   // GraphQL a Crashlytics sans toucher aux requetes ni aux reponses.
   final Link link = Link.from([
     GraphQLErrorReportingLink(errorReporter),
+    // bug-timeout : delai de 20 s applique ici, voir RequestTimeoutLink.
+    RequestTimeoutLink(),
     Link.split((request) => request.isSubscription, websocketLink, httpLink),
   ]);
   final GraphQLCache cache = GraphQLCache(store: HiveStore());
@@ -71,15 +74,14 @@ ValueNotifier<GraphQLClient> clientFor(
         cache: cache,
         link: link,
         // Le paquet `graphql` 5.2.4 applique par defaut un
-        // `queryRequestTimeout` de 5 secondes a TOUTE query/mutation HTTP
-        // (pas seulement les subscriptions, voir `query_manager.dart` /
-        // `graphql_client.dart` du paquet). Sur un reseau mobile ou lors
-        // d'un cold-start backend, ce delai est frequemment depasse et
-        // declenche un `TimeoutException`, indiscernable cote appelant
-        // d'une vraie absence de donnee ("Driver information not found").
-        // On l'aligne sur une valeur realiste plutot que de garder le
-        // defaut trop agressif de la librairie.
-        queryRequestTimeout: const Duration(seconds: 20),
+        // `queryRequestTimeout` de 5 secondes a toute query/mutation HTTP.
+        // Ce delai etait porte a 20 s ici, mais le minuteur du paquet n'annule
+        // pas la requete : une reponse arrivee apres le delai levait
+        // « Bad state: Future already completed » (bug-timeout). Le delai de
+        // 20 s est desormais applique par `RequestTimeoutLink` (meme
+        // `TimeoutException` pour l'appelant, reponse tardive ignoree) ; celui
+        // du paquet est donc coupe.
+        queryRequestTimeout: null,
         defaultPolicies: DefaultPolicies(
             query: Policies(fetch: FetchPolicy.noCache),
             mutate: Policies(fetch: FetchPolicy.noCache),

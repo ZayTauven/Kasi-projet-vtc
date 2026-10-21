@@ -11,7 +11,7 @@ import { SmsProviderDTO } from './dto/sms-provider.dto';
 import { SmsProviderInput } from './dto/sms-provider.input';
 import { SmsProviderResolver } from './sms-provider.resolver';
 import { SmsProviderService } from './sms-provider.service';
-import { SmsService } from './sms.service';
+import { SmsService } from '@kasi/order/sms.service';
 
 @Module({
   imports: [

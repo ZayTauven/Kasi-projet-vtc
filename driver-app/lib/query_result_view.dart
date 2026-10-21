@@ -3,6 +3,7 @@ import 'package:client_shared/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:kasi_driver/request_timeout_link.dart';
 
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:client_shared/components/query_result_view.dart';
@@ -20,7 +21,11 @@ class QueryResultView extends StatelessWidget {
       return QueryResultLoadingView(loadingText: S.of(context).loading);
     }
     if (queryResult.hasException) {
-      if (queryResult.exception.toString().contains("Connection closed") ||
+      // bug-timeout : un délai dépassé s'affiche comme une erreur réseau
+      // (message traduit et bouton pour relancer), plus en texte brut.
+      final timeout = isRequestTimeout(queryResult.exception);
+      if (timeout ||
+          queryResult.exception.toString().contains("Connection closed") ||
           queryResult.exception.toString().contains("Connection reset") ||
           queryResult.exception.toString().contains("Connection refused") ||
           queryResult.exception.toString().contains("Connection timed out") ||
@@ -36,7 +41,12 @@ class QueryResultView extends StatelessWidget {
                 size: 36,
               ),
               const SizedBox(height: 12),
-              const Text("Network error, Please try again."),
+              Text(
+                timeout
+                    ? S.of(context).message_request_timeout
+                    : "Network error, Please try again.",
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                   style:
@@ -80,6 +90,10 @@ String getErrorMessage(BuildContext context, OperationException? exception) {
       return "Votre session a expiré. Veuillez vous reconnecter.";
     }
     return message;
+  }
+  // bug-timeout : aucune réponse dans le délai de 20 s.
+  if (isRequestTimeout(exception)) {
+    return S.of(context).message_request_timeout;
   }
   if (exception.toString().contains("Connection closed") ||
       exception.toString().contains("Connection reset") ||

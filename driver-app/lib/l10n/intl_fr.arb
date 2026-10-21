@@ -440,5 +440,7 @@
   "vehicle_type_required": "Choisissez votre type de véhicule.",
   "vehicle_type_choose": "Choisir",
   "vehicle_type_locked": "Pour changer de véhicule, contactez le support Kasi.",
-  "vehicle_type_save": "Enregistrer"
+  "vehicle_type_save": "Enregistrer",
+  "message_request_timeout": "Le serveur met trop de temps à répondre. Réessayez dans un instant.",
+  "message_order_action_checking": "Le serveur tarde à répondre. Vérification de l'état de la course…"
 }

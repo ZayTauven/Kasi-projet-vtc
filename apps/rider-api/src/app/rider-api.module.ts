@@ -37,6 +37,9 @@ import { KasiMonitoringFilter } from '@kasi/monitoring/monitoring.filter';
     DatabaseModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      // socle-securite (2026-10-20) : pas de pile d'appels dans les reponses
+      // (chemins internes du serveur) ; elle reste dans les journaux.
+      includeStacktraceInErrorResponses: false,
       installSubscriptionHandlers: true,
       // cors: false,
       // context: ({ connection, req, res, extra }) => {

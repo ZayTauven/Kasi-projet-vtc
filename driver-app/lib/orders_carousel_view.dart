@@ -5,8 +5,8 @@ import 'package:kasi_driver/wallet/kasiman_debt_views.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'driver_distance_select_view.dart';
+import 'current_order_resync.dart';
 import 'main_bloc.dart';
-import 'query_result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,6 +50,12 @@ class OrdersCarouselView extends StatelessWidget {
                   if (parsedData == null) return;
                   mainBloc.add(CurrentOrderUpdated(parsedData.updateOneOrder));
                 }, onError: (error) {
+                  // Écran déjà reconstruit (réponse après le délai) : on ne
+                  // touche plus à ce contexte, on relit la course.
+                  if (!context.mounted) {
+                    handleOrderActionError(context, error);
+                    return;
+                  }
                   // p2-argent I3 : refus au-delà du plafond de dette
                   // (`KASIMAN_DEBT_LIMIT`) -> écran de blocage avec le
                   // montant dû et la marche à suivre, au lieu d'un
@@ -60,7 +66,9 @@ class OrdersCarouselView extends StatelessWidget {
                     DebtBlockedView.open(context);
                     return;
                   }
-                  showOperationErrorMessage(context, error);
+                  // bug-timeout : l'acceptation a pu aboutir côté serveur ;
+                  // on relit la course au lieu de laisser rejouer.
+                  handleOrderActionError(context, error);
                 }),
                 builder: (runMutation, result) =>
                     BlocBuilder<MainBloc, MainState>(builder: (context, state) {

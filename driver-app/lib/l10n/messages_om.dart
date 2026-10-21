@@ -1045,4 +1045,12 @@ class SOm extends S {
 
   @override
   String get vehicle_type_save => 'Save';
+
+  @override
+  String get message_request_timeout =>
+      'The server is taking too long to respond. Please try again in a moment.';
+
+  @override
+  String get message_order_action_checking =>
+      'The server is slow to respond. Checking the trip status…';
 }

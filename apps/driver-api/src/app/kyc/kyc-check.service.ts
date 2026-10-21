@@ -1,10 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { DriverEntity } from '@kasi/database/driver.entity';
 import { DriverDocumentService, isoDay } from '@kasi/order/driver-document.service';
 import {
   DRIVER_NOTIFICATION_SERVICE,
   IDriverNotificationService,
 } from '@kasi/order/interfaces/driver-notification.interface';
+import { KasimanSmsService } from '@kasi/order/kasiman-sms.service';
 import { DriverRedisService } from '@kasi/redis/driver-redis.service';
 import { DataSource, In } from 'typeorm';
 
@@ -38,6 +39,20 @@ export function reminderPush(title: string, expiresAt: string, daysLeft: number)
   };
 }
 
+/**
+ * p2-kyc K4 (2026-10-20) : texte du SMS, tire de la push. Les guillemets
+ * francais sortent de l'alphabet GSM : ils passeraient le SMS en Unicode
+ * (70 caracteres par segment au lieu de 160).
+ */
+export function kycSms(body: string): string {
+  return `Kasi Pro : ${body.replace(/«\s?/g, '"').replace(/\s?»/g, '"')}`;
+}
+
+/** SMS envoyes seulement si KYC_SMS_ENABLED=true (desactive par defaut). */
+export function kycSmsEnabled(): boolean {
+  return process.env.KYC_SMS_ENABLED?.trim().toLowerCase() === 'true';
+}
+
 export function suspensionPush(titles: string): { title: string; body: string } {
   return {
     title: 'Compte suspendu',
@@ -66,6 +81,8 @@ export class KycCheckService {
     private readonly dataSource: DataSource,
     @Inject(DRIVER_NOTIFICATION_SERVICE)
     private readonly notifications: IDriverNotificationService,
+    // p2-kyc K4 : SMS en plus de la push (KYC_SMS_ENABLED).
+    @Optional() private readonly sms?: KasimanSmsService,
   ) {}
 
   async run(now = new Date()): Promise<KycCheckResult> {
@@ -112,6 +129,11 @@ export class KycCheckService {
       await this.notifications.plainText(driver, title, body);
     } catch (error) {
       this.logger.warn(`Push KYC non envoyee au Kasiman ${driver.id} : ${(error as Error).message}`);
+    }
+    // p2-kyc K4 : meme message par SMS (app desinstallee, notifications
+    // coupees). Les heures de rappel (8 h - 21 h) valent pour les deux.
+    if (this.sms != null && kycSmsEnabled()) {
+      await this.sms.send(driver.mobileNumber, kycSms(body));
     }
   }
 }

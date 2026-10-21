@@ -56,6 +56,8 @@ import { UnservedDemandService } from '../dispatch/unserved-demand.service';
 import { DispatchProducer } from '@kasi/order/dispatch-producer.service';
 import { DriverDocumentService } from '@kasi/order/driver-document.service';
 import { KycCheckService } from '../kyc/kyc-check.service';
+import { KasimanSmsService } from '@kasi/order/kasiman-sms.service';
+import { SmsService } from '@kasi/order/sms.service';
 
 @Module({
   imports: [
@@ -139,6 +141,9 @@ import { KycCheckService } from '../kyc/kyc-check.service';
     // p2-kyc K1 : controle des documents (job kyc-check du meme consommateur).
     DriverDocumentService,
     KycCheckService,
+    // p2-kyc K4 : SMS au Kasiman (fournisseur par defaut du panel).
+    SmsService,
+    KasimanSmsService,
   ],
   exports: [DriverOrderQueryService, SharedDriverService],
 })

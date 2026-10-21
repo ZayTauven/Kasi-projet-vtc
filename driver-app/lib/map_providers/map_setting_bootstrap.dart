@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kasi_driver/config.dart';
+import 'package:kasi_driver/request_timeout_link.dart';
 
 bool _mapSettingSynced = false;
 
@@ -38,7 +39,8 @@ Future<bool> _tryFetchMapSetting() async {
   try {
     final client = GraphQLClient(
       cache: GraphQLCache(),
-      link: HttpLink('${serverUrl}graphql'),
+      // bug-timeout : delai porte par RequestTimeoutLink (voir ce fichier).
+      link: Link.from([RequestTimeoutLink(), HttpLink('${serverUrl}graphql')]),
       // Seul client de l'app qui gardait le `queryRequestTimeout` par defaut du
       // paquet `graphql` (5 s) — les clients principaux sont a 20 s depuis
       // longtemps (voir graphql_provider.dart). Or cette requete part pendant
@@ -48,7 +50,9 @@ Future<bool> _tryFetchMapSetting() async {
       // sain) et, quand la reponse arrivait juste apres, un
       // « Bad state: Future already completed » remonte jusqu'a
       // FlutterError.onError — donc jusqu'a Crashlytics.
-      queryRequestTimeout: const Duration(seconds: 20),
+      // Minuteur du paquet coupe : il laissait la reponse tardive lever
+      // « Bad state: Future already completed » (bug-timeout).
+      queryRequestTimeout: null,
     );
     final result = await client.query(
       QueryOptions(

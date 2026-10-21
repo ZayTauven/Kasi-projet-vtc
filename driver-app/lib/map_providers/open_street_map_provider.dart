@@ -26,6 +26,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 import 'package:maps_toolkit/maps_toolkit.dart' as map_toolkit;
 import 'package:latlong2/latlong.dart';
 import 'package:kasi_driver/session_token.dart';
+import 'package:kasi_driver/request_timeout_link.dart';
 
 class OpenStreetMapProvider extends StatefulWidget {
   const OpenStreetMapProvider({Key? key}) : super(key: key);
@@ -370,7 +371,12 @@ void onLocationUpdated(geo.Position position, MainBloc bloc,
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
     cache: GraphQLCache(),
-    link: link,
+    // bug-timeout : meme delai de 5 s qu'avant (defaut du paquet), porte par
+    // RequestTimeoutLink, qui ignore la reponse tardive au lieu de lever
+    // « Bad state: Future already completed ».
+    link: Link.from(
+        [RequestTimeoutLink(timeout: const Duration(seconds: 5)), link]),
+    queryRequestTimeout: null,
   );
   final newLocation = LatLng(position.latitude, position.longitude);
   // La position locale est poussée AVANT le réseau : la carte et la distance

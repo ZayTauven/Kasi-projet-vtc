@@ -13,7 +13,6 @@ import 'package:kasi_driver/delivery_info_view.dart';
 import 'package:kasi_driver/graphql/order.fragment.graphql.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/order_invoice_view.dart';
-import 'package:kasi_driver/query_result_view.dart';
 import 'package:kasi_driver/ride_options_sheet_view.dart';
 import 'package:kasi_driver/ride_safety_sheet_view.dart';
 import 'package:kasi_driver/rider_preferences_sheet_view.dart';
@@ -23,6 +22,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 
 import 'config.dart';
+import 'current_order_resync.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'main_bloc.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,9 @@ class OrderStatusCardView extends StatelessWidget {
                 bloc.add(CurrentOrderUpdated(parsedData.updateOneOrder));
               }
             },
-            onError: (error) => showOperationErrorMessage(context, error)),
+            // bug-timeout / bug-rafraichissement : message bref puis
+            // relecture de la course, au lieu de laisser rejouer le glisser.
+            onError: (error) => handleOrderActionError(context, error)),
         builder: (runMutation, result) {
           return BlocBuilder<MainBloc, MainState>(builder: (context, state) {
             if (order.status == Enum$OrderStatus.WaitingForPostPay) {

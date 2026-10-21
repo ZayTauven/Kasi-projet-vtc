@@ -314,5 +314,7 @@
   "fare_price_changed_title": "Le prix a changé",
   "fare_price_changed_message": "Le prix de cette course est passé de {oldPrice} à {newPrice}. Voulez-vous continuer ?",
   "fare_route_unavailable": "Impossible de calculer l'itinéraire pour le moment. Réessayez dans un instant.",
-  "fare_order_already_registered": "Cette commande est déjà enregistrée."
+  "fare_order_already_registered": "Cette commande est déjà enregistrée.",
+  "message_request_timeout": "Le serveur met trop de temps à répondre. Réessayez dans un instant.",
+  "message_order_action_checking": "Le serveur tarde à répondre. Vérification de l'état de la course…"
 }

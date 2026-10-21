@@ -15,6 +15,7 @@ import 'package:kasi_rider/graphql/fragments/active-order.fragment.graphql.dart'
 import 'package:kasi_rider/main/enter_coupon_code_sheet_view.dart';
 import 'package:kasi_rider/main/enter_gift_code_sheet_view.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
+import 'package:kasi_rider/main/current_order_resync.dart';
 import 'package:kasi_rider/main/pay_for_ride_sheet_view.dart';
 import 'package:kasi_rider/main/ride_options_sheet_view.dart';
 import 'package:kasi_rider/main/ride_safety_sheet_view.dart';
@@ -243,8 +244,9 @@ class OrderStatusSheetView extends StatelessWidget {
                                     mainBloc.add(CurrentOrderUpdated(
                                         parsedData.updateOneOrder));
                                   },
-                                  onError: (error) => showOperationErrorMessage(
-                                      context, error)),
+                                  // bug-timeout : relecture de la course.
+                                  onError: (error) =>
+                                      handleOrderActionError(context, error)),
                               builder: (runMutation, result) {
                                 return LightColoredButton(
                                     icon: Ionicons.list,

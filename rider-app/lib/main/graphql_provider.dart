@@ -5,6 +5,12 @@ import 'package:kasi_rider/config.dart';
 import 'package:kasi_rider/main/bloc/jwt_cubit.dart';
 import 'package:kasi_rider/monitoring/crash_reporting.dart';
 import 'package:kasi_rider/monitoring/graphql_error_reporting_link.dart';
+import 'package:kasi_rider/main/request_timeout_link.dart';
+
+/// Dernier lien WebSocket créé par [clientFor] (bug-rafraichissement). Lu par
+/// `CurrentOrderResyncScope` pour observer l'état du socket et relire la
+/// course à sa reconnexion. Simple observation : ne change rien au lien.
+WebSocketLink? activeWebSocketLink;
 
 ValueNotifier<GraphQLClient> clientFor(
     {required String uri, required String subscriptionUri, String? jwtToken}) {
@@ -15,6 +21,7 @@ ValueNotifier<GraphQLClient> clientFor(
               inactivityTimeout: const Duration(minutes: 30)),
           subProtocol: GraphQLProtocol.graphqlWs)
       : WebSocketLink(subscriptionUri, subProtocol: GraphQLProtocol.graphqlWs);
+  activeWebSocketLink = websocketLink;
   final HttpLink httpLink = jwtToken != null
       ? HttpLink(uri, defaultHeaders: {"Authorization": "Bearer $jwtToken"})
       : HttpLink(uri);
@@ -22,6 +29,8 @@ ValueNotifier<GraphQLClient> clientFor(
   // GraphQL a Crashlytics sans toucher aux requetes ni aux reponses.
   final Link link = Link.from([
     GraphQLErrorReportingLink(errorReporter),
+    // bug-timeout : delai de 20 s applique ici, voir RequestTimeoutLink.
+    RequestTimeoutLink(),
     Link.split((request) => request.isSubscription, websocketLink, httpLink),
   ]);
   //final GraphQLCache cache = GraphQLCache(store: HiveStore());
@@ -30,16 +39,14 @@ ValueNotifier<GraphQLClient> clientFor(
         cache: GraphQLCache(),
         link: link,
         // Le paquet `graphql` 5.2.4 applique par defaut un
-        // `queryRequestTimeout` de 5 secondes a TOUTE query/mutation HTTP
-        // (pas seulement les subscriptions, voir `query_manager.dart` /
-        // `graphql_client.dart` du paquet). Sur un reseau mobile ou lors
-        // d'un cold-start backend, ce delai est frequemment depasse et
-        // declenche un `TimeoutException`, silencieusement confondu par
-        // l'UI avec "pas de profil" (voir GetCurrentOrder dans
-        // `location_selection_parent_view.dart`). On l'aligne sur une
-        // valeur realiste plutot que de garder le defaut trop agressif
-        // de la librairie.
-        queryRequestTimeout: const Duration(seconds: 20),
+        // `queryRequestTimeout` de 5 secondes a toute query/mutation HTTP.
+        // Ce delai etait porte a 20 s ici, mais le minuteur du paquet n'annule
+        // pas la requete : une reponse arrivee apres le delai levait
+        // « Bad state: Future already completed » (bug-timeout). Le delai de
+        // 20 s est desormais applique par `RequestTimeoutLink` (meme
+        // `TimeoutException` pour l'appelant, reponse tardive ignoree) ; celui
+        // du paquet est donc coupe.
+        queryRequestTimeout: null,
         defaultPolicies: DefaultPolicies(
             query: Policies(fetch: FetchPolicy.noCache),
             mutate: Policies(fetch: FetchPolicy.noCache),

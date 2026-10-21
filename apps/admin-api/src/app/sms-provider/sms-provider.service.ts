@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { SmsProviderEntity } from '@kasi/database/sms-provider.entity';
-import { SmsService } from './sms.service';
+import { SmsService } from '@kasi/order/sms.service';
 
 @Injectable()
 export class SmsProviderService {
