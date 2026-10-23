@@ -8,6 +8,43 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-23 — Déploiement groupé en production : `daa7f17`, migrations appliquées
+
+**Décision de l'utilisateur** (pas d'utilisateurs réels en prod : exécution immédiate, la
+répétition sur copie est remplacée par une sauvegarde). **Joué par la session principale en SSH**,
+avec la clé de déploiement. Points : `p1-migrations`, `socle-deploiement`, et tous les lots de la
+fiche `docs/fiche-deploiement-groupe.md` §2.
+
+- **Avant** : relevé en lecture seule ; sauvegarde `/root/backups/kasi_avant_deploiement_groupe_
+  2026-10-23_1351.dump` (+ schéma, + copie de `yessal-demo.conf`) ; base quasi vide (0 course,
+  3 Kasimen, 3 clients, 1 opérateur, 0 portefeuille) ; images en service étiquetées `8cbe512`.
+- **Code** : `8cbe512` → `daa7f17` (`git pull --ff-only`), 4 images construites sur le VPS.
+- **Migrations** : baseline marquée (59 tables vérifiées), puis les 7 migrations en 17 s, API
+  arrêtées ; `ledger-open` (0 compte) et `ledger-check` sans écart ; `check` : schéma conforme.
+  **Coupure des API : environ 20 s** (14:16:55 → 14:17:14 UTC).
+- **Vérifié** : 3 API « schéma à jour (8 migrations) », 0 redémarrage ; `mapSetting`, connexion
+  refusée proprement (sans pile d'appels) ; en HTTPS : panel 200, `CancelReason`,
+  `cancelOrder(cancelReasonId)`, `PilotDashboard`, `VehicleType` présents.
+- **Yessal** : `kasi-nginx` redémarré, **pas recréé** (service inchangé dans le compose) ;
+  `yessal-demo.conf` et le réseau `yessal_demo_net` intacts. **Mais `yessal-demo-web` a été tué
+  par manque de mémoire à 14:04, pendant le build** (Angular jusqu'à 4 Go, 413 Mo libres), puis
+  relancé seul par Docker (`unless-stopped`, prêt en 0,5 s). Courte coupure de Yessal web. À
+  l'avenir : construire hors du VPS, ou arrêter Yessal le temps du build.
+- **Constats** :
+  - la production n'a **aucune région** : `getFare` répond `REGION_UNSUPPORTED`, déjà avant le
+    déploiement. Le paramétrage de Dakar (`tools/parametrage/dakar.sql`) la rendra commandable ;
+    prévu au début de la phase 3, après validation des tarifs ;
+  - catalogue des motifs d'annulation vide : insertion refusée à la session principale par la
+    sécurité du mode automatique (écriture de données en prod). **Joué par l'utilisateur le
+    23 octobre** (`tools/parametrage/motifs-annulation.sql`, depuis Git Bash) : `INSERT 0 15`
+    (6 client, 5 Kasiman, 4 opérateur) ; libellés relus en prod, accents intacts.
+- **Retour arrière** disponible : images `kasi-local/*:8cbe512`, sauvegarde ci-dessus.
+- Reste (fiche §6) : nouvelles apps construites contre la prod et validées sur téléphone réel ;
+  `DISPATCH_MODE=waves` avant le premier Kasiman ; `LEDGER_MODE=strict` après deux semaines ;
+  GlitchTip.
+
+---
+
 ## 2026-10-23 — Déploiement groupé : fiche de cadrage, à valider
 
 **Session principale.** Points : `p1-migrations`, `socle-deploiement`. Fiche :
