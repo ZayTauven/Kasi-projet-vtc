@@ -5,7 +5,7 @@
         [nzTitle]="'dispatcher.looking.waitMessage' | translate">
         <div nz-result-extra>
           <button nz-button [routerLink]="'/requests/view/' + orderId" nzType="primary">{{ 'dispatcher.viewRequestDetails' | translate }}</button>
-          <button nz-button (click)="cancelRequest()" nzType="primary" nzDanger>{{ 'dispatcher.cancelRequest' | translate }}</button>
+          <button nz-button (click)="openCancel()" nzType="primary" nzDanger>{{ 'dispatcher.cancelRequest' | translate }}</button>
         </div>
       </nz-result>
     }
@@ -32,3 +32,27 @@
     }
   </div>
 </div>
+
+<nz-modal [nzVisible]="cancelOpen" [nzTitle]="'dispatcher.cancelTitle' | translate" (nzOnCancel)="cancelOpen = false"
+  (nzOnOk)="cancelRequest()" [nzOkText]="'dispatcher.cancelConfirm' | translate" [nzOkDanger]="true"
+  [nzCancelText]="'dispatcher.cancelKeep' | translate"
+  [nzOkDisabled]="!canConfirmCancel" [nzOkLoading]="canceling">
+  <ng-container *nzModalContent>
+    @switch (cancelReasonsState) {
+      @case ('loading') {
+        <nz-skeleton [nzActive]="true" [nzTitle]="false" [nzParagraph]="{ rows: 3 }"></nz-skeleton>
+      }
+      @case ('ready') {
+        <p class="mb-2">{{ 'dispatcher.cancelDesc' | translate }}</p>
+        <nz-radio-group [(ngModel)]="cancelReasonId" class="flex flex-col gap-2">
+          @for (reason of cancelReasons; track reason.id) {
+            <label nz-radio [nzValue]="reason.id">{{ reason.title }}</label>
+          }
+        </nz-radio-group>
+      }
+      @case ('unavailable') {
+        <nz-alert nzType="warning" nzShowIcon [nzMessage]="'dispatcher.cancelReasonsUnavailable' | translate"></nz-alert>
+      }
+    }
+  </ng-container>
+</nz-modal>

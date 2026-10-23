@@ -318,5 +318,10 @@
   "@fare_price_updated": {"placeholders": {"price": {"type": "String"}}},
   "@fare_price_changed_message": {"placeholders": {"oldPrice": {"type": "String"}, "newPrice": {"type": "String"}}},
   "message_request_timeout": "The server is taking too long to respond. Please try again in a moment.",
-  "message_order_action_checking": "The server is slow to respond. Checking the trip status…"
+  "message_order_action_checking": "The server is slow to respond. Checking the trip status…",
+  "message_order_not_sent": "Your request could not be completed. Please try again in a moment.",
+  "cancel_reason_title": "Why are you cancelling?",
+  "cancel_reason_confirm": "Confirm cancellation",
+  "cancel_reason_back": "Don't cancel",
+  "cancel_reason_unavailable": "Reasons could not be loaded. You can still cancel."
 }

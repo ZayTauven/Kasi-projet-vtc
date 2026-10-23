@@ -290,6 +290,7 @@
     "estimatedCost": "Estimated Cost",
     "header": "Request #",
     "requestTIme": "Request Time",
+    "cancelReason": "Cancellation reason",
     "service": "Service",
     "distance": "Distance",
     "duration": "Duration",
@@ -469,6 +470,11 @@
     "determiningLocation": "Determining Location, Please wait...",
     "viewRequestDetails": "View Request Details",
     "cancelRequest": "Cancel Request",
+    "cancelTitle": "Cancel request",
+    "cancelDesc": "Choose the reason for the cancellation. It is saved with the trip and counted in the pilot dashboard.",
+    "cancelReasonsUnavailable": "Reasons unavailable: the request will be canceled without a reason.",
+    "cancelConfirm": "Cancel request",
+    "cancelKeep": "Keep request",
     "driverAcceptedRequestSuffix": "has accepted the request. Go to the trip page for more information.",
     "tripStatusUpdated": "Trip status is updated to {{status}}.",
     "time": "Time"
@@ -1637,6 +1643,7 @@
       "noReason": "No reason",
       "byClient": "Client",
       "byKasiman": "Kasiman",
+      "byOperator": "Operator",
       "byUnknown": "Unspecified"
     },
     "unserved": {

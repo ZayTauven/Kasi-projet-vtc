@@ -184,6 +184,7 @@ mutation UpdateOrderStatus(
   $status: OrderStatus
   $cashPayment: Float
   $destinationArrivedTo: Int
+  $cancelReasonId: ID
 ) {
   updateOneOrder(
     input: {
@@ -192,10 +193,19 @@ mutation UpdateOrderStatus(
         status: $status
         paidAmount: $cashPayment
         destinationArrivedTo: $destinationArrivedTo
+        cancelReasonId: $cancelReasonId
       }
     }
   ) {
     ...CurrentOrder
+  }
+}
+
+# p3-mesures M4 : motifs d'annulation du Kasiman (lus à l'ouverture de la feuille).
+query CancelReasons {
+  cancelReasons {
+    id
+    title
   }
 }
 

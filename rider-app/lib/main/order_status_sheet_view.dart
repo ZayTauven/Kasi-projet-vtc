@@ -16,6 +16,7 @@ import 'package:kasi_rider/main/enter_coupon_code_sheet_view.dart';
 import 'package:kasi_rider/main/enter_gift_code_sheet_view.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
 import 'package:kasi_rider/main/current_order_resync.dart';
+import 'package:kasi_rider/main/cancel_reason_picker.dart';
 import 'package:kasi_rider/main/pay_for_ride_sheet_view.dart';
 import 'package:kasi_rider/main/ride_options_sheet_view.dart';
 import 'package:kasi_rider/main/ride_safety_sheet_view.dart';
@@ -318,68 +319,42 @@ class OrderStatusSheetView extends StatelessWidget {
 
                                           break;
                                         case RideOptionsResult.cancel:
-                                          if ((state.order.service
-                                                      ?.cancellationTotalFee ??
-                                                  0) >
-                                              0) {
-                                            final cancelFee =
-                                                NumberFormat.simpleCurrency(
-                                                        name: state
-                                                            .order.currency)
-                                                    .format(state.order.service!
-                                                        .cancellationTotalFee);
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text(S
-                                                        .of(context)
-                                                        .message_title_warning),
-                                                    content: Text(S
-                                                        .of(context)
-                                                        .cancelation_fee_confirmation_body(
-                                                            cancelFee)),
-                                                    actions: [
-                                                      TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop(),
-                                                          child: Text(S
-                                                              .of(context)
-                                                              .action_cancel)),
-                                                      TextButton(
-                                                          onPressed: () async {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            runMutation(Variables$Mutation$updateOrder(
-                                                                id: state
-                                                                    .order.id,
-                                                                update: Input$UpdateOrderInput(
-                                                                    status: Enum$OrderStatus
-                                                                        .RiderCanceled,
-                                                                    tipAmount:
-                                                                        0,
-                                                                    waitMinutes:
-                                                                        0)));
-                                                          },
-                                                          child: Text(S
-                                                              .of(context)
-                                                              .action_confirm))
-                                                    ],
-                                                  );
-                                                });
-                                          } else {
-                                            runMutation(
-                                                Variables$Mutation$updateOrder(
-                                                    id: state.order.id,
-                                                    update: Input$UpdateOrderInput(
-                                                        status: Enum$OrderStatus
-                                                            .RiderCanceled,
-                                                        waitMinutes: 0,
-                                                        tipAmount: 0)));
+                                          // p3-mesures M4 : la feuille des
+                                          // motifs remplace la confirmation ;
+                                          // elle reprend l'avertissement des
+                                          // frais d'annulation s'il y en a.
+                                          if (!context.mounted) return;
+                                          final cancelFeeAmount = state.order
+                                                  .service
+                                                  ?.cancellationTotalFee ??
+                                              0;
+                                          final warning = cancelFeeAmount > 0
+                                              ? S
+                                                  .of(context)
+                                                  .cancelation_fee_confirmation_body(
+                                                      NumberFormat.simpleCurrency(
+                                                              name: state.order
+                                                                  .currency)
+                                                          .format(
+                                                              cancelFeeAmount))
+                                              : null;
+                                          final choice = await pickCancelReason(
+                                              context,
+                                              warning: warning);
+                                          if (choice == null ||
+                                              !context.mounted) {
+                                            return;
                                           }
+                                          runMutation(
+                                              Variables$Mutation$updateOrder(
+                                                  id: state.order.id,
+                                                  update: Input$UpdateOrderInput(
+                                                      status: Enum$OrderStatus
+                                                          .RiderCanceled,
+                                                      cancelReasonId:
+                                                          choice.reasonId,
+                                                      waitMinutes: 0,
+                                                      tipAmount: 0)));
                                           break;
                                       }
                                     });

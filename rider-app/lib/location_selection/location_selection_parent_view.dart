@@ -19,6 +19,7 @@ import 'package:kasi_rider/main/map_providers/google_map_provider.dart';
 import 'package:kasi_rider/main/map_providers/open_street_map_provider.dart';
 import 'package:kasi_rider/main/order.graphql.dart';
 import 'package:kasi_rider/main/current_order_resync.dart';
+import 'package:kasi_rider/main/cancel_reason_picker.dart';
 import 'package:kasi_rider/main/pay_for_ride_sheet_view.dart';
 import 'package:kasi_rider/main/rate_ride_sheet_view.dart';
 import 'package:client_shared/theme/theme.dart';
@@ -293,13 +294,19 @@ class _RiderBottomViewState extends State<RiderBottomView> {
                                   Enum$OrderStatus.WaitingForPostPay ||
                               (result?.isLoading ?? false)
                           ? null
-                          : () {
-                              runMutation(Variables$Mutation$updateOrder(
-                                  id: (widget.mainBlocState as OrderInvoice)
+                          : () async {
+                              final orderId =
+                                  (widget.mainBlocState as OrderInvoice)
                                       .order
-                                      .id,
+                                      .id;
+                              // p3-mesures M4 : motif avant l'annulation.
+                              final choice = await pickCancelReason(context);
+                              if (choice == null || !context.mounted) return;
+                              runMutation(Variables$Mutation$updateOrder(
+                                  id: orderId,
                                   update: Input$UpdateOrderInput(
                                       status: Enum$OrderStatus.RiderCanceled,
+                                      cancelReasonId: choice.reasonId,
                                       waitMinutes: 0,
                                       tipAmount: 0)));
                             },

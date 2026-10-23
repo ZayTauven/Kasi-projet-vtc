@@ -512,6 +512,8 @@ export class PilotComponent implements OnInit, OnDestroy {
         return "pilot.cancel.byClient";
       case "Driver":
         return "pilot.cancel.byKasiman";
+      case "Operator":
+        return "pilot.cancel.byOperator";
       default:
         return "pilot.cancel.byUnknown";
     }

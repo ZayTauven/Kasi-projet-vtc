@@ -8,6 +8,124 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-23 — `p2-argent` I4 (rider-app) : commande et réservation ne s'arrêtent plus sans rien dire
+
+**Décision de l'utilisateur, appliquée par `kasi-mobile-apps`, vérifiée par la session
+principale.** Point : `p2-argent` I4. Non committé. La commande n'est pas portée dans le
+`MainBloc` (option plus lourde, écartée pour l'instant).
+
+- `select_service_view.dart`, `_placeOrder` : exception rattrapée → Crashlytics (non fatale) et
+  bandeau `message_order_not_sent` (fr, en). Si `createOrder` était déjà parti, la commande
+  immédiate est relue par `CurrentOrderResyncScope.request` (mécanisme de `bug-timeout`, qui
+  réessaie même si l'écran a disparu) ; c'est un écart assumé avec `_reloadCurrentOrder`, qui
+  dépend de l'écran.
+- Chaque sortie sans commande (`_refreshQuote`, `_placeOrder`) laisse une trace `[COMMANDE]` et
+  la clé Crashlytics `commande_derniere_sortie`. Comportement inchangé.
+- `main_bloc.dart:351` : `||` → `&&`.
+- Vérifié sur l'émulateur : exception forcée après `createOrder`, bandeau affiché, course 198
+  relue au lieu d'une seconde commande ; sans l'exception, commande immédiate (200) et réservation
+  à J+1 (201) créées ; 3 lancements propres ; `flutter analyze` sans nouvelle alerte. Courses 198
+  à 201 annulées. Téléphone réel non testé.
+- **À décider** : une réservation interrompue par une exception n'est pas relue. En
+  `WaitingForPrePay`, c'est pourtant une course ouverte côté serveur, que le client ne revoit
+  qu'au redémarrage.
+- Constats : le portefeuille de la cliente de test 36 est à −1 600 FCFA (toutes ses commandes
+  partent en `WaitingForPrePay`) ; la première ouverture de la feuille des motifs a expiré à 20 s
+  juste après l'ouverture du WebSocket, avec un repli correct.
+
+---
+
+## 2026-10-23 — Réservation « qui n'aboutit pas » (rider-app) : non reproduite, sorties silencieuses
+
+**Session principale, puis `kasi-mobile-apps` (diagnostic seul).** Point : `p2-argent` I4 (devis
+figé, `bug-prix`), qui a réécrit la confirmation de commande et de réservation de rider-app.
+Aucun code modifié.
+
+- **Côté serveur, hors de cause** : à 01 h 18 et 01 h 20, le devis de réservation (`getFare` avec
+  `intervalMinutes`) est écrit, au même prix que l'aperçu. `createOrder` n'atteint jamais
+  rider-api (ni requête, ni devis consommé). La mutation de l'app, rejouée à la main pour J+1,
+  passe la validation.
+- **Non reproduit** sur l'émulateur avec le code actuel : réservations 196 (livraison) et 197
+  (Kasi Ville) enregistrées en `Booked`, confirmation affichée. Un message d'erreur forcé avant
+  `createOrder` s'affiche bien : délai ou refus n'auraient pas été muets.
+- **Explication la plus probable** : l'agent d'A2 développait dans rider-app à cette heure-là ; un
+  rechargement à chaud démonte l'écran de choix du service, et `_placeOrder` sort sur `!mounted`.
+  Non prouvé : logcat et journaux nginx de cette heure sont perdus.
+- **Fragilité réelle, quelle que soit la cause** : `_placeOrder` (`select_service_view.dart`)
+  peut s'arrêter sans rien dire, par trois sorties `!mounted` et par une exception non rattrapée.
+  Celle-ci part à Crashlytics (`I/flutter`, pas `E/flutter`) sans message au client. La commande
+  immédiate suit le même chemin.
+- **Défaut latent** : `main_bloc.dart:351`, `state is! SelectingPoints || state is! OrderPreview`
+  est toujours vrai (il faut `&&`). Sans effet aujourd'hui : `GetCurrentOrder` ne renvoie pas de
+  course close.
+- Nettoyage : 196 et 197 annulées par l'opérateur (motif « Autre raison »), pour qu'elles ne
+  partent pas au dispatch.
+- **Correctif proposé, non appliqué** : rattraper les exceptions de `_placeOrder` (Crashlytics
+  plus un message), tracer chaque sortie `!mounted`, corriger le `&&`. Le plus lourd (porter la
+  commande hors du widget, dans le `MainBloc`) est à décider.
+
+---
+
+## 2026-10-23 — `p3-mesures` M4, lot A2 (apps) et vérification de bout en bout
+
+**`kasi-mobile-apps`, puis session principale.** Points : `p3-mesures`. Fiche :
+`docs/fiche-motifs-annulation.md` §2 « Apps ». Non committé.
+
+**A2** : feuille « Pourquoi annulez-vous ? » partagée (`libs/client-shared/lib/components/
+cancel_reason_sheet.dart`), branchée sur les cinq chemins des apps (quatre côté client, un côté
+Kasiman). Motif obligatoire quand la liste est arrivée. Repli si la liste échoue, est vide ou
+dépasse 20 s : l'annulation part sans motif. La boîte d'avertissement des frais (client, après
+attribution) est remplacée : son texte s'affiche en tête de la feuille. Schémas Dart régénérés
+contre les API en marche. Piège : `lib/schema.gql` est celui que lit le générateur, il doit rester
+identique à `*.schema.gql`.
+
+**Validé** :
+- sur l'émulateur Pixel 9 (API 36) : un chemin par ligne, motif relu en base (courses 189 à 195),
+  coupure réseau (annulation sans motif), « Ne pas annuler », trois lancements propres par app ;
+- par la session principale dans le navigateur, panel reconstruit : fiche de la course 193
+  (« Motif d'annulation : Le client ne répond pas ») ; écran Pilote (motifs client et Kasiman
+  sous le bon auteur) ; répartiteur, sur la course de démo 142 restée `Requested` depuis juin :
+  confirmation grisée sans motif, puis `Expired`, motif « Commande en double », activité
+  `CanceledByOperator`, comptée sous `Operator` dans `pilotCancelReasons`.
+
+**Reste** :
+- **téléphone réel** : aucun n'était branché. Les APK de test visent `10.0.2.2` ; pour un
+  téléphone, reconstruire avec `KASI_SERVER_URL=http://192.168.1.2/...` (l'adresse par défaut en
+  `.76` est périmée) ;
+- **réservation impossible depuis l'app client** (constaté par l'agent, non examiné) : le prix est
+  recalculé, mais la course n'est jamais créée, sans message. Les réservations 190 et 191 ont été
+  insérées en SQL pour le test. Défaut nouveau, sans point du référentiel ;
+- **`bug-rafraichissement`** : côté client, une relecture échouée alors qu'aucune course n'est à
+  l'écran n'est jamais retentée ; une course acceptée entre-temps n'apparaît qu'au redémarrage ;
+- la base locale compte désormais plusieurs courses insérées en SQL (177 à 188, 190, 191), qui
+  faussent ses mesures.
+
+---
+
+## 2026-10-23 — `p3-mesures` M4, lot A3 (panel) : motif opérateur obligatoire et compté
+
+**`kasi-admin-panel`, puis session principale.** Points : `p3-mesures`. Fiche :
+`docs/fiche-motifs-annulation.md` §2 « Panel ». Non committé.
+
+- **Répartiteur** : « Annuler la demande » ouvre une confirmation, qui n'existait pas (l'annulation
+  partait au clic), avec un motif opérateur obligatoire. Repli de la fiche : catalogue absent ou
+  vide → avertissement, annulation sans motif. Le filtre `Operator` et `isEnabled` se fait dans le
+  panel : `OrderCancelReasonFilter` ne filtre que sur `id`.
+- **Indicateurs** : `pilotCancelReasons` et `topReasons` comptent aussi les annulations opérateur
+  (activité `CanceledByOperator`, statut `Expired`), auteur `Operator` ; libellé « Opérateur » à
+  l'écran Pilote. Type GraphQL inchangé. `pilot-insights.int-spec.ts` : 10/10.
+- **Fiche de course** : relation `cancelReason` ajoutée à `Order` (admin-api) et motif affiché
+  dans l'en-tête de la fiche.
+- **Session principale** : image admin-api reconstruite, relation `cancelReason` constatée dans
+  le schéma en marche, codegen du panel régénéré contre lui (ajouts seulement), partie fiche
+  appliquée.
+- Vérifié dans le navigateur après l'arrêt de l'émulateur d'A2 (entrée précédente) ; la première
+  reconstruction du panel avait calé faute de mémoire (154 Mo libres).
+- `codegen.live.tmp.yml`, fichier de travail de l'agent, est entré dans le commit `3b48977` de
+  l'utilisateur ; supprimé depuis, la suppression est à committer.
+
+---
+
 ## 2026-10-22 — `p3-mesures` M4 A1 vérifié ; trois suites pour A2 et A3
 
 **Session principale.** Après le compte rendu de `kasi-backend-services` (entrée suivante) :

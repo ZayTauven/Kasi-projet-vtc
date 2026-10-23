@@ -125,7 +125,7 @@ export class PilotCancelReasonDTO {
 
   @Field(() => AnnouncementUserType, {
     nullable: true,
-    description: 'Auteur de l annulation (Rider, Driver) ; null dans le top 5 du tableau.',
+    description: 'Auteur de l annulation (Rider, Driver, Operator) ; null dans le top 5 du tableau.',
   })
   canceledBy?: AnnouncementUserType | null;
 

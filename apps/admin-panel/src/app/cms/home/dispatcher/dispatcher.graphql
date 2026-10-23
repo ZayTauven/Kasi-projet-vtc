@@ -46,9 +46,22 @@ subscription OrderUpdated($id: ID!) {
   }
 }
 
-mutation CancelOrder($orderId: ID!) {
-  cancelOrder(orderId: $orderId) {
+mutation CancelOrder($orderId: ID!, $cancelReasonId: ID) {
+  cancelOrder(orderId: $orderId, cancelReasonId: $cancelReasonId) {
     id
     status
+  }
+}
+
+# p3-mesures M4 (A3) : catalogue des motifs. Le filtre par auteur et par
+# etat se fait cote panel (userType et isEnabled ne sont pas filtrables).
+query DispatcherCancelReasons {
+  orderCancelReasons(paging: { limit: 50 }, sorting: [{ field: id, direction: ASC }]) {
+    nodes {
+      id
+      title
+      isEnabled
+      userType
+    }
   }
 }

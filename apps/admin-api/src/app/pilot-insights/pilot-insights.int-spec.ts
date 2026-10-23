@@ -24,9 +24,9 @@
  * sollicitations (3b) relues brutes dans dispatch_attempt et seulement
  * agregees ici. Droits : Requests_View, ProviderWallet_View.
  *
- * Limite : aucune app n'envoie encore de motif d'annulation
- * (`request.cancelReasonId` n'est ecrit par aucune API) ; le test le pose en
- * SQL, comme le ferait l'app.
+ * Motifs d'annulation : le client et le Kasiman sont poses en SQL (comme le
+ * ferait l'app) ; l'operateur passe par `cancelOrder(orderId, cancelReasonId)`
+ * d'admin-api (M4 A1), compte sous l'auteur `Operator` (M4 A3).
  *
  *   npm run test:integration -- pilot-insights
  */
@@ -128,7 +128,7 @@ type Status = 'completed' | 'riderBefore' | 'riderAfter' | 'driver' | 'expired' 
 interface Spec {
   s: Scenario;
   rider: number;
-  reason?: 'wait' | 'plans' | 'unreachable';
+  reason?: 'wait' | 'plans' | 'unreachable' | 'duplicate';
   score?: number;
   near?: number[];
 }
@@ -233,6 +233,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
       ['wait', 'Attente trop longue', 'Rider'],
       ['plans', 'Changement de programme', 'Rider'],
       ['unreachable', 'Client injoignable', 'Driver'],
+      ['duplicate', 'Commande en double', 'Operator'],
     ]) {
       const [row] = await ds.query(
         `INSERT INTO order_cancel_reason (title, "userType") VALUES ($1, $2) RETURNING id`,
@@ -316,7 +317,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
       { s: 'booked', rider: 2 },
       { s: 'riderCancelBefore', rider: 3, reason: 'wait' },
       { s: 'cash', rider: 4, score: 80 },
-      { s: 'operatorCancel', rider: 1 },
+      { s: 'operatorCancel', rider: 1, reason: 'duplicate' },
       { s: 'wallet', rider: 0, score: 100 },
       { s: 'refusal', rider: 2 },
       { s: 'noKasiman', rider: 4 },
@@ -510,9 +511,12 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
       return { ...course, status: 'riderBefore' };
     }
     if (spec.s === 'operatorCancel') {
-      await buildAdminApi(ds, redis, d, moneyOperator).orderService.cancelOrder(orderId);
+      await buildAdminApi(ds, redis, d, moneyOperator).orderService.cancelOrder(orderId, course.reasonId);
       await runJobsUntil(orderId, async () => false);
       expect(await statusOf(orderId)).toBe(OrderStatus.Expired);
+      // Motif ecrit par l'API (pas par le test).
+      const [{ cancelReasonId }] = await ds.query(`SELECT "cancelReasonId" FROM request WHERE id = $1`, [orderId]);
+      expect(cancelReasonId).toBe(course.reasonId);
       return { ...course, status: 'operator' };
     }
     if (spec.s === 'refusal') {
@@ -575,7 +579,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
       const ts = new Date(week.getTime() + (6 + 9 * i) * HOUR);
       const course = await runCourse(spec, near, ts, noKasiman);
       if (spec.s === 'noKasiman') noKasiman++;
-      if (course.reasonId != null) {
+      if (course.reasonId != null && spec.s !== 'operatorCancel') {
         await ds.query(`UPDATE request SET "cancelReasonId" = $2 WHERE id = $1`, [course.id, course.reasonId]);
       }
       batch.push(course);
@@ -690,7 +694,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
       const answered = outcome('accepted') + outcome('rejected') + outcome('no_answer') + outcome('expired');
       const reasonCount = new Map<number, number>();
       for (const c of cs) {
-        if (c.reasonId != null && ['riderBefore', 'riderAfter', 'driver'].includes(c.status)) {
+        if (c.reasonId != null && ['riderBefore', 'riderAfter', 'driver', 'operator'].includes(c.status)) {
           reasonCount.set(c.reasonId, (reasonCount.get(c.reasonId) ?? 0) + 1);
         }
       }
@@ -870,7 +874,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
     expect(total.money!.commissionRecovered).toBeGreaterThan(0);
     expect(exp.weeks[0].all.money!.blockedKasimen).toBe(1);
     expect(exp.weeks[1].all.money!.blockedKasimen).toBe(0);
-    expect(total.cancellations.topReasons.length).toBe(3);
+    expect(total.cancellations.topReasons.length).toBe(4);
     expect(total.offers.rejected).toBe(2);
     expect(exp.total.parcels.orders.completed).toBe(4);
   });
@@ -930,8 +934,8 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
     const resolver = await resolverFor(['Requests_View']);
     const expected = new Map<string, { canceledBy: string; reasonId: number | null; title: string | null; userType: string | null; count: number }>();
     for (const c of courses.filter((x) => x.ts >= PERIOD.from && x.ts < PERIOD.to)) {
-      if (!['riderBefore', 'riderAfter', 'driver'].includes(c.status)) continue;
-      const canceledBy = c.status === 'driver' ? 'Driver' : 'Rider';
+      if (!['riderBefore', 'riderAfter', 'driver', 'operator'].includes(c.status)) continue;
+      const canceledBy = c.status === 'driver' ? 'Driver' : c.status === 'operator' ? 'Operator' : 'Rider';
       const r = Object.values(reasons).find((x) => x.id === c.reasonId);
       const key = `${canceledBy}|${c.reasonId}`;
       const row = expected.get(key) ?? { canceledBy, reasonId: c.reasonId, title: r?.title ?? null, userType: r?.userType ?? null, count: 0 };
@@ -945,6 +949,7 @@ describe('p3-mesures : tableau de suivi du pilote sur deux semaines de courses',
         (a.reasonId ?? Infinity) - (b.reasonId ?? Infinity),
     );
     expect(sorted.some((r) => r.reasonId == null)).toBe(true);
+    expect(sorted.some((r) => r.canceledBy === 'Operator' && r.reasonId === reasons.duplicate.id)).toBe(true);
     expect(await resolver.pilotCancelReasons(PERIOD.from, PERIOD.to)).toEqual(sorted);
   });
 

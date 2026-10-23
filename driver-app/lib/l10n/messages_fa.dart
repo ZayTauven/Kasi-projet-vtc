@@ -1042,4 +1042,17 @@ class SFa extends S {
   @override
   String get message_order_action_checking =>
       'The server is slow to respond. Checking the trip status…';
+
+  @override
+  String get cancel_reason_title => 'Why are you cancelling?';
+
+  @override
+  String get cancel_reason_confirm => 'Confirm cancellation';
+
+  @override
+  String get cancel_reason_back => 'Don\'t cancel';
+
+  @override
+  String get cancel_reason_unavailable =>
+      'Reasons could not be loaded. You can still cancel.';
 }

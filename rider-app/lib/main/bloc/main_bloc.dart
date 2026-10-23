@@ -348,7 +348,7 @@ class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
         case Enum$OrderStatus.RiderCanceled:
         case Enum$OrderStatus.DriverCanceled:
         case Enum$OrderStatus.$unknown:
-          if (state is! SelectingPoints || state is! OrderPreview) {
+          if (state is! SelectingPoints && state is! OrderPreview) {
             emit(SelectingPoints(const [], const [], true,
                 bookingsCount: bookings));
           }

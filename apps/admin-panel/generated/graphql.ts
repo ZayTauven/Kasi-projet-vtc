@@ -2961,6 +2961,7 @@ export type MutationAssignDriverToOrderArgs = {
 
 
 export type MutationCancelOrderArgs = {
+  cancelReasonId?: InputMaybe<Scalars['ID']['input']>;
   orderId: Scalars['ID']['input'];
 };
 
@@ -3670,6 +3671,7 @@ export type Order = {
   activities: Array<RequestActivity>;
   activitiesAggregate: Array<OrderActivitiesAggregateResponse>;
   addresses: Array<Scalars['String']['output']>;
+  cancelReason?: Maybe<OrderCancelReason>;
   complaints: Array<Complaint>;
   complaintsAggregate: Array<OrderComplaintsAggregateResponse>;
   conversation: Array<OrderMessage>;
@@ -4710,7 +4712,7 @@ export type PilotAssignment = {
 
 export type PilotCancelReason = {
   __typename?: 'PilotCancelReason';
-  /** Auteur de l annulation (Rider, Driver) ; null dans le top 5 du tableau. */
+  /** Auteur de l annulation (Rider, Driver, Operator) ; null dans le top 5 du tableau. */
   canceledBy?: Maybe<AnnouncementUserType>;
   count: Scalars['Int']['output'];
   /** null : annulation sans motif. */
@@ -7687,10 +7689,16 @@ export type OrderUpdatedSubscription = { __typename?: 'Subscription', orderUpdat
 
 export type CancelOrderMutationVariables = Exact<{
   orderId: Scalars['ID']['input'];
+  cancelReasonId?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
 
 export type CancelOrderMutation = { __typename?: 'Mutation', cancelOrder: { __typename?: 'Order', id: string, status: OrderStatus } };
+
+export type DispatcherCancelReasonsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DispatcherCancelReasonsQuery = { __typename?: 'Query', orderCancelReasons: { __typename?: 'OrderCancelReasonConnection', nodes: Array<{ __typename?: 'OrderCancelReason', id: string, title: string, isEnabled: boolean, userType: AnnouncementUserType }> } };
 
 export type DriverOverviewInfoFragment = { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, status: DriverStatus };
 
@@ -8717,7 +8725,7 @@ export type ViewOrderQueryVariables = Exact<{
 }>;
 
 
-export type ViewOrderQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdOn: any, expectedTimestamp?: any | null, costBest: number, costAfterCoupon: number, status: OrderStatus, currency: string, distanceBest: number, durationBest: number, startTimestamp?: any | null, finishTimestamp?: any | null, addresses: Array<string>, points: Array<{ __typename?: 'Point', lat: number, lng: number }>, service?: { __typename?: 'Service', name: string } | null, driver?: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: DriverStatus, media?: { __typename?: 'Media', address: string } | null } | null, rider?: { __typename?: 'Rider', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: RiderStatus, media?: { __typename?: 'Media', address: string } | null } | null, complaints: Array<{ __typename?: 'Complaint', id: string, subject: string, inscriptionTimestamp: any, content?: string | null, requestedByDriver: boolean }>, conversation: Array<{ __typename?: 'OrderMessage', sentAt: any, sentByDriver: boolean, status: MessageStatus, content: string }>, activities: Array<{ __typename?: 'RequestActivity', createdAt: any, type: RequestActivityType }>, coupon?: { __typename?: 'Coupon', title: string, code: string, expireAt: any } | null, riderTransactions: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, rechargeType?: RiderRechargeTransactionType | null, deductType?: RiderDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null, paymentGateway?: { __typename?: 'PaymentGateway', title: string } | null }>, driverTransactions: Array<{ __typename?: 'DriverTransaction', action: TransactionAction, rechargeType?: DriverRechargeTransactionType | null, deductType?: DriverDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null }>, providerTransactions: Array<{ __typename?: 'ProviderTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }>, fleetTransactions: Array<{ __typename?: 'FleetTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }> } };
+export type ViewOrderQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdOn: any, expectedTimestamp?: any | null, costBest: number, costAfterCoupon: number, status: OrderStatus, currency: string, distanceBest: number, durationBest: number, startTimestamp?: any | null, finishTimestamp?: any | null, addresses: Array<string>, points: Array<{ __typename?: 'Point', lat: number, lng: number }>, service?: { __typename?: 'Service', name: string } | null, cancelReason?: { __typename?: 'OrderCancelReason', title: string } | null, driver?: { __typename?: 'Driver', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: DriverStatus, media?: { __typename?: 'Media', address: string } | null } | null, rider?: { __typename?: 'Rider', id: string, firstName?: string | null, lastName?: string | null, mobileNumber: string, registrationTimestamp: any, status: RiderStatus, media?: { __typename?: 'Media', address: string } | null } | null, complaints: Array<{ __typename?: 'Complaint', id: string, subject: string, inscriptionTimestamp: any, content?: string | null, requestedByDriver: boolean }>, conversation: Array<{ __typename?: 'OrderMessage', sentAt: any, sentByDriver: boolean, status: MessageStatus, content: string }>, activities: Array<{ __typename?: 'RequestActivity', createdAt: any, type: RequestActivityType }>, coupon?: { __typename?: 'Coupon', title: string, code: string, expireAt: any } | null, riderTransactions: Array<{ __typename?: 'RiderTransaction', action: TransactionAction, rechargeType?: RiderRechargeTransactionType | null, deductType?: RiderDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null, paymentGateway?: { __typename?: 'PaymentGateway', title: string } | null }>, driverTransactions: Array<{ __typename?: 'DriverTransaction', action: TransactionAction, rechargeType?: DriverRechargeTransactionType | null, deductType?: DriverDeductTransactionType | null, amount: number, status: TransactionStatus, currency: string, refrenceNumber?: string | null }>, providerTransactions: Array<{ __typename?: 'ProviderTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }>, fleetTransactions: Array<{ __typename?: 'FleetTransaction', action: TransactionAction, rechargeType?: ProviderRechargeTransactionType | null, deductType?: ProviderDeductTransactionType | null, amount: number, currency: string, refrenceNumber?: string | null }> } };
 
 export type OrdersListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
@@ -9883,8 +9891,8 @@ export const OrderUpdatedDocument = gql`
     }
   }
 export const CancelOrderDocument = gql`
-    mutation CancelOrder($orderId: ID!) {
-  cancelOrder(orderId: $orderId) {
+    mutation CancelOrder($orderId: ID!, $cancelReasonId: ID) {
+  cancelOrder(orderId: $orderId, cancelReasonId: $cancelReasonId) {
     id
     status
   }
@@ -9896,6 +9904,29 @@ export const CancelOrderDocument = gql`
   })
   export class CancelOrderGQL extends Apollo.Mutation<CancelOrderMutation, CancelOrderMutationVariables> {
     document = CancelOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DispatcherCancelReasonsDocument = gql`
+    query DispatcherCancelReasons {
+  orderCancelReasons(paging: {limit: 50}, sorting: [{field: id, direction: ASC}]) {
+    nodes {
+      id
+      title
+      isEnabled
+      userType
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DispatcherCancelReasonsGQL extends Apollo.Query<DispatcherCancelReasonsQuery, DispatcherCancelReasonsQueryVariables> {
+    document = DispatcherCancelReasonsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -13120,6 +13151,9 @@ export const ViewOrderDocument = gql`
     }
     service {
       name
+    }
+    cancelReason {
+      title
     }
     driver {
       id

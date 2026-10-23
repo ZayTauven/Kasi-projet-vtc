@@ -442,5 +442,9 @@
   "vehicle_type_locked": "Pour changer de véhicule, contactez le support Kasi.",
   "vehicle_type_save": "Enregistrer",
   "message_request_timeout": "Le serveur met trop de temps à répondre. Réessayez dans un instant.",
-  "message_order_action_checking": "Le serveur tarde à répondre. Vérification de l'état de la course…"
+  "message_order_action_checking": "Le serveur tarde à répondre. Vérification de l'état de la course…",
+  "cancel_reason_title": "Pourquoi annulez-vous ?",
+  "cancel_reason_confirm": "Confirmer l'annulation",
+  "cancel_reason_back": "Ne pas annuler",
+  "cancel_reason_unavailable": "Les motifs n'ont pas pu être chargés. Vous pouvez annuler quand même."
 }

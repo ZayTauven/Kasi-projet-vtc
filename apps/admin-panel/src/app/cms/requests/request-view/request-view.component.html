@@ -10,6 +10,9 @@
         <span>{{ 'requests.duration' | translate }}: {{ (order.durationBest / 60).toFixed() }}:{{order.durationBest %
         60}}</span>
         <span>{{ 'profile.locations' | translate }}: {{order.addresses.join(' -> ')}}</span>
+        @if (order.cancelReason; as cancelReason) {
+          <span>{{ 'requests.cancelReason' | translate }}: {{ cancelReason.title }}</span>
+        }
       </div>
       <div class="kasi-profile-head__tags">
         <nz-tag [nzColor]="tagColor.orderStatus(order.status)">{{'enum.request.' + order.status | translate}}</nz-tag>

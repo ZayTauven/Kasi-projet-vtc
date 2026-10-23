@@ -13722,10 +13722,12 @@ class _CopyWithStubImpl$Input$UpdateOneOrderInput<TRes>
 
 class Input$UpdateOrderInput {
   factory Input$UpdateOrderInput({
+    String? cancelReasonId,
     int? destinationArrivedTo,
     double? paidAmount,
     Enum$OrderStatus? status,
   }) => Input$UpdateOrderInput._({
+    if (cancelReasonId != null) r'cancelReasonId': cancelReasonId,
     if (destinationArrivedTo != null)
       r'destinationArrivedTo': destinationArrivedTo,
     if (paidAmount != null) r'paidAmount': paidAmount,
@@ -13736,6 +13738,10 @@ class Input$UpdateOrderInput {
 
   factory Input$UpdateOrderInput.fromJson(Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('cancelReasonId')) {
+      final l$cancelReasonId = data['cancelReasonId'];
+      result$data['cancelReasonId'] = (l$cancelReasonId as String?);
+    }
     if (data.containsKey('destinationArrivedTo')) {
       final l$destinationArrivedTo = data['destinationArrivedTo'];
       result$data['destinationArrivedTo'] = (l$destinationArrivedTo as int?);
@@ -13755,6 +13761,8 @@ class Input$UpdateOrderInput {
 
   Map<String, dynamic> _$data;
 
+  String? get cancelReasonId => (_$data['cancelReasonId'] as String?);
+
   int? get destinationArrivedTo => (_$data['destinationArrivedTo'] as int?);
 
   double? get paidAmount => (_$data['paidAmount'] as double?);
@@ -13763,6 +13771,10 @@ class Input$UpdateOrderInput {
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('cancelReasonId')) {
+      final l$cancelReasonId = cancelReasonId;
+      result$data['cancelReasonId'] = l$cancelReasonId;
+    }
     if (_$data.containsKey('destinationArrivedTo')) {
       final l$destinationArrivedTo = destinationArrivedTo;
       result$data['destinationArrivedTo'] = l$destinationArrivedTo;
@@ -13789,6 +13801,15 @@ class Input$UpdateOrderInput {
       return true;
     }
     if (other is! Input$UpdateOrderInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$cancelReasonId = cancelReasonId;
+    final lOther$cancelReasonId = other.cancelReasonId;
+    if (_$data.containsKey('cancelReasonId') !=
+        other._$data.containsKey('cancelReasonId')) {
+      return false;
+    }
+    if (l$cancelReasonId != lOther$cancelReasonId) {
       return false;
     }
     final l$destinationArrivedTo = destinationArrivedTo;
@@ -13822,10 +13843,12 @@ class Input$UpdateOrderInput {
 
   @override
   int get hashCode {
+    final l$cancelReasonId = cancelReasonId;
     final l$destinationArrivedTo = destinationArrivedTo;
     final l$paidAmount = paidAmount;
     final l$status = status;
     return Object.hashAll([
+      _$data.containsKey('cancelReasonId') ? l$cancelReasonId : const {},
       _$data.containsKey('destinationArrivedTo')
           ? l$destinationArrivedTo
           : const {},
@@ -13845,6 +13868,7 @@ abstract class CopyWith$Input$UpdateOrderInput<TRes> {
       _CopyWithStubImpl$Input$UpdateOrderInput;
 
   TRes call({
+    String? cancelReasonId,
     int? destinationArrivedTo,
     double? paidAmount,
     Enum$OrderStatus? status,
@@ -13862,12 +13886,15 @@ class _CopyWithImpl$Input$UpdateOrderInput<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? cancelReasonId = _undefined,
     Object? destinationArrivedTo = _undefined,
     Object? paidAmount = _undefined,
     Object? status = _undefined,
   }) => _then(
     Input$UpdateOrderInput._({
       ..._instance._$data,
+      if (cancelReasonId != _undefined)
+        'cancelReasonId': (cancelReasonId as String?),
       if (destinationArrivedTo != _undefined)
         'destinationArrivedTo': (destinationArrivedTo as int?),
       if (paidAmount != _undefined) 'paidAmount': (paidAmount as double?),
@@ -13883,6 +13910,7 @@ class _CopyWithStubImpl$Input$UpdateOrderInput<TRes>
   TRes _res;
 
   call({
+    String? cancelReasonId,
     int? destinationArrivedTo,
     double? paidAmount,
     Enum$OrderStatus? status,

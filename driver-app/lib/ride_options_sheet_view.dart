@@ -7,6 +7,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:kasi_driver/l10n/messages.dart';
 import 'package:kasi_driver/main.graphql.dart';
 import 'package:kasi_driver/current_order_resync.dart';
+import 'package:kasi_driver/cancel_reason_picker.dart';
 import 'package:kasi_driver/schema.gql.dart';
 
 class RideOptionsSheetView extends StatelessWidget {
@@ -56,9 +57,14 @@ class RideOptionsSheetView extends StatelessWidget {
                       onPressed: (result?.isLoading ?? false)
                           ? null
                           : () async {
+                              // p3-mesures M4 : motif demandé avant
+                              // d'annuler (vide si la liste est indisponible).
+                              final choice = await pickCancelReason(context);
+                              if (choice == null || !context.mounted) return;
                               runMutation(Variables$Mutation$UpdateOrderStatus(
                                       orderId: orderId,
-                                      status: Enum$OrderStatus.DriverCanceled))
+                                      status: Enum$OrderStatus.DriverCanceled,
+                                      cancelReasonId: choice.reasonId))
                                   .networkResult;
                             });
                 }),

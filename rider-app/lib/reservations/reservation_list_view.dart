@@ -6,6 +6,7 @@ import 'package:client_shared/components/empty_state_card_view.dart';
 import 'package:client_shared/components/back_button.dart';
 import 'package:intl/intl.dart';
 import 'package:kasi_rider/history/history.graphql.dart';
+import 'package:kasi_rider/main/cancel_reason_picker.dart';
 import 'package:kasi_rider/query_result_view.dart';
 import 'package:client_shared/theme/theme.dart';
 
@@ -50,9 +51,12 @@ class ReservationListView extends StatelessWidget {
                           itemBuilder: (context, index) {
                             return ReservationItem(
                               reservation: reservations[index].node,
-                              onCancelSelected: (id) {
-                                runMutation(
-                                    Variables$Mutation$CancelBooking(id: id));
+                              onCancelSelected: (id) async {
+                                // p3-mesures M4 : motif avant l'annulation.
+                                final choice = await pickCancelReason(context);
+                                if (choice == null || !context.mounted) return;
+                                runMutation(Variables$Mutation$CancelBooking(
+                                    id: id, cancelReasonId: choice.reasonId));
                               },
                             );
                           });

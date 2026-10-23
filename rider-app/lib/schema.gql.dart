@@ -10549,11 +10549,13 @@ class _CopyWithStubImpl$Input$UpdateOneRiderInput<TRes>
 
 class Input$UpdateOrderInput {
   factory Input$UpdateOrderInput({
+    String? cancelReasonId,
     String? couponCode,
     Enum$OrderStatus? status,
     double? tipAmount,
     int? waitMinutes,
   }) => Input$UpdateOrderInput._({
+    if (cancelReasonId != null) r'cancelReasonId': cancelReasonId,
     if (couponCode != null) r'couponCode': couponCode,
     if (status != null) r'status': status,
     if (tipAmount != null) r'tipAmount': tipAmount,
@@ -10564,6 +10566,10 @@ class Input$UpdateOrderInput {
 
   factory Input$UpdateOrderInput.fromJson(Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('cancelReasonId')) {
+      final l$cancelReasonId = data['cancelReasonId'];
+      result$data['cancelReasonId'] = (l$cancelReasonId as String?);
+    }
     if (data.containsKey('couponCode')) {
       final l$couponCode = data['couponCode'];
       result$data['couponCode'] = (l$couponCode as String?);
@@ -10587,6 +10593,8 @@ class Input$UpdateOrderInput {
 
   Map<String, dynamic> _$data;
 
+  String? get cancelReasonId => (_$data['cancelReasonId'] as String?);
+
   String? get couponCode => (_$data['couponCode'] as String?);
 
   Enum$OrderStatus? get status => (_$data['status'] as Enum$OrderStatus?);
@@ -10597,6 +10605,10 @@ class Input$UpdateOrderInput {
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('cancelReasonId')) {
+      final l$cancelReasonId = cancelReasonId;
+      result$data['cancelReasonId'] = l$cancelReasonId;
+    }
     if (_$data.containsKey('couponCode')) {
       final l$couponCode = couponCode;
       result$data['couponCode'] = l$couponCode;
@@ -10627,6 +10639,15 @@ class Input$UpdateOrderInput {
       return true;
     }
     if (other is! Input$UpdateOrderInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$cancelReasonId = cancelReasonId;
+    final lOther$cancelReasonId = other.cancelReasonId;
+    if (_$data.containsKey('cancelReasonId') !=
+        other._$data.containsKey('cancelReasonId')) {
+      return false;
+    }
+    if (l$cancelReasonId != lOther$cancelReasonId) {
       return false;
     }
     final l$couponCode = couponCode;
@@ -10669,11 +10690,13 @@ class Input$UpdateOrderInput {
 
   @override
   int get hashCode {
+    final l$cancelReasonId = cancelReasonId;
     final l$couponCode = couponCode;
     final l$status = status;
     final l$tipAmount = tipAmount;
     final l$waitMinutes = waitMinutes;
     return Object.hashAll([
+      _$data.containsKey('cancelReasonId') ? l$cancelReasonId : const {},
       _$data.containsKey('couponCode') ? l$couponCode : const {},
       _$data.containsKey('status') ? l$status : const {},
       _$data.containsKey('tipAmount') ? l$tipAmount : const {},
@@ -10692,6 +10715,7 @@ abstract class CopyWith$Input$UpdateOrderInput<TRes> {
       _CopyWithStubImpl$Input$UpdateOrderInput;
 
   TRes call({
+    String? cancelReasonId,
     String? couponCode,
     Enum$OrderStatus? status,
     double? tipAmount,
@@ -10710,6 +10734,7 @@ class _CopyWithImpl$Input$UpdateOrderInput<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? cancelReasonId = _undefined,
     Object? couponCode = _undefined,
     Object? status = _undefined,
     Object? tipAmount = _undefined,
@@ -10717,6 +10742,8 @@ class _CopyWithImpl$Input$UpdateOrderInput<TRes>
   }) => _then(
     Input$UpdateOrderInput._({
       ..._instance._$data,
+      if (cancelReasonId != _undefined)
+        'cancelReasonId': (cancelReasonId as String?),
       if (couponCode != _undefined) 'couponCode': (couponCode as String?),
       if (status != _undefined) 'status': (status as Enum$OrderStatus?),
       if (tipAmount != _undefined) 'tipAmount': (tipAmount as double?),
@@ -10732,6 +10759,7 @@ class _CopyWithStubImpl$Input$UpdateOrderInput<TRes>
   TRes _res;
 
   call({
+    String? cancelReasonId,
     String? couponCode,
     Enum$OrderStatus? status,
     double? tipAmount,

@@ -96,6 +96,11 @@ input CalculateFareInput {
   twoWay: Boolean
 }
 
+type CancelReason {
+  id: ID!
+  title: String!
+}
+
 type CarColor {
   id: ID!
   name: String!
@@ -387,8 +392,8 @@ enum MessageStatus {
 type Mutation {
   applyCoupon(code: String!): Order!
   calculateFare(input: CalculateFareInput!): CalculateFareDTO!
-  cancelBooking(id: ID!): Order!
-  cancelOrder: Order!
+  cancelBooking(cancelReasonId: ID, id: ID!): Order!
+  cancelOrder(cancelReasonId: ID): Order!
   createOneComplaint(input: CreateOneComplaintInput!): Complaint!
   createOneOrderMessage(input: CreateOneOrderMessageInput!): OrderMessage!
   createOneRiderAddress(input: CreateOneRiderAddressInput!): RiderAddress!
@@ -676,6 +681,9 @@ type Query {
     """Specify to sort results."""
     sorting: [AnnouncementSort!]! = []
   ): AnnouncementConnection!
+
+  """Motifs d'annulation du client, actifs, tries par id."""
+  cancelReasons: [CancelReason!]!
   currentOrder: Order!
   currentOrderWithLocation: CurrentOrder!
   feedbackParameters(
@@ -1199,6 +1207,7 @@ input UpdateOneRiderInput {
 }
 
 input UpdateOrderInput {
+  cancelReasonId: ID
   couponCode: String
   status: OrderStatus
   tipAmount: Float

@@ -442,5 +442,9 @@
   "vehicle_type_locked": "To change vehicle, contact Kasi support.",
   "vehicle_type_save": "Save",
   "message_request_timeout": "The server is taking too long to respond. Please try again in a moment.",
-  "message_order_action_checking": "The server is slow to respond. Checking the trip status…"
+  "message_order_action_checking": "The server is slow to respond. Checking the trip status…",
+  "cancel_reason_title": "Why are you cancelling?",
+  "cancel_reason_confirm": "Confirm cancellation",
+  "cancel_reason_back": "Don't cancel",
+  "cancel_reason_unavailable": "Reasons could not be loaded. You can still cancel."
 }

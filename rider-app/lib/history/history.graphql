@@ -64,8 +64,8 @@ query GetOrderDetails($id: ID!) {
   }
 }
 
-mutation CancelBooking($id: ID!) {
-  cancelBooking(id: $id) {
+mutation CancelBooking($id: ID!, $cancelReasonId: ID) {
+  cancelBooking(id: $id, cancelReasonId: $cancelReasonId) {
     id
   }
 }

@@ -18,6 +18,7 @@ import { FleetTransactionDTO } from '../../fleet/dto/fleet-transaction.dto';
 import { RiderTransactionDTO } from '../../rider/dto/rider-transaction.dto';
 import { RiderDTO } from '../../rider/dto/rider.dto';
 import { ServiceDTO } from '../../service/dto/service.dto';
+import { OrderCancelReasonDTO } from './order-cancel-reason.dto';
 import { OrderMessageDTO } from './order-message.dto';
 import { RequestActivityDTO } from './request-activity.dto';
 
@@ -26,6 +27,8 @@ import { RequestActivityDTO } from './request-activity.dto';
 @Relation('rider', () => RiderDTO, { nullable: true })
 @Relation('service', () => ServiceDTO, { nullable: true })
 @Relation('coupon', () => CouponDTO, { nullable: true })
+// p3-mesures M4 (A3) : motif d'annulation, lu par la fiche de course.
+@Relation('cancelReason', () => OrderCancelReasonDTO, { nullable: true })
 @UnPagedRelation('complaints', () => ComplaintDTO)
 @UnPagedRelation('conversation', () => OrderMessageDTO, {
   relationName: 'conversation',

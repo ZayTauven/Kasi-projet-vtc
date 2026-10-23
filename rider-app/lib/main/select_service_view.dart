@@ -19,6 +19,7 @@ import 'package:kasi_rider/main/current_order_resync.dart';
 import 'package:kasi_rider/main/reserve_confirmation_sheet_view.dart';
 import 'package:kasi_rider/main/reserve_ride_sheet_view.dart';
 import 'package:kasi_rider/main/ride_preferences_sheet_view.dart';
+import 'package:kasi_rider/monitoring/crash_reporting.dart';
 import 'package:kasi_rider/query_result_view.dart';
 import 'package:kasi_rider/schema.gql.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -200,17 +201,27 @@ class _SelectServiceViewState extends State<SelectServiceView> {
       final client = GraphQLProvider.of(context).value;
       final result =
           await fetchFare(client, state, intervalMinutes: intervalMinutes);
-      if (!mounted) return null;
+      if (!mounted) {
+        _traceExit('_refreshQuote', 'écran démonté après getFare');
+        return null;
+      }
       final fare = result.parsedData?.getFare;
       final service = fare == null ? null : findFareService(fare, serviceId);
       final routeMissing = (fare != null && service == null) ||
           graphqlErrorCode(result.exception) ==
               FareQuoteErrorCode.routeUnavailable;
       if (routeMissing) {
-        if (await showRouteUnavailable(context) && mounted) continue;
+        final retry = await showRouteUnavailable(context);
+        if (retry && mounted) continue;
+        _traceExit(
+            '_refreshQuote',
+            mounted
+                ? 'itinéraire indisponible, le client renonce'
+                : 'écran démonté pendant « itinéraire indisponible »');
         return null;
       }
       if (fare == null || service == null) {
+        _traceExit('_refreshQuote', 'devis refusé, message affiché');
         showOperationErrorMessage(context, result.exception);
         return null;
       }
@@ -222,10 +233,29 @@ class _SelectServiceViewState extends State<SelectServiceView> {
       if (newPrice.round() != agreedPrice.round()) {
         final accepted = await confirmFareChange(context,
             oldPrice: agreedPrice, newPrice: newPrice, currency: fare.currency);
-        if (!accepted || !mounted) return null;
+        if (!mounted) {
+          _traceExit('_refreshQuote', 'écran démonté pendant le nouveau prix');
+          return null;
+        }
+        if (!accepted) {
+          _traceExit('_refreshQuote', 'nouveau prix refusé par le client');
+          return null;
+        }
       }
       return service;
     }
+  }
+
+  /// p2-argent I4 : `_placeOrder` ne doit plus s'arrêter sans laisser de
+  /// trace (réservation « qui n'aboutit pas » du 23 octobre). Chaque sortie
+  /// sans commande est écrite au journal et dans une clé Crashlytics, relue
+  /// avec le prochain rapport. Aucune donnée personnelle.
+  void _traceExit(String where, String why) {
+    final message = '$where : $why';
+    debugPrint('[COMMANDE] sortie sans commande, $message');
+    unawaited(errorReporter
+        .setCustomKey('commande_derniere_sortie', message)
+        .catchError((Object _) {}));
   }
 
   /// Course déjà enregistrée (devis consommé, par exemple après un délai
@@ -251,10 +281,16 @@ class _SelectServiceViewState extends State<SelectServiceView> {
   Future<void> _placeOrder({DateTime? bookAt}) async {
     final mainBloc = context.read<MainBloc>();
     final state = mainBloc.state;
-    if (state is! OrderPreview || state.selectedService == null) return;
+    if (state is! OrderPreview || state.selectedService == null) {
+      _traceExit('_placeOrder', 'pas d’aperçu ou pas de service choisi');
+      return;
+    }
     setState(() => isLoading = true);
+    // Vrai dès que createOrder est parti : la course a pu être créée.
+    var orderSent = false;
     try {
       if (Hive.box('user').get('jwt') == null) {
+        _traceExit('_placeOrder', 'pas de session, écran de connexion');
         Navigator.pushNamed(context, 'login');
         return;
       }
@@ -262,10 +298,21 @@ class _SelectServiceViewState extends State<SelectServiceView> {
       DeliveryDetails? delivery;
       if (_isDelivery(state.selectedService!)) {
         delivery = await _askDeliveryDetails(context);
-        if (delivery == null || !mounted) return;
+        if (!mounted) {
+          _traceExit('_placeOrder', 'écran démonté après les détails du colis');
+          return;
+        }
+        if (delivery == null) {
+          _traceExit('_placeOrder', 'détails du colis abandonnés');
+          return;
+        }
       }
       final fcmId = await _getFcmToken(context);
-      if (!mounted) return;
+      if (!mounted) {
+        _traceExit(
+            '_placeOrder', 'écran démonté après le jeton de notification');
+        return;
+      }
 
       var quote = findFareService(_fare, serviceId) ?? state.selectedService!;
       var agreedPrice = displayedFare(quote);
@@ -281,11 +328,17 @@ class _SelectServiceViewState extends State<SelectServiceView> {
           final refreshed = await _refreshQuote(state, serviceId,
               intervalMinutes: bookAt == null ? null : intervalMinutes,
               agreedPrice: agreedPrice);
-          if (refreshed == null || !mounted) return;
+          if (!mounted) {
+            _traceExit('_placeOrder', 'écran démonté après le devis');
+            return;
+          }
+          // La cause est déjà tracée par _refreshQuote.
+          if (refreshed == null) return;
           quote = refreshed;
           agreedPrice = displayedFare(refreshed);
         }
         final client = GraphQLProvider.of(context).value;
+        orderSent = true;
         final result = await client.mutate$CreateOrder(
             Options$Mutation$CreateOrder(
                 variables: Variables$Mutation$CreateOrder(
@@ -307,7 +360,13 @@ class _SelectServiceViewState extends State<SelectServiceView> {
                         recipientMobileNumber: delivery?.recipientMobileNumber,
                         deliveryInstructions: delivery?.deliveryInstructions),
                     notificationPlayerId: fcmId ?? '')));
-        if (!mounted) return;
+        if (!mounted) {
+          _traceExit(
+              '_placeOrder',
+              'écran démonté après createOrder '
+                  '(${result.hasException ? 'échec' : 'réussite'})');
+          return;
+        }
         final order = result.parsedData?.createOrder;
         if (!result.hasException && order != null) {
           if (order.status == Enum$OrderStatus.Booked) {
@@ -333,6 +392,7 @@ class _SelectServiceViewState extends State<SelectServiceView> {
               needsQuote = true;
               continue;
             }
+            _traceExit('_placeOrder', 'itinéraire refusé par createOrder');
             return;
           case FareQuoteErrorCode.alreadyUsed:
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -345,7 +405,10 @@ class _SelectServiceViewState extends State<SelectServiceView> {
             }
             return;
         }
-        if (!mounted) return;
+        if (!mounted) {
+          _traceExit('_placeOrder', 'écran démonté avant le message d’erreur');
+          return;
+        }
         if (bookAt == null) {
           // bug-timeout : la course a pu être créée malgré l'échec ; on la
           // relit au lieu de laisser recommander à l'aveugle.
@@ -354,6 +417,26 @@ class _SelectServiceViewState extends State<SelectServiceView> {
           showOperationErrorMessage(context, result.exception);
         }
         return;
+      }
+    } catch (e, st) {
+      // p2-argent I4 : une exception ici partait sans message au client.
+      final kind = bookAt == null ? 'commande immédiate' : 'réservation';
+      debugPrint('[COMMANDE] exception pendant la $kind : $e');
+      errorReporter.recordError(e, st,
+          reason: 'pendant _placeOrder ($kind'
+              '${orderSent ? ', après envoi de createOrder' : ''})');
+      if (bookAt == null && orderSent) {
+        // bug-timeout : la course a pu être créée ; on la relit au lieu de
+        // laisser recommander à l'aveugle (nouvel essai toutes les 5 s si
+        // la relecture échoue, même si cet écran a disparu).
+        CurrentOrderResyncScope.request('exception après createOrder');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: KasiBanner(S.of(context).message_order_not_sent,
+                type: BannerType.error)));
+      } else {
+        _traceExit('_placeOrder', 'exception, écran démonté : $kind');
       }
     } finally {
       if (mounted) setState(() => isLoading = false);

@@ -66,6 +66,11 @@ input BooleanFieldComparison {
   isNot: Boolean
 }
 
+type CancelReason {
+  id: ID!
+  title: String!
+}
+
 type CarColor {
   id: ID!
   name: String!
@@ -1141,6 +1146,9 @@ type Query {
     sorting: [AnnouncementSort!]! = []
   ): [Announcement!]!
   availableOrders: [Order!]!
+
+  """Motifs d'annulation du Kasiman, actifs, tries par id."""
+  cancelReasons: [CancelReason!]!
   carColors(
     """Specify to filter the records returned."""
     filter: CarColorFilter! = {}
@@ -1564,6 +1572,7 @@ input UpdateOneOrderInput {
 }
 
 input UpdateOrderInput {
+  cancelReasonId: ID
   destinationArrivedTo: Int
   paidAmount: Float
   status: OrderStatus

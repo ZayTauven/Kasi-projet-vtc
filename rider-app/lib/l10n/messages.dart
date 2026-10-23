@@ -1491,6 +1491,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'The server is slow to respond. Checking the trip status…'**
   String get message_order_action_checking;
+
+  /// No description provided for @message_order_not_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request could not be completed. Please try again in a moment.'**
+  String get message_order_not_sent;
+
+  /// No description provided for @cancel_reason_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you cancelling?'**
+  String get cancel_reason_title;
+
+  /// No description provided for @cancel_reason_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm cancellation'**
+  String get cancel_reason_confirm;
+
+  /// No description provided for @cancel_reason_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t cancel'**
+  String get cancel_reason_back;
+
+  /// No description provided for @cancel_reason_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reasons could not be loaded. You can still cancel.'**
+  String get cancel_reason_unavailable;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

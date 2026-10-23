@@ -769,4 +769,21 @@ class SFr extends S {
   @override
   String get message_order_action_checking =>
       'Le serveur tarde à répondre. Vérification de l\'état de la course…';
+
+  @override
+  String get message_order_not_sent =>
+      'Votre demande n\'a pas pu aboutir. Réessayez dans un instant.';
+
+  @override
+  String get cancel_reason_title => 'Pourquoi annulez-vous ?';
+
+  @override
+  String get cancel_reason_confirm => 'Confirmer l\'annulation';
+
+  @override
+  String get cancel_reason_back => 'Ne pas annuler';
+
+  @override
+  String get cancel_reason_unavailable =>
+      'Les motifs n\'ont pas pu être chargés. Vous pouvez annuler quand même.';
 }

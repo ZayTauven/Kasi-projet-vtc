@@ -23667,6 +23667,18 @@
             "description": null,
             "args": [
               {
+                "name": "cancelReasonId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "orderId",
                 "description": null,
                 "type": {
@@ -28696,6 +28708,18 @@
                   }
                 }
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cancelReason",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "OrderCancelReason",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -37030,7 +37054,7 @@
         "fields": [
           {
             "name": "canceledBy",
-            "description": "Auteur de l annulation (Rider, Driver) ; null dans le top 5 du tableau.",
+            "description": "Auteur de l annulation (Rider, Driver, Operator) ; null dans le top 5 du tableau.",
             "args": [],
             "type": {
               "kind": "ENUM",

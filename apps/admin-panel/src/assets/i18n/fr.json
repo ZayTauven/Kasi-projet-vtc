@@ -290,6 +290,7 @@
     "estimatedCost": "Coût estimé",
     "header": "Demande #",
     "requestTIme": "Heure de la demande",
+    "cancelReason": "Motif d'annulation",
     "service": "Service",
     "distance": "Distance",
     "duration": "Durée",
@@ -469,6 +470,11 @@
     "determiningLocation": "Détermination de l'emplacement, veuillez patienter...",
     "viewRequestDetails": "Voir les détails de la demande",
     "cancelRequest": "Annuler la demande",
+    "cancelTitle": "Annuler la demande",
+    "cancelDesc": "Choisissez le motif de l'annulation. Il est enregistré avec la course et compté dans le suivi du pilote.",
+    "cancelReasonsUnavailable": "Motifs indisponibles : la demande sera annulée sans motif.",
+    "cancelConfirm": "Annuler la demande",
+    "cancelKeep": "Garder la demande",
     "driverAcceptedRequestSuffix": "a accepté la demande. Rendez-vous sur la page de la course pour plus d'informations.",
     "tripStatusUpdated": "Le statut de la course a été mis à jour : {{status}}.",
     "time": "Heure"
@@ -1637,6 +1643,7 @@
       "noReason": "Sans motif",
       "byClient": "Client",
       "byKasiman": "Kasiman",
+      "byOperator": "Opérateur",
       "byUnknown": "Non précisé"
     },
     "unserved": {

@@ -115,8 +115,16 @@ mutation CreateOrder(
   }
 }
 
-mutation CancelOrder {
-  cancelOrder {
+# p3-mesures M4 : motifs d'annulation du client (lus à l'ouverture de la feuille).
+query CancelReasons {
+  cancelReasons {
+    id
+    title
+  }
+}
+
+mutation CancelOrder($cancelReasonId: ID) {
+  cancelOrder(cancelReasonId: $cancelReasonId) {
     ...CurrentOrder
   }
 }

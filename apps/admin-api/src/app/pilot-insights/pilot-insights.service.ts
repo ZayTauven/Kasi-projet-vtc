@@ -142,6 +142,15 @@ const FACTS = `
   )`;
 
 const CANCELED = `('RiderCanceled', 'DriverCanceled')`;
+/**
+ * Annulations avec auteur (indicateur 4) : client, Kasiman, et operateur
+ * (`cancelOrder` d'admin-api passe la course en `Expired` et note l'activite
+ * `CanceledByOperator`), dans le `facts` aliase `f`.
+ */
+const CANCELED_WITH_AUTHOR = `(f."status" IN ${CANCELED} OR f."operatorCanceled")`;
+const CANCELED_BY = `CASE WHEN f."status" = 'RiderCanceled' THEN 'Rider'
+                          WHEN f."status" = 'DriverCanceled' THEN 'Driver'
+                          ELSE 'Operator' END`;
 const EXPIRED = `('Expired', 'NotFound', 'NoCloseFound')`;
 
 /** Semaine x famille, semaine, famille, periode (+ colonnes supplementaires). */
@@ -429,19 +438,19 @@ export class PilotInsightsService {
 
   /**
    * Motifs d'annulation (BetterSuite `cancelReasonPopularityByName` et
-   * `ByUserType`, reunis) : par auteur (client, Kasiman) et par motif, sans
+   * `ByUserType`, reunis) : par auteur (client, Kasiman, operateur) et par motif, sans
    * motif compris (`reasonId` null).
    */
   async cancelReasons(from: Date, to: Date): Promise<PilotCancelReasonDTO[]> {
     checkPilotPeriod(from, to);
     const rows: PilotCancelReasonDTO[] = await this.dataSource.query(
       `${FACTS}
-       SELECT CASE WHEN f."status" = 'RiderCanceled' THEN 'Rider' ELSE 'Driver' END AS "canceledBy",
+       SELECT ${CANCELED_BY} AS "canceledBy",
               f."cancelReasonId" AS "reasonId", cr."title", cr."userType"::text AS "userType",
               count(*)::int AS "count"
          FROM facts f
          LEFT JOIN "order_cancel_reason" cr ON cr."id" = f."cancelReasonId"
-        WHERE f."status" IN ${CANCELED}
+        WHERE ${CANCELED_WITH_AUTHOR}
         GROUP BY 1, 2, 3, 4
         ORDER BY "count" DESC, "canceledBy" DESC, "reasonId" ASC NULLS LAST`,
       [from.toISOString(), to.toISOString()],
@@ -539,9 +548,9 @@ export class PilotInsightsService {
       `${FACTS}
        SELECT g."week", g."family", g."reasonId", cr."title", cr."userType"::text AS "userType", g."n"
          FROM (
-           SELECT "week", "family", "cancelReasonId" AS "reasonId", count(*)::int AS "n"
-             FROM facts
-            WHERE "status" IN ${CANCELED} AND "cancelReasonId" IS NOT NULL
+           SELECT f."week", f."family", f."cancelReasonId" AS "reasonId", count(*)::int AS "n"
+             FROM facts f
+            WHERE ${CANCELED_WITH_AUTHOR} AND f."cancelReasonId" IS NOT NULL
             GROUP BY ${groupingSets(['"cancelReasonId"'])}
          ) g
          JOIN "order_cancel_reason" cr ON cr."id" = g."reasonId"`,

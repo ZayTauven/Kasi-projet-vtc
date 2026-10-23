@@ -19,6 +19,9 @@ query ViewOrder($id: ID!) {
     service {
       name
     }
+    cancelReason {
+      title
+    }
     driver {
       id
       firstName
