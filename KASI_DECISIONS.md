@@ -8,6 +8,35 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-23 — Déploiement groupé : fiche de cadrage, à valider
+
+**Session principale.** Points : `p1-migrations`, `socle-deploiement`. Fiche :
+`docs/fiche-deploiement-groupe.md`. Aucune commande exécutée en production.
+
+- **Écart** : prod à `8cbe512` (25 juillet), `main` à `dbef451` (23 commits, 443 fichiers, arbre
+  propre, 2 commits non poussés). 7 migrations après la baseline, toutes additives ; l'ancien code
+  doit tourner sur le schéma migré (à prouver en répétition).
+- **Risques relevés** :
+  - `MoneyPolicy` active un plafond de dette de 10 000 XOF dès le déploiement : un Kasiman au-delà
+    est bloqué ;
+  - la configuration Yessal posée à la main dans `kasi-nginx` peut disparaître à la recréation du
+    conteneur ;
+  - le `migrate.js check` du runbook §6 n'est plus utilisable avant `mark-baseline` (7 migrations
+    en attente) : la conformité de départ se vérifie sur la copie.
+- **Écartés** : pas de suspension KYC au déploiement (seuls les documents expirés suspendent) ;
+  pas de Kasiman rendu inapte (sans type de véhicule, il reste apte) ; permissions des opérateurs
+  inchangées depuis la prod ; contrat des apps installées respecté (arguments facultatifs et
+  énumérations nouvelles seulement).
+- **Proposé** : répétition complète sur une copie de la prod ; fenêtre unique combinant runbook
+  §6 et §7 bis, API arrêtées une à deux minutes ; images en service étiquetées `8cbe512` avant le
+  build, pour un retour du code sans reconstruction ; `DISPATCH_MODE=legacy` au déploiement, puis
+  `waves` après la distribution des nouvelles apps ; paramétrage de Dakar au début de la phase 3,
+  pas au déploiement.
+- À décider (fiche §8) : date, utilisateurs réels à prévenir, plafond de dette, mode de
+  distribution des apps, feu vert pour la répétition.
+
+---
+
 ## 2026-10-23 — `p2-argent` I4 (rider-app) : commande et réservation ne s'arrêtent plus sans rien dire
 
 **Décision de l'utilisateur, appliquée par `kasi-mobile-apps`, vérifiée par la session
