@@ -28,6 +28,12 @@ const routes: Routes = [
                 (m) => m.DispatcherModule
               ),
           },
+          {
+            // p3-mesures M2 : suivi du pilote (docs/fiche-mesures-pilote.md §4).
+            path: 'pilot',
+            loadChildren: () =>
+              import('./home/pilot/pilot.module').then((m) => m.PilotModule),
+          },
         ],
       },
       {

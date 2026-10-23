@@ -37,6 +37,7 @@ import { CronJobService } from './cron-job.service';
 import { DriverModule } from '../driver/driver.module';
 import { SharedDriverService } from '@kasi/order/shared-driver.service';
 import { OrderService } from './order.service';
+import { CancelReasonResolver } from './cancel-reason.resolver';
 import { FleetWalletEntity } from '@kasi/database/fleet-wallet.entity';
 import { FleetTransactionEntity } from '@kasi/database/fleet-transaction.entity';
 import { OrderSubscriptionService } from './order-subscription.service';
@@ -121,6 +122,8 @@ import { SmsService } from '@kasi/order/sms.service';
     SharedOrderService,
     DriverOrderQueryService,
     OrderResolver,
+    // p3-mesures M4 (2026-10-22) : requete cancelReasons.
+    CancelReasonResolver,
     OrderService,
     ServiceService,
     SharedRiderService,

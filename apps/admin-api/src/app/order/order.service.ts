@@ -1,6 +1,7 @@
 ﻿import { InjectPubSub } from '@ptc-org/nestjs-query-graphql';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AnnouncementUserType } from '@kasi/database/enums/anouncement-user-type.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
 import { RequestActivityEntity } from '@kasi/database/request-activity.entity';
@@ -9,6 +10,7 @@ import { OrderRedisService } from '@kasi/redis/order-redis.service';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { Repository } from 'typeorm';
 import { ForbiddenError } from '@nestjs/apollo';
+import { resolveCancelReasonId } from '@kasi/order/cancel-reason';
 import {
   transitionOrder,
   UNASSIGNED_STATUSES,
@@ -44,12 +46,30 @@ export class OrderService {
    * client ou le Kasiman ; avant, elle reecrivait n'importe quelle course (prix
    * remis a 0 compris) et journalisait l'annulation avant de verifier quoi que
    * ce soit. Rejeu sur une course deja Expired : renvoyee sans effet.
+   *
+   * p3-mesures M4 (2026-10-22) : `cancelReasonId` facultatif (motifs
+   * `Operator`), ecrit avec le statut, donc seulement si la ligne change ;
+   * motif refuse : annulation faite sans motif (resolveCancelReasonId).
    */
-  async cancelOrder(orderId: number): Promise<RequestEntity> {
+  async cancelOrder(
+    orderId: number,
+    cancelReasonId?: unknown,
+  ): Promise<RequestEntity> {
+    orderId = Number(orderId);
+    const reasonId = await resolveCancelReasonId(
+      this.orderRepository.manager,
+      cancelReasonId,
+      AnnouncementUserType.Operator,
+      orderId,
+    );
     const changed = await transitionOrder(this.orderRepository, orderId, {
       from: OPERATOR_CANCELABLE_STATUSES,
       to: OrderStatus.Expired,
-      set: { finishTimestamp: new Date(), costAfterCoupon: 0 },
+      set: {
+        finishTimestamp: new Date(),
+        costAfterCoupon: 0,
+        ...(reasonId !== undefined ? { cancelReasonId: reasonId } : {}),
+      },
     });
     const order = await this.orderRepository.findOne({
       where: { id: orderId },

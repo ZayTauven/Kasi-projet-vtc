@@ -54,10 +54,12 @@ export class RiderOrderQueryService extends TypeOrmQueryService<RequestEntity> {
       // riderId = client connecte). Avant : le statut etait ecrit sans condition
       // (y compris sur une course payee) puis les frais preleves a chaque appel.
       // rider-app envoie aussi `tipAmount: 0, waitMinutes: 0` : ignores ici.
+      // p3-mesures M4 (2026-10-22) : motif facultatif `cancelReasonId`.
       const owned = await this.getById(id, opts);
       const result = await this.orderService.cancelOrder(
         Number(id),
         owned.riderId,
+        update.cancelReasonId,
       );
       this.pubSub.publish('orderUpdated', { orderUpdated: result });
       return result;

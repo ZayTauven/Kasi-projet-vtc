@@ -1,0 +1,116 @@
+/* p3-mesures M2 : ecran Pilote. Tokens du design system v3 (styles.scss). */
+
+.pilot-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  padding: 16px 20px;
+}
+
+.pilot-toolbar__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pilot-toolbar__label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--kasi-text-faint);
+}
+
+/* Cartes d'au moins 240 px : 4 par ligne sur grand ecran, moins sinon. */
+.pilot-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.pilot-figure__threshold {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--kasi-border);
+  font-size: 12.5px;
+  color: var(--kasi-text-muted);
+}
+
+.pilot-state {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pilot-state--ok {
+  color: var(--kasi-success);
+  background: var(--kasi-success-bg);
+}
+
+.pilot-state--ko {
+  color: var(--kasi-danger);
+  background: var(--kasi-danger-bg);
+}
+
+.pilot-state--none {
+  color: var(--kasi-text-muted);
+  background: var(--kasi-border);
+}
+
+.pilot-kv {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pilot-kv > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--kasi-text-muted);
+}
+
+.pilot-kv b {
+  color: var(--kasi-text);
+  font-weight: 700;
+}
+
+.pilot-kv--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.pilot-kv--row > div {
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.pilot-kv--row b {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 22px;
+}
+
+.pilot-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pilot-note {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--kasi-text-faint);
+}

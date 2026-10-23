@@ -1,4 +1,8 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
+
+// Types GraphQL explicites (2026-10-21) : sans eux, le type se deduit des
+// metadonnees de compilation, que ts-jest ne produit pas toujours selon
+// l'ordre des fichiers (banc : « Cannot determine a GraphQL output type »).
 
 /**
  * p2-argent I2 (2026-10-19) : rapport d'integrite du grand livre (fiche §3.9),
@@ -7,16 +11,16 @@ import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 @ObjectType('LedgerIntegrityIssue')
 export class LedgerIntegrityIssueDTO {
   /** PROJECTION, UNLINKED_LINE, CURRENCY_TOTAL ou UNBALANCED_ENTRY. */
-  @Field()
+  @Field(() => String)
   kind!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   account?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   currency?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   walletTable?: string;
 
   @Field(() => Float, { nullable: true })
@@ -31,24 +35,24 @@ export class LedgerIntegrityIssueDTO {
   @Field(() => Int, { nullable: true })
   count?: number;
 
-  @Field()
+  @Field(() => String)
   detail!: string;
 }
 
 @ObjectType('LedgerIntegrityReport')
 export class LedgerIntegrityReportDTO {
   /** true : aucun ecart. */
-  @Field()
+  @Field(() => Boolean)
   ok!: boolean;
 
   @Field(() => Int)
   issueCount!: number;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   checkedAt!: Date;
 
   /** Premiere ecriture d'ouverture ; null si le grand livre n'est pas ouvert. */
-  @Field({ nullable: true })
+  @Field(() => GraphQLISODateTime, { nullable: true })
   openedAt?: Date;
 
   @Field(() => Int)

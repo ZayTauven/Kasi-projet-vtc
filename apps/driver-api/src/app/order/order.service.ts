@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from '@kasi/database';
+import { AnnouncementUserType } from '@kasi/database/enums/anouncement-user-type.enum';
 import { DriverStatus } from '@kasi/database/enums/driver-status.enum';
 import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { packageSizeRank } from '@kasi/database/enums/package-size.enum';
@@ -25,6 +26,7 @@ import {
   transitionOrder,
   UNASSIGNED_STATUSES,
 } from '@kasi/order/order-transition';
+import { resolveCancelReasonId } from '@kasi/order/cancel-reason';
 import { ForbiddenError } from '@nestjs/apollo';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { firstValueFrom } from 'rxjs';
@@ -117,21 +119,36 @@ export class OrderService {
    * (course deja annulee par lui) : aucun effet de bord, pas d'erreur.
    * Toute autre situation leve CANCEL_NOT_ALLOWED (message deja traduit par
    * driver-app, ride_options_sheet_view.dart).
+   *
+   * p3-mesures M4 (2026-10-22) : `cancelReasonId` facultatif (motifs
+   * `Driver`), ecrit avec le statut, donc seulement si la ligne change ; motif
+   * refuse : annulation faite sans motif (resolveCancelReasonId).
    */
   async cancelOrder(
     orderId: number,
     driverId?: number,
+    cancelReasonId?: unknown,
   ): Promise<{ order: RequestEntity; changed: boolean }> {
     // Statut de la course, activite et remise en ligne du Kasiman dans UNE
     // transaction : jamais d'annulation enregistree avec un Kasiman encore
     // « in service ».
     const changed = await this.orderRepository.manager.transaction(
       async (manager) => {
+        const reasonId = await resolveCancelReasonId(
+          manager,
+          cancelReasonId,
+          AnnouncementUserType.Driver,
+          orderId,
+        );
         const changed = await transitionOrder(manager, orderId, {
           from: [OrderStatus.DriverAccepted, OrderStatus.Arrived],
           to: OrderStatus.DriverCanceled,
           driverId,
-          set: { finishTimestamp: new Date(), costAfterCoupon: 0 },
+          set: {
+            finishTimestamp: new Date(),
+            costAfterCoupon: 0,
+            ...(reasonId !== undefined ? { cancelReasonId: reasonId } : {}),
+          },
         });
         if (changed) {
           const canceled = await manager.findOneByOrFail(RequestEntity, {

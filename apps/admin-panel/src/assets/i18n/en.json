@@ -165,7 +165,8 @@
     "home": {
       "overview": "Overview",
       "dispatcher": "Dispatcher",
-      "header": "Home"
+      "header": "Home",
+      "pilot": "Pilot"
     },
     "driver": {
       "pendingVerification": "Pending Verification",
@@ -1537,5 +1538,120 @@
     "approvalBlocked": "This Kasiman cannot be approved yet",
     "approvalNoType": "Vehicle type not set.",
     "approvalMissing": "Missing or unapproved mandatory documents: {{list}}."
+  },
+  "pilot": {
+    "subtitle": "Weekly tracking of the Dakar pilot: each key figure against its success threshold.",
+    "export": "Export (CSV)",
+    "period": "Period",
+    "lastEightWeeks": "Last 8 weeks",
+    "pilotStart": "Pilot start",
+    "pilotStartPlaceholder": "Pick a date",
+    "sincePilotStart": "Since pilot start",
+    "family": {
+      "label": "Services",
+      "all": "All",
+      "people": "People",
+      "parcels": "Parcels"
+    },
+    "keyFigures": "Key figures for the period",
+    "figure": {
+      "assignment": "Median assignment time",
+      "assignmentFoot": "90th percentile: {{p90}} · {{assigned}} rides assigned",
+      "service": "Service rate",
+      "serviceFoot": "{{assigned}} assigned out of {{eligible}} orders",
+      "retention": "Kasiman retention",
+      "retentionFoot": "{{retained}} retained out of {{base}} · {{active}} active",
+      "recovery": "Commission recovery",
+      "recoveryFoot": "{{recovered}} recovered out of {{due}} due (all services)",
+      "recurring": "Recurring clients",
+      "recurringFoot": "{{recurring}} recurring out of {{active}} active clients",
+      "completed": "Completed rides",
+      "completedFoot": "out of {{ordered}} ordered",
+      "projection": "Monthly projection",
+      "projectionFoot": "Completed rides scaled to 30 days"
+    },
+    "threshold": {
+      "max": "Threshold: ≤ {{value}}",
+      "min": "Threshold: ≥ {{value}}",
+      "breakEven": "Break-even: {{value}} / month",
+      "none": "No threshold"
+    },
+    "state": {
+      "ok": "Met",
+      "ko": "Not met",
+      "none": "No data"
+    },
+    "weekly": "Weekly trends",
+    "chart": {
+      "ordersTitle": "Rides per week",
+      "delayTitle": "Assignment time (minutes)",
+      "ratesTitle": "Service and acceptance rates (%)",
+      "ordered": "Ordered",
+      "completed": "Completed",
+      "expired": "Expired",
+      "median": "Median",
+      "p90": "90th percentile",
+      "serviceRate": "Service rate",
+      "offerRate": "Offer acceptance",
+      "threshold": "Threshold"
+    },
+    "offers": {
+      "title": "Offers to Kasimen",
+      "rate": "Acceptance rate",
+      "averageWave": "Average assignment wave",
+      "detail": "Accepted / rejected / no answer / expired"
+    },
+    "cancellations": {
+      "title": "Cancellations",
+      "riderBefore": "Client, before assignment",
+      "riderAfter": "Client, after assignment",
+      "driver": "Kasiman"
+    },
+    "satisfaction": {
+      "title": "Satisfaction",
+      "average": "Average rating (stars)",
+      "low": "Ratings of 3 stars or less",
+      "reviews": "Reviews"
+    },
+    "money": {
+      "title": "Cash commission",
+      "due": "Commission due",
+      "recovered": "Commission recovered",
+      "rate": "Recovery rate",
+      "debt": "Kasimen debt (end of period)",
+      "blocked": "Kasimen blocked by the cap",
+      "note": "General ledger, all services combined.",
+      "hidden": "Money indicators require the permission to view Kasimen wallets."
+    },
+    "top": {
+      "title": "Kasimen ranking",
+      "kasiman": "Kasiman",
+      "completed": "Completed rides",
+      "earnings": "Earnings"
+    },
+    "cancel": {
+      "title": "Cancellation reasons",
+      "reason": "Reason",
+      "by": "Canceled by",
+      "count": "Count",
+      "noReason": "No reason",
+      "byClient": "Client",
+      "byKasiman": "Kasiman",
+      "byUnknown": "Unspecified"
+    },
+    "unserved": {
+      "title": "Unserved demand",
+      "expired": "Rides expired without Kasiman",
+      "demands": "Unserved demands",
+      "alerts": "Alerts",
+      "zone": "Zone (lat, lng, 1 km grid)",
+      "noZone": "No unserved demand zone"
+    },
+    "error": {
+      "period": "Invalid period: 400 days at most, end date after start date.",
+      "permission": "Access denied: viewing rides is required.",
+      "generic": "The pilot dashboard could not be loaded."
+    },
+    "generatedAt": "Computed on {{date}}. Weeks run Monday to Sunday, Dakar time."
   }
 }

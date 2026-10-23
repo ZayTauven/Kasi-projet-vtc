@@ -150,6 +150,11 @@ export class CMSComponent implements OnInit, AfterViewInit, OnDestroy {
           route: "/home/dispatcher",
           icon: "radar-chart",
         },
+        {
+          labelKey: "menu.home.pilot",
+          route: "/home/pilot",
+          icon: "fund",
+        },
       ],
     },
     {

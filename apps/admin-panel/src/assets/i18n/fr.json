@@ -165,7 +165,8 @@
     "home": {
       "overview": "Aperçu",
       "dispatcher": "Répartiteur",
-      "header": "Accueil"
+      "header": "Accueil",
+      "pilot": "Pilote"
     },
     "driver": {
       "pendingVerification": "En attente de vérification",
@@ -1537,5 +1538,120 @@
     "approvalBlocked": "Ce Kasiman ne peut pas encore être approuvé",
     "approvalNoType": "Type de véhicule non renseigné.",
     "approvalMissing": "Documents obligatoires manquants ou non validés : {{list}}."
+  },
+  "pilot": {
+    "subtitle": "Suivi hebdomadaire du pilote de Dakar : chaque chiffre clé face à son seuil de réussite.",
+    "export": "Exporter (CSV)",
+    "period": "Période",
+    "lastEightWeeks": "8 dernières semaines",
+    "pilotStart": "Début du pilote",
+    "pilotStartPlaceholder": "Choisir la date",
+    "sincePilotStart": "Depuis le début du pilote",
+    "family": {
+      "label": "Services",
+      "all": "Tous",
+      "people": "Personnes",
+      "parcels": "Colis"
+    },
+    "keyFigures": "Chiffres clés de la période",
+    "figure": {
+      "assignment": "Délai d'attribution médian",
+      "assignmentFoot": "90e centile : {{p90}} · {{assigned}} courses attribuées",
+      "service": "Taux de service",
+      "serviceFoot": "{{assigned}} attribuées sur {{eligible}} commandes",
+      "retention": "Rétention des Kasimen",
+      "retentionFoot": "{{retained}} retenus sur {{base}} · {{active}} actifs",
+      "recovery": "Recouvrement de la commission",
+      "recoveryFoot": "{{recovered}} recouvrés sur {{due}} dus (tous services)",
+      "recurring": "Clients récurrents",
+      "recurringFoot": "{{recurring}} récurrents sur {{active}} clients actifs",
+      "completed": "Courses terminées",
+      "completedFoot": "sur {{ordered}} commandées",
+      "projection": "Projection mensuelle",
+      "projectionFoot": "Courses terminées ramenées à 30 jours"
+    },
+    "threshold": {
+      "max": "Seuil : ≤ {{value}}",
+      "min": "Seuil : ≥ {{value}}",
+      "breakEven": "Point mort : {{value}} / mois",
+      "none": "Sans seuil"
+    },
+    "state": {
+      "ok": "Atteint",
+      "ko": "Non atteint",
+      "none": "Pas de données"
+    },
+    "weekly": "Courbes hebdomadaires",
+    "chart": {
+      "ordersTitle": "Courses par semaine",
+      "delayTitle": "Délai d'attribution (minutes)",
+      "ratesTitle": "Taux de service et d'acceptation (%)",
+      "ordered": "Commandées",
+      "completed": "Terminées",
+      "expired": "Expirées",
+      "median": "Médiane",
+      "p90": "90e centile",
+      "serviceRate": "Taux de service",
+      "offerRate": "Acceptation des offres",
+      "threshold": "Seuil"
+    },
+    "offers": {
+      "title": "Offres aux Kasimen",
+      "rate": "Taux d'acceptation",
+      "averageWave": "Vague moyenne d'attribution",
+      "detail": "Acceptées / refusées / sans réponse / expirées"
+    },
+    "cancellations": {
+      "title": "Annulations",
+      "riderBefore": "Client, avant attribution",
+      "riderAfter": "Client, après attribution",
+      "driver": "Kasiman"
+    },
+    "satisfaction": {
+      "title": "Satisfaction",
+      "average": "Note moyenne (étoiles)",
+      "low": "Notes de 3 étoiles ou moins",
+      "reviews": "Avis"
+    },
+    "money": {
+      "title": "Commission en espèces",
+      "due": "Commission due",
+      "recovered": "Commission recouvrée",
+      "rate": "Taux de recouvrement",
+      "debt": "Dette des Kasimen (fin de période)",
+      "blocked": "Kasimen bloqués par le plafond",
+      "note": "Grand livre, tous services confondus.",
+      "hidden": "Les indicateurs d'argent exigent la permission de consulter les portefeuilles des Kasimen."
+    },
+    "top": {
+      "title": "Classement des Kasimen",
+      "kasiman": "Kasiman",
+      "completed": "Courses terminées",
+      "earnings": "Gains"
+    },
+    "cancel": {
+      "title": "Motifs d'annulation",
+      "reason": "Motif",
+      "by": "Annulée par",
+      "count": "Nombre",
+      "noReason": "Sans motif",
+      "byClient": "Client",
+      "byKasiman": "Kasiman",
+      "byUnknown": "Non précisé"
+    },
+    "unserved": {
+      "title": "Demande non servie",
+      "expired": "Courses expirées sans Kasiman",
+      "demands": "Demandes non servies",
+      "alerts": "Alertes",
+      "zone": "Zone (lat, lng, maille de 1 km)",
+      "noZone": "Aucune zone de demande non servie"
+    },
+    "error": {
+      "period": "Période invalide : 400 jours au plus, date de fin après la date de début.",
+      "permission": "Accès refusé : la consultation des courses est requise.",
+      "generic": "Le tableau du pilote n'a pas pu être chargé."
+    },
+    "generatedAt": "Calculé le {{date}}. Semaines du lundi au dimanche, heure de Dakar."
   }
 }

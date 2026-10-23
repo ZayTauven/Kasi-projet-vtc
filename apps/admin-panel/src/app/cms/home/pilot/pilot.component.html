@@ -1,0 +1,232 @@
+<!-- p3-mesures M2 : ecran « Pilote » (docs/fiche-mesures-pilote.md §3 et §4) -->
+<div class="kasi-page-head">
+  <div class="kasi-page-head__text">
+    <h1 class="kasi-title">{{ 'menu.home.pilot' | translate }}</h1>
+    <p>{{ 'pilot.subtitle' | translate }}</p>
+  </div>
+  <button nz-button nzType="primary" [nzLoading]="exporting" [disabled]="!dashboard"
+    (click)="exportCsv()">
+    <i nz-icon nzType="download"></i>{{ 'pilot.export' | translate }}
+  </button>
+</div>
+
+<!-- Periode et famille -->
+<div class="kasi-card pilot-toolbar mb-4">
+  <div class="pilot-toolbar__group">
+    <span class="pilot-toolbar__label">{{ 'pilot.period' | translate }}</span>
+    <nz-range-picker [ngModel]="range" (ngModelChange)="onRangeChange($event)"
+      [nzAllowClear]="false"></nz-range-picker>
+    <button nz-button (click)="useLastEightWeeks()">{{ 'pilot.lastEightWeeks' | translate }}</button>
+  </div>
+  <div class="pilot-toolbar__group">
+    <span class="pilot-toolbar__label">{{ 'pilot.pilotStart' | translate }}</span>
+    <nz-date-picker [ngModel]="pilotStart" (ngModelChange)="onPilotStartChange($event)"
+      [nzPlaceHolder]="'pilot.pilotStartPlaceholder' | translate"></nz-date-picker>
+    <button nz-button [disabled]="!pilotStart" (click)="useSincePilotStart()">
+      {{ 'pilot.sincePilotStart' | translate }}
+    </button>
+  </div>
+  <div class="pilot-toolbar__group">
+    <span class="pilot-toolbar__label">{{ 'pilot.family.label' | translate }}</span>
+    <nz-radio-group [ngModel]="family" (ngModelChange)="onFamilyChange($event)">
+      <label nz-radio-button nzValue="all">{{ 'pilot.family.all' | translate }}</label>
+      <label nz-radio-button nzValue="people">{{ 'pilot.family.people' | translate }}</label>
+      <label nz-radio-button nzValue="parcels">{{ 'pilot.family.parcels' | translate }}</label>
+    </nz-radio-group>
+  </div>
+</div>
+
+@if (errorKey) {
+  <nz-alert class="block mb-4" nzType="error" nzShowIcon
+    [nzMessage]="errorKey | translate" [nzDescription]="errorText ?? null"></nz-alert>
+}
+
+@if (loading && !dashboard) {
+  <nz-skeleton [nzActive]="true"></nz-skeleton>
+}
+
+@if (dashboard && current) {
+  <!-- Chiffres cles de la periode -->
+  <h2 class="kasi-section-title">{{ 'pilot.keyFigures' | translate }}</h2>
+  <div class="pilot-figures mb-4" [class.opacity-60]="loading">
+    @for (figure of keyFigures; track figure.id) {
+      <div class="kasi-metric pilot-figure" [attr.data-figure]="figure.id">
+        <div class="kasi-metric__label">
+          <i nz-icon [nzType]="figure.icon"></i>{{ figure.labelKey | translate }}
+        </div>
+        <div class="kasi-metric__value">{{ figure.value }}</div>
+        @if (figure.footKey) {
+          <div class="kasi-metric__foot">{{ figure.footKey | translate: figure.footParams }}</div>
+        }
+        <div class="pilot-figure__threshold">
+          @if (figure.thresholdKey) {
+            <span>{{ figure.thresholdKey | translate: figure.thresholdParams }}</span>
+            <span class="pilot-state" [ngClass]="'pilot-state--' + figure.state">
+              {{ 'pilot.state.' + figure.state | translate }}
+            </span>
+          } @else {
+            <span>{{ 'pilot.threshold.none' | translate }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Courbes hebdomadaires -->
+  <h2 class="kasi-section-title">{{ 'pilot.weekly' | translate }}</h2>
+  @if (!hasWeeks) {
+    <p class="w-full text-center py-8 text-gray-500">{{ 'chart.emptyState' | translate }}</p>
+  }
+  <div class="lg:grid lg:grid-cols-3 lg:gap-3 mb-4" [class.hidden]="!hasWeeks">
+    <nz-card class="mt-2" [nzTitle]="'pilot.chart.ordersTitle' | translate">
+      <div nz-g2 [nzChartOptions]="{ height: 260 }" (nzChartInitialized)="onOrdersChartInit($event)"></div>
+    </nz-card>
+    <nz-card class="mt-2" [nzTitle]="'pilot.chart.delayTitle' | translate">
+      <div nz-g2 [nzChartOptions]="{ height: 260 }" (nzChartInitialized)="onDelayChartInit($event)"></div>
+    </nz-card>
+    <nz-card class="mt-2" [nzTitle]="'pilot.chart.ratesTitle' | translate">
+      <div nz-g2 [nzChartOptions]="{ height: 260 }" (nzChartInitialized)="onRatesChartInit($event)"></div>
+    </nz-card>
+  </div>
+
+  <!-- Autres indicateurs de la periode -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
+    <div class="kasi-card">
+      <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.offers.title' | translate }}</span></div>
+      <div class="kasi-card__body pilot-kv">
+        <div><span>{{ 'pilot.offers.rate' | translate }}</span><b>{{ pct(current.offers.rate) }}</b></div>
+        <div><span>{{ 'pilot.offers.averageWave' | translate }}</span><b>{{ num(current.offers.averageWave, '1.0-1') }}</b></div>
+        <div><span>{{ 'pilot.offers.detail' | translate }}</span>
+          <b>{{ current.offers.accepted }} / {{ current.offers.rejected }} / {{ current.offers.noAnswer }} / {{ current.offers.expired }}</b></div>
+      </div>
+    </div>
+    <div class="kasi-card">
+      <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.cancellations.title' | translate }}</span></div>
+      <div class="kasi-card__body pilot-kv">
+        <div><span>{{ 'pilot.cancellations.riderBefore' | translate }}</span><b>{{ pct(current.cancellations.riderBeforeAssignmentRate) }}</b></div>
+        <div><span>{{ 'pilot.cancellations.riderAfter' | translate }}</span><b>{{ pct(current.cancellations.riderAfterAssignmentRate) }}</b></div>
+        <div><span>{{ 'pilot.cancellations.driver' | translate }}</span><b>{{ pct(current.cancellations.driverRate) }}</b></div>
+      </div>
+    </div>
+    <div class="kasi-card">
+      <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.satisfaction.title' | translate }}</span></div>
+      <div class="kasi-card__body pilot-kv">
+        <div><span>{{ 'pilot.satisfaction.average' | translate }}</span><b>{{ num(current.satisfaction.averageStars, '1.1-1') }}</b></div>
+        <div><span>{{ 'pilot.satisfaction.low' | translate }}</span><b>{{ pct(current.satisfaction.lowRatingShare) }}</b></div>
+        <div><span>{{ 'pilot.satisfaction.reviews' | translate }}</span><b>{{ current.satisfaction.reviews }}</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Argent (indicateur 5) : tous services, ProviderWallet_View -->
+  <h2 class="kasi-section-title">{{ 'pilot.money.title' | translate }}</h2>
+  @if (dashboard.moneyVisible && dashboard.total.all.money; as cash) {
+    <div class="kasi-card mb-4">
+      <div class="kasi-card__body pilot-kv pilot-kv--row">
+        <div><span>{{ 'pilot.money.due' | translate }}</span><b>{{ money(cash.commissionDue) }}</b></div>
+        <div><span>{{ 'pilot.money.recovered' | translate }}</span><b>{{ money(cash.commissionRecovered) }}</b></div>
+        <div><span>{{ 'pilot.money.rate' | translate }}</span><b>{{ pct(cash.recoveryRate) }}</b></div>
+        <div><span>{{ 'pilot.money.debt' | translate }}</span><b>{{ money(cash.outstandingDebt) }}</b></div>
+        <div><span>{{ 'pilot.money.blocked' | translate }}</span><b>{{ cash.blockedKasimen }}</b></div>
+      </div>
+      <p class="pilot-note px-5 pb-4">{{ 'pilot.money.note' | translate }}</p>
+    </div>
+  } @else {
+    <nz-alert class="block mb-4" nzType="info" nzShowIcon [nzMessage]="'pilot.money.hidden' | translate"></nz-alert>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
+    <!-- Classement des Kasimen -->
+    <div class="kasi-card">
+      <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.top.title' | translate }}</span></div>
+      <div class="kasi-card__body kasi-card__body--flush">
+        <nz-table #topTable [nzData]="topKasimen" [nzShowPagination]="false" nzSize="small"
+          [nzNoResult]="'chart.emptyState' | translate">
+          <thead>
+            <tr>
+              <th nzWidth="48px">#</th>
+              <th>{{ 'pilot.top.kasiman' | translate }}</th>
+              <th nzAlign="right">{{ 'pilot.top.completed' | translate }}</th>
+              <th nzAlign="right">{{ 'pilot.top.earnings' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (kasiman of topTable.data; track kasiman.id; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <a [routerLink]="['/drivers', 'view', kasiman.id]" class="pilot-person">
+                    <nz-avatar nzSize="small" nzIcon="user"
+                      [nzSrc]="kasiman.avatarUrl ? root + kasiman.avatarUrl : undefined"></nz-avatar>
+                    {{ kasiman.name ?? kasiman.id }}
+                  </a>
+                </td>
+                <td nzAlign="right">{{ kasiman.completed }}</td>
+                <td nzAlign="right">{{ num(kasiman.earnings) }} {{ kasiman.currency }}</td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+
+    <!-- Motifs des annulations -->
+    <div class="kasi-card">
+      <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.cancel.title' | translate }}</span></div>
+      <div class="kasi-card__body kasi-card__body--flush">
+        <nz-table #cancelTable [nzData]="cancelReasons" [nzShowPagination]="false" nzSize="small"
+          [nzNoResult]="'chart.emptyState' | translate">
+          <thead>
+            <tr>
+              <th>{{ 'pilot.cancel.reason' | translate }}</th>
+              <th>{{ 'pilot.cancel.by' | translate }}</th>
+              <th nzAlign="right">{{ 'pilot.cancel.count' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reason of cancelTable.data; track $index) {
+              <tr>
+                <td>{{ reason.title ?? ('pilot.cancel.noReason' | translate) }}</td>
+                <td>{{ canceledByKey(reason.canceledBy) | translate }}</td>
+                <td nzAlign="right">{{ reason.count }}</td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demande non servie (indicateur 8) -->
+  <div class="kasi-card mb-4">
+    <div class="kasi-card__head"><span class="kasi-card__title">{{ 'pilot.unserved.title' | translate }}</span></div>
+    <div class="kasi-card__body pilot-kv pilot-kv--row">
+      <div><span>{{ 'pilot.unserved.expired' | translate }}</span><b>{{ current.unserved.expired }}</b></div>
+      <div><span>{{ 'pilot.unserved.demands' | translate }}</span><b>{{ current.unserved.demands }}</b></div>
+      <div><span>{{ 'pilot.unserved.alerts' | translate }}</span><b>{{ current.unserved.alerts }}</b></div>
+    </div>
+    <div class="kasi-card__body kasi-card__body--flush">
+      <nz-table #zoneTable [nzData]="current.unserved.zones" [nzShowPagination]="false" nzSize="small"
+        [nzNoResult]="'pilot.unserved.noZone' | translate">
+        <thead>
+          <tr>
+            <th>{{ 'pilot.unserved.zone' | translate }}</th>
+            <th nzAlign="right">{{ 'pilot.unserved.demands' | translate }}</th>
+            <th nzAlign="right">{{ 'pilot.unserved.alerts' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (zone of zoneTable.data; track $index) {
+            <tr>
+              <td>{{ num(zone.lat, '1.2-2') }}, {{ num(zone.lng, '1.2-2') }}</td>
+              <td nzAlign="right">{{ zone.demands }}</td>
+              <td nzAlign="right">{{ zone.alerts }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+
+  <p class="pilot-note">{{ 'pilot.generatedAt' | translate: { date: (dashboard.generatedAt | date: 'short') } }}</p>
+}

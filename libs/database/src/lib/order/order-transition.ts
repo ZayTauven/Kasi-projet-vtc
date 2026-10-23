@@ -27,11 +27,15 @@ export interface OrderTransition {
   driverId?: number | null;
   /** Condition supplementaire : course de ce client. */
   riderId?: number;
-  /** Colonnes ecrites en plus du statut. */
+  /**
+   * Colonnes ecrites en plus du statut, dans la meme requete : seulement si
+   * la ligne change (un rejeu ne reecrit rien, motif d'annulation compris).
+   */
   set?: Partial<
     Pick<
       RequestEntity,
       | 'driverId'
+      | 'cancelReasonId'
       | 'etaPickup'
       | 'finishTimestamp'
       | 'costAfterCoupon'

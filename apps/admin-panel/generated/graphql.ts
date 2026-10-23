@@ -4700,6 +4700,206 @@ export type PayoutStatusFilterComparison = {
   notLike?: InputMaybe<PayoutStatus>;
 };
 
+export type PilotAssignment = {
+  __typename?: 'PilotAssignment';
+  /** Courses immediates attribuees (reservations exclues). */
+  assigned: Scalars['Int']['output'];
+  medianSeconds?: Maybe<Scalars['Float']['output']>;
+  p90Seconds?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PilotCancelReason = {
+  __typename?: 'PilotCancelReason';
+  /** Auteur de l annulation (Rider, Driver) ; null dans le top 5 du tableau. */
+  canceledBy?: Maybe<AnnouncementUserType>;
+  count: Scalars['Int']['output'];
+  /** null : annulation sans motif. */
+  reasonId?: Maybe<Scalars['ID']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  /** Destinataire du motif. */
+  userType?: Maybe<AnnouncementUserType>;
+};
+
+export type PilotCancellations = {
+  __typename?: 'PilotCancellations';
+  driverRate?: Maybe<Scalars['Float']['output']>;
+  riderAfterAssignmentRate?: Maybe<Scalars['Float']['output']>;
+  riderBeforeAssignmentRate?: Maybe<Scalars['Float']['output']>;
+  /** Les 5 motifs les plus frequents. */
+  topReasons: Array<PilotCancelReason>;
+};
+
+export type PilotClients = {
+  __typename?: 'PilotClients';
+  active: Scalars['Int']['output'];
+  new: Scalars['Int']['output'];
+  /** Au moins 2 courses terminees dans la tranche. */
+  recurring: Scalars['Int']['output'];
+  recurringRate?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PilotDashboard = {
+  __typename?: 'PilotDashboard';
+  currency: Scalars['String']['output'];
+  from: Scalars['DateTime']['output'];
+  generatedAt: Scalars['DateTime']['output'];
+  /** false sans ProviderWallet_View : money vaut null. */
+  moneyVisible: Scalars['Boolean']['output'];
+  thresholds: PilotThresholds;
+  to: Scalars['DateTime']['output'];
+  total: PilotWeek;
+  weeks: Array<PilotWeek>;
+};
+
+export type PilotExport = {
+  __typename?: 'PilotExport';
+  rows: Scalars['Int']['output'];
+  url: Scalars['String']['output'];
+};
+
+export type PilotIndicators = {
+  __typename?: 'PilotIndicators';
+  assignment: PilotAssignment;
+  cancellations: PilotCancellations;
+  clients: PilotClients;
+  kasimen: PilotKasimen;
+  /** Tous services seulement, et avec ProviderWallet_View ; sinon null. */
+  money?: Maybe<PilotMoney>;
+  offers: PilotOffers;
+  orders: PilotOrders;
+  satisfaction: PilotSatisfaction;
+  service: PilotServiceRate;
+  unserved: PilotUnserved;
+};
+
+/** Classement des Kasimen (repris de BetterSuite drivers-insights, adapte). */
+export type PilotKasiman = {
+  __typename?: 'PilotKasiman';
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  completed: Scalars['Int']['output'];
+  currency?: Maybe<Scalars['String']['output']>;
+  /** Prix avant coupon moins commission, plus pourboire. */
+  earnings: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type PilotKasimen = {
+  __typename?: 'PilotKasimen';
+  active: Scalars['Int']['output'];
+  new: Scalars['Int']['output'];
+  retained: Scalars['Int']['output'];
+  /** Actifs la semaine precedente (somme sur les semaines pour la periode). */
+  retentionBase: Scalars['Int']['output'];
+  retentionRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Commission en especes (grand livre). Exige ProviderWallet_View. */
+export type PilotMoney = {
+  __typename?: 'PilotMoney';
+  /** Kasimen au-dela du plafond (money_policy du moment) en fin de tranche. */
+  blockedKasimen: Scalars['Int']['output'];
+  commissionDue: Scalars['Float']['output'];
+  commissionRecovered: Scalars['Float']['output'];
+  /** Dette des Kasimen en fin de tranche (positive). */
+  outstandingDebt: Scalars['Float']['output'];
+  recoveryRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Dispatch par vagues seulement (dispatch_attempt). */
+export type PilotOffers = {
+  __typename?: 'PilotOffers';
+  accepted: Scalars['Int']['output'];
+  averageWave?: Maybe<Scalars['Float']['output']>;
+  expired: Scalars['Int']['output'];
+  noAnswer: Scalars['Int']['output'];
+  rate?: Maybe<Scalars['Float']['output']>;
+  rejected: Scalars['Int']['output'];
+};
+
+export type PilotOrders = {
+  __typename?: 'PilotOrders';
+  /** WaitingForReview ou Finished. */
+  completed: Scalars['Int']['output'];
+  driverCanceled: Scalars['Int']['output'];
+  /** Expirees sans Kasiman (Expired, NotFound, NoCloseFound), hors annulation operateur. */
+  expired: Scalars['Int']['output'];
+  /** Courses terminees ramenees a 30 jours (jours ecoules de la tranche). */
+  monthlyProjection?: Maybe<Scalars['Float']['output']>;
+  operatorCanceled: Scalars['Int']['output'];
+  ordered: Scalars['Int']['output'];
+  riderCanceledAfterAssignment: Scalars['Int']['output'];
+  riderCanceledBeforeAssignment: Scalars['Int']['output'];
+};
+
+export type PilotSatisfaction = {
+  __typename?: 'PilotSatisfaction';
+  /** Note moyenne en etoiles (score / 20). */
+  averageStars?: Maybe<Scalars['Float']['output']>;
+  /** Part des notes de 3 etoiles ou moins. */
+  lowRatingShare?: Maybe<Scalars['Float']['output']>;
+  reviews: Scalars['Int']['output'];
+};
+
+export type PilotServiceRate = {
+  __typename?: 'PilotServiceRate';
+  assigned: Scalars['Int']['output'];
+  /** Commandees moins annulations du client avant attribution. */
+  eligible: Scalars['Int']['output'];
+  rate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Seuils de reussite du pilote (fiche §6, valides le 2026-10-21). */
+export type PilotThresholds = {
+  __typename?: 'PilotThresholds';
+  /** Delai d attribution median maximal, en secondes. */
+  assignmentMedianMaxSeconds: Scalars['Int']['output'];
+  /** Point mort, en courses terminees par mois. */
+  breakEvenMonthlyOrders: Scalars['Int']['output'];
+  /** Recouvrement minimal de la commission en especes (0 a 1). */
+  cashRecoveryMin: Scalars['Float']['output'];
+  /** Retention hebdomadaire minimale des Kasimen (0 a 1). */
+  kasimanRetentionMin: Scalars['Float']['output'];
+  /** Part minimale de clients recurrents (0 a 1). */
+  recurringClientsMin: Scalars['Float']['output'];
+  /** Taux de service minimal (0 a 1). */
+  serviceRateMin: Scalars['Float']['output'];
+};
+
+export type PilotUnserved = {
+  __typename?: 'PilotUnserved';
+  alerts: Scalars['Int']['output'];
+  demands: Scalars['Int']['output'];
+  expired: Scalars['Int']['output'];
+  /** 10 zones au plus, les plus demandees. */
+  zones: Array<PilotZone>;
+};
+
+export type PilotWeek = {
+  __typename?: 'PilotWeek';
+  /** Tous services. */
+  all: PilotIndicators;
+  /** Fin exclue de la tranche (bornee par to). */
+  end: Scalars['DateTime']['output'];
+  /** Colis (orderType Delivery). */
+  parcels: PilotIndicators;
+  /** Personnes (orderType Ride). */
+  people: PilotIndicators;
+  /** Debut de la tranche (borne par from). */
+  start: Scalars['DateTime']['output'];
+  /** Lundi 00:00 UTC ; null pour la periode entiere. */
+  weekStart?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PilotZone = {
+  __typename?: 'PilotZone';
+  alerts: Scalars['Int']['output'];
+  demands: Scalars['Int']['output'];
+  /** Maille de 0,01 degre (environ 1,1 km). */
+  lat: Scalars['Float']['output'];
+  lng: Scalars['Float']['output'];
+};
+
 export type Point = {
   __typename?: 'Point';
   lat: Scalars['Float']['output'];
@@ -4882,6 +5082,14 @@ export type Query = {
   payoutSessionPreview: PayoutSessionPreview;
   payoutSessions: PayoutSessionConnection;
   payouts: PayoutConnection;
+  /** Annulations par auteur et par motif, sans motif compris (repris de BetterSuite). */
+  pilotCancelReasons: Array<PilotCancelReason>;
+  /** Indicateurs du pilote 1 a 9, par semaine et sur la periode (p3-mesures). */
+  pilotDashboard: PilotDashboard;
+  /** Export CSV des indicateurs, une ligne par semaine et par famille (p3-bilan). */
+  pilotExport: PilotExport;
+  /** Les 10 premiers Kasimen par courses terminees puis gains (repris de BetterSuite). */
+  pilotTopKasimen: Array<PilotKasiman>;
   providerTransaction: ProviderTransaction;
   providerTransactions: ProviderTransactionConnection;
   providerWallet: ProviderWallet;
@@ -5336,6 +5544,30 @@ export type QueryPayoutsArgs = {
   filter?: PayoutFilter;
   paging?: OffsetPaging;
   sorting?: Array<PayoutSort>;
+};
+
+
+export type QueryPilotCancelReasonsArgs = {
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
+};
+
+
+export type QueryPilotDashboardArgs = {
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
+};
+
+
+export type QueryPilotExportArgs = {
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
+};
+
+
+export type QueryPilotTopKasimenArgs = {
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
 };
 
 
@@ -7504,6 +7736,26 @@ export type RiderRegistrationsQueryVariables = Exact<{
 
 export type RiderRegistrationsQuery = { __typename?: 'Query', riderRegistrations: Array<{ __typename?: 'RegistrationResultItem', time: string, count: number }> };
 
+export type PilotIndicatorsFieldsFragment = { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } };
+
+export type PilotWeekFieldsFragment = { __typename?: 'PilotWeek', weekStart?: any | null, start: any, end: any, all: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, people: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, parcels: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } } };
+
+export type PilotDashboardQueryVariables = Exact<{
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
+}>;
+
+
+export type PilotDashboardQuery = { __typename?: 'Query', pilotDashboard: { __typename?: 'PilotDashboard', from: any, to: any, generatedAt: any, currency: string, moneyVisible: boolean, thresholds: { __typename?: 'PilotThresholds', assignmentMedianMaxSeconds: number, serviceRateMin: number, kasimanRetentionMin: number, cashRecoveryMin: number, recurringClientsMin: number, breakEvenMonthlyOrders: number }, weeks: Array<{ __typename?: 'PilotWeek', weekStart?: any | null, start: any, end: any, all: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, people: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, parcels: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } } }>, total: { __typename?: 'PilotWeek', weekStart?: any | null, start: any, end: any, all: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, people: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } }, parcels: { __typename?: 'PilotIndicators', orders: { __typename?: 'PilotOrders', ordered: number, completed: number, riderCanceledBeforeAssignment: number, riderCanceledAfterAssignment: number, driverCanceled: number, expired: number, operatorCanceled: number, monthlyProjection?: number | null }, assignment: { __typename?: 'PilotAssignment', assigned: number, medianSeconds?: number | null, p90Seconds?: number | null }, service: { __typename?: 'PilotServiceRate', assigned: number, eligible: number, rate?: number | null }, offers: { __typename?: 'PilotOffers', accepted: number, rejected: number, noAnswer: number, expired: number, rate?: number | null, averageWave?: number | null }, cancellations: { __typename?: 'PilotCancellations', riderBeforeAssignmentRate?: number | null, riderAfterAssignmentRate?: number | null, driverRate?: number | null, topReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }> }, money?: { __typename?: 'PilotMoney', commissionDue: number, commissionRecovered: number, recoveryRate?: number | null, outstandingDebt: number, blockedKasimen: number } | null, kasimen: { __typename?: 'PilotKasimen', active: number, new: number, retained: number, retentionBase: number, retentionRate?: number | null }, clients: { __typename?: 'PilotClients', active: number, recurring: number, new: number, recurringRate?: number | null }, unserved: { __typename?: 'PilotUnserved', expired: number, demands: number, alerts: number, zones: Array<{ __typename?: 'PilotZone', lat: number, lng: number, demands: number, alerts: number }> }, satisfaction: { __typename?: 'PilotSatisfaction', reviews: number, averageStars?: number | null, lowRatingShare?: number | null } } } }, pilotCancelReasons: Array<{ __typename?: 'PilotCancelReason', reasonId?: string | null, title?: string | null, userType?: AnnouncementUserType | null, canceledBy?: AnnouncementUserType | null, count: number }>, pilotTopKasimen: Array<{ __typename?: 'PilotKasiman', id: string, name?: string | null, avatarUrl?: string | null, completed: number, earnings: number, currency?: string | null }> };
+
+export type PilotExportQueryVariables = Exact<{
+  from: Scalars['DateTime']['input'];
+  to: Scalars['DateTime']['input'];
+}>;
+
+
+export type PilotExportQuery = { __typename?: 'Query', pilotExport: { __typename?: 'PilotExport', url: string, rows: number } };
+
 export type CallMaskingProviderListQueryVariables = Exact<{
   paging?: InputMaybe<OffsetPaging>;
 }>;
@@ -8625,6 +8877,102 @@ export const DriverLocationFragmentDoc = gql`
   lastUpdatedAt
 }
     `;
+export const PilotIndicatorsFieldsFragmentDoc = gql`
+    fragment PilotIndicatorsFields on PilotIndicators {
+  orders {
+    ordered
+    completed
+    riderCanceledBeforeAssignment
+    riderCanceledAfterAssignment
+    driverCanceled
+    expired
+    operatorCanceled
+    monthlyProjection
+  }
+  assignment {
+    assigned
+    medianSeconds
+    p90Seconds
+  }
+  service {
+    assigned
+    eligible
+    rate
+  }
+  offers {
+    accepted
+    rejected
+    noAnswer
+    expired
+    rate
+    averageWave
+  }
+  cancellations {
+    riderBeforeAssignmentRate
+    riderAfterAssignmentRate
+    driverRate
+    topReasons {
+      reasonId
+      title
+      userType
+      canceledBy
+      count
+    }
+  }
+  money {
+    commissionDue
+    commissionRecovered
+    recoveryRate
+    outstandingDebt
+    blockedKasimen
+  }
+  kasimen {
+    active
+    new
+    retained
+    retentionBase
+    retentionRate
+  }
+  clients {
+    active
+    recurring
+    new
+    recurringRate
+  }
+  unserved {
+    expired
+    demands
+    alerts
+    zones {
+      lat
+      lng
+      demands
+      alerts
+    }
+  }
+  satisfaction {
+    reviews
+    averageStars
+    lowRatingShare
+  }
+}
+    `;
+export const PilotWeekFieldsFragmentDoc = gql`
+    fragment PilotWeekFields on PilotWeek {
+  weekStart
+  start
+  end
+  all {
+    ...PilotIndicatorsFields
+  }
+  people {
+    ...PilotIndicatorsFields
+  }
+  parcels {
+    ...PilotIndicatorsFields
+  }
+}
+    ${PilotIndicatorsFieldsFragmentDoc}`;
 export const NotificationsDocument = gql`
     query Notifications {
   complaintAggregate(filter: {status: {in: [UnderInvestigation, Submitted]}}) {
@@ -9687,6 +10035,76 @@ export const RiderRegistrationsDocument = gql`
   })
   export class RiderRegistrationsGQL extends Apollo.Query<RiderRegistrationsQuery, RiderRegistrationsQueryVariables> {
     document = RiderRegistrationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PilotDashboardDocument = gql`
+    query PilotDashboard($from: DateTime!, $to: DateTime!) {
+  pilotDashboard(from: $from, to: $to) {
+    from
+    to
+    generatedAt
+    currency
+    moneyVisible
+    thresholds {
+      assignmentMedianMaxSeconds
+      serviceRateMin
+      kasimanRetentionMin
+      cashRecoveryMin
+      recurringClientsMin
+      breakEvenMonthlyOrders
+    }
+    weeks {
+      ...PilotWeekFields
+    }
+    total {
+      ...PilotWeekFields
+    }
+  }
+  pilotCancelReasons(from: $from, to: $to) {
+    reasonId
+    title
+    userType
+    canceledBy
+    count
+  }
+  pilotTopKasimen(from: $from, to: $to) {
+    id
+    name
+    avatarUrl
+    completed
+    earnings
+    currency
+  }
+}
+    ${PilotWeekFieldsFragmentDoc}`;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PilotDashboardGQL extends Apollo.Query<PilotDashboardQuery, PilotDashboardQueryVariables> {
+    document = PilotDashboardDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PilotExportDocument = gql`
+    query PilotExport($from: DateTime!, $to: DateTime!) {
+  pilotExport(from: $from, to: $to) {
+    url
+    rows
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PilotExportGQL extends Apollo.Query<PilotExportQuery, PilotExportQueryVariables> {
+    document = PilotExportDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -43,6 +43,7 @@ import { LedgerModule } from './ledger/ledger.module';
 import { MoneyPolicyModule } from './money-policy/money-policy.module';
 import { DispatchJournalModule } from './dispatch/dispatch-journal.module';
 import { KycModule } from './kyc/kyc.module';
+import { PilotInsightsModule } from './pilot-insights/pilot-insights.module';
 import { APP_FILTER } from '@nestjs/core';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { KasiMonitoringFilter } from '@kasi/monitoring/monitoring.filter';
@@ -152,6 +153,8 @@ export class AdminAPIModule {
             DispatchJournalModule,
             // p2-kyc K1 (2026-10-20) : documents types du Kasiman.
             KycModule,
+            // p3-mesures M1 et M3 (2026-10-21) : tableau de suivi du pilote.
+            PilotInsightsModule,
             ConfigurationModule,
             HttpModule,
             RedisModule.forRoot({

@@ -38,8 +38,13 @@ export class DispatcherResolver {
   }
 
   @Mutation(() => OrderDTO)
-  async cancelOrder(@Args('orderId', { type: () => ID }) orderId: number): Promise<OrderDTO> {
-    return this.orderService.cancelOrder(orderId);
+  async cancelOrder(
+    @Args('orderId', { type: () => ID }) orderId: number,
+    // p3-mesures M4 (2026-10-22) : motif facultatif (motifs `Operator`).
+    @Args('cancelReasonId', { type: () => ID, nullable: true })
+    cancelReasonId?: string | null,
+  ): Promise<OrderDTO> {
+    return this.orderService.cancelOrder(orderId, cancelReasonId);
   }
 
   @Mutation(() => OrderDTO)

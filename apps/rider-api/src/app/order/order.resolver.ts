@@ -121,9 +121,15 @@ export class OrderResolver {
 
   @Mutation(() => OrderDTO)
   @UseGuards(GqlAuthGuard)
-  async cancelOrder(): Promise<OrderDTO> {
+  async cancelOrder(
+    // p3-mesures M4 (2026-10-22) : motif facultatif (motifs `Rider`). Les apps
+    // installees n'envoient rien : annulation sans motif, comme avant.
+    @Args('cancelReasonId', { type: () => ID, nullable: true })
+    cancelReasonId?: string | null,
+  ): Promise<OrderDTO> {
     return this.riderOrderService.cancelRiderLastOrder(
       this.context.req.user.id,
+      cancelReasonId,
     );
   }
 
@@ -131,11 +137,14 @@ export class OrderResolver {
   @UseGuards(GqlAuthGuard)
   async cancelBooking(
     @Args('id', { type: () => ID }) id: number,
+    @Args('cancelReasonId', { type: () => ID, nullable: true })
+    cancelReasonId?: string | null,
   ): Promise<OrderDTO> {
     // p1-transitions : la reservation doit etre celle du client connecte.
     return this.riderOrderService.cancelOrder(
       Number(id),
       this.context.req.user.id,
+      cancelReasonId,
     );
   }
 

@@ -31,6 +31,7 @@ import { CarModelDTO } from './dto/car-model.dto';
 import { DriverDTO } from './dto/driver.dto';
 import { OrderDTO } from './dto/order.dto';
 import { OrderResolver } from './order.resolver';
+import { CancelReasonResolver } from './cancel-reason.resolver';
 import { RiderOrderService } from './rider-order.service';
 import { FeedbackEntity } from '@kasi/database/feedback.entity';
 import { OrderSubscriptionService } from './order-subscription.service';
@@ -156,6 +157,8 @@ import { HttpModule } from '@nestjs/axios';
     OrderSubscriptionService,
     SharedProviderService,
     OrderResolver,
+    // p3-mesures M4 (2026-10-22) : requete cancelReasons.
+    CancelReasonResolver,
     RiderOrderService,
     SharedDriverService,
     RedisPubSubProvider.provider(),

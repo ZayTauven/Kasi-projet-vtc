@@ -8,6 +8,203 @@ par `kasi-supervisor`.
 
 ---
 
+## 2026-10-22 — `p3-mesures` M4 A1 vérifié ; trois suites pour A2 et A3
+
+**Session principale.** Après le compte rendu de `kasi-backend-services` (entrée suivante) :
+code relu (`cancel-reason.ts`, écriture dans le `set` de la transition), `tsc` sans erreur sur
+rider-api, driver-api et admin-api, tests des motifs à 23/23. Le banc complet (193/193 selon
+l'agent) n'a pas été relancé.
+
+**À reprendre avec A2 et A3** :
+- **Motif opérateur invisible** : une annulation opérateur passe la course en `Expired` ;
+  `pilotCancelReasons` ne lit que `RiderCanceled` et `DriverCanceled`. À ajouter avec A3, sinon
+  le motif est écrit mais jamais montré.
+- **Codegen** : `admin.schema.json` et le code généré des apps doivent être régénérés contre les
+  API reconstruites (images de la stack locale), pas contre l'ancien schéma.
+- **Banc instable** : « Cannot determine a GraphQL output type for the "kind" » réapparaît par
+  intermittence dans le banc complet (1 passe sur 3), après le correctif du 21 octobre. Un autre
+  DTO déclare sans doute un champ `kind` sans type explicite. Hors lot, à corriger avant de se
+  fier au banc pour la sortie de phase.
+- Mémoire de l'hôte à 343 Mo libres pendant les essais : Postgres local a planté quatre fois
+  (récupération automatique). À surveiller pendant A2, qui ajoute l'émulateur.
+
+---
+
+## 2026-10-22 — `p3-mesures` M4, lot A1 (API) : motifs d'annulation lus et écrits
+
+**`kasi-backend-services`.** Points : `p3-mesures`. Fiche : `docs/fiche-motifs-annulation.md`
+§2 « API », §5. Non committé.
+
+- **Ajouts facultatifs seulement** (contrat avec les apps installées) :
+  - rider-api : `cancelReasons: [CancelReason!]!` (motifs `Rider`), `cancelOrder(cancelReasonId: ID)`,
+    `cancelBooking(id: ID!, cancelReasonId: ID)`, `UpdateOrderInput.cancelReasonId: ID` (lu avec
+    `RiderCanceled`) ;
+  - driver-api : `cancelReasons: [CancelReason!]!` (motifs `Driver`), `UpdateOrderInput.cancelReasonId: ID`
+    (lu avec `DriverCanceled`) ;
+  - admin-api : `cancelOrder(orderId: ID!, cancelReasonId: ID)` du répartiteur (motifs `Operator`).
+  - Type neuf `type CancelReason { id: ID! title: String! }`, sans `userType` : aucune énumération
+    nouvelle pour les apps. Aucun type de ce nom n'existait dans rider-api ni driver-api.
+- **Écriture** : le motif va dans le `set` de `transitionOrder`, donc dans la même requête que le
+  statut ; un rejeu ne touche pas la ligne et ne change pas le motif. Sans motif, la colonne n'est
+  pas écrite (comportement d'avant, à l'identique).
+- **Motif refusé** (`resolveCancelReasonId`, `libs/database/src/lib/order/cancel-reason.ts`) :
+  identifiant illisible, inconnu, désactivé ou d'un autre auteur = annulation faite, motif vide, un
+  avertissement `CancelReason` dans les journaux. Jamais d'erreur à cause du motif.
+- **Écart relevé, non traité** : `pilotCancelReasons` ne compte que `RiderCanceled` et
+  `DriverCanceled` (indicateur 4). Le motif opérateur est écrit sur la course (`Expired` +
+  activité `CanceledByOperator`) mais n'apparaît dans aucun indicateur. À trancher avec A3 si
+  l'écran « Pilote » doit le montrer.
+- **Banc** : `cancel-reasons.int-spec.ts` (22 cas : six chemins avec motif, sans motif, motifs
+  refusés, rejeu, `pilotCancelReasons`, signatures) et `dispatcher-cancel-reason.int-spec.ts` ;
+  banc complet **193/193** (19 fichiers), `tsc` sans erreur sur les trois API et les specs.
+- **Signatures vérifiées sans construire de schéma** : sous ts-jest (pas de plugin
+  `@nestjs/graphql`), `GraphQLSchemaFactory.create` échoue par intermittence dans le banc complet
+  (« Cannot determine a GraphQL output type for the "kind" »), y compris sur le test de schéma
+  existant de `pilot-insights.int-spec.ts` (vu une fois sur trois passes, jamais seul). Défaut
+  préexistant du banc, non corrigé ici ; les nouveaux tests lisent les métadonnées des
+  décorateurs à la place.
+- Pas de migration (colonne et table existantes). **Instantanés de schéma non régénérés** :
+  rider-api et driver-api n'en versionnent pas (`schema.gql` écrit au démarrage, absent du dépôt) ;
+  `admin.schema.json` est produit par le codegen du panel (`apps/admin-panel/codegen.yml`) contre
+  l'admin-api **en marche** (127.0.0.1:3000), qui tourne encore l'ancienne image : il sera régénéré
+  avec `generated/graphql.ts` par A3, après reconstruction d'admin-api. Idem pour le codegen d'A2.
+
+---
+
+## 2026-10-22 — Motifs d'annulation rattachés à `p3-mesures` (M4), fiche validée
+
+**Session principale, puis décision de l'utilisateur.** Points : `p3-mesures`. Fiche :
+`docs/fiche-motifs-annulation.md`, **validée telle quelle par l'utilisateur le 22 octobre** :
+motif obligatoire d'un appui (« Autre raison » comprise), catalogue du §3, pas de texte libre.
+
+- **Rattachement** : le constat ouvert du 21 octobre (aucune API n'écrit
+  `request.cancelReasonId`) devient l'incrément M4 de `p3-mesures`. Il rend mesurable
+  l'indicateur 4 déjà validé ; pas de point nouveau dans le référentiel.
+- **Relevé** : six chemins d'annulation (quatre côté client, un côté Kasiman, un côté
+  opérateur), aucun ne transmet de motif. Le catalogue (`order_cancel_reason`) et la colonne
+  existent : le lot se fait sans migration, par ajouts facultatifs au schéma. Les apps installées
+  ne sont pas touchées.
+- Un motif refusé (inconnu, désactivé, d'un autre auteur) n'empêche jamais l'annulation : il est
+  enregistré vide.
+- Découpage : A1 API (`kasi-backend-services`), puis A2 apps (`kasi-mobile-apps`) et A3 panel
+  (`kasi-admin-panel`).
+
+---
+
+## 2026-10-22 — `p3-mesures` M2 vérifié : écran « Pilote » du panel
+
+**Session principale.** Points : `p3-mesures`. Fiche : `docs/fiche-mesures-pilote.md` §4. Non
+committé.
+
+- **Vérifié sur la stack locale** (image du panel reconstruite) : l'écran se charge
+  (`/home/pilot`) ; les 7 chiffres clés avec leur seuil et leur état, les 3 courbes, les offres,
+  les annulations, la satisfaction, la commission, le classement, les motifs et la demande non
+  servie sont affichés ; le filtre tous / personnes / colis s'applique. L'export rend 27 lignes
+  (9 semaines × 3 familles).
+- **Corrigé à la relecture** :
+  - grille des chiffres clés : 4 colonnes forcées dès 1024 px, d'où des seuils cassés lettre par
+    lettre ; remplacée par un remplissage automatique (240 px au moins par carte) ;
+  - courbes : l'axe ne gardait que les semaines ayant une valeur, rapprochant à tort deux semaines
+    éloignées ; le seuil du délai (3 min) sortait de l'axe. Toutes les semaines restent sur l'axe,
+    et l'axe monte au moins jusqu'au seuil.
+- **Écart expliqué, sans correctif** : sur la période, 6 courses terminées pour 2 attribuées. Les
+  courses 177 à 188 (essais mobiles des 20 et 21 octobre) n'ont pas de devis : elles ont été
+  insérées en SQL, hors de `createOrder`, sans `RequestedByRider` ni `DriverAccepted`. Une course
+  réelle passe toujours par ces deux activités. Ces lignes faussent les mesures de la base locale,
+  pas le calcul.
+- **Hors périmètre, constaté** : erreurs console `NG03402` et `<svg> tag not found` présentes sur
+  tout le panel (Aperçu compris), pas propres à cet écran.
+- **Stack locale** : le relais de ports de Docker Desktop était tombé (réponse vide sur 80, 3000
+  et 8080, alors que les services répondaient dans le réseau Docker). Rétabli en redémarrant
+  `kasi-nginx`, `kasi-admin-api` et `kasi-admin-panel`.
+
+---
+
+## 2026-10-21 — `p3-mesures` M1 et M3 vérifiés ; deux constats ouverts
+
+**Session principale.** Après le compte rendu de `kasi-backend-services` (entrée suivante),
+vérification :
+- au premier passage du banc complet, le test `pilot-insights` échouait (169/170), alors qu'il
+  passait seul ;
+- cause : `LedgerIntegrityIssueDTO` (admin-api, grand livre) déclarait des champs GraphQL sans
+  type explicite (`@Field()`), et ts-jest n'en produit pas toujours le type selon l'ordre des
+  fichiers (« Cannot determine a GraphQL output type for the "kind" ») ;
+- correctif : types explicites sur tous ses champs, schéma exposé inchangé ;
+- résultat : banc complet à 170/170, types d'admin-api sans erreur.
+
+**Constats ouverts, sans point du référentiel pour l'instant** :
+- **Motifs d'annulation jamais enregistrés** : aucune API n'écrit `request.cancelReasonId`, et
+  aucune app n'envoie de motif. L'indicateur 4 n'en montrera aucun tant qu'un lot (contrat
+  mobile, deux apps) ne les fera pas envoyer. Proposé à la suite de `p3-mesures`.
+- **Export d'`accounting`** : le nom du fichier et l'URL renvoyée sont calculés par deux
+  `new Date().getTime()` distincts. Le lien peut être cassé à une milliseconde près.
+
+---
+
+## 2026-10-21 — `p3-mesures` M1 et M3 : API du tableau de suivi du pilote et export CSV
+
+**Tranché par `kasi-backend-services`, à revoir par l'utilisateur.** Points : `p3-mesures`,
+`bs-mod-insights`. Fiche : `docs/fiche-mesures-pilote.md` §3 à §5. Non committé.
+
+- **Module `pilot-insights`** (admin-api), lecture seule, sans table ni migration : requêtes
+  `pilotDashboard(from, to)`, `pilotCancelReasons(from, to)`, `pilotTopKasimen(from, to)`,
+  `pilotExport(from, to)`. Types GraphQL neufs (`Pilot*`), ajout pur lu par le seul panel.
+  Seuils du §6 renvoyés avec les indicateurs (`thresholds`, constantes de l'API).
+- **Droits** : `Requests_View` pour tout ; `ProviderWallet_View` en plus pour l'indicateur 5,
+  sinon `money` vaut null et les colonnes d'argent du CSV sont vides.
+- **Rattachement au temps** : une course appartient à la semaine de sa commande
+  (`requestTimestamp`) ; ses offres, son avis, sa demande non servie et son statut final la
+  suivent. L'argent appartient à la semaine de son écriture au grand livre. `from` inclus, `to`
+  exclu, chaque semaine bornée par la période ; 400 jours au plus (`PILOT_PERIOD_INVALID`).
+- **Précisions de définition** prises faute d'indication dans la fiche :
+  - expirées sans Kasiman = `Expired`, `NotFound`, `NoCloseFound`, hors annulation opérateur
+    (comptée à part, `operatorCanceled`) ; réservation = activité `BookedBy*` ;
+  - projection mensuelle = terminées ramenées à 30 jours écoulés de la tranche ;
+  - rétention de la période = somme des retenus ÷ somme des actifs S-1, semaine par semaine ;
+    la base S-1 de la 1re semaine est lue avant `from` ; « nouveau » = première course terminée
+    de tout l'historique dans la tranche ;
+  - indicateur 5 : sur « tous services » seulement (un règlement de dette n'est rattaché à
+    aucune course) ; encours (positif) et Kasimen bloqués calculés sur les soldes du grand livre
+    en fin de tranche, avec le plafond `money_policy` du moment ;
+  - note : l'app client envoie étoiles × 20 ; « ≤ 3 » = score ≤ 60, moyenne rendue en étoiles ;
+  - zones de demande non servie : maille de 0,01° (≈ 1,1 km), 10 au plus ;
+  - gains du classement = prix avant coupon − commission + pourboire (base de l'écran des gains
+    de driver-app).
+- **Repris de BetterSuite** : `cancel-reason-insights` (par motif et par auteur réunis) et
+  `drivers-insights` (classement, adapté à la période). Le reste n'est pas porté (fiche §2).
+- **Écart constaté** : aucune API n'écrit `request.cancelReasonId` ; les motifs resteront « sans
+  motif » tant que les apps n'en envoient pas. À rattacher à un point (contrat mobile) par la
+  session principale.
+- Test : `apps/admin-api/src/app/pilot-insights/pilot-insights.int-spec.ts` (10 tests) ; banc
+  complet au vert.
+
+---
+
+## 2026-10-21 — `p3-mesures` : tableau de suivi du pilote, fiche validée avec ses seuils
+
+**Décision de l'utilisateur.** Points : `p3-mesures`, `p3-bilan`, `bs-mod-insights`. Fiche :
+`docs/fiche-mesures-pilote.md`.
+
+- **9 indicateurs**, par semaine : courses, délai d'attribution, taux de service et taux
+  d'acceptation, annulations et motifs, commission en espèces recouvrée, Kasimen actifs et
+  retenus, clients, demande non servie, satisfaction. Lecture seule, sans table ni migration ;
+  écran « Pilote » dans l'accueil du panel, et export CSV.
+- **Seuils de réussite du pilote** (`p3-bilan`) :
+  - délai d'attribution médian sous 3 minutes ;
+  - taux de service supérieur à 85 % ;
+  - rétention hebdomadaire des Kasimen supérieure à 70 % ;
+  - recouvrement de la commission en espèces supérieur à 90 % ;
+  - au moins 30 % de clients récurrents ;
+  - trajectoire vers le point mort (5 000 courses par mois), à préciser par l'équipe.
+- **Reprise BetterSuite** : seuls les motifs d'annulation et le classement des Kasimen (adapté)
+  sont portés. Le reste fait doublon avec `accounting` ou ne mesure pas ce qu'il faut.
+- Le passage en `waves` doit précéder le premier Kasiman recruté : sans lui, le taux
+  d'acceptation n'est pas mesurable.
+- Les e-commerçants (`p3-b2b`) sont suivis comme des clients, par leur numéro, jusqu'au compte
+  entreprise de la phase 4.
+
+---
+
 ## 2026-10-21 — `bug-rafraichissement`, `bug-timeout` (apps) et piles d'appels masquées
 
 **Tranché par la session principale, à revoir par l'utilisateur.** Points : `bug-rafraichissement`,

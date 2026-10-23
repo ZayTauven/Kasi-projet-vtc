@@ -8,6 +8,7 @@ import { OrderStatus } from '@kasi/database/enums/order-status.enum';
 import { PaymentStatus } from '@kasi/database/enums/payment-status.enum';
 import { ProviderRechargeTransactionType } from '@kasi/database/enums/provider-recharge-transaction-type.enum';
 import { RequestActivityType } from '@kasi/database/enums/request-activity-type.enum';
+import { AnnouncementUserType } from '@kasi/database/enums/anouncement-user-type.enum';
 import { RiderDeductTransactionType } from '@kasi/database/enums/rider-deduct-transaction-type.enum';
 import { TransactionAction } from '@kasi/database/enums/transaction-action.enum';
 import { TransactionStatus } from '@kasi/database/enums/transaction-status.enum';
@@ -38,6 +39,7 @@ import {
   UNASSIGNED_STATUSES,
 } from '@kasi/order/order-transition';
 import { MoneyKey } from '@kasi/order/wallet-ledger';
+import { resolveCancelReasonId } from '@kasi/order/cancel-reason';
 import {
   LedgerAccounts,
   LedgerEntryNature,
@@ -164,7 +166,7 @@ export class RiderOrderService {
     });
   }
 
-  async cancelRiderLastOrder(riderId: number) {
+  async cancelRiderLastOrder(riderId: number, cancelReasonId?: unknown) {
     const order = await this.getCurrentOrder(riderId);
     if (order == null) {
       // Rejeu d'une annulation deja faite (la course n'est plus « en cours ») :
@@ -178,7 +180,7 @@ export class RiderOrderService {
       }
       throw new ForbiddenError('CANCEL_NOT_ALLOWED');
     }
-    return this.cancelOrder(order.id, riderId);
+    return this.cancelOrder(order.id, riderId, cancelReasonId);
   }
 
   /**
@@ -191,8 +193,16 @@ export class RiderOrderService {
    * effet. Course terminee, payee ou annulee par un autre : CANCEL_NOT_ALLOWED
    * (avant : la course etait reecrite en RiderCanceled quel que soit son
    * statut, y compris apres paiement).
+   *
+   * p3-mesures M4 (2026-10-22) : `cancelReasonId` facultatif (motifs `Rider`),
+   * ecrit avec le statut, donc seulement si la ligne change ; motif refuse :
+   * annulation faite sans motif (resolveCancelReasonId).
    */
-  async cancelOrder(orderId: number, riderId?: number): Promise<RequestEntity> {
+  async cancelOrder(
+    orderId: number,
+    riderId?: number,
+    cancelReasonId?: unknown,
+  ): Promise<RequestEntity> {
     const before = await this.orderRepository.findOne({
       where: { id: orderId },
       relations: { service: true },
@@ -215,11 +225,21 @@ export class RiderOrderService {
     );
     const { changed, feeCharged } = await this.orderRepository.manager.transaction(
       async (manager) => {
+        const reasonId = await resolveCancelReasonId(
+          manager,
+          cancelReasonId,
+          AnnouncementUserType.Rider,
+          orderId,
+        );
         const changed = await transitionOrder(manager, orderId, {
           from: RIDER_CANCELABLE_STATUSES,
           to: OrderStatus.RiderCanceled,
           riderId: before.riderId,
-          set: { finishTimestamp: new Date(), costAfterCoupon: 0 },
+          set: {
+            finishTimestamp: new Date(),
+            costAfterCoupon: 0,
+            ...(reasonId !== undefined ? { cancelReasonId: reasonId } : {}),
+          },
         });
         if (!changed) {
           return { changed: false, feeCharged: false };

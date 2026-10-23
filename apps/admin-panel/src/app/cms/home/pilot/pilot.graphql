@@ -1,0 +1,141 @@
+# p3-mesures M2 (2026-10-21) : ecran « Pilote » (docs/fiche-mesures-pilote.md §3 et §4).
+
+fragment PilotIndicatorsFields on PilotIndicators {
+  orders {
+    ordered
+    completed
+    riderCanceledBeforeAssignment
+    riderCanceledAfterAssignment
+    driverCanceled
+    expired
+    operatorCanceled
+    monthlyProjection
+  }
+  assignment {
+    assigned
+    medianSeconds
+    p90Seconds
+  }
+  service {
+    assigned
+    eligible
+    rate
+  }
+  offers {
+    accepted
+    rejected
+    noAnswer
+    expired
+    rate
+    averageWave
+  }
+  cancellations {
+    riderBeforeAssignmentRate
+    riderAfterAssignmentRate
+    driverRate
+    topReasons {
+      reasonId
+      title
+      userType
+      canceledBy
+      count
+    }
+  }
+  money {
+    commissionDue
+    commissionRecovered
+    recoveryRate
+    outstandingDebt
+    blockedKasimen
+  }
+  kasimen {
+    active
+    new
+    retained
+    retentionBase
+    retentionRate
+  }
+  clients {
+    active
+    recurring
+    new
+    recurringRate
+  }
+  unserved {
+    expired
+    demands
+    alerts
+    zones {
+      lat
+      lng
+      demands
+      alerts
+    }
+  }
+  satisfaction {
+    reviews
+    averageStars
+    lowRatingShare
+  }
+}
+
+fragment PilotWeekFields on PilotWeek {
+  weekStart
+  start
+  end
+  all {
+    ...PilotIndicatorsFields
+  }
+  people {
+    ...PilotIndicatorsFields
+  }
+  parcels {
+    ...PilotIndicatorsFields
+  }
+}
+
+query PilotDashboard($from: DateTime!, $to: DateTime!) {
+  pilotDashboard(from: $from, to: $to) {
+    from
+    to
+    generatedAt
+    currency
+    moneyVisible
+    thresholds {
+      assignmentMedianMaxSeconds
+      serviceRateMin
+      kasimanRetentionMin
+      cashRecoveryMin
+      recurringClientsMin
+      breakEvenMonthlyOrders
+    }
+    weeks {
+      ...PilotWeekFields
+    }
+    total {
+      ...PilotWeekFields
+    }
+  }
+  pilotCancelReasons(from: $from, to: $to) {
+    reasonId
+    title
+    userType
+    canceledBy
+    count
+  }
+  pilotTopKasimen(from: $from, to: $to) {
+    id
+    name
+    avatarUrl
+    completed
+    earnings
+    currency
+  }
+}
+
+query PilotExport($from: DateTime!, $to: DateTime!) {
+  pilotExport(from: $from, to: $to) {
+    url
+    rows
+  }
+}

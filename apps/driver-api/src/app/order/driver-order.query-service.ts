@@ -95,7 +95,7 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
     const driverId: number = this.context.req.user.id;
     switch (update.status) {
       case OrderStatus.DriverCanceled:
-        return this.cancelByDriver(orderId, driverId);
+        return this.cancelByDriver(orderId, driverId, update.cancelReasonId);
       case OrderStatus.DriverAccepted:
         return this.accept(orderId, driverId);
       case OrderStatus.Arrived:
@@ -286,10 +286,15 @@ export class DriverOrderQueryService extends TypeOrmQueryService<RequestEntity> 
   private async cancelByDriver(
     orderId: number,
     driverId: number,
+    cancelReasonId?: unknown,
   ): Promise<RequestEntity> {
     // Statut, activite CanceledByDriver et remise en ligne : une transaction
-    // (OrderService.cancelOrder).
-    const { changed } = await this.orderService.cancelOrder(orderId, driverId);
+    // (OrderService.cancelOrder). p3-mesures M4 : motif facultatif.
+    const { changed } = await this.orderService.cancelOrder(
+      orderId,
+      driverId,
+      cancelReasonId,
+    );
     const order = await this.loadOrder(orderId);
     if (changed) {
       this.riderNotificationService.canceled(order.rider);
